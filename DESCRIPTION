@@ -1,0 +1,10 @@
+Package: DrugUtilisation
+Title: Summarise patient-level drug utilisation in data mapped to the OMOP Common Data Model 
+Version: 0.0.0.9000
+Authors@R: 
+    person("Marti", "Catala", , "marti.catalasabate@ndorms.ox.ac.uk", role = c("aut", "cre"))
+Description: Summarise patient-level drug utilisation in data mapped to the OMOP Common Data Model.
+License: Apache License (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
