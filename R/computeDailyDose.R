@@ -18,7 +18,6 @@
 #'
 #' @param table table
 #' @param cdm cdm
-#' @param tableName tableName
 #' @param verbose verbose
 #'
 #' @return
@@ -26,18 +25,35 @@
 #'
 #' @examples
 computeDailyDose <- function(table,
+                             cdm = cdm,
                              verbose = FALSE) {
   checkmate::assertTibble(table)
+  checkmate::assertClass(cdm, "cdm_reference")
   checkmate::assertLogical(verbose)
   checkmate::assertTRUE(
-    c(
-      "person_id", "quantity", "drug_concept_id", "drug_exposure_start_date",
-      "drug_exposure_end_date", "ingredient_concept_id"
-    ) %in% colnames(table)
+    all(c(
+      "person_id", "quantity", "drug_concept_id", "days_supply",
+      "ingredient_concept_id"
+    ) %in% colnames(table))
   )
+  checkmate::assertFALSE(c("daily_dose") %in% colnames(table))
+  checkmate::assertTRUE(c("drug_strength") %!in% names(cdm))
+
 
   table <- table %>%
-    dplyr::mutate(daily_dose = 50) %>%
+    dplyr::left_join(
+      table %>%
+        dplyr::select("person_id", "days_supply") %>%
+        dplyr::inner_join(
+          cdm$drug_strength,
+          by = c("drug_concept_id", "ingredient_concept_id")
+        ) %>%
+        dplyr::mutate(
+          daily_dose = .data$quantity * .data$amount_value / .data$days_supply
+        ) %>%
+        dplyr::select("person_id", "daily_dose", "drug_concept_id"),
+      by = c("person_id", "drug_concept_id")
+    ) %>%
     dplyr::compute()
 
   return(table)
