@@ -27,6 +27,7 @@
 computeDailyDose <- function(table,
                              cdm = cdm,
                              verbose = FALSE) {
+  # initial checks
   checkmate::assertTibble(table)
   checkmate::assertClass(cdm, "cdm_reference")
   checkmate::assertLogical(verbose)
@@ -38,8 +39,7 @@ computeDailyDose <- function(table,
   )
   checkmate::assertFALSE(c("daily_dose") %in% colnames(table))
   checkmate::assertTRUE(c("drug_strength") %!in% names(cdm))
-
-
+  # add daily dose column
   table <- table %>%
     dplyr::left_join(
       table %>%

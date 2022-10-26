@@ -25,6 +25,7 @@
 #' @param tablesToCharacterize Name of the tables in the cdm that we want to
 #' summarize
 #' @param characterizationTableName characterizationTableName
+#' @param permanentCharacterizationTable permanentCharacterizationTable
 #' @param verbose verbose
 #'
 #' @return
