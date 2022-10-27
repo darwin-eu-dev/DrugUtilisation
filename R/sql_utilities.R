@@ -1,3 +1,10 @@
+#' Explain function
+#'
+#' @param dialect dialect
+#' @param years_to_add years_to_add
+#' @param variable variable
+#'
+#' @noRd
 sql_add_years<-function(dialect, years_to_add, variable){
 
   error_message <- checkmate::makeAssertCollection()
@@ -15,6 +22,13 @@ sql_add_years<-function(dialect, years_to_add, variable){
   return(rendered_translated_sql)
 }
 
+#' Explain function
+#'
+#' @param dialect dialect
+#' @param days_to_add days_to_add
+#' @param variable variable
+#'
+#' @noRd
 sql_add_days<-function(dialect, days_to_add, variable){
 
   error_message <- checkmate::makeAssertCollection()
@@ -32,6 +46,13 @@ sql_add_days<-function(dialect, days_to_add, variable){
   return(rendered_translated_sql)
 }
 
+#' Explain function
+#'
+#' @param dialect dialect
+#' @param variable1 variable1
+#' @param variable2 variable2
+#'
+#' @noRd
 sqlDiffDays <- function(dialect, variable1, variable2) {
   SqlRender::translate(
     SqlRender::render("DATEDIFF(DAY, @variable1, @variable2)",
