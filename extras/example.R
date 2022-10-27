@@ -34,7 +34,6 @@ specifications <- tibble(
   )
 studyTime = NULL
 drugUtilisationCohortName = "dus_valporate"
-instantiateIncidencePrevalenceCohort = TRUE
 imputeDuration = FALSE
 imputeDailyDose = FALSE
 durationLowerBound = NULL
