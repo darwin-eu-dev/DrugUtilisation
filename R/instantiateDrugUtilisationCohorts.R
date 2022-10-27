@@ -102,23 +102,23 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     imputeValueName = "default_daily_dose",
     allowZero = TRUE)
 
-  drugUtilisationCohort <- drugUtilisationCohort %>%
-    dplyr::rename(
-      "cohort_start_date" = "drug_exposure_start_date",
-      "cohort_end_date" = "drug_exposure_start_date"
-    ) %>%
-    dplyr::select(
-      "person_id", "daily_dose", "cohort_start_date", "cohort_end_date"
-    ) %>%
-    dplyr::compute()
-
   # compute cumulative dose per person
   cumulativeDoseNoRestrictions <- drugUtilisationCohort %>%
     dplyr::group_by(.data$person_id) %>%
     dplyr::summarise(
       cumulative_dose = sum(
-        .data$daily_dose * (.data$cohort_end_date - .data$cohort_start_date + 1)
+        .data$daily_dose * .data$days_supply
       )
+    ) %>%
+    dplyr::compute()
+
+  drugUtilisationCohort <- drugUtilisationCohort %>%
+    dplyr::rename(
+      "cohort_start_date" = "drug_exposure_start_date",
+      "cohort_end_date" = "drug_exposure_end_date"
+    ) %>%
+    dplyr::select(
+      "person_id", "daily_dose", "cohort_start_date", "cohort_end_date"
     ) %>%
     dplyr::compute()
 
@@ -162,7 +162,7 @@ getNonOverlapedExposures <- function(interestExposures,
         dplyr::select("person_id", "cohort_end_date") %>%
         dplyr::distinct() %>%
         dplyr::mutate(
-          start_overlap = .data$cohort_end_date + lubridate::days(1)
+          start_overlap = .data$cohort_end_date + 1
         ) %>%
         dplyr::select(-"cohort_end_date")
     ) %>%

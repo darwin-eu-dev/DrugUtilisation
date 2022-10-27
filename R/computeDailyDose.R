@@ -77,13 +77,3 @@ computeDailyDose <- function(table,
 
   return(table)
 }
-
-sqlDiffDays <- function(dialect, variable1, variable2) {
-  SqlRender::translate(
-    SqlRender::render("DATEDIFF(DAY, @variable1, @variable2)",
-      variable1 = variable1,
-      variable2 = variable2
-    ),
-    targetDialect = dialect
-  )
-}
