@@ -35,9 +35,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               specifications,
                                               studyTime = NULL,
                                               drugUtilisationCohortName,
-                                              drugUtilisationTableDataName,
                                               instantiateIncidencePrevalenceCohort = TRUE,
-                                              incidencePrevalenceCohortName = "drug_utilisation_outcomes",
                                               imputeDuration = FALSE,
                                               imputeDailyDose = FALSE,
                                               durationLowerBound = NULL,
@@ -45,56 +43,65 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               dailyDoseLowerBound = NULL,
                                               dailyDoseUpperBound = NULL,
                                               verbose = FALSE) {
+  drugUtilisationTableDataName <- paste0(drugUtilisationCohortName, "_info")
+  incidencePrevalenceCohortName <- paste0(drugUtilisationCohortName, "_incprev")
   specifications <- specifications %>%
     dplyr::select(
       "drug_concept_id", "ingredient_concept_id",
       tidyselect::matches("default_duration"),
-      tidyselect::matches("default_daily_dose")
+      tidyselect::matches("default_daily_dose"),
+      tidyselect::matches("default_quantity")
     )
-  if (is.na(studyTime)) {
+  if (isTRUE(is.na(studyTime))) {
     studyTime <- NULL
   }
   drugUtilisationCohort <- cdm[["drug_exposure"]] %>%
     dplyr::select(
       "person_id", "drug_concept_id", "drug_exposure_start_date",
-      "drug_exposure_end_date", "quantity"
+      "drug_exposure_end_date", "quantity",
+      tidyselect::matches("days_supply")
     ) %>%
     dplyr::inner_join(
       specifications,
       by = "drug_concept_id",
       copy = TRUE
     )
-  if (imputeDuration == FALSE) {
+  if (isFALSE("days_supply" %in% colnames(cdm[["drug_exposure"]]))) {
     drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::filter(!is.na(.data$drug_exposure_end_date))
-  } else {
-    drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::mutate(
-        drug_exposure_end_date = dplyr::if_else(
-          !is.na(.data$drug_exposure_end_date),
-          .data$drug_exposure_end_date,
-          as.Date(.data$drug_exposure_start_date + lubridate::days(
-            .data$default_duration - 1
-          ))
-        )
-      )
+      dplyr::mutate(days_supply = dbplyr::sql(sqlDiffDays(
+        CDMConnector::dbms(attr(cdm, "dbcon")),
+        "drug_exposure_start_date",
+        "drug_exposure_end_date"
+      )) + 1)
   }
-  drugUtilisationCohort <- drugUtilisationCohort %>%
-    computeDailyDose(verbose = verbose)
 
-  if (imputeDailyDose == FALSE) {
-    drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::filter(!is.na(.data$daily_dose))
-  } else {
-    drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::mutate(
-        daily_dose = dplyr::if_else(
-          is.na(.data$daily_dose),
-          .data$default_daily_dose,
-          .data$daily_dose
-        )
-      )
-  }
+  # impute duration
+  drugUtilisationCohort <- imputeVariable(
+    x = drugUtilisationCohort,
+    variableName = "days_supply",
+    impute = imputeDuration,
+    lowerBound = durationLowerBound,
+    upperBound = durationUpperBound,
+    imputeValueName = "default_duration",
+    allowZero = FALSE)
+
+  # compute the daily dose
+  drugUtilisationCohort <- computeDailyDose(
+    table = drugUtilisationCohort,
+    cdm = cdm,
+    verbose = verbose
+  )
+
+  # impute daily_dose
+  drugUtilisationCohort <- imputeVariable(
+    x = drugUtilisationCohort,
+    variableName = "daily_dose",
+    impute = imputeDuration,
+    lowerBound = dailyDoseLowerBound,
+    upperBound = dailyDoseUpperBound,
+    imputeValueName = "default_daily_dose",
+    allowZero = TRUE)
+
   drugUtilisationCohort <- drugUtilisationCohort %>%
     dplyr::rename(
       "cohort_start_date" = "drug_exposure_start_date",
@@ -104,6 +111,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "person_id", "daily_dose", "cohort_start_date", "cohort_end_date"
     ) %>%
     dplyr::compute()
+
   # compute cumulative dose per person
   cumulativeDoseNoRestrictions <- drugUtilisationCohort %>%
     dplyr::group_by(.data$person_id) %>%
@@ -345,7 +353,7 @@ getNonOverlapedExposures <- function(interestExposures,
         dplyr::distinct() %>%
         dplyr::ungroup() %>%
         dplyr::compute()
-    # if criteria is to pick the minimum
+      # if criteria is to pick the minimum
     } else if (sameIndexMode == "min") {
       overlapedGroupsSameIndex <- overlapedGroupsSameIndex %>%
         dplyr::group_by(
@@ -357,25 +365,25 @@ getNonOverlapedExposures <- function(interestExposures,
         dplyr::ungroup() %>%
         dplyr::compute()
     }
-      # add again the merged same overlap into overlapedGroups
-      overlapedGroups <- overlapedGroups %>%
-        dplyr::union_all(overlapedGroupsSameIndex) %>%
-        dplyr::compute()
+    # add again the merged same overlap into overlapedGroups
+    overlapedGroups <- overlapedGroups %>%
+      dplyr::union_all(overlapedGroupsSameIndex) %>%
+      dplyr::compute()
     # solve the overlap with different index dates group
-      overlapedGroups <- overlapedGroups %>%
+    overlapedGroups <- overlapedGroups %>%
       dplyr::group_by(.data$person_id, .data$overlap_subgroup)
     # if the overlapMode is first (earliest exposure prevails)
     if (overlapMode == "first") {
       overlapedGroups <- overlapedGroups %>%
         dplyr::filter(
           .data$cohort_start_date == min(.data$cohort_start_date, na.rm = TRUE)
-          )
+        )
       # if the overlapMode is second (latest exposure prevails)
     } else if (overlapMode == "second") {
       overlapedGroups <- overlapedGroups %>%
         dplyr::filter(
           .data$cohort_start_date == max(.data$cohort_start_date, na.rm = TRUE)
-          )
+        )
       # if the overlapMode is max (exposure with more daily dose prevails)
     } else if (overlapMode == "max") {
       overlapedGroups <- overlapedGroups %>%
@@ -389,7 +397,7 @@ getNonOverlapedExposures <- function(interestExposures,
       overlapedGroups <- overlapedGroups %>%
         dplyr::filter(.data$daily_dose == min(.data$daily_dose, na.rm = TRUE))
     }
-      overlapedGroups <- overlapedGroups %>%
+    overlapedGroups <- overlapedGroups %>%
       dplyr::select(
         "person_id", "overlap_group", "overlap_subgroup",
         "start_overlap", "end_overlap", "daily_dose"
@@ -526,4 +534,74 @@ computeIncidencePrevalenceCohorts <- function(cdm,
   )
   # return cdm
   return(cdm)
+}
+
+#' Get the cohorts to compute incidence and prevalence
+#'
+#' @param interestExposures interestExposures
+#' @param gapEra gapEra
+#' @param incidencePrevalenceCohortName incidencePrevalenceCohortName
+#' @param verbose verbose
+#'
+#' @noRd
+imputeVariable <- function(x,
+                           variableName,
+                           impute,
+                           lowerBound,
+                           upperBound,
+                           imputeValueName,
+                           allowZero){
+  x <- x %>%
+    dplyr::rename("variable" = .env$variableName)
+  # impute if allow zero
+  if (isTRUE(allowZero)){
+    x <- x %>%
+      dplyr::mutate(impute = dplyr::if_else(
+        is.na(.data$variable) | .data$variable < 0,
+        1,
+        0
+      ))
+  } else {
+    x <- x %>%
+      dplyr::mutate(impute = dplyr::if_else(
+        is.na(.data$variable) | .data$variable <= 0,
+        1,
+        0
+      ))
+  }
+  # impute lower bound
+  if (!is.null(lowerBound)) {
+    x <- x %>%
+      dplyr::mutate(impute = dplyr::if_else(
+        .data$variable < .env$lowerBound,
+        1,
+        .data$impute
+      ))
+  }
+  if (!is.null(upperBound)) {
+    x <- x %>%
+      dplyr::mutate(impute = dplyr::if_else(
+        .data$variable > .env$upperBound,
+        1,
+        .data$impute
+      ))
+  }
+  if (isFALSE(impute)) {
+    x <- x %>%
+      dplyr::filter(.data$impute == 0)
+  } else {
+    x <- x %>%
+      dplyr::rename("imputeValue" = .env$imputeValueName) %>%
+      dplyr::mutate(variable = dplyr::if_else(
+        .data$impute == 1,
+        .data$imputeValue,
+        .data$variable
+      )) %>%
+      dplyr::rename(!!imputeValueName := "imputeValue")
+  }
+  x <- x %>%
+    dplyr::select(-"impute") %>%
+    dplyr::rename(!!variableName := "variable") %>%
+    dplyr::compute()
+  return(x)
 }
