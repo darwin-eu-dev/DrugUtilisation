@@ -536,12 +536,15 @@ computeIncidencePrevalenceCohorts <- function(cdm,
   return(cdm)
 }
 
-#' Get the cohorts to compute incidence and prevalence
+#' Impute or eliminate values under a certain conditions
 #'
-#' @param interestExposures interestExposures
-#' @param gapEra gapEra
-#' @param incidencePrevalenceCohortName incidencePrevalenceCohortName
-#' @param verbose verbose
+#' @param x x
+#' @param variableName variableName
+#' @param impute impute
+#' @param lowerBound lowerBound
+#' @param upperBound upperBound
+#' @param imputeValueName imputeValueName
+#' @param allowZero allowZero
 #'
 #' @noRd
 imputeVariable <- function(x,
