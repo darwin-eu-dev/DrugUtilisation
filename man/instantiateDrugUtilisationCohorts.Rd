@@ -31,6 +31,8 @@ instantiateDrugUtilisationCohorts(
 
 \item{gapEra}{gapEra}
 
+\item{eraJoinMode}{eraJoinMode}
+
 \item{overlapMode}{overlapMode}
 
 \item{sameIndexMode}{sameIndexMode}

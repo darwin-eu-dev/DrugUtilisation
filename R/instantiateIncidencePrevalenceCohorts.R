@@ -20,6 +20,8 @@
 #' @param conceptIds conceptIds
 #' @param gapEra gapEra
 #' @param incidencePrevalenceCohortName incidencePrevalenceCohortName
+#' @param cohortDefinitionId cohortDefinitionId
+#' @param overWrite overWrite
 #' @param verbose verbose
 #'
 #' @return
@@ -30,9 +32,16 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
                                                   conceptIds,
                                                   gapEra,
                                                   incidencePrevalenceCohortName,
-                                                  cohortDefinitionId = 1,
+                                                  cohortDefinitionId = NULL,
                                                   overWrite = TRUE,
                                                   verbose) {
+
+  if (!is.list(conceptIds)){
+    conceptIds <- list(conceptIds)
+  }
+  if (is.null(cohortDefinitionId)){
+    cohortDefinitionId <- 1:length(conceptIds)
+  }
   incidencePrevalenceCohort <- cdm[["drug_exposure"]] %>%
     dplyr::select(
       "person_id", "drug_concept_id", "drug_exposure_start_date",

@@ -40,8 +40,6 @@ getIndication(
 \item{indicationTableName}{indicationTableName}
 
 \item{verbose}{verbose}
-
-\item{noIndication}{noIndication}
 }
 \description{
 Get indication for a target cohort

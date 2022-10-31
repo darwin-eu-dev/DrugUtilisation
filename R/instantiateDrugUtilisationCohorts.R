@@ -20,6 +20,7 @@
 #' @param specifications specifications
 #' @param studyTime studyTime
 #' @param gapEra gapEra
+#' @param eraJoinMode eraJoinMode
 #' @param overlapMode overlapMode
 #' @param sameIndexMode sameIndexMode
 #' @param drugUtilisationCohortName drugUtilisationCohortName

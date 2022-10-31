@@ -25,7 +25,6 @@
 #' @param indicationGap indicationGap
 #' @param unknownIndication unknownIndication
 #' @param unknownIndicarionTables unknownIndicarionTables
-#' @param noIndication noIndication
 #' @param indicationTableName indicationTableName
 #' @param verbose verbose
 #'
