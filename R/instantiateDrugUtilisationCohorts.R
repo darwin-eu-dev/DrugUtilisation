@@ -16,15 +16,19 @@
 
 #' Explain function
 #'
-#' @param cdm Connection to a database using DBI::dbConnect()
-#' @param targetCohortName Name of the table in the cdm that contains the
-#' target cohort
-#' @param targetCohortId Indentifier for the analyzed target
-#' cohorts
-#' @param temporalWindows Temporal windows that we want to characterize
-#' @param tablesToCharacterize Name of the tables in the cdm that we want to
-#' summarize
-#' @param characterizationTableName characterizationTableName
+#' @param cdm cdm
+#' @param specifications specifications
+#' @param studyTime studyTime
+#' @param gapEra gapEra
+#' @param overlapMode overlapMode
+#' @param sameIndexMode sameIndexMode
+#' @param drugUtilisationCohortName drugUtilisationCohortName
+#' @param imputeDuration imputeDuration
+#' @param imputeDailyDose imputeDailyDose
+#' @param durationLowerBound durationLowerBound
+#' @param durationUpperBound durationUpperBound
+#' @param dailyDoseLowerBound dailyDoseLowerBound
+#' @param dailyDoseUpperBound dailyDoseUpperBound
 #' @param verbose verbose
 #'
 #' @return
@@ -34,6 +38,10 @@
 instantiateDrugUtilisationCohorts <- function(cdm,
                                               specifications,
                                               studyTime = NULL,
+                                              gapEra,
+                                              eraJoinMode,
+                                              overlapMode,
+                                              sameIndexMode,
                                               drugUtilisationCohortName,
                                               imputeDuration = FALSE,
                                               imputeDailyDose = FALSE,
@@ -42,15 +50,13 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               dailyDoseLowerBound = NULL,
                                               dailyDoseUpperBound = NULL,
                                               verbose = FALSE) {
-
+  dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
   drugUtilisationTableDataName <- paste0(drugUtilisationCohortName, "_info")
-  incidencePrevalenceCohortName <- paste0(drugUtilisationCohortName, "_incprev")
   specifications <- specifications %>%
     dplyr::select(
       "drug_concept_id", "ingredient_concept_id",
       tidyselect::matches("default_duration"),
-      tidyselect::matches("default_daily_dose"),
-      tidyselect::matches("default_quantity")
+      tidyselect::matches("default_daily_dose")
     )
   if (isTRUE(is.na(studyTime))) {
     studyTime <- NULL
@@ -58,15 +64,40 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   drugUtilisationCohort <- cdm[["drug_exposure"]] %>%
     dplyr::select(
       "person_id", "drug_concept_id", "drug_exposure_start_date",
-      "drug_exposure_end_date", "quantity",
+      "drug_exposure_end_date", "quantity", "drug_exposure_id",
       tidyselect::matches("days_supply")
     ) %>%
     dplyr::inner_join(
       specifications,
       by = "drug_concept_id",
       copy = TRUE
-    )
-  if (isFALSE("days_supply" %in% colnames(cdm[["drug_exposure"]]))) {
+    ) %>%
+    dplyr::compute()
+
+  if (!is.null(studyTime)) {
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::group_by(.data$person_id) %>%
+      dplyr::mutate(
+        drug_exposure_end_date_max = min(
+          .data$drug_exposure_start_date,
+          na.rm = TRUE
+        )
+      ) %>%
+      dplyr::mutate(
+        drug_exposure_end_date_max = as.Date(dbplyr::sql(sql_add_days(
+          CDMConnector::dbms(attr(cdm, "dbcon")),
+          studyTime - 1,
+          "drug_exposure_end_date_max"
+        )))
+      ) %>%
+      dplyr::ungroup() %>%
+      dplyr::filter(
+        .data$drug_exposure_start_date <= .data$drug_exposure_end_date_max
+      ) %>%
+      dplyr::compute()
+  }
+
+  if (isFALSE("days_supply" %in% colnames(drugUtilisationCohort))) {
     drugUtilisationCohort <- drugUtilisationCohort %>%
       dplyr::mutate(days_supply = dbplyr::sql(sqlDiffDays(
         CDMConnector::dbms(attr(cdm, "dbcon")),
@@ -83,7 +114,53 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     lowerBound = durationLowerBound,
     upperBound = durationUpperBound,
     imputeValueName = "default_duration",
-    allowZero = FALSE)
+    allowZero = FALSE
+  )
+
+  if (!is.null(studyTime)) {
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::mutate(
+        drug_exposure_end_date =
+          .data$drug_exposure_start_date + .data$days_supply
+      ) %>%
+      dplyr::mutate(
+        drug_exposure_end_date = as.Date(dbplyr::sql(sql_add_days(
+          CDMConnector::dbms(attr(cdm, "dbcon")),
+          -1,
+          "drug_exposure_end_date"
+        )))
+      ) %>%
+      dplyr::mutate(
+        force_max = dplyr::if_else(
+          .data$drug_exposure_end_date > .data$drug_exposure_end_date_max,
+          1,
+          0
+        )
+      ) %>%
+      dplyr::mutate(
+        drug_exposure_end_date = dplyr::if_else(
+          .data$force_max == 1,
+          .data$drug_exposure_end_date_max,
+          .data$drug_exposure_end_date
+        )
+      ) %>%
+      dplyr::filter(
+        .data$drug_exposure_start_date <= .data$drug_exposure_end_date
+      ) %>%
+      dplyr::mutate(
+        days_supply = dplyr::if_else(
+          .data$force_max == 1,
+          dbplyr::sql(sqlDiffDays(
+            CDMConnector::dbms(attr(cdm, "dbcon")),
+            "drug_exposure_start_date",
+            "drug_exposure_end_date"
+          )) + 1,
+          .data$days_supply
+        )
+      ) %>%
+      dplyr::select(-"force_max", -"drug_exposure_end_date_max") %>%
+      dplyr::compute()
+  }
 
   # compute the daily dose
   drugUtilisationCohort <- computeDailyDose(
@@ -100,416 +177,611 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     lowerBound = dailyDoseLowerBound,
     upperBound = dailyDoseUpperBound,
     imputeValueName = "default_daily_dose",
-    allowZero = TRUE)
+    allowZero = TRUE
+  )
 
   # compute cumulative dose per person
   cumulativeDoseNoRestrictions <- drugUtilisationCohort %>%
     dplyr::group_by(.data$person_id) %>%
     dplyr::summarise(
-      cumulative_dose = sum(.data$daily_dose * .data$days_supply, na.rm = TRUE)
+      cumulative_dose_no_restrictions = sum(
+        .data$daily_dose * .data$days_supply,
+        na.rm = TRUE
+      )
     ) %>%
     dplyr::compute()
 
+  # get only the variables that we are interested in
   drugUtilisationCohort <- drugUtilisationCohort %>%
-    dplyr::rename(
-      "cohort_start_date" = "drug_exposure_start_date",
-      "cohort_end_date" = "drug_exposure_end_date"
-    ) %>%
     dplyr::select(
-      "person_id", "daily_dose", "cohort_start_date", "cohort_end_date"
+      "person_id", "drug_exposure_id", "drug_exposure_start_date",
+      "drug_exposure_end_date", "daily_dose", "days_supply"
     ) %>%
     dplyr::compute()
 
-  drugUtilisationCohort <- getNonOverlapedExposures(
-    interestExposures = drugUtilisationCohort,
+  drugUtilisationCohort <- getPeriods(
+    x = drugUtilisationCohort,
+    dialect = dialect,
+    verbose = verbose
+  )
+
+  drugUtilisationCohort <- joinExposures(
+    x = drugUtilisationCohort,
+    gapEra = gapEra,
+    eraJoinMode = eraJoinMode,
+    sameIndexMode = sameIndexMode,
+    dialect = dialect,
+    verbose = verbose
+  )
+
+  if (is.null(studyTime)) {
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::filter(.data$era_id == 1) %>%
+      dplyr::compute()
+  }
+
+  drugUtilisationCohort <- continuousExposures(
+    x = drugUtilisationCohort,
     overlapMode = overlapMode,
     sameIndexMode = sameIndexMode,
+    dialect = dialect,
     verbose = verbose
   )
 }
 
-#' Get drose cohorts without overlaping.
+#' Explain function
 #'
-#' @param interestExposures interestExposures
+#' @param x table
+#' @param dialect dialect
+#' @param verbose verbose
+#'
+#' @noRd
+getPeriods <- function(x, dialect, verbose) {
+  # compute the start of possible overlapping periods
+  x_start <- x %>%
+    dplyr::select("person_id", "drug_exposure_start_date") %>%
+    dplyr::distinct() %>%
+    dplyr::rename("start_interval" = "drug_exposure_start_date") %>%
+    dplyr::union(
+      x %>%
+        dplyr::select("person_id", "drug_exposure_end_date") %>%
+        dplyr::distinct() %>%
+        dplyr::mutate(
+          start_interval = as.Date(dbplyr::sql(sql_add_days(
+            dialect,
+            1,
+            "drug_exposure_end_date"
+          )))
+        ) %>%
+        dplyr::select(-"drug_exposure_end_date")
+    ) %>%
+    dplyr::group_by(.data$person_id) %>%
+    dplyr::filter(
+      .data$start_interval < max(.data$start_interval, na.rm = TRUE)
+    ) %>%
+    dbplyr::window_order(.data$start_interval) %>%
+    dplyr::mutate(subexposure_id = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
+    dplyr::compute()
+  # compute the start of possible overlapping periods
+  x_end <- x %>%
+    dplyr::select("person_id", "drug_exposure_start_date") %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(
+      end_interval = as.Date(dbplyr::sql(sql_add_days(
+        dialect,
+        -1,
+        "drug_exposure_start_date"
+      )))
+    ) %>%
+    dplyr::select(-"drug_exposure_start_date") %>%
+    dplyr::union(x %>%
+      dplyr::select("person_id", "drug_exposure_end_date") %>%
+      dplyr::distinct() %>%
+      dplyr::rename("end_interval" = "drug_exposure_end_date")) %>%
+    dplyr::group_by(.data$person_id) %>%
+    dplyr::filter(
+      .data$end_interval > min(.data$end_interval, na.rm = TRUE)
+    ) %>%
+    dbplyr::window_order(.data$end_interval) %>%
+    dplyr::mutate(subexposure_id = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
+    dplyr::compute()
+  # compute the overlapping periods joining start and end dates
+  x_intervals <- x_start %>%
+    dplyr::inner_join(
+      x_end,
+      by = c("person_id", "subexposure_id")
+    ) %>%
+    dplyr::compute()
+  # we join the exposures with the overlapping periods and we only consider the
+  # exposures that contribute to each overlapping period
+  x_intervals <- x_intervals %>%
+    dplyr::inner_join(x, by = "person_id") %>%
+    dplyr::filter(.data$drug_exposure_start_date <= .data$start_interval) %>%
+    dplyr::filter(.data$drug_exposure_end_date >= .data$end_interval) %>%
+    dplyr::compute()
+  # the overlapping subgroups are grouped into groups of continuous exposure,
+  # see the documentation for a more detailed explanation of the difference
+  # between overlapping group and subgroups
+  x_intervals_ids <- x_intervals %>%
+    dplyr::select("person_id", "subexposure_id") %>%
+    dplyr::distinct() %>%
+    dplyr::left_join(
+      x_intervals %>%
+        dplyr::select("person_id", "subexposure_id") %>%
+        dplyr::distinct() %>%
+        dplyr::mutate(subexposure_id = .data$subexposure_id + 1) %>%
+        dplyr::mutate(index_continuous_exposure = 0),
+      by = c("person_id", "subexposure_id")
+    ) %>%
+    dplyr::mutate(index_continuous_exposure = dplyr::if_else(
+      is.na(.data$index_continuous_exposure),
+      1,
+      .data$index_continuous_exposure
+    )) %>%
+    dplyr::group_by(.data$person_id) %>%
+    dbplyr::window_order(.data$subexposure_id) %>%
+    dplyr::mutate(
+      continuous_exposure_id = cumsum(.data$index_continuous_exposure)
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::select("person_id", "subexposure_id", "continuous_exposure_id") %>%
+    dplyr::compute()
+  x_intervals <- x_intervals %>%
+    dplyr::left_join(
+      x_intervals_ids,
+      by = c("person_id", "subexposure_id")
+    ) %>%
+    dplyr::compute()
+  return(x_intervals)
+}
+
+#' Explain function
+#'
+#' @param x table
+#' @param gapEra gapEra
+#' @param eraJoinMode eraJoinMode
+#' @param sameIndexMode sameIndexMode
+#' @param dialect dialect
+#' @param verbose verbose
+#'
+#' @noRd
+joinExposures <- function(x,
+                          gapEra,
+                          eraJoinMode,
+                          sameIndexMode,
+                          dialect,
+                          verbose) {
+  # get the start of gaps
+  gap_start <- x %>%
+    dplyr::group_by(.data$person_id) %>%
+    dplyr::filter(
+      .data$continuous_exposure_id < max(
+        .data$continuous_exposure_id,
+        na.rm = TRUE
+      )
+    ) %>%
+    dplyr::group_by(.data$person_id, .data$continuous_exposure_id) %>%
+    dplyr::summarise(
+      start_interval = max(.data$end_interval, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(
+      start_interval = as.Date(dbplyr::sql(sql_add_days(
+        dialect,
+        1,
+        "start_interval"
+      )))
+    ) %>%
+    dplyr::compute()
+  # get the end of gaps
+  gap_end <- x %>%
+    dplyr::group_by(.data$person_id) %>%
+    dplyr::filter(
+      .data$continuous_exposure_id < max(
+        .data$continuous_exposure_id,
+        na.rm = TRUE
+      )
+    ) %>%
+    dplyr::group_by(.data$person_id, .data$continuous_exposure_id) %>%
+    dplyr::summarise(
+      end_interval = min(.data$start_interval, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(
+      end_interval = as.Date(dbplyr::sql(sql_add_days(
+        dialect,
+        -1,
+        "end_interval"
+      )))
+    ) %>%
+    dplyr::mutate(continuous_exposure_id = .data$continuous_exposure_id - 1) %>%
+    dplyr::compute()
+  # get eras
+  gap_period <- gap_start %>%
+    dplyr::inner_join(
+      gap_end,
+      by = c("person_id", "continuous_exposure_id")
+    ) %>%
+    dplyr::mutate(days_supply = dbplyr::sql(sqlDiffDays(
+      dialect,
+      "start_interval",
+      "end_interval"
+    )) + 1) %>%
+    dplyr::filter(.data$days_supply <= .env$gapEra) %>%
+    dplyr::mutate(gap = 1)
+  if (eraJoinMode == "zero") {
+    gap_period <- gap_period %>%
+      dplyr::mutate(daily_dose = 0)
+  } else if (eraJoinMode == "join") {
+    gap_period <- gap_period %>%
+      dplyr::mutate(daily_dose = 0) %>%
+      dplyr::mutate(days_supply = 0)
+  }
+  subexposure_id <- gap_period %>%
+    dplyr::select("person_id", "continuous_exposure_id") %>%
+    dplyr::inner_join(
+      x %>%
+        dplyr::group_by(.data$person_id, .data$continuous_exposure_id) %>%
+        dplyr::summarise(
+          subexposure_id = max(.data$subexposure_id, na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
+        dplyr::mutate(subexposure_id = .data$subexposure_id + 1),
+      by = c("person_id", "continuous_exposure_id")
+    ) %>%
+    dplyr::compute()
+  gap_period <- gap_period %>%
+    dplyr::inner_join(
+      subexposure_id,
+      by = c("person_id", "continuous_exposure_id")
+    ) %>%
+    dplyr::select(-"continuous_exposure_id") %>%
+    dplyr::compute()
+  if (eraJoinMode == "first" | eraJoinMode == "second") {
+    if (eraJoinMode == "first") {
+      daily_dose <- gap_period %>%
+        dplyr::select("person_id", "subexposure_id") %>%
+        dplyr::inner_join(
+          x %>%
+            dplyr::select(
+              "person_id", "subexposure_id", "drug_exposure_start_date",
+              "daily_dose"
+            ) %>%
+            dplyr::mutate(subexposure_id = .data$subexposure_id + 1),
+          by = c("person_id", "subexposure_id")
+        ) %>%
+        dplyr::group_by(.data$person_id, .data$subexposure_id) %>%
+        dplyr::filter(
+          drug_exposure_start_date == min(
+            .data$drug_exposure_start_date,
+            na.rm = TRUE
+          )
+        ) %>%
+        dplyr::mutate(number_in_group = dplyr::n()) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(-"drug_exposure_start_date") %>%
+        dplyr::compute()
+    } else {
+      daily_dose <- gap_period %>%
+        dplyr::select("person_id", "subexposure_id") %>%
+        dplyr::inner_join(
+          x %>%
+            dplyr::select(
+              "person_id", "subexposure_id", "daily_dose"
+            ) %>%
+            dplyr::mutate(subexposure_id = .data$subexposure_id - 1),
+          by = c("person_id", "subexposure_id")
+        ) %>%
+        dplyr::group_by(.data$person_id, .data$subexposure_id) %>%
+        dplyr::mutate(number_in_group = dplyr::n()) %>%
+        dplyr::ungroup() %>%
+        dplyr::compute()
+    }
+    daily_dose_multiple <- daily_dose %>%
+      dplyr::filter(.data$number_in_group > 1) %>%
+      dplyr::select(-"number_in_group") %>%
+      dplyr::compute()
+    if (daily_dose_multiple %>% dplyr::tally() %>% dplyr::pull() > 0) {
+      daily_dose_multiple <- daily_dose_multiple %>%
+        dplyr::group_by(.data$person_id, .data$subexposure_id)
+      if (sameIndexMode == "sum") {
+        daily_dose_multiple <- daily_dose_multiple %>%
+          dplyr::summarise(
+            daily_dose = sum(.data$daily_dose, na.rm = TRUE),
+            .groups = "drop"
+          )
+      } else if (sameIndexMode == "max") {
+        daily_dose_multiple <- daily_dose_multiple %>%
+          dplyr::summarise(
+            daily_dose = max(.data$daily_dose, na.rm = TRUE),
+            .groups = "drop"
+          )
+      } else if (sameIndexMode == "min") {
+        daily_dose_multiple <- daily_dose_multiple %>%
+          dplyr::summarise(
+            daily_dose = min(.data$daily_dose, na.rm = TRUE),
+            .groups = "drop"
+          )
+      }
+      daily_dose_multiple <- daily_dose_multiple %>%
+        dplyr::compute()
+      daily_dose <- daily_dose %>%
+        dplyr::select(-"number_in_group") %>%
+        dplyr::anti_join(
+          daily_dose_multiple,
+          by = c("person_id", "subexposure_id")
+        ) %>%
+        dplyr::union_all(daily_dose_multiple) %>%
+        dplyr::compute()
+    }
+    gap_period <- gap_period %>%
+      dplyr::inner_join(
+        daily_dose,
+        by = c("person_id", "subexposure_id")
+      ) %>%
+      dplyr::compute()
+  }
+  # add eras to the exposures
+  x <- x %>%
+    dplyr::union_all(gap_period) %>%
+    dplyr::mutate(gap = dplyr::if_else(is.na(.data$gap), 0, 1)) %>%
+    dplyr::compute()
+  era_id <- x %>%
+    dplyr::select("person_id", "subexposure_id") %>%
+    dplyr::distinct() %>%
+    dplyr::compute()
+  era_id <- era_id %>%
+    dplyr::left_join(
+      era_id %>%
+        dplyr::mutate(subexposure_id = .data$subexposure_id + 1) %>%
+        dplyr::mutate(era_id = 0),
+      by = c("person_id", "subexposure_id")
+    ) %>%
+    dplyr::mutate(era_id = dplyr::if_else(is.na(era_id), 1, 0)) %>%
+    dplyr::group_by(.data$person_id) %>%
+    dbplyr::window_order(.data$subexposure_id) %>%
+    dplyr::mutate(era_id = cumsum(.data$era_id)) %>%
+    dplyr::ungroup() %>%
+    dplyr::compute()
+  x <- x %>%
+    dplyr::inner_join(
+      era_id,
+      by = c("person_id", "subexposure_id")
+    ) %>%
+    dplyr::compute()
+  return(x)
+}
+
+#' Explain function
+#'
+#' @param x table
 #' @param overlapMode overlapMode
 #' @param sameIndexMode sameIndexMode
 #' @param verbose verbose
 #'
 #' @noRd
-getNonOverlapedExposures <- function(interestExposures,
-                                     overlapMode,
-                                     sameIndexMode,
-                                     verbose) {
-  # compute the start of possible overlapping periods
-  overlap_intervals_start <- interestExposures %>%
-    dplyr::select("person_id", "cohort_start_date") %>%
-    dplyr::distinct() %>%
-    dplyr::rename("start_overlap" = "cohort_start_date") %>%
-    dplyr::union(
-      interestExposures %>%
-        dplyr::select("person_id", "cohort_end_date") %>%
-        dplyr::distinct() %>%
-        dplyr::mutate(
-          start_overlap = dbplyr::sql(sql_add_days(
-            CDMConnector::dbms(attr(cdm, "dbcon")),
-            1,
-            "cohort_end_date"))
-        ) %>%
-        dplyr::select(-"cohort_end_date")
-    ) %>%
-    dplyr::group_by(.data$person_id) %>%
-    dplyr::filter(
-      .data$start_overlap < max(.data$start_overlap, na.rm = TRUE)
-    ) %>%
-    dbplyr::window_order(.data$start_overlap) %>%
-    dplyr::mutate(overlap_subgroup = dplyr::row_number()) %>%
+continuousExposures <- function(x,
+                                overlapMode,
+                                sameIndexMode,
+                                dialect,
+                                verbose) {
+  x <- x %>%
+    dplyr::select(-"drug_exposure_end_date") %>%
+    dplyr::group_by(.data$person_id, .data$subexposure_id) %>%
+    dplyr::mutate(number_exposures_interval = dplyr::n()) %>%
     dplyr::ungroup() %>%
     dplyr::compute()
-  # compute the start of possible overlapping periods
-  overlap_intervals_end <- interestExposures %>%
-    dplyr::select("person_id", "cohort_start_date") %>%
-    dplyr::distinct() %>%
-    dplyr::mutate(
-      end_overlap = dbplyr::sql(sql_add_days(
-        CDMConnector::dbms(attr(cdm, "dbcon")),
-        -1,
-        "cohort_start_date"))
-    ) %>%
-    dplyr::select(-"cohort_start_date") %>%
-    dplyr::union(interestExposures %>%
-      dplyr::select("person_id", "cohort_end_date") %>%
-      dplyr::distinct() %>%
-      dplyr::rename("end_overlap" = "cohort_end_date")) %>%
-    dplyr::group_by(.data$person_id) %>%
-    dplyr::filter(
-      .data$end_overlap > min(.data$end_overlap, na.rm = TRUE)
-    ) %>%
-    dbplyr::window_order(.data$end_overlap) %>%
-    dplyr::mutate(overlap_subgroup = dplyr::row_number()) %>%
-    dplyr::ungroup() %>%
-    dplyr::compute()
-  # compute the overlapping periods joining start and end dates
-  overlap_intervals <- overlap_intervals_start %>%
-    dplyr::inner_join(
-      overlap_intervals_end,
-      by = c("person_id", "overlap_subgroup")
-    ) %>%
-    dplyr::compute()
-  # we join the exposures with the overlapping periods and we only consider the
-  # exposures that contribute to each overlapping period
-  overlap_groups <- overlap_intervals %>%
-    dplyr::inner_join(
-      interestExposures %>%
-        dbplyr::window_order(.data$person_id) %>%
-        dplyr::mutate(exposure_id = dplyr::row_number()),
-      by = "person_id"
-    ) %>%
-    dplyr::filter(.data$cohort_start_date <= .data$start_overlap) %>%
-    dplyr::filter(.data$cohort_end_date >= .data$end_overlap) %>%
-    dplyr::group_by(.data$person_id, .data$overlap_subgroup) %>%
-    dplyr::mutate(n_ind_subgroup = dplyr::n()) %>%
-    dplyr::ungroup() %>%
-    dplyr::compute()
-  # the overlapping subgroups are grouped into groups of continuous exposure,
-  # see the documentation for a more detailed explanation of the difference
-  # between overlapping group and subgroups
-  overlap_groups <- overlap_groups %>%
-    dplyr::left_join(
-      overlap_groups %>%
-        dplyr::mutate(overlap_subgroup = .data$overlap_subgroup - 1) %>%
-        dplyr::rename("next_overlap_start" = "overlap_start") %>%
-        dplyr::select("person_id", "overlap_subgroup", "next_overlap_start"),
-      by = c("person_id", "overlap_subgroup")
-    ) %>%
-    dplyr::mutate(index_group = dplyr::if_else(
-      is.na(.data$next_overlap_start),
-      0,
-      dplyr::if_else(
-        .data$overlap_end + 1 == .data$next_overlap_start,
-        0,
-        1
-      )
-    )) %>%
-    dplyr::group_by(.data$person_id) %>%
-    dplyr::arrange(.data$overlap_subgroup) %>%
-    dplyr::mutate(overlap_group = 1 + cumsum(.data$index_group)) %>%
-    dplyr::select(-"index_group") %>%
-    dplyr::compute()
-
   # save number of exposures and number of groups and subgroups
-  exposureCounts <- overlap_groups %>%
+  exposureCounts <- x %>%
     dplyr::group_by(.data$person_id) %>%
     dplyr::summarise(
-      number_exposures = dplyr::n_distinct(.data$exposure_id),
-      number_groups_with_overlap = dplyr::n_distinct(
-        .data$overlap_group[.data$number_individuals_subgroup > 1]
+      number_exposures = dplyr::n_distinct(.data$drug_exposure_id),
+      number_subexposures = dplyr::n_distinct(.data$subexposure_id),
+      number_subexposures_with_overlap = dplyr::n_distinct(
+        .data$subexposure_id[.data$number_exposures_interval > 1]
       ),
-      number_groups_no_overlap = dplyr::n_distinct(.data$overlap_group),
-      number_subgroups_with_overlap = dplyr::n_distinct(
-        .data$overlap_sub_group[.data$number_individuals_subgroup > 1]
+      number_continuous_exposures = dplyr::n_distinct(
+        .data$continuous_exposure_id[!is.na(.data$continuous_exposure_id)]
       ),
-      number_subgroups_no_overlap = dplyr::n_distinct(.data$overlap_sub_group),
-      number_subgroups = dplyr::n_distinct(.data$overlap_subgroup),
+      number_continuous_exposures_with_overlap = dplyr::n_distinct(
+        .data$continuous_exposure_id[.data$number_exposures_interval > 1 &
+          !is.na(.data$continuous_exposure_id)]
+      ),
+      number_eras = dplyr::n_distinct(.data$era_id),
+      number_eras_with_overlap = dplyr::n_distinct(
+        .data$era_id[.data$number_exposures_interval > 1]
+      ),
+      number_non_exposed_periods = dplyr::n_distinct(.data$era_id),
+      number_gaps = sum(.data$gap, na.rm = TRUE),
+      number_days_gap = sum(.data$gap * .data$days_supply, na.rm = TRUE),
+      cumulative_gap_dose = sum(
+        .data$gap * .data$days_supply * daily_dose,
+        na.rm = TRUE
+      ),
       .groups = "drop"
     ) %>%
     dplyr::mutate(
-      number_groups_no_overlap =
-        .data$number_groups_no_overlap - .data$number_group_with_overlap
+      number_subexposures_no_overlap =
+        .data$number_subexposures - .data$number_subexposures_with_overlap
     ) %>%
     dplyr::mutate(
-      number_subgroups_no_overlap =
-        .data$number_subgroups_no_overlap - .data$number_subgroup_with_overlap
+      number_continuous_exposures_no_overlap =
+        .data$number_continuous_exposures -
+          .data$number_continuous_exposures_with_overlap
+    ) %>%
+    dplyr::mutate(
+      number_eras_no_overlap =
+        .data$number_eras - .data$number_eras_with_overlap
     ) %>%
     dplyr::compute()
   # get the subgroups without overlap
-  notOverlapedGroups <- overlap_groups %>%
-    dplyr::filter(.data$number_individuals_subgroup == 1) %>%
-    dplyr::select(-"number_individuals_subgroup", -"exposure_id") %>%
-    dplyr::mutate(
-      exposed_days = as.numeric(
-        difftime(.data$end_overlap, .data$start_overlap, units = "days")
-      ) + 1
-    ) %>%
-    dplyr::mutate(cumulative_dose = daily_dose * exposed_days) %>%
+  uniqueExposures <- x %>%
+    dplyr::filter(.data$number_exposures_interval == 1) %>%
     dplyr::select(
-      "person_id", "overlap_group", "overlap_subgroup",
-      "daily_dose", "exposed_days", "cumulative_dose", "start_overlap",
-      "end_overlap"
+      "person_id", "subexposure_id", "daily_dose", "days_supply",
+      "start_interval", "end_interval"
     ) %>%
     dplyr::compute()
 
   # get the overlapped groups
-  overlapedGroups <- overlap_groups %>%
-    dplyr::filter(.data$number_individuals_subgroup > 1) %>%
-    dplyr::select(-"number_individuals_subgroup", -"exposure_id") %>%
+  multipleExposures <- x %>%
+    dplyr::filter(.data$number_exposures_interval > 1) %>%
+    dplyr::select(
+      "person_id", "subexposure_id", "daily_dose", "days_supply",
+      "start_interval", "end_interval", "drug_exposure_start_date"
+    ) %>%
     dplyr::compute()
 
-  if (overlaped_groups %>% dplyr::tally() %>% dplyr::pull() > 0) {
+  if (multipleExposures %>% dplyr::tally() %>% dplyr::pull() > 0) {
 
     # search individuals with same index date in subgroups
-    overlapedGroupsSameIndex <- overlapedGroups %>%
+    multipleExposuresSameIndex <- multipleExposures %>%
       dplyr::group_by(
-        .data$person_id, .data$overlap_subgroup, .data$cohort_start_date
+        .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
       ) %>%
-      dplyr::mutate(n_same_index = dplyr::n()) %>%
+      dplyr::mutate(number_same_index = dplyr::n()) %>%
       dplyr::ungroup() %>%
-      dplyr::filter(.data$n_same_index > 1) %>%
-      dplyr::select(-"n_same_index") %>%
+      dplyr::filter(.data$number_same_index > 1) %>%
+      dplyr::select(-"number_same_index") %>%
       dplyr::compute()
 
     # get the overlaps with different index date
-    overlapedGroups <- overlapedGroups %>%
-      dplyr::anti_join(overlapedGroupsSameIndex,
-        by = c(
-          "person_id", "overlap_group", "overlap_subgroup",
-          "cohort_start_date"
-        )
+    multipleExposures <- multipleExposures %>%
+      dplyr::anti_join(
+        multipleExposuresSameIndex,
+        by = c("person_id", "subexposure_id", "drug_exposure_start_date")
       ) %>%
       dplyr::compute()
+
+    # I AM HERE (ELIMINATE NOT USED VARIABLES AS DRUG_EXPOSSURE_END_DATE)
 
     # solve the overlap with same index date
     # if criteria is to pick maximum
     if (sameIndexMode == "max") {
-      overlapedGroupsSameIndex <- overlapedGroupsSameIndex %>%
+      multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$overlap_subgroup,
-          .data$cohort_start_date
+          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
         ) %>%
-        dplyr::filter(dose == max(.data$dose, na.rm = TRUE)) %>%
+        dplyr::filter(daily_dose == max(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
         dplyr::ungroup() %>%
         dplyr::compute()
       # if criteria is to pick the sum
-    } else if (same_index_mode == "sum") {
-      overlaped_groups_same_index <- overlaped_groups_same_index %>%
+    } else if (sameIndexMode == "sum") {
+      multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$overlap_subgroup,
-          .data$cohort_start_date
+          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
         ) %>%
-        dplyr::mutate(dose = sum(.data$dose, na.rm = TRUE)) %>%
+        dplyr::mutate(daily_dose == sum(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
         dplyr::ungroup() %>%
         dplyr::compute()
       # if criteria is to pick the minimum
     } else if (sameIndexMode == "min") {
-      overlapedGroupsSameIndex <- overlapedGroupsSameIndex %>%
+      multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$overlap_subgroup,
-          .data$cohort_start_date
+          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
         ) %>%
-        dplyr::filter(dose == min(.data$dose, na.rm = TRUE)) %>%
+        dplyr::filter(daily_dose == min(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
         dplyr::ungroup() %>%
         dplyr::compute()
     }
     # add again the merged same overlap into overlapedGroups
-    overlapedGroups <- overlapedGroups %>%
-      dplyr::union_all(overlapedGroupsSameIndex) %>%
+    multipleExposures <- multipleExposures %>%
+      dplyr::union_all(multipleExposuresSameIndex) %>%
       dplyr::compute()
     # solve the overlap with different index dates group
-    overlapedGroups <- overlapedGroups %>%
-      dplyr::group_by(.data$person_id, .data$overlap_subgroup)
+    multipleExposures <- multipleExposures %>%
+      dplyr::group_by(.data$person_id, .data$subexposure_id)
     # if the overlapMode is first (earliest exposure prevails)
     if (overlapMode == "first") {
-      overlapedGroups <- overlapedGroups %>%
+      multipleExposures <- multipleExposures %>%
         dplyr::filter(
-          .data$cohort_start_date == min(.data$cohort_start_date, na.rm = TRUE)
+          .data$drug_exposure_start_date == min(
+            .data$drug_exposure_start_date,
+            na.rm = TRUE
+          )
         )
       # if the overlapMode is second (latest exposure prevails)
     } else if (overlapMode == "second") {
-      overlapedGroups <- overlapedGroups %>%
+      multipleExposures <- multipleExposures %>%
         dplyr::filter(
-          .data$cohort_start_date == max(.data$cohort_start_date, na.rm = TRUE)
+          .data$drug_exposure_start_date == max(
+            .data$drug_exposure_start_date,
+            na.rm = TRUE
+          )
         )
       # if the overlapMode is max (exposure with more daily dose prevails)
     } else if (overlapMode == "max") {
-      overlapedGroups <- overlapedGroups %>%
-        dplyr::filter(.data$daily_dose == max(.data$daily_dose, na.rm = TRUE))
+      multipleExposures <- multipleExposures %>%
+        dplyr::select(-"cohort_start_date") %>%
+        dplyr::filter(
+          .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
+        ) %>%
+        dplyr::distinct()
       # if the overlapMode is sum (all exposure are considered)
     } else if (overlapMode == "sum") {
-      overlapedGroups <- overlapedGroups %>%
-        dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE))
+      multipleExposures <- multipleExposures %>%
+        dplyr::select(-"cohort_start_date") %>%
+        dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
+        dplyr::distinct()
       # if the overlapMode is min (exposure with less daily dose prevails)
     } else if (overlapMode == "min") {
-      overlapedGroups <- overlapedGroups %>%
-        dplyr::filter(.data$daily_dose == min(.data$daily_dose, na.rm = TRUE))
+      multipleExposures <- multipleExposures %>%
+        dplyr::select(-"cohort_start_date") %>%
+        dplyr::filter(
+          .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
+        ) %>%
+        dplyr::distinct()
     }
-    overlapedGroups <- overlapedGroups %>%
-      dplyr::select(
-        "person_id", "overlap_group", "overlap_subgroup",
-        "start_overlap", "end_overlap", "daily_dose"
-      ) %>%
-      dplyr::distinct() %>%
+    multipleExposures <- multipleExposures %>%
       dplyr::ungroup() %>%
-      dplyr::mutate(exposed_days = as.numeric(difftime(.data$end_overlap,
-        .data$start_overlap,
-        units = "days"
-      )) + 1) %>%
-      dplyr::mutate(cumulative_dose = daily_dose * exposed_days) %>%
+      dplyr::select(
+        "person_id", "subexposure_id", "daily_dose", "days_supply",
+        "start_interval", "end_interval"
+      ) %>%
       dplyr::compute()
 
-    if (not_overlaped_groups %>% dplyr::tally() %>% dplyr::pull() > 0) {
-      overlaped_groups <- overlaped_groups %>%
-        dplyr::union(not_overlaped_groups) %>%
+    if (uniqueExposures %>% dplyr::tally() %>% dplyr::pull() > 0) {
+      uniqueExposures <- multipleExposures %>%
+        dplyr::union(uniqueExposures) %>%
         dplyr::compute()
+    } else {
+      uniqueExposures <- multipleExposures
     }
-  } else {
-    overlaped_groups <- not_overlaped_groups
   }
   # obtain first, cumulative and era time
-  overlaped_groups <- overlaped_groups %>%
-    dplyr::group_by(.data$person_id, .data$overlap_group) %>%
+  personSummary <- uniqueExposures %>%
+    dplyr::group_by(.data$person_id) %>%
     dplyr::summarise(
-      start_overlap = min(.data$start_overlap),
-      end_overlap = max(.data$end_overlap),
-      exposed_days = sum(.data$exposed_days),
-      cumulative_dose = sum(.data$cumulative_dose),
-      overlap_subgroup = min(.data$overlap_subgroup),
+      cohort_start_date = min(.data$start_interval, na.rm = TRUE),
+      cohort_end_date = max(.data$end_interval, na.rm = TRUE),
+      exposed_days = sum(.data$days_supply, na.rm = TRUE),
+      cumulative_dose = sum(.data$daily_dose * .data$days_supply, na.rm = TRUE),
+      subexposure_id = min(.data$subexposure_id, na.rm = TRUE),
       .groups = "drop"
     ) %>%
-    dplyr::inner_join(overlaped_groups %>%
+    dplyr::mutate(study_days = dbplyr::sql(sqlDiffDays(
+      dialect,
+      "cohort_start_date",
+      "cohort_end_date"
+    )) + 1) %>%
+    dplyr::mutate(not_exposed_days = .data$study_days - .data$exposed_days) %>%
+    dplyr::inner_join(uniqueExposures %>%
       dplyr::rename("initial_dose" = "daily_dose") %>%
-      dplyr::select("person_id", "overlap_group", "overlap_subgroup", "initial_dose"),
-    by = c("person_id", "overlap_group", "overlap_subgroup")
+      dplyr::select("person_id", "subexposure_id", "initial_dose"),
+    by = c("person_id", "subexposure_id")
     ) %>%
-    dplyr::left_join(overlap_exposure_counts,
-      by = c("person_id", "overlap_group")
-    ) %>%
-    dplyr::left_join(overlap_period_counts,
-      by = c("person_id", "overlap_group")
-    ) %>%
-    dplyr::mutate(N_overlap_periods = dplyr::if_else(
-      is.na(N_overlap_periods), as.integer(0), .data$N_overlap_periods, as.integer(0)
-    )) %>%
-    dplyr::select(
-      "person_id", "overlap_group", "start_overlap", "end_overlap",
-      "initial_dose", "exposed_days", "cumulative_dose", "N_exposures",
-      "N_overlap_periods"
-    ) %>%
-    dplyr::inner_join(
-      overlap_groups_total_dose,
-      by = c("person_id", "start_overlap")
-    ) %>%
-    dplyr::mutate(
-      not_considered_cumulative_dose =
-        .data$not_considered_cumulative_dose - .data$cumulative_dose
+    dplyr::select(-"subexposure_id") %>%
+    dplyr::left_join(exposureCounts,
+      by = c("person_id")
     ) %>%
     dplyr::compute()
 
-  cdm[[nonOverlapedExposuresName]] <- overlaped_groups
-
-  return(cdm)
-}
-
-#' Impute or eliminate values under a certain conditions
-#'
-#' @param x x
-#' @param variableName variableName
-#' @param impute impute
-#' @param lowerBound lowerBound
-#' @param upperBound upperBound
-#' @param imputeValueName imputeValueName
-#' @param allowZero allowZero
-#'
-#' @noRd
-imputeVariable <- function(x,
-                           variableName,
-                           impute,
-                           lowerBound,
-                           upperBound,
-                           imputeValueName,
-                           allowZero){
-  x <- x %>%
-    dplyr::rename("variable" = .env$variableName)
-  # impute if allow zero
-  if (isTRUE(allowZero)){
-    x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        is.na(.data$variable) | .data$variable < 0,
-        1,
-        0
-      ))
-  } else {
-    x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        is.na(.data$variable) | .data$variable <= 0,
-        1,
-        0
-      ))
-  }
-  # impute lower bound
-  if (!is.null(lowerBound)) {
-    x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        .data$variable < .env$lowerBound,
-        1,
-        .data$impute
-      ))
-  }
-  if (!is.null(upperBound)) {
-    x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        .data$variable > .env$upperBound,
-        1,
-        .data$impute
-      ))
-  }
-  if (isFALSE(impute)) {
-    x <- x %>%
-      dplyr::filter(.data$impute == 0)
-  } else {
-    x <- x %>%
-      dplyr::rename("imputeValue" = .env$imputeValueName) %>%
-      dplyr::mutate(variable = dplyr::if_else(
-        .data$impute == 1,
-        .data$imputeValue,
-        .data$variable
-      )) %>%
-      dplyr::rename(!!imputeValueName := "imputeValue")
-  }
-  x <- x %>%
-    dplyr::select(-"impute") %>%
-    dplyr::rename(!!variableName := "variable") %>%
-    dplyr::compute()
-  return(x)
+  return(personSummary)
 }

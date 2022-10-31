@@ -59,7 +59,7 @@ computeDailyDose <- function(table,
       table %>%
         dplyr::select(
           "person_id", "days_supply", "quantity", "drug_concept_id",
-          "ingredient_concept_id"
+          "ingredient_concept_id", "drug_exposure_id"
         ) %>%
         dplyr::inner_join(
           cdm$drug_strength,
@@ -69,9 +69,13 @@ computeDailyDose <- function(table,
           daily_dose = .data$quantity * .data$amount_value / .data$days_supply
         ) %>%
         dplyr::select(
-          "person_id", "daily_dose", "drug_concept_id", "ingredient_concept_id"
+          "person_id", "daily_dose", "drug_concept_id", "ingredient_concept_id",
+          "drug_exposure_id"
         ),
-      by = c("person_id", "drug_concept_id", "ingredient_concept_id")
+      by = c(
+        "person_id", "drug_concept_id", "ingredient_concept_id",
+        "drug_exposure_id"
+        )
     ) %>%
     dplyr::compute()
 
