@@ -28,7 +28,7 @@
 #' @param indicationAggregation indicationAggregation
 #' @param indicationTableName indicationTableName
 #' @param aggregationTableName aggregationTableName
-#' @param verbose verbos
+#' @param verbose verbose
 #'
 #' @return
 #' @export
