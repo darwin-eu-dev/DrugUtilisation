@@ -118,6 +118,13 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     imputeValueName = "default_duration",
     allowZero = FALSE
   )
+  
+   # compute the daily dose
+  drugUtilisationCohort <- computeDailyDose(
+    table = drugUtilisationCohort,
+    cdm = cdm,
+    verbose = verbose
+  )
 
   if (!is.null(studyTime)) {
     drugUtilisationCohort <- drugUtilisationCohort %>%
@@ -146,9 +153,6 @@ instantiateDrugUtilisationCohorts <- function(cdm,
           .data$drug_exposure_end_date
         )
       ) %>%
-      dplyr::filter(
-        .data$drug_exposure_start_date <= .data$drug_exposure_end_date
-      ) %>%
       dplyr::mutate(
         days_supply = dplyr::if_else(
           .data$force_max == 1,
@@ -163,13 +167,6 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       dplyr::select(-"force_max", -"drug_exposure_end_date_max") %>%
       dplyr::compute()
   }
-
-  # compute the daily dose
-  drugUtilisationCohort <- computeDailyDose(
-    table = drugUtilisationCohort,
-    cdm = cdm,
-    verbose = verbose
-  )
 
   # impute daily_dose
   drugUtilisationCohort <- imputeVariable(
