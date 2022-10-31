@@ -8,6 +8,10 @@ instantiateDrugUtilisationCohorts(
   cdm,
   specifications,
   studyTime = NULL,
+  gapEra,
+  eraJoinMode,
+  overlapMode,
+  sameIndexMode,
   drugUtilisationCohortName,
   imputeDuration = FALSE,
   imputeDailyDose = FALSE,
@@ -19,22 +23,33 @@ instantiateDrugUtilisationCohorts(
 )
 }
 \arguments{
-\item{cdm}{Connection to a database using DBI::dbConnect()}
+\item{cdm}{cdm}
+
+\item{specifications}{specifications}
+
+\item{studyTime}{studyTime}
+
+\item{gapEra}{gapEra}
+
+\item{overlapMode}{overlapMode}
+
+\item{sameIndexMode}{sameIndexMode}
+
+\item{drugUtilisationCohortName}{drugUtilisationCohortName}
+
+\item{imputeDuration}{imputeDuration}
+
+\item{imputeDailyDose}{imputeDailyDose}
+
+\item{durationLowerBound}{durationLowerBound}
+
+\item{durationUpperBound}{durationUpperBound}
+
+\item{dailyDoseLowerBound}{dailyDoseLowerBound}
+
+\item{dailyDoseUpperBound}{dailyDoseUpperBound}
 
 \item{verbose}{verbose}
-
-\item{targetCohortName}{Name of the table in the cdm that contains the
-target cohort}
-
-\item{targetCohortId}{Indentifier for the analyzed target
-cohorts}
-
-\item{temporalWindows}{Temporal windows that we want to characterize}
-
-\item{tablesToCharacterize}{Name of the tables in the cdm that we want to
-summarize}
-
-\item{characterizationTableName}{characterizationTableName}
 }
 \description{
 Explain function
