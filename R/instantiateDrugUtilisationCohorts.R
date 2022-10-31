@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Explain function
+#' It instantiates the cohorts and their supplementary information
+#' (cohorts_info) for the DUS study
 #'
 #' @param cdm cdm
 #' @param specifications specifications
