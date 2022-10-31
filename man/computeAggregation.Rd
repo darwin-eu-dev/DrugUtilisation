@@ -10,21 +10,42 @@ computeAggregation(
   genderAggregation,
   ageGroupsAgregation,
   ageGroups,
-  yearAggregation,
-  yearMonthAggregation,
+  indexYearAggregation,
+  indexYearMonthAggregation,
   initialDoseAggregation,
   meanDoseAggregation,
   indicationAggregation,
   indicationTableName,
   aggregationTableName,
-  permanentAggregationTable,
   verbose
 )
 }
 \arguments{
 \item{cdm}{cdm}
 
-\item{specifications}{specifications}
+\item{personSummaryName}{personSummaryName}
+
+\item{genderAggregation}{genderAggregation}
+
+\item{ageGroupsAgregation}{ageGroupsAgregation}
+
+\item{ageGroups}{ageGroups}
+
+\item{indexYearAggregation}{indexYearAggregation}
+
+\item{indexYearMonthAggregation}{indexYearMonthAggregation}
+
+\item{initialDoseAggregation}{initialDoseAggregation}
+
+\item{meanDoseAggregation}{meanDoseAggregation}
+
+\item{indicationAggregation}{indicationAggregation}
+
+\item{indicationTableName}{indicationTableName}
+
+\item{aggregationTableName}{aggregationTableName}
+
+\item{verbose}{verbos}
 }
 \description{
 Explain function

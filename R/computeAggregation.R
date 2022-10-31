@@ -17,7 +17,19 @@
 #' Explain function
 #'
 #' @param cdm cdm
-#' @param specifications specifications
+#' @param personSummaryName personSummaryName
+#' @param genderAggregation genderAggregation
+#' @param ageGroupsAgregation ageGroupsAgregation
+#' @param ageGroups ageGroups
+#' @param indexYearAggregation indexYearAggregation
+#' @param indexYearMonthAggregation indexYearMonthAggregation
+#' @param initialDoseAggregation initialDoseAggregation
+#' @param meanDoseAggregation meanDoseAggregation
+#' @param indicationAggregation indicationAggregation
+#' @param indicationTableName indicationTableName
+#' @param aggregationTableName aggregationTableName
+#' @param verbose verbos
+#'
 #' @return
 #' @export
 #'
@@ -27,14 +39,13 @@ computeAggregation <- function(cdm,
                                genderAggregation,
                                ageGroupsAgregation,
                                ageGroups,
-                               yearAggregation,
-                               yearMonthAggregation,
+                               indexYearAggregation,
+                               indexYearMonthAggregation,
                                initialDoseAggregation,
                                meanDoseAggregation,
                                indicationAggregation,
                                indicationTableName,
                                aggregationTableName,
-                               permanentAggregationTable,
                                verbose) {
   aggregationTable <- cdm[[personSummaryName]] %>%
     dplyr::mutate(aggregation = "All") %>%
@@ -68,7 +79,7 @@ computeAggregation <- function(cdm,
       dplyr::compute()
   }
 
-  if (yearAggregation == TRUE){
+  if (indexYearAggregation == TRUE){
     aggregationTable <- aggregationTable %>%
       dplyr::union(
         cdm[[personSummaryName]] %>%
@@ -80,7 +91,7 @@ computeAggregation <- function(cdm,
       dplyr::compute()
   }
 
-  if (yearMonthAggregation == TRUE){
+  if (indexYearMonthAggregation == TRUE){
     aggregationTable <- aggregationTable %>%
       dplyr::union(
         cdm[[personSummaryName]] %>%

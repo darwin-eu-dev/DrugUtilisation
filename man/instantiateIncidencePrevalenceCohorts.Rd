@@ -9,7 +9,7 @@ instantiateIncidencePrevalenceCohorts(
   conceptIds,
   gapEra,
   incidencePrevalenceCohortName,
-  cohortDefinitionId = 1,
+  cohortDefinitionId = NULL,
   overWrite = TRUE,
   verbose
 )
@@ -22,6 +22,10 @@ instantiateIncidencePrevalenceCohorts(
 \item{gapEra}{gapEra}
 
 \item{incidencePrevalenceCohortName}{incidencePrevalenceCohortName}
+
+\item{cohortDefinitionId}{cohortDefinitionId}
+
+\item{overWrite}{overWrite}
 
 \item{verbose}{verbose}
 }
