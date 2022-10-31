@@ -45,7 +45,7 @@ computeAggregation(
 
 \item{aggregationTableName}{aggregationTableName}
 
-\item{verbose}{verbos}
+\item{verbose}{verbose}
 }
 \description{
 Explain function
