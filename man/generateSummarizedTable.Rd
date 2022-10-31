@@ -17,7 +17,17 @@ generateSummarizedTable(
 \arguments{
 \item{cdm}{cdm}
 
-\item{specifications}{specifications}
+\item{tableToSummarizeName}{tableToSummarizeName}
+
+\item{variables}{variables}
+
+\item{estimates}{estimates}
+
+\item{tableResultsName}{tableResultsName}
+
+\item{tableAggregationName}{tableAggregationName}
+
+\item{verbose}{verbose}
 }
 \description{
 Explain function

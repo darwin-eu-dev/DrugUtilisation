@@ -17,7 +17,13 @@
 #' Explain function
 #'
 #' @param cdm cdm
-#' @param specifications specifications
+#' @param tableToSummarizeName tableToSummarizeName
+#' @param variables variables
+#' @param estimates estimates
+#' @param tableResultsName tableResultsName
+#' @param tableAggregationName tableAggregationName
+#' @param verbose verbose
+#'
 #' @return
 #' @export
 #'
