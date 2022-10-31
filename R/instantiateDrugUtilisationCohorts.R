@@ -229,6 +229,80 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   )
 }
 
+#' Impute or eliminate values under a certain conditions
+#'
+#' @param x x
+#' @param variableName variableName
+#' @param impute impute
+#' @param lowerBound lowerBound
+#' @param upperBound upperBound
+#' @param imputeValueName imputeValueName
+#' @param allowZero allowZero
+#'
+#' @noRd
+imputeVariable <- function(x,
+                           variableName,
+                           impute,
+                           lowerBound,
+                           upperBound,
+                           imputeValueName,
+                           allowZero) {
+  x <- x %>%
+    dplyr::rename("variable" = .env$variableName)
+  # impute if allow zero
+  if (isTRUE(allowZero)) {
+    x <- x %>%
+      dplyr::mutate(impute = dplyr::if_else(
+        is.na(.data$variable) | .data$variable < 0,
+        1,
+        0
+      ))
+  } else {
+    x <- x %>%
+      dplyr::mutate(impute = dplyr::if_else(
+        is.na(.data$variable) | .data$variable <= 0,
+        1,
+        0
+      ))
+  }
+  # impute lower bound
+  if (!is.null(lowerBound)) {
+    x <- x %>%
+      dplyr::mutate(impute = dplyr::if_else(
+        .data$variable < .env$lowerBound,
+        1,
+        .data$impute
+      ))
+  }
+  if (!is.null(upperBound)) {
+    x <- x %>%
+      dplyr::mutate(impute = dplyr::if_else(
+        .data$variable > .env$upperBound,
+        1,
+        .data$impute
+      ))
+  }
+  if (isFALSE(impute)) {
+    x <- x %>%
+      dplyr::filter(.data$impute == 0)
+  } else {
+    x <- x %>%
+      dplyr::rename("imputeValue" = .env$imputeValueName) %>%
+      dplyr::mutate(variable = dplyr::if_else(
+        .data$impute == 1,
+        .data$imputeValue,
+        .data$variable
+      )) %>%
+      dplyr::rename(!!imputeValueName := "imputeValue")
+  }
+  x <- x %>%
+    dplyr::select(-"impute") %>%
+    dplyr::rename(!!variableName := "variable") %>%
+    dplyr::compute()
+  return(x)
+}
+
+
 #' Explain function
 #'
 #' @param x table
