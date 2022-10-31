@@ -26,13 +26,13 @@
 #' @export
 #'
 #' @examples
-computeIncidencePrevalenceCohorts <- function(cdm,
-                                              conceptIds,
-                                              gapEra,
-                                              incidencePrevalenceCohortName,
-                                              cohortDefinitionId = 1,
-                                              overWrite = TRUE,
-                                              verbose) {
+instantiateIncidencePrevalenceCohorts <- function(cdm,
+                                                  conceptIds,
+                                                  gapEra,
+                                                  incidencePrevalenceCohortName,
+                                                  cohortDefinitionId = 1,
+                                                  overWrite = TRUE,
+                                                  verbose) {
   incidencePrevalenceCohort <- cdm[["drug_exposure"]] %>%
     dplyr::select(
       "person_id", "drug_concept_id", "drug_exposure_start_date",
