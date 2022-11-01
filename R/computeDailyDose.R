@@ -31,7 +31,7 @@ computeDailyDose <- function(table,
   checkmate::assertClass(cdm, "cdm_reference")
   checkmate::assertLogical(verbose)
   if (isFALSE(all(c(
-    "person_id", "quantity", "drug_concept_id", "days_supply",
+    "person_id", "quantity", "drug_concept_id", "days_exposed",
     "ingredient_concept_id"
   ) %in% colnames(table)))) {
     if (isTRUE(all(c(
@@ -40,7 +40,7 @@ computeDailyDose <- function(table,
     ) %in% colnames(table)))) {
       table <- table %>%
         dplyr::mutate(
-          days_supply = dbplyr::sql(sqlDiffDays(
+          days_exposed = dbplyr::sql(sqlDiffDays(
             CDMConnector::dbms(attr(cdm, "dbcon")),
             "drug_exposure_start_date",
             "drug_exposure_end_date"
@@ -48,7 +48,7 @@ computeDailyDose <- function(table,
         ) %>%
         dplyr::compute()
     } else {
-      stop("'table' must contain as columns 'days_supply' or 'drug_exposure_start_date' and 'drug_exposure_end_date'")
+      stop("'table' must contain as columns 'days_exposed' or 'drug_exposure_start_date' and 'drug_exposure_end_date'")
     }
   }
   checkmate::assertFALSE(c("daily_dose") %in% colnames(table))
@@ -58,7 +58,7 @@ computeDailyDose <- function(table,
     dplyr::left_join(
       table %>%
         dplyr::select(
-          "person_id", "days_supply", "quantity", "drug_concept_id",
+          "person_id", "days_exposed", "quantity", "drug_concept_id",
           "ingredient_concept_id", "drug_exposure_id"
         ) %>%
         dplyr::inner_join(
@@ -66,7 +66,7 @@ computeDailyDose <- function(table,
           by = c("drug_concept_id", "ingredient_concept_id")
         ) %>%
         dplyr::mutate(
-          daily_dose = .data$quantity * .data$amount_value / .data$days_supply
+          daily_dose = .data$quantity * .data$amount_value / .data$days_exposed
         ) %>%
         dplyr::select(
           "person_id", "daily_dose", "drug_concept_id", "ingredient_concept_id",
