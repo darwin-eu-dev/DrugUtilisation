@@ -52,6 +52,17 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               dailyDoseLowerBound = NULL,
                                               dailyDoseUpperBound = NULL,
                                               verbose = FALSE) {
+  error_message <- checkmate::makeAssertCollection()
+
+  if(imputeDuration == TRUE){
+    default_duration_exists <- !is.null(specifications$default_duration)
+    checkmate::assertTRUE(default_duration_exists, add = error_message)
+  }
+
+  if(imputeDailyDose == TRUE){
+    default_daily_dose_exists <- !is.null(specifications$default_daily_dose)
+    checkmate::assertTRUE(default_daily_dose_exists, add = error_message)
+  }
   dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
   drugUtilisationTableDataName <- paste0(drugUtilisationCohortName, "_info")
   specifications <- specifications %>%
@@ -115,7 +126,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     imputeValueName = "default_duration",
     allowZero = FALSE
   )
-  
+
    # compute the daily dose
   drugUtilisationCohort <- computeDailyDose(
     table = drugUtilisationCohort,
@@ -789,7 +800,7 @@ continuousExposures <- function(x,
       # if the overlapMode is max (exposure with more daily dose prevails)
     } else if (overlapMode == "max") {
       multipleExposures <- multipleExposures %>%
-        dplyr::select(-"cohort_start_date") %>%
+        dplyr::select(-"drug_exposure_start_date") %>%
         dplyr::filter(
           .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
         ) %>%
@@ -797,13 +808,13 @@ continuousExposures <- function(x,
       # if the overlapMode is sum (all exposure are considered)
     } else if (overlapMode == "sum") {
       multipleExposures <- multipleExposures %>%
-        dplyr::select(-"cohort_start_date") %>%
+        dplyr::select(-"drug_exposure_start_date") %>%
         dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct()
       # if the overlapMode is min (exposure with less daily dose prevails)
     } else if (overlapMode == "min") {
       multipleExposures <- multipleExposures %>%
-        dplyr::select(-"cohort_start_date") %>%
+        dplyr::select(-"drug_exposure_start_date") %>%
         dplyr::filter(
           .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
         ) %>%
