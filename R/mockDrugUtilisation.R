@@ -33,7 +33,7 @@
 #' @export
 #'
 #' @examples
-mockDrugExposure <- function(drug_exposure = NULL,
+mockDrugUtilisation <- function(drug_exposure = NULL,
                              drug_strength = NULL,
                              drug_concept_id_size = 5,
                              ingredient_concept_id_size = 1,
