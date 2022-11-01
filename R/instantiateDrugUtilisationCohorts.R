@@ -450,7 +450,7 @@ joinExposures <- function(x,
   gap_end <- x %>%
     dplyr::group_by(.data$person_id) %>%
     dplyr::filter(
-      .data$continuous_exposure_id < max(
+      .data$continuous_exposure_id > min(
         .data$continuous_exposure_id,
         na.rm = TRUE
       )
