@@ -1,11 +1,12 @@
 test_that("simple checks", {
   cdm <- mockDrugUtilisation(patient_size = 1000,drug_exposure_size = 2000)
-  specifications <- cdm$drug_strength %>%
-    dplyr::select("drug_concept_id","ingredient_concept_id") %>%
+  spec <- cdm$drug_strength %>%
+    dplyr::select("drug_concept_id") %>%
     dplyr::collect()
 
   expect_error(instantiateDrugUtilisationCohorts(cdm,
-                                                 specifications,
+                                                 specifications = spec,
+                                                 ingredient_concept_id = 1,
                                                  studyTime = NULL,
                                                  gapEra = 2000,
                                                  eraJoinMode = "zero",
@@ -22,7 +23,8 @@ test_that("simple checks", {
 
   result <- instantiateDrugUtilisationCohorts(
     cdm,
-    specifications,
+    specifications = spec,
+    ingredient_concept_id = 1,
     studyTime = NULL,
     gapEra = 2000,
     eraJoinMode = "zero",

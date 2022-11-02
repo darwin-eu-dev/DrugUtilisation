@@ -54,16 +54,35 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               dailyDoseUpperBound = NULL,
                                               verbose = FALSE) {
   error_message <- checkmate::makeAssertCollection()
-
+  #if request to impute days supply, must provide default duration
   if(imputeDuration == TRUE){
     default_duration_exists <- !is.null(specifications$default_duration)
     checkmate::assertTRUE(default_duration_exists, add = error_message)
   }
-
+  #if request to impute daily dose, must provide default daily dose
   if(imputeDailyDose == TRUE){
     default_daily_dose_exists <- !is.null(specifications$default_daily_dose)
     checkmate::assertTRUE(default_daily_dose_exists, add = error_message)
   }
+  #check cdm
+  cdm_inherits_check <- inherits(cdm, "cdm_reference")
+  checkmate::assertTRUE(cdm_inherits_check,
+                        add = error_message
+  )
+  if (!isTRUE(cdm_inherits_check)) {
+    error_message$push(
+      "- cdm must be a CDMConnector CDM reference object"
+    )
+  }
+  #check drug exposure table exist
+  cdm_drug_exp_exists <- inherits(cdm$drug_exposure, "tbl_dbi")
+  checkmate::assertTRUE(cdm_drug_exp_exists, add = error_message)
+  if (!isTRUE(cdm_drug_exp_exists)) {
+    error_message$push(
+      "- table `drug exposure` is not found"
+    )
+  }
+
   dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
   drugUtilisationTableDataName <- paste0(drugUtilisationCohortName, "_info")
   specifications <- specifications %>%
