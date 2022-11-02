@@ -4,20 +4,14 @@ test_that("simple checks", {
     dplyr::select("drug_concept_id","ingredient_concept_id") %>%
     dplyr::collect()
 
-  gapEra = 2000
-  eraJoinMode = "zero"
-  overlapMode = "max"
-  sameIndexMode = "sum"
-  drugUtilisationCohortName = "testTb"
-
   expect_error(instantiateDrugUtilisationCohorts(cdm,
                                                  specifications,
                                                  studyTime = NULL,
-                                                 gapEra,
-                                                 eraJoinMode,
-                                                 overlapMode,
-                                                 sameIndexMode,
-                                                 drugUtilisationCohortName,
+                                                 gapEra = 2000,
+                                                 eraJoinMode = "zero",
+                                                 overlapMode = "max",
+                                                 sameIndexMode = "sum",
+                                                 drugUtilisationCohortName = "drugUtilisationCohortName",
                                                  imputeDuration = TRUE,
                                                  imputeDailyDose = TRUE,
                                                  durationLowerBound = NULL,
@@ -30,11 +24,11 @@ test_that("simple checks", {
     cdm,
     specifications,
     studyTime = NULL,
-    gapEra,
-    eraJoinMode,
-    overlapMode,
-    sameIndexMode,
-    drugUtilisationCohortName,
+    gapEra = 2000,
+    eraJoinMode = "zero",
+    overlapMode = "max",
+    sameIndexMode = "sum",
+    drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
     durationLowerBound = NULL,

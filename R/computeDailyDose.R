@@ -26,17 +26,17 @@
 #' @examples
 computeDailyDose <- function(table,
                              cdm = cdm,
+                             ingredient_concept_id = ingredient_concept_id,
                              verbose = FALSE) {
   # initial checks
   checkmate::assertClass(cdm, "cdm_reference")
   checkmate::assertLogical(verbose)
   if (isFALSE(all(c(
-    "person_id", "quantity", "drug_concept_id", "days_exposed",
-    "ingredient_concept_id"
+    "person_id", "quantity", "drug_concept_id", "days_exposed"
   ) %in% colnames(table)))) {
     if (isTRUE(all(c(
       "person_id", "quantity", "drug_concept_id", "drug_exposure_start_date",
-      "drug_exposure_end_date", "ingredient_concept_id"
+      "drug_exposure_end_date"
     ) %in% colnames(table)))) {
       table <- table %>%
         dplyr::mutate(
@@ -58,24 +58,24 @@ computeDailyDose <- function(table,
     dplyr::left_join(
       table %>%
         dplyr::select(
-          "person_id", "days_exposed", "quantity", "drug_concept_id",
-          "ingredient_concept_id", "drug_exposure_id"
+          "person_id", "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id"
         ) %>%
         dplyr::inner_join(
           cdm$drug_strength,
-          by = c("drug_concept_id", "ingredient_concept_id")
+          by = c("drug_concept_id")
         ) %>%
         dplyr::mutate(
           daily_dose = .data$quantity * .data$amount_value / .data$days_exposed
         ) %>%
+        dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
         dplyr::select(
           "person_id", "daily_dose", "drug_concept_id", "ingredient_concept_id",
           "drug_exposure_id"
         ),
       by = c(
-        "person_id", "drug_concept_id", "ingredient_concept_id",
+        "person_id", "drug_concept_id",
         "drug_exposure_id"
-        )
+      )
     ) %>%
     dplyr::compute()
 
