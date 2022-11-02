@@ -39,6 +39,7 @@
 #' @examples
 instantiateDrugUtilisationCohorts <- function(cdm,
                                               specifications,
+                                              ingredient_concept_id,
                                               studyTime = NULL,
                                               gapEra,
                                               eraJoinMode,
@@ -53,21 +54,40 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               dailyDoseUpperBound = NULL,
                                               verbose = FALSE) {
   error_message <- checkmate::makeAssertCollection()
-
+  #if request to impute days supply, must provide default duration
   if(imputeDuration == TRUE){
     default_duration_exists <- !is.null(specifications$default_duration)
     checkmate::assertTRUE(default_duration_exists, add = error_message)
   }
-
+  #if request to impute daily dose, must provide default daily dose
   if(imputeDailyDose == TRUE){
     default_daily_dose_exists <- !is.null(specifications$default_daily_dose)
     checkmate::assertTRUE(default_daily_dose_exists, add = error_message)
   }
+  #check cdm
+  cdm_inherits_check <- inherits(cdm, "cdm_reference")
+  checkmate::assertTRUE(cdm_inherits_check,
+                        add = error_message
+  )
+  if (!isTRUE(cdm_inherits_check)) {
+    error_message$push(
+      "- cdm must be a CDMConnector CDM reference object"
+    )
+  }
+  #check drug exposure table exist
+  cdm_drug_exp_exists <- inherits(cdm$drug_exposure, "tbl_dbi")
+  checkmate::assertTRUE(cdm_drug_exp_exists, add = error_message)
+  if (!isTRUE(cdm_drug_exp_exists)) {
+    error_message$push(
+      "- table `drug exposure` is not found"
+    )
+  }
+
   dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
   drugUtilisationTableDataName <- paste0(drugUtilisationCohortName, "_info")
   specifications <- specifications %>%
     dplyr::select(
-      "drug_concept_id", "ingredient_concept_id",
+      "drug_concept_id",
       tidyselect::matches("default_duration"),
       tidyselect::matches("default_daily_dose")
     )
@@ -127,10 +147,11 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     allowZero = FALSE
   )
 
-   # compute the daily dose
+  # compute the daily dose
   drugUtilisationCohort <- computeDailyDose(
     table = drugUtilisationCohort,
     cdm = cdm,
+    ingredient_concept_id = ingredient_concept_id,
     verbose = verbose
   )
 
@@ -357,9 +378,9 @@ getPeriods <- function(x, dialect, verbose) {
     ) %>%
     dplyr::select(-"drug_exposure_start_date") %>%
     dplyr::union(x %>%
-      dplyr::select("person_id", "drug_exposure_end_date") %>%
-      dplyr::distinct() %>%
-      dplyr::rename("end_interval" = "drug_exposure_end_date")) %>%
+                   dplyr::select("person_id", "drug_exposure_end_date") %>%
+                   dplyr::distinct() %>%
+                   dplyr::rename("end_interval" = "drug_exposure_end_date")) %>%
     dplyr::group_by(.data$person_id) %>%
     dplyr::filter(
       .data$end_interval > min(.data$end_interval, na.rm = TRUE)
@@ -670,7 +691,7 @@ continuousExposures <- function(x,
       ),
       number_continuous_exposures_with_overlap = dplyr::n_distinct(
         .data$continuous_exposure_id[.data$number_exposures_interval > 1 &
-          !is.na(.data$continuous_exposure_id)]
+                                       !is.na(.data$continuous_exposure_id)]
       ),
       number_eras = dplyr::n_distinct(.data$era_id),
       number_eras_with_overlap = dplyr::n_distinct(
@@ -692,7 +713,7 @@ continuousExposures <- function(x,
     dplyr::mutate(
       number_continuous_exposures_no_overlap =
         .data$number_continuous_exposures -
-          .data$number_continuous_exposures_with_overlap
+        .data$number_continuous_exposures_with_overlap
     ) %>%
     dplyr::mutate(
       number_eras_no_overlap =
@@ -854,13 +875,13 @@ continuousExposures <- function(x,
     )) + 1) %>%
     dplyr::mutate(not_exposed_days = .data$study_days - .data$exposed_days) %>%
     dplyr::inner_join(uniqueExposures %>%
-      dplyr::rename("initial_dose" = "daily_dose") %>%
-      dplyr::select("person_id", "subexposure_id", "initial_dose"),
-    by = c("person_id", "subexposure_id")
+                        dplyr::rename("initial_dose" = "daily_dose") %>%
+                        dplyr::select("person_id", "subexposure_id", "initial_dose"),
+                      by = c("person_id", "subexposure_id")
     ) %>%
     dplyr::select(-"subexposure_id") %>%
     dplyr::left_join(exposureCounts,
-      by = c("person_id")
+                     by = c("person_id")
     ) %>%
     dplyr::compute()
 

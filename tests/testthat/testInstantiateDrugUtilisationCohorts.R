@@ -1,23 +1,18 @@
 test_that("simple checks", {
   cdm <- mockDrugUtilisation(patient_size = 1000,drug_exposure_size = 2000)
-  specifications <- cdm$drug_strength %>%
-    dplyr::select("drug_concept_id","ingredient_concept_id") %>%
+  spec <- cdm$drug_strength %>%
+    dplyr::select("drug_concept_id") %>%
     dplyr::collect()
 
-  gapEra = 2000
-  eraJoinMode = "zero"
-  overlapMode = "max"
-  sameIndexMode = "sum"
-  drugUtilisationCohortName = "testTb"
-
   expect_error(instantiateDrugUtilisationCohorts(cdm,
-                                                 specifications,
+                                                 specifications = spec,
+                                                 ingredient_concept_id = 1,
                                                  studyTime = NULL,
-                                                 gapEra,
-                                                 eraJoinMode,
-                                                 overlapMode,
-                                                 sameIndexMode,
-                                                 drugUtilisationCohortName,
+                                                 gapEra = 2000,
+                                                 eraJoinMode = "zero",
+                                                 overlapMode = "max",
+                                                 sameIndexMode = "sum",
+                                                 drugUtilisationCohortName = "drugUtilisationCohortName",
                                                  imputeDuration = TRUE,
                                                  imputeDailyDose = TRUE,
                                                  durationLowerBound = NULL,
@@ -28,13 +23,14 @@ test_that("simple checks", {
 
   result <- instantiateDrugUtilisationCohorts(
     cdm,
-    specifications,
+    specifications = spec,
+    ingredient_concept_id = 1,
     studyTime = NULL,
-    gapEra,
-    eraJoinMode,
-    overlapMode,
-    sameIndexMode,
-    drugUtilisationCohortName,
+    gapEra = 2000,
+    eraJoinMode = "zero",
+    overlapMode = "max",
+    sameIndexMode = "sum",
+    drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
     durationLowerBound = NULL,
