@@ -33,9 +33,9 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
                                                   gapEra,
                                                   incidencePrevalenceCohortName,
                                                   cohortDefinitionId = NULL,
-                                                  overWrite = TRUE,
+                                                  append = FALSE,
+                                                  overWrite = FALSE,
                                                   verbose) {
-
   #checks
   errorMessage <- checkmate::makeAssertCollection()
   checkmate::assert_int(gapEra, lower = 1)
@@ -44,8 +44,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
 
 
   if (is.null(cohortDefinitionId)) {
-    cohortDefinitionId <-
-      1:length(conceptIds)#create dummy cohort Definition Id if NULL
+    cohortDefinitionId <- 1#create dummy cohort Definition Id if NULL
   }
   incidencePrevalenceCohort <- cdm[["drug_exposure"]] %>%
     dplyr::select(
@@ -69,7 +68,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
         dplyr::select("person_id", "drug_exposure_end_date") %>%
         dplyr::distinct() %>%
         dplyr::mutate(cohort_start_date = as.Date(dbplyr::sql(
-          sql_add_days(CDMConnector::dbms(attr(cdm, "dbcon")),
+          DrugUtilisation:::sql_add_days(CDMConnector::dbms(attr(cdm, "dbcon")),
                        1,
                        "drug_exposure_end_date")
         ))) %>%
@@ -86,7 +85,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::select("person_id", "drug_exposure_start_date") %>%
     dplyr::distinct() %>%
     dplyr::mutate(cohort_end_date = as.Date(dbplyr::sql(
-      sql_add_days(CDMConnector::dbms(attr(cdm, "dbcon")),-1,
+      sql_add_days(CDMConnector::dbms(attr(cdm, "dbcon")), -1,
                    "drug_exposure_start_date")
     ))) %>%
     dplyr::select(-"drug_exposure_start_date") %>%
@@ -108,7 +107,10 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::inner_join(incidencePrevalenceCohort, by = "person_id") %>%
     dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_start_date) %>%
     dplyr::filter(.data$drug_exposure_end_date >= .data$cohort_end_date) %>%
-    dplyr::select("person_id", "cohort_start_date", "cohort_end_date", "index") %>%
+    dplyr::select("person_id",
+                  "cohort_start_date",
+                  "cohort_end_date",
+                  "index") %>%
     dplyr::compute()
   # compute the eras
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
@@ -131,43 +133,40 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::group_by(.data$person_id) %>%
     dbplyr::window_order(.data$index) %>%
     dplyr::mutate(era_group = cumsum(.data$era_index)) %>%
+    dplyr::group_by(.data$person_id, .data$era_group) %>%
     dplyr::summarise(
       cohort_start_date = min(.data$cohort_start_date, na.rm = TRUE),
       cohort_end_date = max(.data$cohort_end_date, na.rm = TRUE),
-      number_index = dplyr::n(),
       .groups = "drop"
     ) %>%
-    dplyr::select("person_id",
+    dplyr::select("subject_id" = "person_id",
                   "cohort_start_date",
-                  "cohort_end_date",
-                  "number_index") %>%
+                  "cohort_end_date") %>%
+    dplyr::mutate(cohort_definition_id = .env$cohortDefinitionId) %>%
     dplyr::compute()
 
-  # MISSING the instantiate part
+  #create perm tables in database
+  if (append == FALSE) {
+    cdm <-
+      SqlUtilities::computePermanent(
+        incidencePrevalenceCohort,
+        "incidencePrevalenceCohort",
+        schema = attr(cdm, "write_schema"),
+        overwrite = overWrite
+      )
+  }
 
-  # # get the query to instantiate the table
-  # sql_query <- paste0(
-  #   "SELECT * INTO",
-  #   attr(cdm, "write_schema"),
-  #   ".",
-  #   incidencePrevalenceCohortName,
-  #   " FROM (",
-  #   dbplyr::sql_render(PASC_cohort_table),
-  #   ") AS from_table"
-  # )
-  # # execute the query to instantiate the table
-  # DBI::dbExecute(db, as.character(sql_query))
-  # # make the table visible in the current cdm object
-  # cdm[[incidencePrevalenceCohortName]] <- dplyr::tbl(
-  #   attr(cdm, "dbcon"),
-  #   paste0(
-  #     "SELECT * FROM ",
-  #     attr(cdm, "write_schema"),
-  #     ".",
-  #     incidencePrevalenceCohortName
-  #   )
-  # )
+  if (append == TRUE) {
+    cdm <-
+      SqlUtilities::appendPermanent(
+        incidencePrevalenceCohort,
+        "incidencePrevalenceCohort",
+        schema = attr(cdm, "write_schema")
+      )
+  }
 
   # return cdm
   return(cdm)
 }
+
+
