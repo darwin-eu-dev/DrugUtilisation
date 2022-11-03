@@ -117,8 +117,12 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_start_date) %>%
     dplyr::filter(.data$drug_exposure_end_date >= .data$cohort_end_date) %>%
     dplyr::select(
-      "person_id", "cohort_start_date", "cohort_end_date", "index"
+      "person_id", "cohort_start_date", "cohort_end_date",
     ) %>%
+    dplyr::group_by(.data$person_id) %>%
+    dbplyr::window_order(.data$cohort_end_date) %>%
+    dplyr::mutate(index = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
     dplyr::compute()
   # compute the eras
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
