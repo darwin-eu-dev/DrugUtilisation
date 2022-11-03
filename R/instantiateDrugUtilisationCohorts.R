@@ -553,7 +553,7 @@ joinExposures <- function(x,
               "person_id", "subexposure_id", "drug_exposure_start_date",
               "daily_dose"
             ) %>%
-            dplyr::mutate(subexposure_id = .data$subexposure_id + 1),
+            dplyr::mutate(subexposure_id = .data$subexposure_id + 2),
           by = c("person_id", "subexposure_id")
         ) %>%
         dplyr::group_by(.data$person_id, .data$subexposure_id) %>%
@@ -575,7 +575,7 @@ joinExposures <- function(x,
             dplyr::select(
               "person_id", "subexposure_id", "daily_dose"
             ) %>%
-            dplyr::mutate(subexposure_id = .data$subexposure_id - 1),
+            dplyr::mutate(subexposure_id = .data$subexposure_id),
           by = c("person_id", "subexposure_id")
         ) %>%
         dplyr::group_by(.data$person_id, .data$subexposure_id) %>%
