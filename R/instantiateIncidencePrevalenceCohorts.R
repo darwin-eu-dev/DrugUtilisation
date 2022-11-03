@@ -149,7 +149,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     cdm <-
       SqlUtilities::computePermanent(
         incidencePrevalenceCohort,
-        "incidencePrevalenceCohort",
+        incidencePrevalenceCohortName,
         schema = attr(cdm, "write_schema"),
         overwrite = overWrite
       )
@@ -159,7 +159,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     cdm <-
       SqlUtilities::appendPermanent(
         incidencePrevalenceCohort,
-        "incidencePrevalenceCohort",
+        incidencePrevalenceCohortName,
         schema = attr(cdm, "write_schema")
       )
   }
