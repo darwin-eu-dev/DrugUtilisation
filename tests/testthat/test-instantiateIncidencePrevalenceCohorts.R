@@ -2,7 +2,7 @@
 test_that("mock db: checks on working example", {
   #checks for Era generation
   cdm <- mockDrugUtilisation(seed=1)
-
+  incidencePrevalenceCohortName <- "test"
   out_put_1 <- instantiateIncidencePrevalenceCohorts(
     cdm,
     conceptIds = 1,
