@@ -118,7 +118,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       dplyr::mutate(
         drug_exposure_end_date_max = as.Date(dbplyr::sql(sql_add_days(
           CDMConnector::dbms(attr(cdm, "dbcon")),
-          studyTime - 1,
+          !!studyTime - 1,
           "drug_exposure_end_date_max"
         )))
       ) %>%
@@ -158,9 +158,12 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   if (!is.null(studyTime)) {
     drugUtilisationCohort <- drugUtilisationCohort %>%
       dplyr::mutate(
-        drug_exposure_end_date =
-          .data$drug_exposure_start_date + .data$days_exposed
-      ) %>%
+        days_exposed = as.integer(days_exposed)) %>%
+      dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(sql_add_days(
+        CDMConnector::dbms(attr(cdm, "dbcon")),
+        "days_exposed",
+        "drug_exposure_start_date"
+      )))) %>% dplyr::compute() %>%
       dplyr::mutate(
         drug_exposure_end_date = as.Date(dbplyr::sql(sql_add_days(
           CDMConnector::dbms(attr(cdm, "dbcon")),
@@ -631,6 +634,10 @@ joinExposures <- function(x,
   x <- x %>%
     dplyr::union_all(gap_period) %>%
     dplyr::mutate(gap = dplyr::if_else(is.na(.data$gap), 0, 1)) %>%
+    dplyr::mutate(days_exposed =  dbplyr::sql(sqlDiffDays(
+      dialect,
+      "start_interval",
+      "end_interval")) + 1) %>%
     dplyr::compute()
   era_id <- x %>%
     dplyr::select("person_id", "subexposure_id") %>%
@@ -655,6 +662,7 @@ joinExposures <- function(x,
       by = c("person_id", "subexposure_id")
     ) %>%
     dplyr::compute()
+
   return(x)
 }
 
@@ -778,7 +786,7 @@ continuousExposures <- function(x,
         dplyr::group_by(
           .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
         ) %>%
-        dplyr::mutate(daily_dose == sum(.data$daily_dose, na.rm = TRUE)) %>%
+        dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
         dplyr::ungroup() %>%
         dplyr::compute()
