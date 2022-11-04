@@ -118,7 +118,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       dplyr::mutate(
         drug_exposure_end_date_max = as.Date(dbplyr::sql(sql_add_days(
           CDMConnector::dbms(attr(cdm, "dbcon")),
-          !!studyTime - 1,
+          studyTime - 1,
           "drug_exposure_end_date_max"
         )))
       ) %>%
