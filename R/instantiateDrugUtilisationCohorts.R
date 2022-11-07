@@ -39,7 +39,7 @@
 #' @examples
 instantiateDrugUtilisationCohorts <- function(cdm,
                                               specifications,
-                                              ingredient_concept_id,
+                                              ingredientConceptId,
                                               studyTime = 365,
                                               gapEra = 30,
                                               eraJoinMode = "first",
@@ -65,7 +65,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     )
   }
   #check ingredient concept id is an integer
-  checkmate::assert_int(ingredient_concept_id,
+  checkmate::assert_int(ingredientConceptId,
                         add = error_message,
                         null.ok = TRUE)
 
@@ -145,7 +145,15 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "- table `drug exposure` is not found"
     )
   }
-
+  
+  #check drug strength table exist
+  cdm_drug_str_exists <- inherits(cdm$drug_strength, "tbl_dbi")
+  checkmate::assertTRUE(cdm_drug_str_exists, add = error_message)
+  if (!isTRUE(cdm_drug_str_exists)) {
+    error_message$push(
+      "- table `drug strength` is not found"
+    )
+  }
   #check eraJoinMode is correctly specified
   eraJoinModeCheck <- eraJoinMode %in% c("zero", "join", "first", "second")
   checkmate::assertTRUE(eraJoinModeCheck, add = error_message)
@@ -164,7 +172,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                  `second`"))}
 
   #check sameIndexMode is correctly specified
-  sameIndexModeCheck <- sameIndexMode %in% c("max", "sum", "min", "first", "second")
+  sameIndexModeCheck <- sameIndexMode %in% c("max", "sum", "min")
   checkmate::assertTRUE(sameIndexModeCheck, add = error_message)
   if(!isTRUE(sameIndexModeCheck)){
     error_message$push(
@@ -176,8 +184,8 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   drugUtilisationTableDataName <- paste0(drugUtilisationCohortName, "_info")
 
   if(is.null(specifications)){
-    allIngredient <- cdm$drug_strength$ingredient_concept_id
-    cdm$drug
+    specifications <- cdm[["drug_strength"]] %>% dplyr::filter(
+      ingredient_concept_id == ingredientConceptId) %>% select("drug_concept_id") %>% collect()
   }
 
   specifications <- specifications %>%
@@ -246,7 +254,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   drugUtilisationCohort <- computeDailyDose(
     table = drugUtilisationCohort,
     cdm = cdm,
-    ingredient_concept_id = ingredient_concept_id,
+    ingredient_concept_id = ingredientConceptId,
     verbose = verbose
   )
 
