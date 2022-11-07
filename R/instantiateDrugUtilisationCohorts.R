@@ -39,12 +39,12 @@
 #' @examples
 instantiateDrugUtilisationCohorts <- function(cdm,
                                               specifications,
-                                              ingredient_concept_id,
-                                              studyTime = NULL,
-                                              gapEra,
-                                              eraJoinMode,
-                                              overlapMode,
-                                              sameIndexMode,
+                                              ingredientConceptId,
+                                              studyTime = 365,
+                                              gapEra = 30,
+                                              eraJoinMode = "first",
+                                              overlapMode = "first",
+                                              sameIndexMode = "sum",
                                               drugUtilisationCohortName,
                                               imputeDuration = FALSE,
                                               imputeDailyDose = FALSE,
@@ -54,16 +54,6 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               dailyDoseUpperBound = NULL,
                                               verbose = FALSE) {
   error_message <- checkmate::makeAssertCollection()
-  #if request to impute days supply, must provide default duration
-  if(imputeDuration == TRUE){
-    default_duration_exists <- !is.null(specifications$default_duration)
-    checkmate::assertTRUE(default_duration_exists, add = error_message)
-  }
-  #if request to impute daily dose, must provide default daily dose
-  if(imputeDailyDose == TRUE){
-    default_daily_dose_exists <- !is.null(specifications$default_daily_dose)
-    checkmate::assertTRUE(default_daily_dose_exists, add = error_message)
-  }
   #check cdm
   cdm_inherits_check <- inherits(cdm, "cdm_reference")
   checkmate::assertTRUE(cdm_inherits_check,
@@ -74,6 +64,79 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "- cdm must be a CDMConnector CDM reference object"
     )
   }
+  #check ingredient concept id is an integer
+  checkmate::assert_int(ingredientConceptId,
+                        add = error_message,
+                        null.ok = TRUE)
+
+  #check studyTime is an integer
+  checkmate::assert_int(studyTime,
+                         add = error_message,
+                         null.ok = TRUE)
+
+  #check gapEra is an integer
+  checkmate::assert_int(gapEra,
+                        add = error_message,
+                        null.ok = TRUE)
+
+  #check drugUtilisationCohortName is a character
+  checkmate::assert_character(drugUtilisationCohortName,
+                              add = messageStore)
+
+  #check imputeDuration is a character
+  checkmate::assert_logical(imputeDuration,
+                            add = messageStore)
+
+  #check imputeDailyDose is a character
+  checkmate::assert_logical(imputeDailyDose,
+                            add = messageStore)
+
+  #check verbose is a character
+  checkmate::assert_logical(verbose,
+                            add = messageStore)
+
+  #check durationLowerBound is an integer
+  checkmate::assert_int(durationLowerBound,
+                        add = error_message,
+                        null.ok = TRUE)
+
+  #check durationUpperBound an integer
+  checkmate::assert_int(durationUpperBound,
+                        add = error_message,
+                        null.ok = TRUE)
+  #check dailyDoseLowerBound is numeric
+  checkmate::assert_numeric(dailyDoseLowerBound,
+                            add = messageStore,
+                            null.ok = TRUE)
+
+  #check dailyDoseUpperBound is numeric
+  checkmate::assert_numeric(dailyDoseUpperBound,
+                            add = messageStore,
+                            null.ok = TRUE)
+
+  #if request to impute days supply, must provide default duration
+  if(imputeDuration == TRUE){
+    default_duration_exists <- any(grepl("default_duration",
+                                     colnames(specifications),ignore.case=TRUE))
+    checkmate::assertTRUE(default_duration_exists, add = error_message)
+    if (!isTRUE(default_duration_exists)) {
+      error_message$push(
+        "- must provide default_duration if imputeDuration = TRUE"
+      )
+    }
+  }
+  #if request to impute daily dose, must provide default daily dose
+  if(imputeDailyDose == TRUE){
+    default_daily_dose_exists <- any(grepl("default_daily_dose",
+                                           colnames(specifications),ignore.case=TRUE))
+    checkmate::assertTRUE(default_daily_dose_exists, add = error_message)
+    if (!isTRUE(default_daily_dose_exists)) {
+      error_message$push(
+        "- must provide default_daily_dose if imputeDailyDose = TRUE"
+      )
+    }
+  }
+
   #check drug exposure table exist
   cdm_drug_exp_exists <- inherits(cdm$drug_exposure, "tbl_dbi")
   checkmate::assertTRUE(cdm_drug_exp_exists, add = error_message)
@@ -82,9 +145,49 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "- table `drug exposure` is not found"
     )
   }
+  
+  #check drug strength table exist
+  cdm_drug_str_exists <- inherits(cdm$drug_strength, "tbl_dbi")
+  checkmate::assertTRUE(cdm_drug_str_exists, add = error_message)
+  if (!isTRUE(cdm_drug_str_exists)) {
+    error_message$push(
+      "- table `drug strength` is not found"
+    )
+  }
+  #check eraJoinMode is correctly specified
+  eraJoinModeCheck <- eraJoinMode %in% c("zero", "join", "first", "second")
+  checkmate::assertTRUE(eraJoinModeCheck, add = error_message)
+  if(!isTRUE(eraJoinModeCheck)){
+    error_message$push(
+      glue::glue("- eraJoinMode must be one of `zero`, `join`, `first`, `second`"
+    ))
+  }
+
+  #check overlapMode is correctly specified
+  overlapModeCheck <- overlapMode %in% c("max", "sum", "min", "first", "second")
+  checkmate::assertTRUE(overlapModeCheck, add = error_message)
+  if(!isTRUE(overlapModeCheck)){
+    error_message$push(
+      glue::glue("- overlapMode must be one of `max`, `sum`, `min`, `first`,
+                 `second`"))}
+
+  #check sameIndexMode is correctly specified
+  sameIndexModeCheck <- sameIndexMode %in% c("max", "sum", "min")
+  checkmate::assertTRUE(sameIndexModeCheck, add = error_message)
+  if(!isTRUE(sameIndexModeCheck)){
+    error_message$push(
+      glue::glue("- sameIndexMode must be one of `max`, `sum`, `min`"))}
+
+  checkmate::reportAssertions(collection = error_message)
 
   dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
   drugUtilisationTableDataName <- paste0(drugUtilisationCohortName, "_info")
+
+  if(is.null(specifications)){
+    specifications <- cdm[["drug_strength"]] %>% dplyr::filter(
+      ingredient_concept_id == ingredientConceptId) %>% select("drug_concept_id") %>% collect()
+  }
+
   specifications <- specifications %>%
     dplyr::select(
       "drug_concept_id",
@@ -151,7 +254,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   drugUtilisationCohort <- computeDailyDose(
     table = drugUtilisationCohort,
     cdm = cdm,
-    ingredient_concept_id = ingredient_concept_id,
+    ingredient_concept_id = ingredientConceptId,
     verbose = verbose
   )
 

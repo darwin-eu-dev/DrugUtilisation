@@ -1,9 +1,9 @@
-test_that("simple checks and sums", {
+test_that("test expect errors",{
   cdm <- mockDrugUtilisation(patient_size = 1000,drug_exposure_size = 2000)
   spec <- cdm$drug_strength %>%
     dplyr::select("drug_concept_id") %>%
     dplyr::collect()
-
+  #throw error when set impute = TRUE but not provided in specification
   expect_error(instantiateDrugUtilisationCohorts(cdm,
                                                  specifications = spec,
                                                  ingredient_concept_id = 1,
@@ -12,7 +12,8 @@ test_that("simple checks and sums", {
                                                  eraJoinMode = "first",
                                                  overlapMode = "max",
                                                  sameIndexMode = "sum",
-                                                 drugUtilisationCohortName = "drugUtilisationCohortName",
+                                                 drugUtilisationCohortName =
+                                                   "drugUtilisationCohortName",
                                                  imputeDuration = TRUE,
                                                  imputeDailyDose = TRUE,
                                                  durationLowerBound = NULL,
@@ -20,6 +21,35 @@ test_that("simple checks and sums", {
                                                  dailyDoseLowerBound = NULL,
                                                  dailyDoseUpperBound = NULL,
                                                  verbose = FALSE))
+
+  #throw error when ingredient_concept_id is not integer
+  expect_error(instantiateDrugUtilisationCohorts(cdm,
+                                                 specifications = spec,
+                                                 ingredient_concept_id = 1.3,
+                                                 studyTime = NULL,
+                                                 gapEra = 2,
+                                                 eraJoinMode = "first",
+                                                 overlapMode = "max",
+                                                 sameIndexMode = "sum",
+                                                 drugUtilisationCohortName =
+                                                   "drugUtilisationCohortName",
+                                                 imputeDuration = TRUE,
+                                                 imputeDailyDose = FALSE,
+                                                 durationLowerBound = NULL,
+                                                 durationUpperBound = NULL,
+                                                 dailyDoseLowerBound = NULL,
+                                                 dailyDoseUpperBound = NULL,
+                                                 verbose = FALSE))
+
+})
+
+test_that("simple checks and sums", {
+  cdm <- mockDrugUtilisation(patient_size = 1000,drug_exposure_size = 2000)
+  spec <- cdm$drug_strength %>%
+    dplyr::select("drug_concept_id") %>%
+    dplyr::collect()
+
+
 
   result <- instantiateDrugUtilisationCohorts(
     cdm,
