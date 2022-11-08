@@ -47,7 +47,7 @@ library(CDMConnector)
 library(DrugUtilisation)
 
 # We first need to create a cdm_reference
-cdm<-mockDrugUtilisationRef()
+cdm <- mockDrugUtilisationRef()
 # and this is what this example data looks like
 head(cdm$person)
 head(cdm$observation_period)
@@ -59,7 +59,10 @@ To create, instantiate and characterize the drug utilisation cohorts we
 have to specify an ingredient (ingredientConceptId):
 
 ``` r
-instantiateDrugUtilisationCohorts(ingredientConceptId = 1)
+cdm <- instantiateDrugUtilisationCohorts(
+  cdm = cdm,
+  ingredientConceptId = 1
+)
 ```
 
 We can also specify a list of drugs and an interest ingredient:
@@ -67,7 +70,8 @@ We can also specify a list of drugs and an interest ingredient:
 ``` r
 library(dplyr)
 scpecs <- tibble(drugConceptId = c(1,2))
-instantiateDrugUtilisationCohorts(
+cdm <- instantiateDrugUtilisationCohorts(
+  cdm = cdm,
   ingredientConceptId = 1,
   specifications = specs
 )
