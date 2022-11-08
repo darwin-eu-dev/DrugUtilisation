@@ -29,7 +29,7 @@ remotes::install_github("darwin-eu/DrugUtilisation")
 When working with DrugUtilisation, you will use CDMConnector to manage
 your connection to the database. If you don´t already have this
 installed you can install it from
-[CRAN](https://cran.r-project.org/web/packages/CDMConnector/index.html).
+[CRAN](https://CRAN.R-project.org/package=CDMConnector).
 
 ``` r
 install.packages("CDMConnector")
