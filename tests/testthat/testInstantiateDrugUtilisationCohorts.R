@@ -6,7 +6,7 @@ test_that("test expect errors",{
   #throw error when set impute = TRUE but not provided in specification
   expect_error(instantiateDrugUtilisationCohorts(cdm,
                                                  specifications = spec,
-                                                 ingredient_concept_id = 1,
+                                                 ingredientConceptId = 1,
                                                  studyTime = NULL,
                                                  gapEra = 2,
                                                  eraJoinMode = "first",
@@ -22,10 +22,10 @@ test_that("test expect errors",{
                                                  dailyDoseUpperBound = NULL,
                                                  verbose = FALSE))
 
-  #throw error when ingredient_concept_id is not integer
+  #throw error when ingredientConceptId is not integer
   expect_error(instantiateDrugUtilisationCohorts(cdm,
                                                  specifications = spec,
-                                                 ingredient_concept_id = 1.3,
+                                                 ingredientConceptId = 1.3,
                                                  studyTime = NULL,
                                                  gapEra = 2,
                                                  eraJoinMode = "first",
@@ -54,7 +54,7 @@ test_that("simple checks and sums", {
   result <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = NULL,
     gapEra = 2000,
     eraJoinMode = "zero",
@@ -111,7 +111,7 @@ test_that("all output checks for single era with single gap (less than eraGap)",
     quantity = c(1,2,3,4))
 
   drug_strength <- tibble::tibble(
-    ingredient_concept_id = c(1, 1, 1, 1),
+    ingredientConceptId = c(1, 1, 1, 1),
     drug_concept_id = c(1, 2, 3, 4),
     amount_value = c(1, 2, 3, 4),
     amount_unit_concept_id = c(8576, 8576, 8576, 8576)
@@ -131,7 +131,7 @@ test_that("all output checks for single era with single gap (less than eraGap)",
   result <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = NULL,
     gapEra = 3,
     eraJoinMode = "first",
@@ -156,7 +156,7 @@ test_that("all output checks for single era with single gap (less than eraGap)",
   testInitialDose <- computeDailyDose(
     table = cdm$drug_exposure,
     cdm = cdm,
-    ingredient_concept_id = ingredient_concept_id,
+    ingredient_concept_id = 1,
     verbose = FALSE
   )
 
@@ -246,7 +246,7 @@ test_that("test impute and lower upper bound", {
     quantity = c(1, 2, 3))
 
   drug_strength <- tibble::tibble(
-    ingredient_concept_id = c(1, 1, 1),
+    ingredientConceptId = c(1, 1, 1),
     drug_concept_id = c(1, 2, 3),
     amount_value = c(NA, 1000, 0),
     amount_unit_concept_id = c(8576, 8576, 8576)
@@ -272,7 +272,7 @@ test_that("test impute and lower upper bound", {
   result <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1350, #limit end date to 2013-09-11
     gapEra = 3,
     eraJoinMode = eraJoinMode,
@@ -315,7 +315,7 @@ test_that("test same index", {
     quantity = c(1, 2, 3))
 
   drug_strength <- tibble::tibble(
-    ingredient_concept_id = c(1, 1, 1),
+    ingredientConceptId = c(1, 1, 1),
     drug_concept_id = c(1, 2, 3),
     amount_value = c(1, 10, 20),
     amount_unit_concept_id = c(8576, 8576, 8576)
@@ -339,7 +339,7 @@ test_that("test same index", {
   resultMax <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
@@ -358,7 +358,7 @@ test_that("test same index", {
   resultMin <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
@@ -377,7 +377,7 @@ test_that("test same index", {
   resultSum <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
@@ -426,7 +426,7 @@ test_that("test same index for join exp", {
     quantity = c(1, 2, 3))
 
   drug_strength <- tibble::tibble(
-    ingredient_concept_id = c(1, 1, 1),
+    ingredientConceptId = c(1, 1, 1),
     drug_concept_id = c(1, 2, 3),
     amount_value = c(1, 10, 20),
     amount_unit_concept_id = c(8576, 8576, 8576)
@@ -450,7 +450,7 @@ test_that("test same index for join exp", {
   resultMax <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
@@ -469,7 +469,7 @@ test_that("test same index for join exp", {
   resultMin <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
@@ -488,7 +488,7 @@ test_that("test same index for join exp", {
   resultSum <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
@@ -532,7 +532,7 @@ test_that("test era join mode", {
     quantity = c(1, 2))
 
   drug_strength <- tibble::tibble(
-    ingredient_concept_id = c(1, 1),
+    ingredientConceptId = c(1, 1),
     drug_concept_id = c(1, 2),
     amount_value = c(1, 10),
     amount_unit_concept_id = c(8576, 8576)
@@ -556,7 +556,7 @@ test_that("test era join mode", {
   resultFirst <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = "first",
@@ -575,7 +575,7 @@ test_that("test era join mode", {
   resultSecond <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = "second",
@@ -594,7 +594,7 @@ test_that("test era join mode", {
   resultZero <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = "zero",
@@ -614,7 +614,7 @@ test_that("test era join mode", {
   resultJoin <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = "join",
@@ -664,7 +664,7 @@ test_that("test overlap mode", {
     quantity = c(1, 2))
 
   drug_strength <- tibble::tibble(
-    ingredient_concept_id = c(1, 1),
+    ingredientConceptId = c(1, 1),
     drug_concept_id = c(1, 2),
     amount_value = c(1, 10),
     amount_unit_concept_id = c(8576, 8576)
@@ -688,7 +688,7 @@ test_that("test overlap mode", {
   resultSecond <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
@@ -707,7 +707,7 @@ test_that("test overlap mode", {
   resultMin <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
-    ingredient_concept_id = 1,
+    ingredientConceptId = 1,
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
@@ -730,3 +730,144 @@ test_that("test overlap mode", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
+
+
+
+
+
+test_that("test StudyStartDate and StudyEndDate", {
+
+  drug_exposure <- tibble::tibble(
+    drug_exposure_id = c(1, 2, 3, 4, 5),
+    drug_concept_id = c(1, 2, 3, 4, 5),
+    person_id = c(1, 1, 2, 2, 3),
+    drug_exposure_start_date = c(
+      as.Date("2010-01-01"),
+      as.Date("2010-01-02"),
+      as.Date("2010-01-03"),
+      as.Date("2010-02-02"),
+      as.Date("2010-02-01")),
+    drug_exposure_end_date = c(
+      as.Date("2010-01-02"),
+      as.Date("2010-01-10"),
+      as.Date("2010-02-04"),
+      as.Date("2010-02-05"),
+      as.Date("2010-02-10")),
+    quantity = c(1, 2, 3, 4, 5))
+
+  drug_strength <- tibble::tibble(
+    ingredientConceptId = c(1, 1, 1, 1, 1),
+    drug_concept_id = c(1, 2, 3, 4, 5),
+    amount_value = c(1, 2, 3, 4, 5),
+  )
+
+
+
+  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
+                             drug_strength = drug_strength)
+
+
+  spec <- cdm$drug_strength %>%
+    dplyr::select("drug_concept_id") %>%
+    dplyr::collect()
+
+
+  sameIndexMode = "max"
+  eraJoinMode = "first"
+
+  #when there is no exp with same start, changing sameIndexMode should return same result
+  resultStudyStart <- instantiateDrugUtilisationCohorts(
+    cdm,
+    specifications = spec,
+    ingredientConceptId = 1,
+    studyTime = 1000, #limit end date to 2013-09-11
+    gapEra = 10,
+    eraJoinMode = eraJoinMode,
+    overlapMode = "second",
+    sameIndexMode = sameIndexMode,
+    drugUtilisationCohortName = "drugUtilisationCohortName",
+    imputeDuration = FALSE,
+    imputeDailyDose = FALSE,
+    durationLowerBound = NULL,
+    durationUpperBound = NULL,
+    dailyDoseLowerBound = NULL,
+    dailyDoseUpperBound = NULL,
+    studyStartDate = as.Date("2010-01-02"),
+    studyEndDate = as.Date("2010-01-05"),
+    verbose = FALSE
+  ) %>% dplyr::collect()
+
+  expect_true(resultStudyStart$person_id == 2)
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
+
+
+
+test_that("test multi gap end", {
+
+  drug_exposure <- tibble::tibble(
+    drug_exposure_id = c(1, 2, 3, 4),
+    drug_concept_id = c(1, 2, 3, 4),
+    person_id = c(1, 1, 1, 1),
+    drug_exposure_start_date = c(
+      as.Date("2010-01-01"),
+      as.Date("2010-01-05"),
+      as.Date("2010-01-05"),
+      as.Date("2010-01-05")),
+    drug_exposure_end_date = c(
+      as.Date("2010-01-02"),
+      as.Date("2010-01-05"),
+      as.Date("2010-01-06"),
+      as.Date("2010-01-07")),
+    quantity = c(1, 2, 3, 4))
+
+  drug_strength <- tibble::tibble(
+    ingredientConceptId = c(1, 1, 1, 1),
+    drug_concept_id = c(1, 2, 3, 4),
+    amount_value = c(1, 2, 3, 4),
+  )
+
+
+
+  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
+                             drug_strength = drug_strength)
+
+
+  spec <- cdm$drug_strength %>%
+    dplyr::select("drug_concept_id") %>%
+    dplyr::collect()
+
+
+  sameIndexMode = "max"
+  eraJoinMode = "second"
+
+  #when there is no exp with same start, changing sameIndexMode should return same result
+  resultMultiGapEnd <- instantiateDrugUtilisationCohorts(
+    cdm,
+    specifications = spec,
+    ingredientConceptId = 1,
+    studyTime = 1000, #limit end date to 2013-09-11
+    gapEra = 10,
+    eraJoinMode = eraJoinMode,
+    overlapMode = "second",
+    sameIndexMode = sameIndexMode,
+    drugUtilisationCohortName = "drugUtilisationCohortName",
+    imputeDuration = FALSE,
+    imputeDailyDose = FALSE,
+    durationLowerBound = NULL,
+    durationUpperBound = NULL,
+    dailyDoseLowerBound = NULL,
+    dailyDoseUpperBound = NULL,
+    verbose = FALSE
+  ) %>% dplyr::collect()
+
+  expect_true(resultMultiGapEnd$cumulative_dose == 16 * 2 / 3 + 16 + 1)
+
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
+
