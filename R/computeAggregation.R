@@ -38,16 +38,17 @@ computeAggregation <- function(cdm,
                                personSummaryName,
                                genderAggregation = TRUE,
                                ageGroupsAgregation = TRUE,
-                               ageGroups = list(c(0,19),c(20,39),c(40,59),c(60,79),c(80,150)) ,
+                               ageGroups = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)) ,
                                indexYearAggregation = TRUE,
-                               indexYearMonthAggregation = TRUE,
+                               indexYearMonthAggregation = FALSE,
                                initialDoseAggregation = TRUE,
-                               meanDoseAggregation = TRUE,
+                               meanDoseAggregation = FALSE,
                                cohortid = NULL,
-                              ## indicationAggregation,
-                              ## indicationTableName,
+                               ## indicationAggregation,
+                               ## indicationTableName,
                                aggregationTableName = "drug_utilisation_aggregation_table",
-                              verbose) {
+                               verbose
+) {
   #basic checks
   errorMessage <- checkmate::makeAssertCollection()
   checkmate::checkDbType(cdm, type = "cdm_reference", errorMessage)
@@ -150,8 +151,8 @@ computeAggregation <- function(cdm,
           dplyr::filter(.data$age >= .env$x[1]) %>%
           dplyr::filter(.data$age <= .env$x[2]) %>%
           ##dplyr::mutate(aggregation = "Age groups") %>%
-          dplyr::mutate(age_groups = groupName) %>%
-          dplyr::select("subject_id", "age_groups") %>%
+          dplyr::mutate(age_group = groupName) %>%
+          dplyr::select("subject_id", "age_group") %>%
           dplyr::compute()
       )
     })
