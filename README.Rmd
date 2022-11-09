@@ -1,5 +1,17 @@
+---
+  output: github_document
+---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
 
 # DrugUtilisation
 
@@ -11,38 +23,26 @@ badges: end -->
 
 ## Package overview
 
-DrugUtilisation contains functions to obtain the instantiate and
-characterize the cohorts used in a drug Utilisation study using the OMOP
-common data model. Drug utilisation studies examine the marketing,
-distribution, prescription and use of drugs in a society, with special
-emphasis on the resulting medical, social and economic consequences.
+DrugUtilisation contains functions to obtain the instantiate and characterize the cohorts used in a drug Utilisation study using the OMOP common data model. Drug utilisation studies examine the marketing, distribution, prescription and use of drugs in a society, with special emphasis on the resulting medical, social and economic consequences.
 
 ## Package installation
 
 You can install the development version of DrugUtilisation like so:
 
-``` r
+```{r, eval=FALSE}
 install.packages("remotes")
 remotes::install_github("darwin-eu/DrugUtilisation")
 ```
 
-When working with DrugUtilisation, you will use CDMConnector to manage
-your connection to the database. If you don´t already have this
-installed you can install it from
-[CRAN](https://CRAN.R-project.org/package=CDMConnector).
-
-``` r
+When working with DrugUtilisation, you will use CDMConnector to manage your connection to the database. If you don´t already have this installed you can install it from [CRAN](https://CRAN.R-project.org/package=CDMConnector).
+```{r, eval=FALSE}
 install.packages("CDMConnector")
 ```
 
 ## Example
+First, we need to create a cdm reference for the data we´ll be using. Here we´ll generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package documentation.
 
-First, we need to create a cdm reference for the data we´ll be using.
-Here we´ll generate an example with simulated data, but to see how you
-would set this up for your database please consult the CDMConnector
-package documentation.
-
-``` r
+```{r, eval = FALSE}
 library(CDMConnector)
 library(DrugUtilisation)
 
@@ -55,10 +55,9 @@ head(cdm$drug_exposure)
 head(cdm$drug_strength)
 ```
 
-To create, instantiate and characterize the drug utilisation cohorts we
-have to specify an ingredient (ingredientConceptId):
+To create, instantiate and characterize the drug utilisation cohorts we have to specify an ingredient (ingredientConceptId):
 
-``` r
+```{r, eval = FALSE}
 cdm <- instantiateDrugUtilisationCohorts(
   cdm = cdm,
   ingredientConceptId = 1
@@ -66,8 +65,7 @@ cdm <- instantiateDrugUtilisationCohorts(
 ```
 
 We can also specify a list of drugs and an interest ingredient:
-
-``` r
+```{r, eval = FALSE}
 library(dplyr)
 scpecs <- tibble(drugConceptId = c(1,2))
 cdm <- instantiateDrugUtilisationCohorts(

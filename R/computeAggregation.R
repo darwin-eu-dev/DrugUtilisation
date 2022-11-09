@@ -20,7 +20,7 @@
 #' @param personSummaryName personSummaryName
 #' @param genderAggregation genderAggregation
 #' @param ageGroupsAgregation ageGroupsAgregation
-#' @param ageGroups ageGroups
+#' @param ageGroups ageGroups the input is a list of user define age group
 #' @param indexYearAggregation indexYearAggregation
 #' @param indexYearMonthAggregation indexYearMonthAggregation
 #' @param initialDoseAggregation initialDoseAggregation
@@ -36,110 +36,197 @@
 #' @examples
 computeAggregation <- function(cdm,
                                personSummaryName,
-                               genderAggregation,
-                               ageGroupsAgregation,
-                               ageGroups,
-                               indexYearAggregation,
-                               indexYearMonthAggregation,
-                               initialDoseAggregation,
-                               meanDoseAggregation,
-                               indicationAggregation,
-                               indicationTableName,
-                               aggregationTableName,
-                               verbose) {
+                               genderAggregation = TRUE,
+                               ageGroupsAgregation = TRUE,
+                               ageGroups = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)) ,
+                               indexYearAggregation = TRUE,
+                               indexYearMonthAggregation = FALSE,
+                               initialDoseAggregation = TRUE,
+                               meanDoseAggregation = FALSE,
+                               cohortid = NULL,
+                               ## indicationAggregation,
+                               ## indicationTableName,
+                               aggregationTableName = "drug_utilisation_aggregation_table",
+                               verbose
+) {
+  #basic checks
+  errorMessage <- checkmate::makeAssertCollection()
+  checkmate::checkDbType(cdm, type = "cdm_reference", errorMessage)
+  checkmate::checkLogical(genderAggregation, errorMessage, null.ok = FALSE)
+  checkmate::checkLogical(ageGroupsAgregation, errorMessage, null.ok = FALSE)
+  checkmate::checkLogical(indexYearAggregation, errorMessage, null.ok = FALSE)
+  checkmate::checkLogical(indexYearMonthAggregation, errorMessage, null.ok = FALSE)
+  checkmate::checkLogical(initialDoseAggregation, errorMessage, null.ok = FALSE)
+  checkmate::checkLogical(meanDoseAggregation, errorMessage, null.ok = FALSE)
+  checkmate::checkLogical(verbose, errorMessage, null.ok = FALSE)
+  checkmate::checkCharacter(personSummaryName, errorMessage, null.ok = FALSE)
+  checkmate::checkCharacter(aggregationTableName, errorMessage, null.ok = FALSE)
+  checkmate::checkList(ageGroups, errorMessage, null.ok = TRUE)
+  checkmate::checkCount(cohortid, errorMessage, null.ok = TRUE)
+  checkmate::reportAssertions(collection = errorMessage)
+
+  #check table inside cdm
+  cdm_inherits_check <- inherits(cdm, "cdm_reference")
+  checkmate::assertTRUE(cdm_inherits_check,
+                        add = error_message)
+  if (!isTRUE(cdm_inherits_check)) {
+    error_message$push("- cdm must be a CDMConnector CDM reference object")
+  }
+
+  #check if personsummaryname table exist
+  cdm_personSummaryName_exists <-
+    inherits(cdm$personSummaryName, "tbl_dbi")
+  checkmate::assertTRUE(cdm_personSummaryName_exists, add = error_message)
+  if (!isTRUE(cdm_personSummaryName_exists)) {
+    error_message$push("- person summary table is not found")
+  }
+  #check if patient table exist
+  if (genderAggregation == TRUE | ageGroupsAgregation == TRUE) {
+    cdm_person_exists <- inherits(cdm$person, "tbl_dbi")
+    checkmate::assertTRUE(cdm_person_exists, add = error_message)
+    if (!isTRUE(cdm_person_exists)) {
+      error_message$push("- table `person` is not found")
+    }
+  }
+
+  #check if aggregationTableName table exist in database
+
+  cdm_aggregationTableName_exists <-
+    inherits(cdm$aggregationTableName, "tbl_dbi")
+  checkmate::assertTRUE(cdm_aggregationTableName_exists, add = error_message)
+  if (!isFALSE(cdm_aggregationTableName_exists)) {
+    error_message$push("output table already exist in database please specified a different name")
+  }
+
+
+
+
+
   aggregationTable <- cdm[[personSummaryName]] %>%
-    dplyr::mutate(aggregation = "All") %>%
-    dplyr::mutate(value = as.character(NA)) %>%
-    dplyr::select("subject_id", "aggregation", "value") %>%
-    dplyr::compute()
+    ##  dplyr::mutate(aggregation = "All") %>%
+    ##  dplyr::mutate(value = as.character(NA)) %>%
+    dplyr::select("subject_id", "cohort_start_date", "cohort_end_date")
+
 
   if (genderAggregation == TRUE) {
+    #get gender from cohortprofile
+    get_gender <-
+      CohortProfiles::getSex(cdm = cdm,
+                             cohortId = cohortid,
+                             cohortTable = personSummaryName)
+
+
+    #join gender to input table
+    get_gender <-
+      cdm[[personSummaryName]] %>% dplyr::left_join(get_gender %>% dplyr::select("subject_id", "sex"),
+                                                    by = c("subject_id" = "person_id"))
+
+
     aggregationTable <- aggregationTable %>%
-      dplyr::union(
-        cdm[[personSummaryName]] %>%
-          dplyr::mutate(aggregation = "Gender") %>%
-          dplyr::mutate(value = .data$gender) %>%
-          dplyr::select("subject_id", "aggregation", "value")
-      ) %>%
-      dplyr::compute()
+      dplyr::left_join(
+        get_gender %>%
+          ##dplyr::mutate(aggregation = "Gender") %>%
+          dplyr::mutate(gender = .data$sex) %>%
+          dplyr::select("subject_id", "gender")
+      )
   }
 
-  if (ageGroupsAgregation == TRUE){
-    aggregationTableAge <- lapply(ageGroups, function(x){
+  if (ageGroupsAgregation == TRUE) {
+    #get age from cohortprofile
+    get_age <-
+      CohortProfiles::getAge(cdm = cdm,
+                             cohortId = cohortid,
+                             cohortTable = personSummaryName)
+
+
+    #join age to input table
+    get_age <-
+      cdm[[personSummaryName]] %>% dplyr::left_join(get_age %>% dplyr::select("subject_id", "age"),
+                                                    by = c("subject_id" = "person_id"))
+
+    aggregationTableAge <- lapply(ageGroups, function(x) {
       groupName <- paste0(x[1], ";", x[2])
-      return(cdm[[personSummaryName]] %>%
-        dplyr::filter(.data$age >= .env$x[1]) %>%
-        dplyr::filter(.data$age <= .env$x[2]) %>%
-        dplyr::mutate(agregation = "Age groups") %>%
-        dplyr::mutate(value = groupName) %>%
-        dplyr::compute())
+      return(
+        get_age %>%
+          dplyr::filter(.data$age >= .env$x[1]) %>%
+          dplyr::filter(.data$age <= .env$x[2]) %>%
+          ##dplyr::mutate(aggregation = "Age groups") %>%
+          dplyr::mutate(age_group = groupName) %>%
+          dplyr::select("subject_id", "age_group") %>%
+          dplyr::compute()
+      )
     })
+
     aggregationTable <- aggregationTable %>%
-      dplyr::union(dplyr::bind_rows(aggregationTableAge)) %>%
+      dplyr::left_join(aggregationTableAge %>% purrr::reduce(union)) %>%
       dplyr::compute()
   }
 
-  if (indexYearAggregation == TRUE){
+  if (indexYearAggregation == TRUE) {
     aggregationTable <- aggregationTable %>%
-      dplyr::union(
+      dplyr::left_join(
         cdm[[personSummaryName]] %>%
-          dplyr::mutate(aggregation = "Index year") %>%
-          dplyr::mutate(value = as.character(lubridate::year(
-            .data$cohort_start_date))) %>%
-          dplyr::select("subject_id", "aggregation", "value")
-      ) %>%
-      dplyr::compute()
+          ## dplyr::mutate(aggregation = "Index year") %>%
+          dplyr::mutate(index_year = as.character(
+            base::format(.data$cohort_start_date, format = "%Y")
+          )) %>%
+          dplyr::select("subject_id", "index_year")
+      )
   }
 
-  if (indexYearMonthAggregation == TRUE){
+  if (indexYearMonthAggregation == TRUE) {
     aggregationTable <- aggregationTable %>%
-      dplyr::union(
+      dplyr::left_join(
         cdm[[personSummaryName]] %>%
-          dplyr::mutate(aggregation = "Index month-year") %>%
-          dplyr::mutate(value = as.character(paste0(
-            lubridate::month(.data$cohort_start_date),
-            "_",
-            lubridate::year(.data$cohort_start_date)))) %>%
-          dplyr::select("subject_id", "aggregation", "value")
-      ) %>%
-      dplyr::compute()
+          ## dplyr::mutate(aggregation = "Index month-year") %>%
+          dplyr::mutate(index_month_year = as.character(
+            paste0(
+              base::format(.data$cohort_start_date, format = "%m"),
+              "_",
+              base::format(.data$cohort_start_date, format = "%Y")
+            )
+          )) %>%
+          dplyr::select("subject_id", "index_month_year")
+      )
   }
 
-  if (initialDoseAggregation == TRUE){
+  if (initialDoseAggregation == TRUE) {
     aggregationTable <- aggregationTable %>%
-      dplyr::union(
+      dplyr::left_join(
         cdm[[personSummaryName]] %>%
-          dplyr::mutate(aggregation = "Initial dose") %>%
-          dplyr::mutate(value = as.character(.data$initial_dose)) %>%
-          dplyr::select("subject_id", "aggregation", "value")
-      ) %>%
-      dplyr::compute()
+          ##dplyr::mutate(aggregation = "Initial dose") %>%
+          dplyr::mutate(initial_dose = as.character(round(
+            .data$initial_dose
+          ))) %>%
+          dplyr::select("subject_id", "initial_dose")
+      )
   }
 
-  if (meanDoseAggregation == TRUE){
+  if (meanDoseAggregation == TRUE) {
     aggregationTable <- aggregationTable %>%
-      dplyr::union(
+      dplyr::left_join(
         cdm[[personSummaryName]] %>%
-          dplyr::mutate(aggregation = "Mean dose") %>%
-          dplyr::mutate(value = as.character(round(
-            .data$cumulative_dose/.data$exposed_days))) %>%
-          dplyr::select("subject_id", "aggregation", "value")
-      ) %>%
-      dplyr::compute()
+          ##  dplyr::mutate(aggregation = "Mean dose") %>%
+          dplyr::mutate(mean_dose = as.character(
+            round(.data$cumulative_dose / .data$exposed_days)
+          )) %>%
+          dplyr::select("subject_id", "mean_dose")
+      )
   }
 
-  if (indicationAggregation == TRUE){
-    aggregationTable <- aggregationTable %>%
-      dplyr::union(
-        cdm[[indicationTableName]] %>%
-          dplyr::mutate(aggregation = "Indication") %>%
-          dplyr::rename("value" = "indication_name") %>%
-          dplyr::select("subject_id", "aggregation", "value")
-      ) %>%
-      dplyr::compute()
-  }
+  # if (indicationAggregation == TRUE){
+  #   aggregationTable <- aggregationTable %>%
+  #     dplyr::union(
+  #       cdm[[indicationTableName]] %>%
+  #         dplyr::mutate(aggregation = "Indication") %>%
+  #         dplyr::rename("value" = "indication_name") %>%
+  #         dplyr::select("subject_id", "aggregation", "value")
+  #     ) %>%
+  #     dplyr::compute()
+
   #filter minimum counts
-  cdm[[aggregationTableName]] <- aggregationTable
+  cdm[[aggregationTableName]] <- aggregationTable %>%
+    dplyr::compute()
 
   return(cdm)
 }
