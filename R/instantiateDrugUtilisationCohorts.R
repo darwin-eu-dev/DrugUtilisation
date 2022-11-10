@@ -878,6 +878,14 @@ continuousExposures <- function(x,
         .data$gap * .data$days_exposed * daily_dose,
         na.rm = TRUE
       ),
+      all_dose = sum(
+        .data$days_exposed * daily_dose,
+        na.rm = TRUE
+      ),
+      all_exposed_days = sum(
+        .data$days_exposed,
+        na.rm = TRUE
+      ),
       .groups = "drop"
     ) %>%
     dplyr::mutate(
@@ -976,6 +984,7 @@ continuousExposures <- function(x,
       dplyr::group_by(.data$person_id, .data$subexposure_id)
     # if the overlapMode is first (earliest exposure prevails)
     if (overlapMode == "first") {
+      # tempOrigin <- multipleExposures
       multipleExposures <- multipleExposures %>%
         dplyr::filter(
           .data$drug_exposure_start_date == min(
@@ -983,8 +992,16 @@ continuousExposures <- function(x,
             na.rm = TRUE
           )
         )
+      # discardExposure <- tempOrigin %>%
+      #   dplyr::filter(
+      #     .data$drug_exposure_start_date != min(
+      #       .data$drug_exposure_start_date,
+      #       na.rm = TRUE
+      #     )
+      #   )
       # if the overlapMode is second (latest exposure prevails)
     } else if (overlapMode == "second") {
+      # tempOrigin <- multipleExposures
       multipleExposures <- multipleExposures %>%
         dplyr::filter(
           .data$drug_exposure_start_date == max(
@@ -992,14 +1009,25 @@ continuousExposures <- function(x,
             na.rm = TRUE
           )
         )
+      # discardExposure <- tempOrigin %>%
+      #   dplyr::filter(
+      #     .data$drug_exposure_start_date != max(
+      #       .data$drug_exposure_start_date,
+      #       na.rm = TRUE
+      #     )
+      #   )
       # if the overlapMode is max (exposure with more daily dose prevails)
     } else if (overlapMode == "max") {
+      # tempOrigin <- multipleExposures
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
         dplyr::filter(
           .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
         ) %>%
         dplyr::distinct()
+      # discardExposure <- tempOrigin %>% dplyr::anti_join(
+      #   multipleExposures,
+      #   by = c("person_id", "subexposure_id"))
       # if the overlapMode is sum (all exposure are considered)
     } else if (overlapMode == "sum") {
       multipleExposures <- multipleExposures %>%
@@ -1008,12 +1036,16 @@ continuousExposures <- function(x,
         dplyr::distinct()
       # if the overlapMode is min (exposure with less daily dose prevails)
     } else if (overlapMode == "min") {
+      # tempOrigin <- multipleExposures
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
         dplyr::filter(
           .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
         ) %>%
         dplyr::distinct()
+      # discardExposure <- tempOrigin %>% dplyr::anti_join(
+      #   multipleExposures,
+      #   by = c("person_id", "subexposure_id"))
     }
     multipleExposures <- multipleExposures %>%
       dplyr::ungroup() %>%
@@ -1032,6 +1064,9 @@ continuousExposures <- function(x,
     }
   }
   # obtain first, cumulative and era time
+
+
+
   personSummary <- uniqueExposures %>%
     dplyr::group_by(.data$person_id) %>%
     dplyr::summarise(
@@ -1057,7 +1092,27 @@ continuousExposures <- function(x,
     dplyr::left_join(exposureCounts,
                      by = c("person_id")
     ) %>%
+    dplyr::mutate(not_considered_dose = all_dose - cumulative_dose + cumulative_gap_dose,
+                  not_considered_exposed_days = all_exposed_days - exposed_days + number_days_gap,
+                  prop_cum_gap_dose = cumulative_gap_dose / cumulative_dose,
+                  prop_not_considered_exp_days = not_considered_exposed_days / all_exposed_days) %>%
     dplyr::compute()
+
+#
+#   if(!is.null(discardExposure)){
+#     overlapPersonSummary <- discardExposure %>%
+#       dplyr::group_by(.data$person_id) %>%
+#       dplyr::summarise(
+#         not_considered_exposed_days = sum(.data$days_exposed, na.rm = TRUE),
+#         not_considered_dose = sum(.data$daily_dose * .data$days_exposed, na.rm = TRUE),
+#         .groups = "drop"
+#       ) %>%dplyr::compute()
+#
+#     personSummary <- personSummary %>%
+#       dplyr::left_join(overlapPersonSummary,
+#                        by = c("person_id"))
+#
+#     }
 
 
   return(personSummary)
