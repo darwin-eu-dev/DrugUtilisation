@@ -19,11 +19,14 @@
 #'
 #' @param cdm cdm
 #' @param specifications specifications
+#' @param cohortEntryPriorHistory minimum prior history/observation time
+#' @param studyStartDate cohort level criteria, cohort start date in result: larger than StudyStartDate
+#' @param studyEndDate cohort level criteria, cohort start date in result: smaller than StudyStartDate
 #' @param studyTime studyTime
 #' @param gapEra gapEra
-#' @param eraJoinMode eraJoinMode
-#' @param overlapMode overlapMode
-#' @param sameIndexMode sameIndexMode
+#' @param eraJoinMode ways to join drug exposures with gap to drug era
+#' @param overlapMode ways to deal with overlapping exposures
+#' @param sameIndexMode ways to join exposures when having same start dates
 #' @param drugUtilisationCohortName drugUtilisationCohortName
 #' @param imputeDuration imputeDuration
 #' @param imputeDailyDose imputeDailyDose
@@ -52,6 +55,9 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               durationUpperBound = NULL,
                                               dailyDoseLowerBound = NULL,
                                               dailyDoseUpperBound = NULL,
+                                              cohortEntryPriorHistory = NULL,
+                                              studyStartDate = NULL,
+                                              studyEndDate = NULL,
                                               verbose = FALSE) {
   error_message <- checkmate::makeAssertCollection()
   #check cdm
@@ -64,6 +70,22 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "- cdm must be a CDMConnector CDM reference object"
     )
   }
+
+  #check cohortEntryPriorHistory is an integer
+  checkmate::assert_int(cohortEntryPriorHistory,
+                        add = error_message,
+                        null.ok = TRUE)
+
+  #check studyStartDate is an integer
+  checkmate::assert_date(studyStartDate,
+                         add = messageStore,
+                         null.ok = TRUE)
+
+  #check studyEndDate is an integer
+  checkmate::assert_date(studyEndDate,
+                         add = messageStore,
+                         null.ok = TRUE)
+
   #check ingredient concept id is an integer
   checkmate::assert_int(ingredientConceptId,
                         add = error_message,
@@ -71,8 +93,13 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
   #check studyTime is an integer
   checkmate::assert_int(studyTime,
-                         add = error_message,
-                         null.ok = TRUE)
+                        add = error_message,
+                        null.ok = TRUE)
+
+  #check ingredient concept id is an integer
+  checkmate::assert_int(ingredientConceptId,
+                        add = error_message,
+                        null.ok = TRUE)
 
   #check gapEra is an integer
   checkmate::assert_int(gapEra,
@@ -117,7 +144,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   #if request to impute days supply, must provide default duration
   if(imputeDuration == TRUE){
     default_duration_exists <- any(grepl("default_duration",
-                                     colnames(specifications),ignore.case=TRUE))
+                                         colnames(specifications),ignore.case=TRUE))
     checkmate::assertTRUE(default_duration_exists, add = error_message)
     if (!isTRUE(default_duration_exists)) {
       error_message$push(
@@ -145,7 +172,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "- table `drug exposure` is not found"
     )
   }
-  
+
   #check drug strength table exist
   cdm_drug_str_exists <- inherits(cdm$drug_strength, "tbl_dbi")
   checkmate::assertTRUE(cdm_drug_str_exists, add = error_message)
@@ -160,7 +187,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   if(!isTRUE(eraJoinModeCheck)){
     error_message$push(
       glue::glue("- eraJoinMode must be one of `zero`, `join`, `first`, `second`"
-    ))
+      ))
   }
 
   #check overlapMode is correctly specified
@@ -197,6 +224,12 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   if (isTRUE(is.na(studyTime))) {
     studyTime <- NULL
   }
+  if (isTRUE(is.na(studyStartDate))) {
+    studyStartDate <- NULL
+  }
+  if (isTRUE(is.na(studyEndDate))) {
+    studyEndDate <- NULL
+  }
   drugUtilisationCohort <- cdm[["drug_exposure"]] %>%
     dplyr::select(
       "person_id", "drug_concept_id", "drug_exposure_start_date",
@@ -231,6 +264,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       ) %>%
       dplyr::compute()
   }
+
 
   drugUtilisationCohort <- drugUtilisationCohort %>%
     dplyr::mutate(days_exposed = dbplyr::sql(sqlDiffDays(
@@ -361,6 +395,35 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     dialect = dialect,
     verbose = verbose
   )
+
+
+  if (!is.null(studyStartDate)) {
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::filter(
+        .data$cohort_start_date >= studyStartDate
+      ) %>%
+      dplyr::compute()
+  }
+
+  if (!is.null(studyEndDate)) {
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::filter(
+        .data$cohort_start_date <= studyEndDate
+      ) %>%
+      dplyr::compute()
+  }
+
+
+
+  if (!is.null(cohortEntryPriorHistory)) {
+    cdm[["temp"]] <- drugUtilisationCohort
+    priorDaysCohort <- CohortProfiles::getPriorHistoryCohortEntry(cdm,"temp")
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      left_join(priorDaysCohort %>% mutate(person_id = subject_id), by = "person_id") %>%
+      dplyr::filter(number_of_days >= cohortEntryPriorHistory) %>% dplyr::compute()
+  }
+
+  return(drugUtilisationCohort)
 }
 
 #' Impute or eliminate values under a certain conditions
@@ -815,6 +878,14 @@ continuousExposures <- function(x,
         .data$gap * .data$days_exposed * daily_dose,
         na.rm = TRUE
       ),
+      all_dose = sum(
+        .data$days_exposed * daily_dose,
+        na.rm = TRUE
+      ),
+      all_exposed_days = sum(
+        .data$days_exposed,
+        na.rm = TRUE
+      ),
       .groups = "drop"
     ) %>%
     dplyr::mutate(
@@ -913,6 +984,7 @@ continuousExposures <- function(x,
       dplyr::group_by(.data$person_id, .data$subexposure_id)
     # if the overlapMode is first (earliest exposure prevails)
     if (overlapMode == "first") {
+      # tempOrigin <- multipleExposures
       multipleExposures <- multipleExposures %>%
         dplyr::filter(
           .data$drug_exposure_start_date == min(
@@ -920,8 +992,16 @@ continuousExposures <- function(x,
             na.rm = TRUE
           )
         )
+      # discardExposure <- tempOrigin %>%
+      #   dplyr::filter(
+      #     .data$drug_exposure_start_date != min(
+      #       .data$drug_exposure_start_date,
+      #       na.rm = TRUE
+      #     )
+      #   )
       # if the overlapMode is second (latest exposure prevails)
     } else if (overlapMode == "second") {
+      # tempOrigin <- multipleExposures
       multipleExposures <- multipleExposures %>%
         dplyr::filter(
           .data$drug_exposure_start_date == max(
@@ -929,14 +1009,25 @@ continuousExposures <- function(x,
             na.rm = TRUE
           )
         )
+      # discardExposure <- tempOrigin %>%
+      #   dplyr::filter(
+      #     .data$drug_exposure_start_date != max(
+      #       .data$drug_exposure_start_date,
+      #       na.rm = TRUE
+      #     )
+      #   )
       # if the overlapMode is max (exposure with more daily dose prevails)
     } else if (overlapMode == "max") {
+      # tempOrigin <- multipleExposures
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
         dplyr::filter(
           .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
         ) %>%
         dplyr::distinct()
+      # discardExposure <- tempOrigin %>% dplyr::anti_join(
+      #   multipleExposures,
+      #   by = c("person_id", "subexposure_id"))
       # if the overlapMode is sum (all exposure are considered)
     } else if (overlapMode == "sum") {
       multipleExposures <- multipleExposures %>%
@@ -945,12 +1036,16 @@ continuousExposures <- function(x,
         dplyr::distinct()
       # if the overlapMode is min (exposure with less daily dose prevails)
     } else if (overlapMode == "min") {
+      # tempOrigin <- multipleExposures
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
         dplyr::filter(
           .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
         ) %>%
         dplyr::distinct()
+      # discardExposure <- tempOrigin %>% dplyr::anti_join(
+      #   multipleExposures,
+      #   by = c("person_id", "subexposure_id"))
     }
     multipleExposures <- multipleExposures %>%
       dplyr::ungroup() %>%
@@ -969,6 +1064,9 @@ continuousExposures <- function(x,
     }
   }
   # obtain first, cumulative and era time
+
+
+
   personSummary <- uniqueExposures %>%
     dplyr::group_by(.data$person_id) %>%
     dplyr::summarise(
@@ -994,7 +1092,28 @@ continuousExposures <- function(x,
     dplyr::left_join(exposureCounts,
                      by = c("person_id")
     ) %>%
+    dplyr::mutate(not_considered_dose = all_dose - cumulative_dose + cumulative_gap_dose,
+                  not_considered_exposed_days = all_exposed_days - exposed_days + number_days_gap,
+                  prop_cum_gap_dose = cumulative_gap_dose / cumulative_dose,
+                  prop_not_considered_exp_days = not_considered_exposed_days / all_exposed_days) %>%
     dplyr::compute()
+
+#
+#   if(!is.null(discardExposure)){
+#     overlapPersonSummary <- discardExposure %>%
+#       dplyr::group_by(.data$person_id) %>%
+#       dplyr::summarise(
+#         not_considered_exposed_days = sum(.data$days_exposed, na.rm = TRUE),
+#         not_considered_dose = sum(.data$daily_dose * .data$days_exposed, na.rm = TRUE),
+#         .groups = "drop"
+#       ) %>%dplyr::compute()
+#
+#     personSummary <- personSummary %>%
+#       dplyr::left_join(overlapPersonSummary,
+#                        by = c("person_id"))
+#
+#     }
+
 
   return(personSummary)
 }
