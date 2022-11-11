@@ -12,28 +12,29 @@ largeScaleCharacterization(
   tablesToCharacterize,
   characterizationTableName = "characterization",
   permanentCharacterizationTable = FALSE,
-  verbose
+  verbose = FALSE
 )
 }
 \arguments{
-\item{cdm}{Connection to a database using DBI::dbConnect()}
+\item{cdm}{cdm connection created with CDMConnector package}
 
 \item{targetCohortName}{Name of the table in the cdm that contains the
 target cohort}
 
-\item{targetCohortId}{Indentifier for the analyzed target
-cohorts}
+\item{targetCohortId}{Cohort definition id for the analyzed target cohorts}
 
 \item{temporalWindows}{Temporal windows that we want to characterize}
 
 \item{tablesToCharacterize}{Name of the tables in the cdm that we want to
 summarize}
 
-\item{characterizationTableName}{characterizationTableName}
+\item{characterizationTableName}{Name of the table that contains the large
+scale characterization}
 
-\item{permanentCharacterizationTable}{permanentCharacterizationTable}
+\item{permanentCharacterizationTable}{if we want the table to be instantiated
+as a permanent table or not}
 
-\item{verbose}{verbose}
+\item{verbose}{Explain the steps of the program}
 }
 \description{
 Explain function

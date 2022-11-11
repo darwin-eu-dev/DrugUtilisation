@@ -20,6 +20,7 @@
 #' @param cdm cdm
 #' @param specifications specifications
 #' @param cohortEntryPriorHistory minimum prior history/observation time
+#' @param ingredientConceptId Ingredient OMOP concept that we are interested in the study
 #' @param studyStartDate cohort level criteria, cohort start date in result: larger than StudyStartDate
 #' @param studyEndDate cohort level criteria, cohort start date in result: smaller than StudyStartDate
 #' @param studyTime studyTime
@@ -41,7 +42,7 @@
 #'
 #' @examples
 instantiateDrugUtilisationCohorts <- function(cdm,
-                                              specifications,
+                                              specifications = NULL,
                                               ingredientConceptId,
                                               studyTime = 365,
                                               gapEra = 30,
@@ -59,6 +60,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               studyStartDate = NULL,
                                               studyEndDate = NULL,
                                               verbose = FALSE) {
+
   error_message <- checkmate::makeAssertCollection()
   #check cdm
   cdm_inherits_check <- inherits(cdm, "cdm_reference")
@@ -69,6 +71,13 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     error_message$push(
       "- cdm must be a CDMConnector CDM reference object"
     )
+  } else {
+    if (is.null(specifications)){
+      specifications <- cdm$drug_strength %>%
+        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
+        dplyr::select("drug_concept_id") %>%
+        dplyr::collect()
+    }
   }
 
   #check cohortEntryPriorHistory is an integer
@@ -348,22 +357,11 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     allowZero = TRUE
   )
 
-  # compute cumulative dose per person
-  cumulativeDoseNoRestrictions <- drugUtilisationCohort %>%
-    dplyr::group_by(.data$person_id) %>%
-    dplyr::summarise(
-      cumulative_dose_no_restrictions = sum(
-        .data$daily_dose * .data$days_exposed,
-        na.rm = TRUE
-      )
-    ) %>%
-    dplyr::compute()
-
   # get only the variables that we are interested in
   drugUtilisationCohort <- drugUtilisationCohort %>%
     dplyr::select(
       "person_id", "drug_exposure_id", "drug_exposure_start_date",
-      "drug_exposure_end_date", "daily_dose", "days_exposed"
+      "drug_exposure_end_date", "daily_dose"
     ) %>%
     dplyr::compute()
 
@@ -412,8 +410,6 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       ) %>%
       dplyr::compute()
   }
-
-
 
   if (!is.null(cohortEntryPriorHistory)) {
     cdm[["temp"]] <- drugUtilisationCohort
@@ -564,6 +560,11 @@ getPeriods <- function(x, dialect, verbose) {
       x_end,
       by = c("person_id", "subexposure_id")
     ) %>%
+    dplyr::mutate(days_exposed = dbplyr::sql(sqlDiffDays(
+      CDMConnector::dbms(attr(cdm, "dbcon")),
+      "start_interval",
+      "end_interval"
+    )) + 1) %>%
     dplyr::compute()
   # we join the exposures with the overlapping periods and we only consider the
   # exposures that contribute to each overlapping period
@@ -788,6 +789,9 @@ joinExposures <- function(x,
         ) %>%
         dplyr::union_all(daily_dose_multiple) %>%
         dplyr::compute()
+    } else {
+      daily_dose <- daily_dose %>%
+        dplyr::select(-"number_in_group")
     }
     gap_period <- gap_period %>%
       dplyr::inner_join(
@@ -800,10 +804,6 @@ joinExposures <- function(x,
   x <- x %>%
     dplyr::union_all(gap_period) %>%
     dplyr::mutate(gap = dplyr::if_else(is.na(.data$gap), 0, 1)) %>%
-    dplyr::mutate(days_exposed =  dbplyr::sql(sqlDiffDays(
-      dialect,
-      "start_interval",
-      "end_interval")) + 1) %>%
     dplyr::compute()
   era_id <- x %>%
     dplyr::select("person_id", "subexposure_id") %>%
@@ -1092,10 +1092,10 @@ continuousExposures <- function(x,
     dplyr::left_join(exposureCounts,
                      by = c("person_id")
     ) %>%
-    dplyr::mutate(not_considered_dose = all_dose - cumulative_dose + cumulative_gap_dose,
-                  not_considered_exposed_days = all_exposed_days - exposed_days + number_days_gap,
-                  prop_cum_gap_dose = cumulative_gap_dose / cumulative_dose,
-                  prop_not_considered_exp_days = not_considered_exposed_days / all_exposed_days) %>%
+    dplyr::mutate(not_considered_dose = .data$all_dose - .data$cumulative_dose,
+                  not_considered_exposed_days = .data$all_exposed_days - .data$exposed_days,
+                  prop_cum_gap_dose = .data$cumulative_gap_dose / .data$cumulative_dose,
+                  prop_not_considered_exp_days = .data$not_considered_exposed_days / .data$all_exposed_days) %>%
     dplyr::compute()
 
 #

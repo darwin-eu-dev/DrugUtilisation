@@ -51,7 +51,7 @@ computeAggregation <- function(cdm,
 ) {
   #basic checks
   errorMessage <- checkmate::makeAssertCollection()
-  checkmate::checkDbType(cdm, type = "cdm_reference", errorMessage)
+  #checkmate::checkDbType(cdm, type = "cdm_reference", errorMessage)
   checkmate::checkLogical(genderAggregation, errorMessage, null.ok = FALSE)
   checkmate::checkLogical(ageGroupsAgregation, errorMessage, null.ok = FALSE)
   checkmate::checkLogical(indexYearAggregation, errorMessage, null.ok = FALSE)
