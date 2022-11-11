@@ -15,7 +15,7 @@ Config/testthat/edition: 3
 Imports: 
     CDMConnector,
     checkmate,
-    CohortProfiles,
+    SqlRender,
     DBI,
     dbplyr,
     dplyr,
@@ -23,7 +23,8 @@ Imports:
     glue,
     lubridate,
     purrr,
-    SqlRender,
-    SqlUtilities,
     tidyr,
     tidyselect
+Remotes:
+    darwin-eu/CohortProfiles,
+    darwin-eu/SqlUtilities
