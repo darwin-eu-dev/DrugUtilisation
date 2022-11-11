@@ -53,7 +53,7 @@ largeScaleCharacterization <- function(cdm,
   checkmate::assertCharacter(targetCohortName, len = 1, add = errorMessage)
   if (length(targetCohortName) == 1 & is.character(targetCohortName)) {
     targetCohortExist <- targetCohortName %in% names(cdm)
-    if (isTRUE(targetCohortExist)) {
+    if (!isTRUE(targetCohortExist)) {
       errorMessage$push("- targetCohortName is not in the cdm reference")
     }
     if (isTRUE(targetCohortExist)) {
@@ -63,7 +63,7 @@ largeScaleCharacterization <- function(cdm,
         add = errorMessage
       )
       checkmate::assertTRUE(
-        all_of(c(
+        all(c(
           "cohort_definition_id", "subject_id", "cohort_start_date",
           "cohort_end_date"
         ) %in% names(cdm[[targetCohortName]])),
@@ -79,7 +79,7 @@ largeScaleCharacterization <- function(cdm,
   # check temporalWindows
   checkmate::assertList(temporalWindows, min.len = 1, add = errorMessage)
   checkmate::assertTRUE(
-    all_of(unlist(lapply(temporalWindows, length)) == 2),
+    all(unlist(lapply(temporalWindows, length)) == 2),
     add = errorMessage
   )
   # check tablesToCharacterize
@@ -87,7 +87,7 @@ largeScaleCharacterization <- function(cdm,
     tablesToCharacterize, min.len = 1, add = errorMessage
     )
   checkmate::assertTRUE(
-    all_of(tablesToCharacterize %in% names(cdm)), add = errorMessage
+    all(tablesToCharacterize %in% names(cdm)), add = errorMessage
     )
   # check characterizationTableName
   checkmate::assertCharacter(
@@ -114,7 +114,7 @@ largeScaleCharacterization <- function(cdm,
   }) %>%
     dplyr::bind_rows() %>%
     dplyr::mutate(windowId = dplyr::row_number()) %>%
-    dplyr::select("window_id", "window_name", "window_start", "window_end")
+    dplyr::select("windowId", "windowName", "windowStart", "windowEnd")
 
   if (!is.null(targetCohortId)) {
     target_cohort <- cdm[[targetCohortName]] %>%
@@ -182,7 +182,8 @@ largeScaleCharacterization <- function(cdm,
     concept_id <- get_concept[[table_name]]
 
     study_table <- cdm[[table_name]] %>%
-      dplyr::inner_join(target_cohort,
+      dplyr::inner_join(target_cohort %>%
+                          mutate(person_id = subject_id),
                         by = "person_id"
       ) %>%
       dplyr::rename("start_date" = .env$start_date)
@@ -202,10 +203,10 @@ largeScaleCharacterization <- function(cdm,
       dplyr::compute()
 
     temporalWindows <- tidyr::expand_grid(
-      window_id,
-      temporalWindows$window_id
+      study_table$table_id,
+      temporalWindows$windowId
     ) %>%
-      dplyr::left_join(temporalWindows, by = "window_id")
+      dplyr::left_join(temporalWindows, by = "windowId")
 
     study_table <- study_table %>%
       dplyr::left_join(temporalWindows,
