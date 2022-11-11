@@ -15,11 +15,10 @@ knitr::opts_chunk$set(
 
 # DrugUtilisation
 
-<!-- badges: start 
-[![codecov.io](https://codecov.io/github/darwin-eu/IncidencePrevalence/coverage.svg?branch=main)](https://codecov.io/github/darwin-eu/IncidencePrevalence?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu/IncidencePrevalence/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/IncidencePrevalence/actions)
-[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://www.tidyverse.org/lifecycle/#experimental)
-badges: end -->
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/darwin-eu/DrugUtilisation/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/darwin-eu/DrugUtilisation/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/darwin-eu/DrugUtilisation/branch/main/graph/badge.svg)](https://app.codecov.io/gh/darwin-eu/DrugUtilisation?branch=main)
+<!-- badges: end -->
 
 ## Package overview
 

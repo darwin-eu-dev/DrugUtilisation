@@ -4,7 +4,12 @@
 \alias{computeDailyDose}
 \title{Explain function}
 \usage{
-computeDailyDose(table, cdm = cdm, verbose = FALSE)
+computeDailyDose(
+  table,
+  cdm = cdm,
+  ingredient_concept_id = ingredient_concept_id,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{table}{table}

@@ -2,16 +2,18 @@
 % Please edit documentation in R/instantiateDrugUtilisationCohorts.R
 \name{instantiateDrugUtilisationCohorts}
 \alias{instantiateDrugUtilisationCohorts}
-\title{Explain function}
+\title{It instantiates the cohorts and their supplementary information
+(cohorts_info) for the DUS study}
 \usage{
 instantiateDrugUtilisationCohorts(
   cdm,
-  specifications,
-  studyTime = NULL,
-  gapEra,
-  eraJoinMode,
-  overlapMode,
-  sameIndexMode,
+  specifications = NULL,
+  ingredientConceptId,
+  studyTime = 365,
+  gapEra = 30,
+  eraJoinMode = "first",
+  overlapMode = "first",
+  sameIndexMode = "sum",
   drugUtilisationCohortName,
   imputeDuration = FALSE,
   imputeDailyDose = FALSE,
@@ -19,6 +21,9 @@ instantiateDrugUtilisationCohorts(
   durationUpperBound = NULL,
   dailyDoseLowerBound = NULL,
   dailyDoseUpperBound = NULL,
+  cohortEntryPriorHistory = NULL,
+  studyStartDate = NULL,
+  studyEndDate = NULL,
   verbose = FALSE
 )
 }
@@ -27,15 +32,17 @@ instantiateDrugUtilisationCohorts(
 
 \item{specifications}{specifications}
 
+\item{ingredientConceptId}{Ingredient OMOP concept that we are interested in the study}
+
 \item{studyTime}{studyTime}
 
 \item{gapEra}{gapEra}
 
-\item{eraJoinMode}{eraJoinMode}
+\item{eraJoinMode}{ways to join drug exposures with gap to drug era}
 
-\item{overlapMode}{overlapMode}
+\item{overlapMode}{ways to deal with overlapping exposures}
 
-\item{sameIndexMode}{sameIndexMode}
+\item{sameIndexMode}{ways to join exposures when having same start dates}
 
 \item{drugUtilisationCohortName}{drugUtilisationCohortName}
 
@@ -51,8 +58,15 @@ instantiateDrugUtilisationCohorts(
 
 \item{dailyDoseUpperBound}{dailyDoseUpperBound}
 
+\item{cohortEntryPriorHistory}{minimum prior history/observation time}
+
+\item{studyStartDate}{cohort level criteria, cohort start date in result: larger than StudyStartDate}
+
+\item{studyEndDate}{cohort level criteria, cohort start date in result: smaller than StudyStartDate}
+
 \item{verbose}{verbose}
 }
 \description{
-Explain function
+It instantiates the cohorts and their supplementary information
+(cohorts_info) for the DUS study
 }

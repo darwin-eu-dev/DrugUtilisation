@@ -114,7 +114,7 @@ getIndication <- function(cdm,
         table_indication <- cdm[[table]] %>%
           dplyr::rename("unkown_indication_start_date" = get_start_date[[table]]) %>%
           dplyr::select("person_id", "start_date") %>%
-          dplyr::distinc()
+          dplyr::distinct()
         if (indicationGap == 0) {
           target_db_unkown <- target_db_unkown %>%
             dplyr::inner_join(

@@ -22,8 +22,8 @@ test_that("mock db: checks on working example", {
   )
 
   expect_true(
-    out_put_1 %>% dplyr::summarise(min(cohort_start_date)) %>% dplyr::pull() == cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>% dplyr::summarise(min(drug_exposure_start_date)) %>% dplyr::pull()
+    out_put_1 %>% dplyr::summarise(min(cohort_start_date, na.rm = TRUE)) %>% dplyr::pull() == cdm$drug_exposure %>%
+      dplyr::filter(drug_concept_id == 1) %>% dplyr::summarise(min(drug_exposure_start_date, na.rm = TRUE)) %>% dplyr::pull()
   )
 
   expect_true(out_put_1 %>% dplyr::filter(subject_id != 1) %>% dplyr::count() %>% dplyr::pull() == 0)
@@ -68,8 +68,6 @@ test_that("mock db: checks on working example", {
     out_put_4 %>% dplyr::summarise(max(cohort_start_date, na.rm = TRUE)) %>% dplyr::pull() != cdm$drug_exposure %>%
       dplyr::filter(drug_concept_id == 1) %>% dplyr::summarise(max(drug_exposure_start_date, na.rm = TRUE)) %>% dplyr::pull()
   )
-
-
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
