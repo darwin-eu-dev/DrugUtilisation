@@ -117,10 +117,10 @@ largeScaleCharacterization <- function(cdm,
     dplyr::select("window_id", "window_name", "window_start", "window_end")
 
   if (!is.null(targetCohortId)) {
-    target_cohort <- cdm[[targetCohort]] %>%
+    target_cohort <- cdm[[targetCohortName]] %>%
       dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId)
   } else {
-    target_cohort <- cdm[[targetCohort]]
+    target_cohort <- cdm[[targetCohortName]]
   }
 
   target_cohort <- target_cohort %>%
