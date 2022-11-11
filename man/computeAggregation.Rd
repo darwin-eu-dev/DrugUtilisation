@@ -7,16 +7,15 @@
 computeAggregation(
   cdm,
   personSummaryName,
-  genderAggregation,
-  ageGroupsAgregation,
-  ageGroups,
-  indexYearAggregation,
-  indexYearMonthAggregation,
-  initialDoseAggregation,
-  meanDoseAggregation,
-  indicationAggregation,
-  indicationTableName,
-  aggregationTableName,
+  genderAggregation = TRUE,
+  ageGroupsAgregation = TRUE,
+  ageGroups = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
+  indexYearAggregation = TRUE,
+  indexYearMonthAggregation = FALSE,
+  initialDoseAggregation = TRUE,
+  meanDoseAggregation = FALSE,
+  cohortid = NULL,
+  aggregationTableName = "drug_utilisation_aggregation_table",
   verbose
 )
 }
@@ -29,7 +28,7 @@ computeAggregation(
 
 \item{ageGroupsAgregation}{ageGroupsAgregation}
 
-\item{ageGroups}{ageGroups}
+\item{ageGroups}{ageGroups the input is a list of user define age group}
 
 \item{indexYearAggregation}{indexYearAggregation}
 
@@ -39,13 +38,13 @@ computeAggregation(
 
 \item{meanDoseAggregation}{meanDoseAggregation}
 
-\item{indicationAggregation}{indicationAggregation}
-
-\item{indicationTableName}{indicationTableName}
-
 \item{aggregationTableName}{aggregationTableName}
 
 \item{verbose}{verbose}
+
+\item{indicationAggregation}{indicationAggregation}
+
+\item{indicationTableName}{indicationTableName}
 }
 \description{
 Explain function

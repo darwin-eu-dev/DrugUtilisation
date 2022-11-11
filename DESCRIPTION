@@ -11,3 +11,18 @@ RoxygenNote: 7.2.1
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Imports: 
+    CDMConnector,
+    checkmate,
+    CohortProfiles,
+    DBI,
+    dbplyr,
+    dplyr,
+    duckdb,
+    glue,
+    lubridate,
+    purrr,
+    SqlRender,
+    SqlUtilities,
+    tidyr,
+    tidyselect

@@ -188,7 +188,7 @@ largeScaleCharacterization <- function(cdm,
       dplyr::rename("start_date" = .env$start_date)
     if (is.null(end_date)) {
       study_table <- study_table %>%
-        dplyre::mutate(end_date = .data$start_date)
+        dplyr::mutate(end_date = .data$start_date)
     } else {
       study_table <- study_table %>%
         dplyr::rename("end_date" = .env$end_date)

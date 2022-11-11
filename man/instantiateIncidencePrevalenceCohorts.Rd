@@ -10,20 +10,23 @@ instantiateIncidencePrevalenceCohorts(
   gapEra,
   incidencePrevalenceCohortName,
   cohortDefinitionId = NULL,
+  append = FALSE,
   overWrite = TRUE,
   verbose
 )
 }
 \arguments{
-\item{cdm}{cdm}
+\item{cdm}{drug_exposure table from cdm}
 
-\item{conceptIds}{conceptIds}
+\item{conceptIds}{conceptIds users want to compute era}
 
-\item{gapEra}{gapEra}
+\item{gapEra}{Maxmium gap for the gap Era}
 
 \item{incidencePrevalenceCohortName}{incidencePrevalenceCohortName}
 
 \item{cohortDefinitionId}{cohortDefinitionId}
+
+\item{append}{append or compute table in cdm}
 
 \item{overWrite}{overWrite}
 
