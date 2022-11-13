@@ -78,6 +78,9 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   checkmate::assertLogical(verbose, len = 1, add = errorMessage)
   checkmate::reportAssertions(collection = errorMessage)
 
+  # check that you can write in the database and schema provided
+
+
   # BLOCK 1 Obtain concept_set_names and cohort_definition_id
   # read the complete file name of the concepts in the specified folder
   conceptSets <- dplyr::tibble(concept_set_path = list.files(
@@ -152,11 +155,11 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::select(-"drug_concept_id") %>%
     dplyr::compute()
 
-  # BLOC 4 obtain the start of the periods where the person may be exposed
-  # A period starts at the start of an exposure
+  # BLOC 4 obtain the start of the intervals where the person may be exposed
+  # An interval starts at the start of an exposure
   incidencePrevalenceStart <- incidencePrevalenceCohort %>%
     dplyr::select("cohort_definition_id", "person_id",
-      "period_start_date" = "drug_exposure_start_date"
+      "interval_start_date" = "drug_exposure_start_date"
     )
   # or at the next day of the end of an exposure
   incidencePrevalenceStart <- incidencePrevalenceStart %>%
@@ -167,7 +170,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
           "drug_exposure_end_date"
         ) %>%
         dplyr::distinct() %>%
-        dplyr::mutate(period_start_date = as.Date(dbplyr::sql(
+        dplyr::mutate(interval_start_date = as.Date(dbplyr::sql(
           SqlUtilities::sql_add_days(
             CDMConnector::dbms(attr(cdm, "dbcon")),
             1,
@@ -179,21 +182,21 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   # we eliminate repeated starts:
   incidencePrevalenceStart <- incidencePrevalenceStart %>%
     dplyr::distinct()
-  # now we have the starts of the periods we eliminate the last start (end of
+  # now we have the starts of the intervals we eliminate the last start (end of
   # the last exposure) for each person in each cohort
   incidencePrevalenceStart <- incidencePrevalenceStart %>%
     dplyr::group_by(.data$cohort_definition_id, .data$person_id) %>%
     dplyr::filter(
-      .data$period_start_date < max(.data$period_start_date, na.rm = TRUE))
-  # we sort and number the starts of the periods
+      .data$interval_start_date < max(.data$interval_start_date, na.rm = TRUE))
+  # we sort and number the starts of the intervals
   incidencePrevalenceStart <- incidencePrevalenceStart %>%
-    dbplyr::window_order(.data$period_start_date) %>%
+    dbplyr::window_order(.data$interval_start_date) %>%
     dplyr::mutate(index = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
     dplyr::compute()
 
-  # BLOC 5 obtain the end of the periods where the person may be exposed
-  # A period ends at the previous day when an exposure starts
+  # BLOC 5 obtain the end of the intervals where the person may be exposed
+  # A interval ends at the previous day when an exposure starts
   incidencePrevalenceEnd <- incidencePrevalenceCohort %>%
     dplyr::select(
       "cohort_definition_id", "person_id",
@@ -212,26 +215,26 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::union(
       incidencePrevalenceCohort %>%
         dplyr::select("cohort_definition_id", "person_id",
-                      "period_end_date" = "drug_exposure_end_date"
+                      "interval_end_date" = "drug_exposure_end_date"
         )
     )
   # we eliminate repeated ends:
   incidencePrevalenceEnd <- incidencePrevalenceEnd %>%
     dplyr::distinct()
-  # now we have the starts of the periods we eliminate the first end
+  # now we have the starts of the intervals we eliminate the first end
   # (previous day of the first exposure) for each person in each cohort
   incidencePrevalenceEnd <- incidencePrevalenceEnd %>%
     dplyr::group_by(.data$cohort_definition_id, .data$person_id) %>%
     dplyr::filter(
-      .data$period_end_date > min(.data$period_end_date, na.rm = TRUE))
-  # we sort and number the ends of the periods
+      .data$interval_end_date > min(.data$interval_end_date, na.rm = TRUE))
+  # we sort and number the ends of the intervals
   incidencePrevalenceEnd <- incidencePrevalenceEnd %>%
-    dbplyr::window_order(.data$period_end_date) %>%
+    dbplyr::window_order(.data$interval_end_date) %>%
     dplyr::mutate(index = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
     dplyr::compute()
 
-  # BLOC 6 obtain the exposed periods
+  # BLOC 6 obtain the exposed intervals
   # Start and end dates are joined with the exposures
   incidencePrevalenceCohort <- incidencePrevalenceStart %>%
     dplyr::inner_join(incidencePrevalenceEnd,
@@ -240,80 +243,52 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::inner_join(incidencePrevalenceCohort,
       by = c("cohort_definition_id", "person_id")
     )
-  # we mark the empty periods as gaps
+  # we mark the empty intervals as gaps
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
     dplyr::group_by(.data$cohort_definition_id, .data$person_id, .data$index) %>%
     dplyr::mutate(gap = dplyr::if_else(sum(
-      .data$drug_exposure_start_date <= .data$period_start_date &
-        .data$drug_exposure_end_date >= .data$period_end_date
+      .data$drug_exposure_start_date <= .data$interval_start_date &
+        .data$drug_exposure_end_date >= .data$interval_end_date
     ) == 0, 1, 0)) %>%
     dplyr::ungroup() %>%
     dplyr::compute()
   # gaps smaller than gapEra are not marked as gaps
-  # I AM HERE!
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
     dplyr::filter(.data$gap == 0) %>%
     dplyr::union_all(
       incidencePrevalenceCohort %>%
         dplyr::filter(.data$gap == 1) %>%
         dplyr::mutate(gap = dplyr::if_else(
-          dbplyr::sql(SqlUtilities::sqlDiffDays())
+          dbplyr::sql(SqlUtilities::sqlDiffDays(
+            CDMConnector::dbms(attr(cdm,"dbcon")),
+            "interval_start_date",
+            "interval_end_date")) + 1 <= .env$gapEra,
+          0,
+          1
         ))
     )
-    dplyr::filter() %>%
-    dplyr::filter() %>%
-    dplyr::select(
-      "cohort_definition_id", "person_id", "cohort_start_date",
-      "cohort_end_date"
-    ) %>%
-    dplyr::group_by(.data$cohort_definition_id, .data$person_id) %>%
-    dbplyr::window_order(.data$cohort_end_date) %>%
-    dplyr::mutate(index = dplyr::row_number()) %>%
-    dplyr::ungroup() %>%
-    dplyr::compute()
-
-  # Now we want to compute the different eras
+  # We group by person_id and cohort_definition_id
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
-    dplyr::left_join(
-      incidencePrevalenceCohort %>%
-        dplyr::mutate(index = .data$index + 1) %>%
-        dplyr::rename("prev_exposure_end" = "cohort_end_date") %>%
-        dplyr::select(
-          "cohort_definition_id", "person_id", "index",
-          "prev_exposure_end"
-        ),
-      by = c("cohort_definition_id", "person_id", "index")
-    ) %>%
-    dplyr::mutate(era_index = dplyr::if_else(
-      is.na(.data$prev_exposure_end),
-      1,
-      dplyr::if_else(
-        dbplyr::sql(SqlUtilities::datediff(
-          "prev_exposure_end", "cohort_start_date"
-        )) - 1 <= .env$gapEra,
-        0,
-        1
-      )
-    )) %>%
-    dplyr::group_by(.data$cohort_definition_id, .data$person_id) %>%
-    dbplyr::window_order(.data$index) %>%
-    dplyr::mutate(era_group = cumsum(.data$era_index)) %>%
-    dplyr::group_by(
-      .data$cohort_definition_id, .data$person_id,
-      .data$era_group
-    ) %>%
+    dplyr::group_by(.data$person_id, .data$cohort_definition_id)
+  # We arrange by interval_start_date and compute the era_id of each exposure
+  incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
+    dbplyr::window_order(.data$interval_start_date) %>%
+    dplyr::mutate(era_id = cumsum(.data$gap))
+  # We summarize each era to obtain cohort_start_date and cohort_end_date
+  incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
+    dplyr::group_by(.data$person_id, .data$cohort_definition_id, .data$era_id) %>%
     dplyr::summarise(
-      cohort_start_date = min(.data$cohort_start_date, na.rm = TRUE),
-      cohort_end_date = max(.data$cohort_end_date, na.rm = TRUE),
+      cohort_start_date = min(.data$interval_start_date, na.rm = TRUE),
+      cohort_end_date = min(.data$interval_end_date, na.rm = TRUE),
       .groups = "drop"
-    ) %>%
-    dplyr::select("cohort_definition_id",
-      "subject_id" = "person_id",
-      "cohort_start_date", "cohort_end_date"
-    ) %>%
+    )
+  # Select the final variables and compute
+  incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
+    dplyr::select("cohort_definition_id", "subject_id" = "person_id",
+                  "cohort_start_date", "cohort_end_date") %>%
     dplyr::compute()
 
-  # instantiate the cohorts
+  # BLOC 7 instantiate the cohorts in the database as permanent tables
   cdm <-
     SqlUtilities::computePermanent(
       incidencePrevalenceCohort,
@@ -322,7 +297,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
       overwrite = overWrite
     )
 
-  # write the equivalence csv
+  # BLOC 8 write the equivalence.csv table in the output folder
   write.csv(
     conceptSets,
     file = here::here(conceptSetFolder, "equivalence.csv"),
