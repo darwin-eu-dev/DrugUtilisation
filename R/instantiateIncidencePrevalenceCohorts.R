@@ -330,7 +330,8 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   # We arrange by interval_start_date and compute the era_id of each exposure
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
     dbplyr::window_order(.data$index) %>%
-    dplyr::mutate(era_id = cumsum(.data$gap))
+    dplyr::mutate(era_id = cumsum(.data$gap)) %>%
+    dplyr::filter(.data$gap == 0)
   # We summarize each era to obtain cohort_start_date and cohort_end_date
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
     dplyr::group_by(
@@ -365,7 +366,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     fileName <- here::here(conceptSetFolder, "equivalence.csv")
   }
   write.csv(
-    conceptSets,
+    conceptList,
     file = fileName,
     row.names = FALSE
   )
