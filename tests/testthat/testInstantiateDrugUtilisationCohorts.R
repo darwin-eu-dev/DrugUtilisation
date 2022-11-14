@@ -25,7 +25,6 @@ test_that("test expect errors",{
   expect_error(instantiateDrugUtilisationCohorts(cdm,
                                                  specifications = spec,
                                                  ingredientConceptId = 1,
-                                                 studyTime = NULL,
                                                  gapEra = 2,
                                                  eraJoinMode = "Previous",
                                                  overlapMode = "Maximum",
@@ -38,7 +37,6 @@ test_that("test expect errors",{
   expect_error(instantiateDrugUtilisationCohorts(cdm,
                                                  specifications = spec,
                                                  ingredientConceptId = 1.3,
-                                                 studyTime = NULL,
                                                  gapEra = 2,
                                                  eraJoinMode = "first",
                                                  overlapMode = "max",
@@ -58,7 +56,6 @@ test_that("simple checks and sums", {
     cdm = cdm,
     specifications = spec,
     ingredientConceptId = 1,
-    studyTime = NULL,
     gapEra = 2000,
     eraJoinMode = "Zero",
     overlapMode = "Maximum",
@@ -88,7 +85,6 @@ test_that("simple checks and sums", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })
-
 
 test_that("all output checks for single era with single gap (less than eraGap)", {
 
@@ -128,7 +124,6 @@ test_that("all output checks for single era with single gap (less than eraGap)",
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
-    studyTime = NULL,
     gapEra = 3,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
@@ -215,11 +210,7 @@ test_that("all output checks for single era with single gap (less than eraGap)",
   expect_true(result$cumulative_gap_dose == sum(testCumulativeDose$gap *
                                                   testCumulativeDose$days_exposed * testCumulativeDose$daily_dose))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-  })
-
-#I AM HERE
-
-
+})
 
 test_that("test impute and lower upper bound", {
 
@@ -257,28 +248,29 @@ test_that("test impute and lower upper bound", {
   spec$default_duration <- 10
   spec$default_daily_dose <- 10
 
-  eraJoinMode = "second"
-  overlapMode = "first"
+  eraJoinMode = "Subsequent"
+  overlapMode = "Previous"
 
   #when there is no exp with same start, changing sameIndexMode should return same result
   result <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1350, #limit end date to 2013-09-11
     gapEra = 3,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
-    sameIndexMode = "max",
+    sameIndexMode = "Maximum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = TRUE,
     imputeDailyDose = TRUE,
-    durationLowerBound = 2,
-    durationUpperBound = 365,
-    dailyDoseLowerBound = 5,
-    dailyDoseUpperBound = 100,
+    durationRange = c(2, 365),
+    dailyDoseRange = c(5, 100),
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  result <- result$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(result$exposed_days == 10)
 
@@ -286,9 +278,6 @@ test_that("test impute and lower upper bound", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
-
-
 
 test_that("test same index", {
 
@@ -324,66 +313,62 @@ test_that("test same index", {
     dplyr::collect()
 
 
-  eraJoinMode = "second"
-  overlapMode = "first"
+  eraJoinMode = "Subsequent"
+  overlapMode = "Previous"
 
   #when there is no exp with same start, changing sameIndexMode should return same result
   resultMax <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
-    sameIndexMode = "max",
+    sameIndexMode = "Maximum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
-    imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultMax <- resultMax$drugUtilisationCohortName_info %>% dplyr::collect()
 
   resultMin <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
-    sameIndexMode = "min",
+    sameIndexMode = "Minimum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultMin <- resultMin$drugUtilisationCohortName_info %>% dplyr::collect()
 
   resultSum <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
-    sameIndexMode = "sum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultSum <- resultSum$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(resultMax$cumulative_dose == 60)
 
@@ -393,13 +378,6 @@ test_that("test same index", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
-
-
-
-
-
-
 
 test_that("test same index for join exp", {
 
@@ -435,66 +413,63 @@ test_that("test same index for join exp", {
     dplyr::collect()
 
 
-  eraJoinMode = "first"
-  overlapMode = "first"
+  eraJoinMode = "Previous"
+  overlapMode = "Previous"
 
   #when there is no exp with same start, changing sameIndexMode should return same result
   resultMax <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
-    sameIndexMode = "max",
+    sameIndexMode = "Maximum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultMax <- resultMax$drugUtilisationCohortName_info %>% dplyr::collect()
 
   resultMin <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
-    sameIndexMode = "min",
+    sameIndexMode = "Minimum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultMin <- resultMin$drugUtilisationCohortName_info %>% dplyr::collect()
 
   resultSum <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
-    sameIndexMode = "sum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultSum <- resultSum$drugUtilisationCohortName_info %>% dplyr::collect()
 
   #
     expect_true(resultMax$cumulative_dose == 20 + 20 / 3 + 20 * 3)
@@ -505,9 +480,6 @@ test_that("test same index for join exp", {
 
     DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
-
-
 
 test_that("test era join mode", {
 
@@ -541,86 +513,81 @@ test_that("test era join mode", {
     dplyr::collect()
 
 
-  sameIndexMode = "max"
-  overlapMode = "first"
+  sameIndexMode = "Maximum"
+  overlapMode = "Previous"
 
   #when there is no exp with same start, changing sameIndexMode should return same result
   resultFirst <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
-    eraJoinMode = "first",
+    eraJoinMode = "Previous",
     overlapMode = overlapMode,
     sameIndexMode = sameIndexMode,
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultFirst <- resultFirst$drugUtilisationCohortName_info %>% dplyr::collect()
 
   resultSecond <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
-    eraJoinMode = "second",
+    eraJoinMode = "Subsequent",
     overlapMode = overlapMode,
     sameIndexMode = sameIndexMode,
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultSecond <- resultSecond$drugUtilisationCohortName_info %>% dplyr::collect()
 
   resultZero <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
-    eraJoinMode = "zero",
+    eraJoinMode = "Zero",
     overlapMode = overlapMode,
     sameIndexMode = sameIndexMode,
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
 
+  resultZero <- resultZero$drugUtilisationCohortName_info %>% dplyr::collect()
 
   resultJoin <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
-    eraJoinMode = "join",
+    eraJoinMode = "Join",
     overlapMode = overlapMode,
     sameIndexMode = sameIndexMode,
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultJoin <- resultJoin$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(resultFirst$cumulative_dose == 1 * 1 /2 * 4 + 2 * 10)
 
@@ -632,14 +599,6 @@ test_that("test era join mode", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
-
-
-
-
-
-
-
 
 test_that("test overlap mode", {
 
@@ -673,48 +632,45 @@ test_that("test overlap mode", {
     dplyr::collect()
 
 
-  sameIndexMode = "max"
-  eraJoinMode = "first"
+  sameIndexMode = "Maximum"
+  eraJoinMode = "Previous"
 
   #when there is no exp with same start, changing sameIndexMode should return same result
   resultSecond <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
-    overlapMode = "second",
+    overlapMode = "Subsequent",
     sameIndexMode = sameIndexMode,
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultSecond <- resultSecond$drugUtilisationCohortName_info %>% dplyr::collect()
 
   resultMin <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
-    overlapMode = "min",
+    overlapMode = "Minimum",
     sameIndexMode = sameIndexMode,
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
 
+  resultMin <- resultMin$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(resultSecond$cumulative_dose == 1 / 2 + 20)
 
@@ -722,11 +678,6 @@ test_that("test overlap mode", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
-
-
-
-
 
 test_that("test StudyStartDate and StudyEndDate", {
 
@@ -765,38 +716,35 @@ test_that("test StudyStartDate and StudyEndDate", {
     dplyr::collect()
 
 
-  sameIndexMode = "max"
-  eraJoinMode = "first"
+  sameIndexMode = "Maximum"
+  eraJoinMode = "Previous"
 
   #when there is no exp with same start, changing sameIndexMode should return same result
   resultStudyStart <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
-    overlapMode = "second",
+    overlapMode = "Subsequent",
     sameIndexMode = sameIndexMode,
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     studyStartDate = as.Date("2010-01-02"),
     studyEndDate = as.Date("2010-01-05"),
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
 
-  expect_true(resultStudyStart$person_id == 2)
+  resultStudyStart <- resultStudyStart$drugUtilisationCohortName_info %>%
+    dplyr::collect()
+
+  expect_true(resultStudyStart$subject_id == 2)
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
-
-
 
 test_that("test multi gap end", {
 
@@ -830,28 +778,28 @@ test_that("test multi gap end", {
     dplyr::collect()
 
 
-  sameIndexMode = "max"
-  eraJoinMode = "second"
+  sameIndexMode = "Maximum"
+  eraJoinMode = "Subsequent"
 
   #when there is no exp with same start, changing sameIndexMode should return same result
   resultMultiGapEnd <- instantiateDrugUtilisationCohorts(
     cdm,
     specifications = spec,
     ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
     studyTime = 1000, #limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
-    overlapMode = "second",
+    overlapMode = "Subsequent",
     sameIndexMode = sameIndexMode,
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
-  ) %>% dplyr::collect()
+  )
+
+  resultMultiGapEnd <- resultMultiGapEnd$drugUtilisationCohortName_info %>%
+    dplyr::collect()
 
   expect_true(resultMultiGapEnd$cumulative_dose == 16 * 2 / 3 + 16 + 1)
 
@@ -867,11 +815,14 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "zero",
-    overlapMode = "sum",
-    sameIndexMode = "sum",
+    eraJoinMode = "Zero",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>%
+    dplyr::collect()
 
   expect_true(all(results$not_considered_dose == 0))
 
@@ -906,11 +857,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "zero",
-    overlapMode = "sum",
-    sameIndexMode = "sum",
+    eraJoinMode = "Zero",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 0)
   expect_true(results$cumulative_dose == 180)
@@ -922,11 +875,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "zero",
-    overlapMode = "sum",
-    sameIndexMode = "min",
+    eraJoinMode = "Zero",
+    overlapMode = "Sum",
+    sameIndexMode = "Minimum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 100)
   expect_true(results$cumulative_dose == 80)
@@ -938,11 +893,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "zero",
-    overlapMode = "sum",
-    sameIndexMode = "max",
+    eraJoinMode = "Zero",
+    overlapMode = "Sum",
+    sameIndexMode = "Maximum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 70)
   expect_true(results$cumulative_dose == 110)
@@ -954,11 +911,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "join",
-    overlapMode = "sum",
-    sameIndexMode = "sum",
+    eraJoinMode = "Join",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 0)
   expect_true(results$cumulative_dose == 180)
@@ -970,11 +929,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "join",
-    overlapMode = "sum",
-    sameIndexMode = "min",
+    eraJoinMode = "Join",
+    overlapMode = "Sum",
+    sameIndexMode = "Minimum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 100)
   expect_true(results$cumulative_dose == 80)
@@ -986,11 +947,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "join",
-    overlapMode = "sum",
-    sameIndexMode = "max",
+    eraJoinMode = "Join",
+    overlapMode = "Sum",
+    sameIndexMode = "Maximum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 70)
   expect_true(results$cumulative_dose == 110)
@@ -1002,11 +965,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "first",
-    overlapMode = "sum",
-    sameIndexMode = "sum",
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 0)
   expect_true(results$cumulative_dose == 200)
@@ -1018,11 +983,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "first",
-    overlapMode = "sum",
-    sameIndexMode = "min",
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Minimum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 100)
   expect_true(results$cumulative_dose == 100)
@@ -1034,11 +1001,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "first",
-    overlapMode = "sum",
-    sameIndexMode = "max",
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Maximum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 70)
   expect_true(results$cumulative_dose == 130)
@@ -1050,11 +1019,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "second",
-    overlapMode = "sum",
-    sameIndexMode = "sum",
+    eraJoinMode = "Subsequent",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 0)
   expect_true(results$cumulative_dose == 360)
@@ -1066,11 +1037,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "second",
-    overlapMode = "sum",
-    sameIndexMode = "min",
+    eraJoinMode = "Subsequent",
+    overlapMode = "Sum",
+    sameIndexMode = "Minimum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 100)
   expect_true(results$cumulative_dose == 120)
@@ -1082,11 +1055,13 @@ test_that("test not considered dose", {
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
-    eraJoinMode = "second",
-    overlapMode = "sum",
-    sameIndexMode = "max",
+    eraJoinMode = "Subsequent",
+    overlapMode = "Sum",
+    sameIndexMode = "Maximum",
     drugUtilisationCohortName = "drugUtilisationCohortName"
-  ) %>% dplyr::collect()
+  )
+
+  results <- results$drugUtilisationCohortName_info %>% dplyr::collect()
 
   expect_true(results$not_considered_dose == 70)
   expect_true(results$cumulative_dose == 190)
@@ -1097,5 +1072,3 @@ test_that("test not considered dose", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
-

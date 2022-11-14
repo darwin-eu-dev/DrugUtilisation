@@ -81,7 +81,7 @@
 #' start on the same day is solved inside a subexposure. There are five possible
 #'  options:
 #' "Previous" the considered daily_dose is the one of the earliest exposure.
-#' "Current" the considered daily_dose is the one of the new exposure that
+#' "Subsequent" the considered daily_dose is the one of the new exposure that
 #' starts in that subexposure.
 #' "Minimum" the considered daily_dose is the minimum of all of the exposures in
 #' the subexposure.
@@ -283,7 +283,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   # check overlapMode
   checkmate::assertChoice(
     overlapMode,
-    choices = c("Previous", "Current", "Minimum", "Maximum", "Sum"),
+    choices = c("Previous", "Subsequent", "Minimum", "Maximum", "Sum"),
     add = errorMessage
   )
 
@@ -486,9 +486,8 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     drugUtilisationCohort <- drugUtilisationCohort %>%
       dplyr::mutate(
         drug_exposure_end_date = .data$drug_exposure_start_date +
-          .data$days_exposed - 1
-      ) %>%
-      dplyr::compute()
+          as.integer(.data$days_exposed - 1)
+      )
   }
 
   # We compute the daily dose using drugExposureDiagnostics function (to be
@@ -509,7 +508,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
         drug_exposure_end_date = dplyr::if_else(
           .data$drug_exposure_end_date > .data$drug_exposure_end_date_max,
           .data$drug_exposure_end_date_max,
-          .data$drug_exposure_end_date,
+          .data$drug_exposure_end_date
         )
       )
   }
@@ -1163,7 +1162,7 @@ continuousExposures <- function(x,
       dplyr::filter(.data$era_id == 1)
   }
   # get the groups variable to know at which level we are grouping
-  if (summarizeMode == "FizedTime") {
+  if (summarizeMode == "FixedTime") {
     groups <- c("person_id")
   } else {
     groups <- c("person_id", "era_id")
@@ -1233,7 +1232,7 @@ continuousExposures <- function(x,
     dplyr::filter(.data$number_exposures_interval == 1) %>%
     dplyr::select(
       "person_id", "subexposure_id", "daily_dose", "days_exposed",
-      "start_interval", "end_interval"
+      "start_interval", "end_interval", "era_id"
     ) %>%
     dplyr::compute()
 
@@ -1242,7 +1241,7 @@ continuousExposures <- function(x,
     dplyr::filter(.data$number_exposures_interval > 1) %>%
     dplyr::select(
       "person_id", "subexposure_id", "daily_dose", "days_exposed",
-      "start_interval", "end_interval", "drug_exposure_start_date"
+      "start_interval", "end_interval", "drug_exposure_start_date", "era_id"
     ) %>%
     dplyr::compute()
 
@@ -1263,7 +1262,9 @@ continuousExposures <- function(x,
     multipleExposures <- multipleExposures %>%
       dplyr::anti_join(
         multipleExposuresSameIndex,
-        by = c("person_id", "subexposure_id", "drug_exposure_start_date")
+        by = c(
+          "person_id", "subexposure_id", "drug_exposure_start_date", "era_id"
+          )
       ) %>%
       dplyr::compute()
 
@@ -1272,7 +1273,8 @@ continuousExposures <- function(x,
     if (sameIndexMode == "Maximum") {
       multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
+          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date,
+          .data$era_id
         ) %>%
         dplyr::filter(daily_dose == max(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
@@ -1282,7 +1284,8 @@ continuousExposures <- function(x,
     } else if (sameIndexMode == "Sum") {
       multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
+          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date,
+          .data$era_id
         ) %>%
         dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
@@ -1292,7 +1295,8 @@ continuousExposures <- function(x,
     } else if (sameIndexMode == "Minimum") {
       multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
+          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date,
+          .data$era_id
         ) %>%
         dplyr::filter(daily_dose == min(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
@@ -1352,7 +1356,7 @@ continuousExposures <- function(x,
       dplyr::ungroup() %>%
       dplyr::select(
         "person_id", "subexposure_id", "daily_dose", "days_exposed",
-        "start_interval", "end_interval"
+        "start_interval", "end_interval", "era_id"
       ) %>%
       dplyr::compute()
 
@@ -1366,7 +1370,7 @@ continuousExposures <- function(x,
   }
 
   personSummary <- uniqueExposures %>%
-    dplyr::group_by(.data$person_id) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(groups))) %>%
     dplyr::summarise(
       cohort_start_date = min(.data$start_interval, na.rm = TRUE),
       cohort_end_date = max(.data$end_interval, na.rm = TRUE),
@@ -1388,7 +1392,7 @@ continuousExposures <- function(x,
     ) %>%
     dplyr::select(-"subexposure_id") %>%
     dplyr::left_join(exposureCounts,
-      by = c("person_id")
+      by = groups
     ) %>%
     dplyr::mutate(
       not_considered_dose = .data$all_dose - .data$cumulative_dose,
