@@ -1,3 +1,21 @@
+specifications = NULL
+studyStartDate = NULL
+studyEndDate = NULL
+summarizeMode = "AllEras"
+cohortEntryPriorHistory = 180
+gapEra = 30
+eraJoinMode = "Previous"
+overlapMode = "Previous"
+sameIndexMode = "Sum"
+imputeDuration = FALSE
+imputeDailyDose = FALSE
+durationRange = NULL
+dailyDoseRange = NULL
+drugUtilisationCohortName = "dus_cohort"
+overwrite = TRUE
+instantiateInfo = FALSE
+verbose = FALSE
+
 test_that("test expect errors",{
   cdm <- mockDrugUtilisation(patient_size = 1000,drug_exposure_size = 2000)
   spec <- cdm$drug_strength %>%
@@ -9,18 +27,12 @@ test_that("test expect errors",{
                                                  ingredientConceptId = 1,
                                                  studyTime = NULL,
                                                  gapEra = 2,
-                                                 eraJoinMode = "first",
-                                                 overlapMode = "max",
-                                                 sameIndexMode = "sum",
+                                                 eraJoinMode = "Previous",
+                                                 overlapMode = "Maximum",
+                                                 sameIndexMode = "Sum",
                                                  drugUtilisationCohortName =
                                                    "drugUtilisationCohortName",
-                                                 imputeDuration = TRUE,
-                                                 imputeDailyDose = TRUE,
-                                                 durationLowerBound = NULL,
-                                                 durationUpperBound = NULL,
-                                                 dailyDoseLowerBound = NULL,
-                                                 dailyDoseUpperBound = NULL,
-                                                 verbose = FALSE))
+                                                 imputeDuration = TRUE))
 
   #throw error when ingredientConceptId is not integer
   expect_error(instantiateDrugUtilisationCohorts(cdm,
@@ -32,14 +44,7 @@ test_that("test expect errors",{
                                                  overlapMode = "max",
                                                  sameIndexMode = "sum",
                                                  drugUtilisationCohortName =
-                                                   "drugUtilisationCohortName",
-                                                 imputeDuration = TRUE,
-                                                 imputeDailyDose = FALSE,
-                                                 durationLowerBound = NULL,
-                                                 durationUpperBound = NULL,
-                                                 dailyDoseLowerBound = NULL,
-                                                 dailyDoseUpperBound = NULL,
-                                                 verbose = FALSE))
+                                                   "drugUtilisationCohortName"))
 
 })
 
@@ -55,20 +60,15 @@ test_that("simple checks and sums", {
     ingredientConceptId = 1,
     studyTime = NULL,
     gapEra = 2000,
-    eraJoinMode = "zero",
-    overlapMode = "max",
-    sameIndexMode = "sum",
+    eraJoinMode = "Zero",
+    overlapMode = "Maximum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
-    imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
-    verbose = FALSE
+    imputeDailyDose = FALSE
   )
 
-  result <- result %>% dplyr::collect()
+  result <- result$drugUtilisationCohortName_info %>% dplyr::collect()
 
   #test not_exposed_days
   expect_true(all(result$exposed_days + result$not_exposed_days == result$study_days))
@@ -130,19 +130,15 @@ test_that("all output checks for single era with single gap (less than eraGap)",
     ingredientConceptId = 1,
     studyTime = NULL,
     gapEra = 3,
-    eraJoinMode = "first",
-    overlapMode = "sum",
-    sameIndexMode = "sum",
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
     drugUtilisationCohortName = "drugUtilisationCohortName",
     imputeDuration = FALSE,
     imputeDailyDose = FALSE,
-    durationLowerBound = NULL,
-    durationUpperBound = NULL,
-    dailyDoseLowerBound = NULL,
-    dailyDoseUpperBound = NULL,
     verbose = FALSE
   )
-  result <- result %>% dplyr::collect()
+  result <- result$drugUtilisationCohortName_info %>% dplyr::collect()
 
   #test exposed days
   expect_true(result$exposed_days == difftime(as.Date("2013-09-05"), as.Date("2010-01-01")) + 1)
@@ -173,8 +169,8 @@ test_that("all output checks for single era with single gap (less than eraGap)",
   testCumulativeDose <- joinExposures(
     x = testPeriod,
     gapEra = 3,
-    eraJoinMode = "first",
-    sameIndexMode = "sum",
+    eraJoinMode = "Previous",
+    sameIndexMode = "Sum",
     dialect =  CDMConnector::dbms(attr(cdm, "dbcon")),
     verbose = verbose
   ) %>% dplyr::collect()
@@ -221,8 +217,7 @@ test_that("all output checks for single era with single gap (less than eraGap)",
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
   })
 
-
-
+#I AM HERE
 
 
 
