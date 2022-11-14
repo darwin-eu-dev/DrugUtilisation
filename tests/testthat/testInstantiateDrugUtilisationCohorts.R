@@ -1,21 +1,3 @@
-specifications = NULL
-studyStartDate = NULL
-studyEndDate = NULL
-summarizeMode = "AllEras"
-cohortEntryPriorHistory = 180
-gapEra = 30
-eraJoinMode = "Previous"
-overlapMode = "Previous"
-sameIndexMode = "Sum"
-imputeDuration = FALSE
-imputeDailyDose = FALSE
-durationRange = NULL
-dailyDoseRange = NULL
-drugUtilisationCohortName = "dus_cohort"
-overwrite = TRUE
-instantiateInfo = FALSE
-verbose = FALSE
-
 test_that("test expect errors",{
   cdm <- mockDrugUtilisation(patient_size = 1000,drug_exposure_size = 2000)
   spec <- cdm$drug_strength %>%
