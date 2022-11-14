@@ -123,6 +123,7 @@ start to be considered. Only incident exposed eras before StudyEndDate
 are allowed. If it is NULL no restriction is applied. By default: NULL.}
 
 \item{verbose}{Whether the code should print the process.
+
 TERMINOLOGY
 \itemize{
 \item exposure: we refer to exposure to a row in the drug_exposure table of the
@@ -142,7 +143,12 @@ parameter value
 continuous exposures and exposed gaps.
 See this picture for a descriptive visualization of the terms previously
 described:
-\figure{exposures_definitions.png}
+\if{html}{
+  \out{<div style="text-align: center">}\figure{exposures_definitions.png}{options: style="width:750px;max-width:75\%;"}\out{</div>}
+}
+\if{latex}{
+  \out{\begin{center}}\figure{myfigure.png}\out{\end{center}}
+}
 }}
 
 \item{summarizeMode}{Choice on how to summarize the exposures. There are
