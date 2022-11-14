@@ -205,6 +205,18 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     "drug_concept_id" %in% colnames(specifications),
     add = errorMessage
   )
+  if (imputeDuration == TRUE){
+    checkmate::assertTRUE(
+      "default_duration" %in% colnames(specifications),
+      add = errorMessage
+    )
+  }
+  if (imputeDailyDose == TRUE){
+    checkmate::assertTRUE(
+      "default_daily_dose" %in% colnames(specifications),
+      add = errorMessage
+    )
+  }
 
   # check cohortEntryPriorHistory is an integer
   checkmate::assert_int(cohortEntryPriorHistory,
