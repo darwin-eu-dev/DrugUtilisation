@@ -28,43 +28,154 @@ instantiateDrugUtilisationCohorts(
 )
 }
 \arguments{
-\item{cdm}{cdm}
+\item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
+must contain at least 'drug_exposure', 'drug_strength', observation_period'
+and concept_ancestor' tables. The 'cdm' object must contain the
+'write_schema' as attribute and  the user should have permission to write on
+it. It is a compulsory input, no default value is provided.}
 
-\item{specifications}{specifications}
+\item{specifications}{Tibble with one to three columns. First column
+(drug_concept_id) contains the OMOP drug concept id of the drugs of interest.
+The first column is compulsory if the argument is provided. Second column
+(default_duration) is only required if 'imputeDuration' = TRUE, then zero,
+negative or outside range ('durationRange') durations are imputed by the
+provided value. Third column (default_daily_dose) is only required if
+'imputeDailyDose' = TRUE, then negative or outside range ('dailyDoseRange)
+daily doses are imputed by the provided value. DrugExposureDiagnostics is a
+package that can be used to generate the specifications file. If it is NULL
+all drug concept ids that contain the provided ingredientConceptId are
+considered, no imputation is allowed in this case. By default: NULL.}
 
-\item{ingredientConceptId}{Ingredient OMOP concept that we are interested in the study}
+\item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
+the study. It is a compulsory input, no default value is provided.}
 
-\item{studyTime}{studyTime}
+\item{studyTime}{Time period after first exposure where we summarize the
+ingredient of interest. Argument only considered if 'summarizeMode' = "Time".
+No default value is provided.}
 
-\item{gapEra}{gapEra}
+\item{gapEra}{Number of days between two continuous exposures to be
+considered in the same era. By default: 180.}
 
-\item{eraJoinMode}{ways to join drug exposures with gap to drug era}
+\item{eraJoinMode}{How two different continuous exposures are joined in an
+era. There are four options:
+"Zero" the exposures are joined considering that the period between both
+continuous exposures the subject is treated with a daily dose of zero. The
+time between both exposures contributes to the total exposed time.
+"Join" the exposures are joined considering that the period between both
+continuous exposures the subject is treated with a daily dose of zero. The
+time between both exposures does not contribute to the total exposed time.
+"Previous" the exposures are joined considering that the period between both
+continuous exposures the subject is treated with the daily dose of the
+previous subexposure. The time between both exposures contributes to the
+total exposed time.
+"Subsequent" the exposures are joined considering that the period between
+both continuous exposures the subject is treated with the daily dose of the
+subsequent subexposure. The time between both exposures contributes to the
+total exposed time.
+By default: "Previous".}
 
-\item{overlapMode}{ways to deal with overlapping exposures}
+\item{overlapMode}{How the overlapping between two exposures that do not
+start on the same day is solved inside a subexposure. There are five possible
+options:
+"Previous" the considered daily_dose is the one of the earliest exposure.
+"Current" the considered daily_dose is the one of the new exposure that
+starts in that subexposure.
+"Minimum" the considered daily_dose is the minimum of all of the exposures in
+the subexposure.
+"Maximum" the considered daily_dose is the maximum of all of the exposures in
+the subexposure.
+"Sum" the considered daily_dose is the sum of all the exposures present in
+the subexposure.
+By default: "Previous".}
 
-\item{sameIndexMode}{ways to join exposures when having same start dates}
+\item{sameIndexMode}{How the overlapping between two exposures that start on
+the same day is solved inside a subexposure. There are five possible options:
+"Minimum" the considered daily_dose is the minimum of all of the exposures in
+the subexposure.
+"Maximum" the considered daily_dose is the maximum of all of the exposures in
+the subexposure.
+"Sum" the considered daily_dose is the sum of all the exposures present in
+the subexposure.
+By default: "Sum".}
 
-\item{drugUtilisationCohortName}{drugUtilisationCohortName}
+\item{drugUtilisationCohortName}{Name of the table that will be instantiated
+in the database in the 'write_schema'. By default: "dus_cohort".}
 
-\item{imputeDuration}{imputeDuration}
+\item{imputeDuration}{Whether the duration should be imputed (imputeDuration
+= TRUE) or the exposure should be dismissed (imputeDuration = FALSE) when the
+duration is negative, zero or outside durationRange. By default: FALSE.}
 
-\item{imputeDailyDose}{imputeDailyDose}
+\item{imputeDailyDose}{Whether the daily_dose should be imputed
+(imputeDailyDose = TRUE) or the exposure should be dismissed
+(imputeDailyDose = FALSE) when the daily_dose is negative or outside
+dailyDoseRange. By default: FALSE.}
 
-\item{durationLowerBound}{durationLowerBound}
+\item{cohortEntryPriorHistory}{Minimum number of days of prior history
+(observation time) required for the incident eras to be considered. By
+default: 180.}
 
-\item{durationUpperBound}{durationUpperBound}
+\item{studyStartDate}{Minimum date where the incident exposed eras should
+start to be considered. Only incident exposed eras larger than StudyStartDate
+are allowed. If it is NULL no restriction is applied. By default: NULL.}
 
-\item{dailyDoseLowerBound}{dailyDoseLowerBound}
+\item{studyEndDate}{Maximum date where the incident exposed eras should
+start to be considered. Only incident exposed eras before StudyEndDate
+are allowed. If it is NULL no restriction is applied. By default: NULL.}
 
-\item{dailyDoseUpperBound}{dailyDoseUpperBound}
+\item{verbose}{Whether the code should print the process.
+TERMINOLOGY
+\itemize{
+\item exposure: we refer to exposure to a row in the drug_exposure table of the
+cdm object.
+\item subexposure: period of time were the number of exposures that a person is
+exposed to does not change.
+\item continuous exposure: period of time where the individual is exposed with no
+interruption. This period can be comprised by multiple subexposures and
+exposure.
+\item exposed gap: period of time that the individual is not exposed (there are
+no exposures in the time period), but its length is smaller or equal than
+gapEra parameter value so the individual is considered to be exposed.
+\item non exposed gap: period of time that the individual is not exposed (there are
+no exposures in the time period) and its length is larger than gapEra
+parameter value
+\item era: period of time the individual is considered exposed. It is formed by
+continuous exposures and exposed gaps.
+See this picture for a descriptive visualization of the terms previously
+described:
+\figure{exposures_definitions.png}
+}}
 
-\item{cohortEntryPriorHistory}{minimum prior history/observation time}
+\item{summarizeMode}{Choice on how to summarize the exposures. There are
+three options:
+"Time" if we choose to summarize by 'Time' each individual is followed the
+exact same number of days specified in 'studyTime' argument.
+"AllEras" we summarize the output will be a summary of the exposed eras of
+each individual. Each individual can contribute multiple times.
+"FirstEra" we only consider the first observable era of each individual. In
+this case each individual can not contribute with multiple rows.
+By default: "AllEras".}
 
-\item{studyStartDate}{cohort level criteria, cohort start date in result: larger than StudyStartDate}
+\item{durationRange}{Range between the duration must be comprised. It should
+be a numeric vector of length two, with no NAs and the first value should be
+equal or smaller than the second one. It is only required if imputeDuration
+= TRUE. If NULL no restrictions are applied. By default: NULL.}
 
-\item{studyEndDate}{cohort level criteria, cohort start date in result: smaller than StudyStartDate}
+\item{dailyDoseRange}{Range between the daily_dose must be comprised. It
+should be a numeric vector of length two, with no NAs and the first value
+should be equal or smaller than the second one. It is only required if
+imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
+NULL.}
 
-\item{verbose}{verbose}
+\item{overwrite}{Whether the cohort overwrites the table if it already
+exists. By defaut: TRUE.}
+
+\item{instantiateInfo}{Whether the dosage summary is instantiated in the
+database or it is maintained as temporal table. The name of this table is the
+one provided in drugUtilisationCohortName adding "_dose_info" at the end, so by
+default its name is going to be "dus_cohort_dose_info". By default: FALSE.}
+}
+\value{
+The function returns the 'cdm' object
 }
 \description{
 It instantiates the cohorts and their supplementary information
