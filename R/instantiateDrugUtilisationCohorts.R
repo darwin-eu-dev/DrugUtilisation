@@ -185,8 +185,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   # check ingredient concept id is a count
   checkmate::assertCount(
     ingredientConceptId,
-    add = errorMessage,
-    null.ok = TRUE
+    add = errorMessage
   )
 
   # try to put specification as tibble
@@ -570,6 +569,10 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     verbose = verbose
   )
 
+  drugUtilisationCohort <- drugUtilisationCohort %>%
+    dplyr::rename("subject_id" = "person_id") %>%
+    dplyr::mutate(cohort_definition_id = 1)
+
 
   if (!is.null(studyStartDate)) {
     drugUtilisationCohort <- drugUtilisationCohort %>%
@@ -587,16 +590,44 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       dplyr::compute()
   }
 
-  if (!is.null(cohortEntryPriorHistory)) {
-    cdm[["temp"]] <- drugUtilisationCohort
-    priorDaysCohort <- CohortProfiles::getPriorHistoryCohortEntry(cdm, "temp")
-    drugUtilisationCohort <- drugUtilisationCohort %>%
-      left_join(priorDaysCohort %>% mutate(person_id = subject_id), by = "person_id") %>%
-      dplyr::filter(number_of_days >= cohortEntryPriorHistory) %>%
-      dplyr::compute()
+  # priorDaysCohort <- CohortProfiles::getPriorHistoryCohortEntry(
+  #   cdm,
+  #   drugUtilisationCohortName
+  # )
+  # drugUtilisationCohort <- drugUtilisationCohort %>%
+  #   dplyr::left_join(
+  #     priorDaysCohort,
+  #     by = c(
+  #       "subject_id", "cohort_definition_id",
+  #       "cohort_start_date", "cohort_end_date"
+  #     )
+  #   ) %>%
+  #   dplyr::filter(.data$number_of_days >= .env$cohortEntryPriorHistory) %>%
+  #   dplyr::compute()
+
+  cdm[[drugUtilisationCohortName]] <- SqlUtilities::computePermanent(
+    drugUtilisationCohort %>%
+      dplyr::select(
+        "cohort_definition_id", "subject_id", "cohort_start_date",
+        "cohort_end_date"
+      ),
+    drugUtilisationCohortName,
+    schema = attr(cdm, "write_schema"),
+    overwrite = overwrite
+  )
+
+  if (instantiateInfo == TRUE) {
+    cdm[[drugUtilisationTableDataName]] <- SqlUtilities::computePermanent(
+      drugUtilisationCohort,
+      drugUtilisationTableDataName,
+      schema = attr(cdm, "write_schema"),
+      overwrite = overwrite
+    )
+  } else {
+    cdm[[drugUtilisationTableDataName]] <- drugUtilisationCohort
   }
 
-  return(drugUtilisationCohort)
+  return(cdm)
 }
 
 #' Impute or eliminate values under a certain conditions
@@ -824,7 +855,6 @@ getPeriods <- function(x, dialect, verbose) {
     dplyr::compute()
 
   return(x_intervals)
-
 }
 
 #' Explain function
@@ -1110,7 +1140,6 @@ joinExposures <- function(x,
     dplyr::compute()
 
   return(x)
-
 }
 
 #' Explain function
@@ -1134,10 +1163,10 @@ continuousExposures <- function(x,
       dplyr::filter(.data$era_id == 1)
   }
   # get the groups variable to know at which level we are grouping
-  if (summarizeMode == "FizedTime"){
+  if (summarizeMode == "FizedTime") {
     groups <- c("person_id")
   } else {
-    groups <- c("perosn_id", "era_id")
+    groups <- c("person_id", "era_id")
   }
 
   # compute the number of exposures in each interval
@@ -1149,7 +1178,7 @@ continuousExposures <- function(x,
     dplyr::compute()
   # save number of exposures, number of subexposures, number of groups...
   exposureCounts <- x %>%
-    dplyr::group_by(dplyr::all_of(groups)) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(groups))) %>%
     dplyr::summarise(
       number_exposures = dplyr::n_distinct(.data$drug_exposure_id),
       number_subexposures = dplyr::n_distinct(.data$subexposure_id),
