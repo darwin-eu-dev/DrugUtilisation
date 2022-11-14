@@ -7,32 +7,36 @@
 \usage{
 instantiateDrugUtilisationCohorts(
   cdm,
-  specifications = NULL,
   ingredientConceptId,
-  studyTime = 365,
-  gapEra = 30,
-  eraJoinMode = "first",
-  overlapMode = "first",
-  sameIndexMode = "sum",
-  drugUtilisationCohortName,
-  imputeDuration = FALSE,
-  imputeDailyDose = FALSE,
-  durationLowerBound = NULL,
-  durationUpperBound = NULL,
-  dailyDoseLowerBound = NULL,
-  dailyDoseUpperBound = NULL,
-  cohortEntryPriorHistory = NULL,
+  specifications = NULL,
   studyStartDate = NULL,
   studyEndDate = NULL,
+  summarizeMode = "AllEras",
+  studyTime,
+  cohortEntryPriorHistory = 180,
+  gapEra = 30,
+  eraJoinMode = "Previous",
+  overlapMode = "Previous",
+  sameIndexMode = "Sum",
+  imputeDuration = FALSE,
+  imputeDailyDose = FALSE,
+  durationRange = NULL,
+  dailyDoseRange = NULL,
+  drugUtilisationCohortName = "dus_cohort",
+  overwrite = TRUE,
+  instantiateInfo = FALSE,
   verbose = FALSE
 )
 }
 \arguments{
 \item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
-must contain at least 'drug_exposure', 'drug_strength', observation_period'
-and concept_ancestor' tables. The 'cdm' object must contain the
+must contain at least 'drug_exposure', 'drug_strength' and
+observation_period' tables. The 'cdm' object must contain the
 'write_schema' as attribute and  the user should have permission to write on
 it. It is a compulsory input, no default value is provided.}
+
+\item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
+the study. It is a compulsory input, no default value is provided.}
 
 \item{specifications}{Tibble with one to three columns. First column
 (drug_concept_id) contains the OMOP drug concept id of the drugs of interest.
@@ -44,14 +48,35 @@ provided value. Third column (default_daily_dose) is only required if
 daily doses are imputed by the provided value. DrugExposureDiagnostics is a
 package that can be used to generate the specifications file. If it is NULL
 all drug concept ids that contain the provided ingredientConceptId are
-considered, no imputation is allowed in this case. By default: NULL.}
+considered, no imputation is allowed in this case. 'drug_strength' table is
+used to determine which are the drug_concept_id that contain a certain
+ingredient. By default: NULL.}
 
-\item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
-the study. It is a compulsory input, no default value is provided.}
+\item{studyStartDate}{Minimum date where the incident exposed eras should
+start to be considered. Only incident exposed eras larger than StudyStartDate
+are allowed. If it is NULL no restriction is applied. By default: NULL.}
+
+\item{studyEndDate}{Maximum date where the incident exposed eras should
+start to be considered. Only incident exposed eras before StudyEndDate
+are allowed. If it is NULL no restriction is applied. By default: NULL.}
+
+\item{summarizeMode}{Choice on how to summarize the exposures. There are
+three options:
+"FixedTime" each individual is followed the exact same number of days
+specified in 'studyTime' argument.
+"AllEras" we summarize the output will be a summary of the exposed eras of
+each individual. Each individual can contribute multiple times.
+"FirstEra" we only consider the first observable era of each individual. In
+this case each individual can not contribute with multiple rows.
+By default: "AllEras".}
 
 \item{studyTime}{Time period after first exposure where we summarize the
-ingredient of interest. Argument only considered if 'summarizeMode' = "Time".
-No default value is provided.}
+ingredient of interest. Argument only considered if 'summarizeMode' =
+"FixedTime". No default value is provided.}
+
+\item{cohortEntryPriorHistory}{Minimum number of days of prior history
+(observation time) required for the incident eras to be considered. By
+default: 180.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era. By default: 180.}
@@ -98,9 +123,6 @@ the subexposure.
 the subexposure.
 By default: "Sum".}
 
-\item{drugUtilisationCohortName}{Name of the table that will be instantiated
-in the database in the 'write_schema'. By default: "dus_cohort".}
-
 \item{imputeDuration}{Whether the duration should be imputed (imputeDuration
 = TRUE) or the exposure should be dismissed (imputeDuration = FALSE) when the
 duration is negative, zero or outside durationRange. By default: FALSE.}
@@ -110,17 +132,27 @@ duration is negative, zero or outside durationRange. By default: FALSE.}
 (imputeDailyDose = FALSE) when the daily_dose is negative or outside
 dailyDoseRange. By default: FALSE.}
 
-\item{cohortEntryPriorHistory}{Minimum number of days of prior history
-(observation time) required for the incident eras to be considered. By
-default: 180.}
+\item{durationRange}{Range between the duration must be comprised. It should
+be a numeric vector of length two, with no NAs and the first value should be
+equal or smaller than the second one. It is only required if imputeDuration
+= TRUE. If NULL no restrictions are applied. By default: NULL.}
 
-\item{studyStartDate}{Minimum date where the incident exposed eras should
-start to be considered. Only incident exposed eras larger than StudyStartDate
-are allowed. If it is NULL no restriction is applied. By default: NULL.}
+\item{dailyDoseRange}{Range between the daily_dose must be comprised. It
+should be a numeric vector of length two, with no NAs and the first value
+should be equal or smaller than the second one. It is only required if
+imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
+NULL.}
 
-\item{studyEndDate}{Maximum date where the incident exposed eras should
-start to be considered. Only incident exposed eras before StudyEndDate
-are allowed. If it is NULL no restriction is applied. By default: NULL.}
+\item{drugUtilisationCohortName}{Name of the table that will be instantiated
+in the database in the 'write_schema'. By default: "dus_cohort".}
+
+\item{overwrite}{Whether the cohort overwrites the table if it already
+exists. By default: TRUE.}
+
+\item{instantiateInfo}{Whether the dosage summary is instantiated in the
+database or it is maintained as temporal table. The name of this table is the
+one provided in drugUtilisationCohortName adding "_dose_info" at the end, so by
+default its name is going to be "dus_cohort_dose_info". By default: FALSE.}
 
 \item{verbose}{Whether the code should print the process.
 
@@ -150,38 +182,10 @@ described:
   \out{\begin{center}}\figure{myfigure.png}\out{\end{center}}
 }
 }}
-
-\item{summarizeMode}{Choice on how to summarize the exposures. There are
-three options:
-"Time" if we choose to summarize by 'Time' each individual is followed the
-exact same number of days specified in 'studyTime' argument.
-"AllEras" we summarize the output will be a summary of the exposed eras of
-each individual. Each individual can contribute multiple times.
-"FirstEra" we only consider the first observable era of each individual. In
-this case each individual can not contribute with multiple rows.
-By default: "AllEras".}
-
-\item{durationRange}{Range between the duration must be comprised. It should
-be a numeric vector of length two, with no NAs and the first value should be
-equal or smaller than the second one. It is only required if imputeDuration
-= TRUE. If NULL no restrictions are applied. By default: NULL.}
-
-\item{dailyDoseRange}{Range between the daily_dose must be comprised. It
-should be a numeric vector of length two, with no NAs and the first value
-should be equal or smaller than the second one. It is only required if
-imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
-NULL.}
-
-\item{overwrite}{Whether the cohort overwrites the table if it already
-exists. By defaut: TRUE.}
-
-\item{instantiateInfo}{Whether the dosage summary is instantiated in the
-database or it is maintained as temporal table. The name of this table is the
-one provided in drugUtilisationCohortName adding "_dose_info" at the end, so by
-default its name is going to be "dus_cohort_dose_info". By default: FALSE.}
 }
 \value{
-The function returns the 'cdm' object
+The function returns the 'cdm' object with the created tables as
+references of the object.
 }
 \description{
 It instantiates the cohorts and their supplementary information
