@@ -27,6 +27,6 @@ Imports:
     tidyselect,
     rlang
 Remotes:
-    github::darwin-eu/CohortProfiles,
-    github::darwin-eu/SqlUtilities
+    darwin-eu/CohortProfiles,
+    darwin-eu/SqlUtilities
 
