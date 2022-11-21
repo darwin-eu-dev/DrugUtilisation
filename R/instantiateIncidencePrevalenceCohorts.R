@@ -215,7 +215,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
         ) %>%
         dplyr::distinct() %>%
         dplyr::mutate(interval_start_date = as.Date(dbplyr::sql(
-          SqlUtilities::sql_add_days(
+          sql_add_days(
             CDMConnector::dbms(attr(cdm, "dbcon")),
             1,
             "drug_exposure_end_date"
@@ -249,7 +249,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     ) %>%
     dplyr::distinct() %>%
     dplyr::mutate(interval_end_date = as.Date(dbplyr::sql(
-      SqlUtilities::sql_add_days(
+      sql_add_days(
         CDMConnector::dbms(attr(cdm, "dbcon")),
         -1,
         "drug_exposure_start_date"
@@ -315,7 +315,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
       incidencePrevalenceCohort %>%
         dplyr::filter(.data$gap == 1) %>%
         dplyr::mutate(gap = dplyr::if_else(
-          dbplyr::sql(SqlUtilities::sqlDiffDays(
+          dbplyr::sql(sqlDiffDays(
             CDMConnector::dbms(attr(cdm, "dbcon")),
             "interval_start_date",
             "interval_end_date"
@@ -352,7 +352,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
 
   # Instantiate the cohorts in the database as permanent tables
   cdm[[incidencePrevalenceCohortName]] <-
-    SqlUtilities::computePermanent(
+    computePermanent(
       incidencePrevalenceCohort,
       incidencePrevalenceCohortName,
       schema = attr(cdm, "write_schema"),
