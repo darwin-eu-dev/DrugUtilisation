@@ -25,9 +25,9 @@
 #' @param indexYearMonthAggregation indexYearMonthAggregation
 #' @param initialDoseAggregation initialDoseAggregation
 #' @param meanDoseAggregation meanDoseAggregation
+#' @param cohortid cohortid stupid paramater
 #' @param aggregationTableName aggregationTableName
 #' @param verbose verbose
-#' @param cohortid cohortid
 #'
 #' @return
 #' @export
