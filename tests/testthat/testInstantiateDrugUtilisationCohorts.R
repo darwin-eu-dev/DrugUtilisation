@@ -1054,3 +1054,66 @@ test_that("test not considered dose", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
+
+
+
+test_that("test cohort profile", {
+
+  drug_exposure <- dplyr::tibble(
+    drug_exposure_id = c(1, 2, 3, 4),
+    drug_concept_id = c(1, 2, 3, 4),
+    person_id = c(1, 1, 1, 1),
+    drug_exposure_start_date = c(
+      as.Date("2010-01-01"),
+      as.Date("2010-01-05"),
+      as.Date("2010-01-05"),
+      as.Date("2010-01-05")),
+    drug_exposure_end_date = c(
+      as.Date("2010-01-02"),
+      as.Date("2010-01-05"),
+      as.Date("2010-01-06"),
+      as.Date("2010-01-07")),
+    quantity = c(1, 2, 3, 4))
+
+  drug_strength <- dplyr::tibble(
+    ingredientConceptId = c(1, 1, 1, 1),
+    drug_concept_id = c(1, 2, 3, 4),
+    amount_value = c(1, 2, 3, 4),
+  )
+
+  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
+                             drug_strength = drug_strength)
+
+  spec <- cdm$drug_strength %>%
+    dplyr::select("drug_concept_id") %>%
+    dplyr::collect()
+
+
+  sameIndexMode = "Maximum"
+  eraJoinMode = "Subsequent"
+
+  #when there is no exp with same start, changing sameIndexMode should return same result
+  resultMultiGapEnd <- instantiateDrugUtilisationCohorts(
+    cdm,
+    specifications = spec,
+    ingredientConceptId = 1,
+    summarizeMode = "FixedTime",
+    studyTime = 1000, #limit end date to 2013-09-11
+    gapEra = 10,
+    eraJoinMode = eraJoinMode,
+    overlapMode = "Subsequent",
+    sameIndexMode = sameIndexMode,
+    drugUtilisationCohortName = "drugUtilisationCohortName",
+    imputeDuration = FALSE,
+    imputeDailyDose = FALSE,
+    cohortEntryPriorHistory = 180,
+    verbose = FALSE
+  )
+
+  resultMultiGapEnd <- resultMultiGapEnd$drugUtilisationCohortName_info %>%
+    dplyr::collect()
+
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+})
+
