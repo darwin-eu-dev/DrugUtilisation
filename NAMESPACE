@@ -11,6 +11,6 @@ export(instantiateIncidencePrevalenceCohorts)
 export(largeScaleCharacterization)
 export(mockDrugUtilisation)
 importFrom(dplyr,"%>%")
+importFrom(rlang,":=")
 importFrom(rlang,.data)
 importFrom(rlang,.env)
-

@@ -25,10 +25,9 @@
 #' @param indexYearMonthAggregation indexYearMonthAggregation
 #' @param initialDoseAggregation initialDoseAggregation
 #' @param meanDoseAggregation meanDoseAggregation
-#' @param indicationAggregation indicationAggregation
-#' @param indicationTableName indicationTableName
 #' @param aggregationTableName aggregationTableName
 #' @param verbose verbose
+#' @param cohortid
 #'
 #' @return
 #' @export
@@ -111,14 +110,14 @@ computeAggregation <- function(cdm,
   if (genderAggregation == TRUE) {
     #get gender from cohortprofile
     get_gender <-
-      CohortProfiles::getSex(cdm = cdm,
+      CohortProfiles::getGender(cdm = cdm,
                              cohortId = cohortid,
                              cohortTable = personSummaryName)
 
 
     #join gender to input table
     get_gender <-
-      cdm[[personSummaryName]] %>% dplyr::left_join(get_gender %>% dplyr::select("subject_id", "sex"),
+      cdm[[personSummaryName]] %>% dplyr::left_join(get_gender %>% dplyr::select("subject_id", "gender"),
                                                     by = c("subject_id" = "person_id"))
 
 
@@ -126,7 +125,6 @@ computeAggregation <- function(cdm,
       dplyr::left_join(
         get_gender %>%
           ##dplyr::mutate(aggregation = "Gender") %>%
-          dplyr::mutate(gender = sex) %>%
           dplyr::select("subject_id", "gender")
       )
   }
@@ -148,8 +146,8 @@ computeAggregation <- function(cdm,
       groupName <- paste0(x[1], ";", x[2])
       return(
         get_age %>%
-          dplyr::filter(age >= x[1]) %>%
-          dplyr::filter(age <= x[2]) %>%
+          dplyr::filter(.data$age >= x[1]) %>%
+          dplyr::filter(.data$age <= x[2]) %>%
           ##dplyr::mutate(aggregation = "Age groups") %>%
           dplyr::mutate(age_group = groupName) %>%
           dplyr::select("subject_id", "age_group") %>%

@@ -183,7 +183,7 @@ largeScaleCharacterization <- function(cdm,
 
     study_table <- cdm[[table_name]] %>%
       dplyr::inner_join(target_cohort %>%
-                          mutate(person_id = subject_id),
+                          dplyr::mutate(person_id = .data$subject_id),
                         by = "person_id"
       ) %>%
       dplyr::rename("start_date" = .env$start_date)

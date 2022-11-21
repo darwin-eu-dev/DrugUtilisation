@@ -792,7 +792,7 @@ getPeriods <- function(x, dialect, verbose) {
     ) %>%
     # compute the number of days in each subexposure
     dplyr::mutate(days_exposed = dbplyr::sql(sqlDiffDays(
-      CDMConnector::dbms(attr(cdm, "dbcon")),
+      dialect,
       "start_interval",
       "end_interval"
     )) + 1)
@@ -1276,7 +1276,7 @@ continuousExposures <- function(x,
           .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date,
           .data$era_id
         ) %>%
-        dplyr::filter(daily_dose == max(.data$daily_dose, na.rm = TRUE)) %>%
+        dplyr::filter(.data$daily_dose == max(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
         dplyr::ungroup() %>%
         dplyr::compute()
@@ -1298,7 +1298,7 @@ continuousExposures <- function(x,
           .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date,
           .data$era_id
         ) %>%
-        dplyr::filter(daily_dose == min(.data$daily_dose, na.rm = TRUE)) %>%
+        dplyr::filter(.data$daily_dose == min(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct() %>%
         dplyr::ungroup() %>%
         dplyr::compute()
