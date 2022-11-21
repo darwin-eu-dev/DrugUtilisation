@@ -8,3 +8,10 @@ export(getIndication)
 export(instantiateDrugUtilisationCohorts)
 export(instantiateIncidencePrevalenceCohorts)
 export(largeScaleCharacterization)
+<<<<<<< Updated upstream
+=======
+export(mockDrugUtilisation)
+importFrom(dplyr,"%>%")
+importFrom(rlang,.data)
+importFrom(rlang,.env)
+>>>>>>> Stashed changes

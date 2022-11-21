@@ -43,7 +43,23 @@ instantiateDrugUtilisationCohorts(
 
 \item{imputeDailyDose}{imputeDailyDose}
 
+<<<<<<< Updated upstream
 \item{durationLowerBound}{durationLowerBound}
+=======
+\item{overlapMode}{How the overlapping between two exposures that do not
+start on the same day is solved inside a subexposure. There are five possible
+options:
+"Previous" the considered daily_dose is the one of the earliest exposure.
+"Subsequent" the considered daily_dose is the one of the new exposure that
+starts in that subexposure.
+"Minimum" the considered daily_dose is the minimum of all of the exposures in
+the subexposure.
+"Maximum" the considered daily_dose is the maximum of all of the exposures in
+the subexposure.
+"Sum" the considered daily_dose is the sum of all the exposures present in
+the subexposure.
+By default: "Previous".}
+>>>>>>> Stashed changes
 
 \item{durationUpperBound}{durationUpperBound}
 
