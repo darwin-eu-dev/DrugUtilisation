@@ -27,7 +27,7 @@
 #' @param meanDoseAggregation meanDoseAggregation
 #' @param aggregationTableName aggregationTableName
 #' @param verbose verbose
-#' @param cohortid
+#' @param cohortid cohortid
 #'
 #' @return
 #' @export
