@@ -26,7 +26,6 @@ Imports:
     tidyr,
     tidyselect,
     rlang
-Remotes:
-    darwin-eu/CohortProfiles,
-    darwin-eu/SqlUtilities
+
+
 

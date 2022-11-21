@@ -605,7 +605,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   #   dplyr::compute()
 
 
-  cdm[[drugUtilisationCohortName]] <- sqlUtilities::computePermanent(
+  cdm[[drugUtilisationCohortName]] <- computePermanent(
     drugUtilisationCohort %>%
       dplyr::select(
         "cohort_definition_id", "subject_id", "cohort_start_date",
@@ -617,7 +617,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   )
 
   if (instantiateInfo == TRUE) {
-    cdm[[drugUtilisationTableDataName]] <- sqlUtilities::computePermanent(
+    cdm[[drugUtilisationTableDataName]] <- computePermanent(
       drugUtilisationCohort,
       drugUtilisationTableDataName,
       schema = attr(cdm, "write_schema"),
