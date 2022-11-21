@@ -7,12 +7,26 @@
 mockDrugUtilisation(
   drug_exposure = NULL,
   drug_strength = NULL,
+  observation_period = NULL,
+  condition_occurrence = NULL,
+  person = NULL,
   drug_concept_id_size = 5,
+  condition_concept_id_size = 5,
   ingredient_concept_id_size = 1,
   drug_exposure_size = 10,
   patient_size = 1,
   min_drug_exposure_start_date = "2000-01-01",
   max_drug_exposure_start_date = "2020-01-01",
+  earliest_date_of_birth = NULL,
+  latest_date_of_birth = NULL,
+  earliest_observation_start_date = NULL,
+  latest_observation_start_date = NULL,
+  min_days_to_observation_end = NULL,
+  max_days_to_observation_end = NULL,
+  earliest_condition_start_date = NULL,
+  latest_condition_start_date = NULL,
+  min_days_to_condition_end = NULL,
+  max_days_to_condition_end = NULL,
   seed = 1
 )
 }
@@ -21,7 +35,15 @@ mockDrugUtilisation(
 
 \item{drug_strength}{default null user can define its own table}
 
+\item{observation_period}{default null user can define its own table}
+
+\item{condition_occurrence}{default null user can define its own table}
+
+\item{person}{default null user can define its own table}
+
 \item{drug_concept_id_size}{number of unique drug concept id}
+
+\item{condition_concept_id_size}{number of unique row in the concept table}
 
 \item{ingredient_concept_id_size}{number of unique drug ingredient concept id}
 
@@ -32,6 +54,26 @@ mockDrugUtilisation(
 \item{min_drug_exposure_start_date}{user define minimum drug exposure start date}
 
 \item{max_drug_exposure_start_date}{user define maximium drug exposure start date}
+
+\item{earliest_date_of_birth}{the earliest date of birth of patient in person table format "dd-mm-yyyy"}
+
+\item{latest_date_of_birth}{the latest date of birth for patient in person table format "dd-mm-yyyy"}
+
+\item{earliest_observation_start_date}{the earliest observation start date for patient format "dd-mm-yyyy"}
+
+\item{latest_observation_start_date}{the latest observation start date for patient format "dd-mm-yyyy"}
+
+\item{min_days_to_observation_end}{the minimum number of days of the observational integer}
+
+\item{max_days_to_observation_end}{the maximum number of days of the observation period integer}
+
+\item{earliest_condition_start_date}{the earliest condition start date for patient format "dd-mm-yyyy"}
+
+\item{latest_condition_start_date}{the latest condition start date for patient format "dd-mm-yyyy"}
+
+\item{min_days_to_condition_end}{the minimum number of days of the condition integer}
+
+\item{max_days_to_condition_end}{the maximum number of days of the condition integer}
 
 \item{seed}{seed}
 }
