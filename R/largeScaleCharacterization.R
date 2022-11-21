@@ -16,17 +16,18 @@
 
 #' Explain function
 #'
-#' @param cdm Connection to a database using DBI::dbConnect()
+#' @param cdm cdm connection created with CDMConnector package
 #' @param targetCohortName Name of the table in the cdm that contains the
 #' target cohort
-#' @param targetCohortId Indentifier for the analyzed target
-#' cohorts
+#' @param targetCohortId Cohort definition id for the analyzed target cohorts
 #' @param temporalWindows Temporal windows that we want to characterize
 #' @param tablesToCharacterize Name of the tables in the cdm that we want to
 #' summarize
-#' @param characterizationTableName characterizationTableName
-#' @param permanentCharacterizationTable permanentCharacterizationTable
-#' @param verbose verbose
+#' @param characterizationTableName Name of the table that contains the large
+#' scale characterization
+#' @param permanentCharacterizationTable if we want the table to be instantiated
+#' as a permanent table or not
+#' @param verbose Explain the steps of the program
 #'
 #' @return
 #' @export
@@ -39,7 +40,65 @@ largeScaleCharacterization <- function(cdm,
                                        tablesToCharacterize,
                                        characterizationTableName = "characterization",
                                        permanentCharacterizationTable = FALSE,
-                                       verbose) {
+                                       verbose = FALSE) {
+
+  errorMessage <- checkmate::makeAssertCollection()
+  # check cdm
+  cdm_inherits_check <- inherits(cdm, "cdm_reference")
+  checkmate::assertTRUE(cdm_inherits_check, add = errorMessage)
+  if (!isTRUE(cdm_inherits_check)) {
+    errorMessage$push("- cdm must be a CDMConnector CDM reference object")
+  }
+  # check targetCohortName
+  checkmate::assertCharacter(targetCohortName, len = 1, add = errorMessage)
+  if (length(targetCohortName) == 1 & is.character(targetCohortName)) {
+    targetCohortExist <- targetCohortName %in% names(cdm)
+    if (!isTRUE(targetCohortExist)) {
+      errorMessage$push("- targetCohortName is not in the cdm reference")
+    }
+    if (isTRUE(targetCohortExist)) {
+      checkmate::assertClass(
+        cdm[[targetCohortName]],
+        classes = "tbl_dbi",
+        add = errorMessage
+      )
+      checkmate::assertTRUE(
+        all(c(
+          "cohort_definition_id", "subject_id", "cohort_start_date",
+          "cohort_end_date"
+        ) %in% names(cdm[[targetCohortName]])),
+        add = errorMessage
+      )
+    }
+  }
+  if (is.numeric(targetCohortId)){
+    targetCohortId <- as.character(targetCohortId)
+  }
+  # check targetCohortId
+  checkmate::assertCharacter(targetCohortId, null.ok = TRUE, add = errorMessage)
+  # check temporalWindows
+  checkmate::assertList(temporalWindows, min.len = 1, add = errorMessage)
+  checkmate::assertTRUE(
+    all(unlist(lapply(temporalWindows, length)) == 2),
+    add = errorMessage
+  )
+  # check tablesToCharacterize
+  checkmate::assertCharacter(
+    tablesToCharacterize, min.len = 1, add = errorMessage
+    )
+  checkmate::assertTRUE(
+    all(tablesToCharacterize %in% names(cdm)), add = errorMessage
+    )
+  # check characterizationTableName
+  checkmate::assertCharacter(
+    characterizationTableName, len = 1, add = errorMessage
+  )
+  #check permanentCharacterizationTable
+  checkmate::assertLogical(permanentCharacterizationTable, add = errorMessage)
+  #check verbose
+  checkmate::assertLogical(verbose, add = errorMessage)
+  # report collection of errors
+  checkmate::reportAssertions(collection = errorMessage)
 
   # setTemporalWindows inf to 40000
   temporalWindows <- lapply(temporalWindows, function(x) {
@@ -55,13 +114,13 @@ largeScaleCharacterization <- function(cdm,
   }) %>%
     dplyr::bind_rows() %>%
     dplyr::mutate(windowId = dplyr::row_number()) %>%
-    dplyr::select("window_id", "window_name", "window_start", "window_end")
+    dplyr::select("windowId", "windowName", "windowStart", "windowEnd")
 
   if (!is.null(targetCohortId)) {
-    target_cohort <- cdm[[targetCohort]] %>%
+    target_cohort <- cdm[[targetCohortName]] %>%
       dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId)
   } else {
-    target_cohort <- cdm[[targetCohort]]
+    target_cohort <- cdm[[targetCohortName]]
   }
 
   target_cohort <- target_cohort %>%
@@ -123,13 +182,14 @@ largeScaleCharacterization <- function(cdm,
     concept_id <- get_concept[[table_name]]
 
     study_table <- cdm[[table_name]] %>%
-      dplyr::inner_join(target_cohort,
+      dplyr::inner_join(target_cohort %>%
+                          mutate(person_id = subject_id),
                         by = "person_id"
       ) %>%
       dplyr::rename("start_date" = .env$start_date)
     if (is.null(end_date)) {
       study_table <- study_table %>%
-        dplyre::mutate(end_date = .data$start_date)
+        dplyr::mutate(end_date = .data$start_date)
     } else {
       study_table <- study_table %>%
         dplyr::rename("end_date" = .env$end_date)
@@ -143,10 +203,10 @@ largeScaleCharacterization <- function(cdm,
       dplyr::compute()
 
     temporalWindows <- tidyr::expand_grid(
-      window_id,
-      temporalWindows$window_id
+      study_table$table_id,
+      temporalWindows$windowId
     ) %>%
-      dplyr::left_join(temporalWindows, by = "window_id")
+      dplyr::left_join(temporalWindows, by = "windowId")
 
     study_table <- study_table %>%
       dplyr::left_join(temporalWindows,
