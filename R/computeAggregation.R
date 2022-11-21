@@ -110,9 +110,9 @@ computeAggregation <- function(cdm,
   if (genderAggregation == TRUE) {
     #get gender from cohortprofile
     get_gender <-
-      CohortProfiles::getGender(cdm = cdm,
-                             cohortId = cohortid,
-                             cohortTable = personSummaryName)
+      getGender(cdm = cdm,
+        cohortId = cohortid,
+        cohortTable = personSummaryName)
 
 
     #join gender to input table
@@ -132,9 +132,9 @@ computeAggregation <- function(cdm,
   if (ageGroupsAgregation == TRUE) {
     #get age from cohortprofile
     get_age <-
-      CohortProfiles::getAge(cdm = cdm,
-                             cohortId = cohortid,
-                             cohortTable = personSummaryName)
+      getAge(cdm = cdm,
+        cohortId = cohortid,
+        cohortTable = personSummaryName)
 
 
     #join age to input table
