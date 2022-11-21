@@ -73,7 +73,7 @@ getIndication <- function(cdm,
   }
 
   # get indications
-  if (indication_gap == 0) {
+  if (indicationGap == 0) {
     target_db <- target_db %>%
       dplyr::left_join(indication_db %>%
         dplyr::rename("indication_id" = "cohort_definition_id") %>%
@@ -96,7 +96,7 @@ getIndication <- function(cdm,
           .data$indication_start_date,
           units = "days"
         ))) %>%
-        dplyr::filter(.data$dif_time_indication <= .env$indication_gap) %>%
+        dplyr::filter(.data$dif_time_indication <= .env$indicationGap) %>%
         dplyr::filter(.data$dif_time_indication >= 0) %>%
         dplyr::select(-"dif_time_indication", -"indication_start_date") %>%
         dplyr::distinct(),
@@ -134,7 +134,7 @@ getIndication <- function(cdm,
               units = "days"
             ))) %>%
             dplyr::filter(
-              .data$dif_time_unkown_indication <= .env$indication_gap
+              .data$dif_time_unkown_indication <= .env$indicationGap
             ) %>%
             dplyr::filter(.data$dif_time_unkown_indication >= 0) %>%
             dplyr::select(

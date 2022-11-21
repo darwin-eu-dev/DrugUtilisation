@@ -139,7 +139,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   )
   # add descendants to the ones that they have include_descendants = TRUE
   conceptList <- conceptList %>%
-    dplyr::filter(include_descendants == FALSE) %>%
+    dplyr::filter(.data$include_descendants == FALSE) %>%
     dplyr::union(
       cdm[["concept_ancestor"]] %>%
         dplyr::select(
@@ -148,7 +148,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
         ) %>%
         dplyr::inner_join(
           conceptList %>%
-            dplyr::filter(include_descendants == TRUE),
+            dplyr::filter(.data$include_descendants == TRUE),
           copy = TRUE,
           by = "concept_id"
         ) %>%
@@ -156,7 +156,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
         dplyr::rename("concept_id" = "descendant_concept_id") %>%
         dplyr::collect()
     ) %>%
-    dplyr::select(-"include_descendants") %>%
+    dplyr::select(-".data$include_descendants") %>%
     dplyr::rename("drug_concept_id" = "concept_id")
   # eliminate the ones that is_excluded = TRUE
   conceptList <- conceptList %>%
@@ -215,7 +215,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
         ) %>%
         dplyr::distinct() %>%
         dplyr::mutate(interval_start_date = as.Date(dbplyr::sql(
-          SqlUtilities::sql_add_days(
+          sql_add_days(
             CDMConnector::dbms(attr(cdm, "dbcon")),
             1,
             "drug_exposure_end_date"
@@ -249,7 +249,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     ) %>%
     dplyr::distinct() %>%
     dplyr::mutate(interval_end_date = as.Date(dbplyr::sql(
-      SqlUtilities::sql_add_days(
+      sql_add_days(
         CDMConnector::dbms(attr(cdm, "dbcon")),
         -1,
         "drug_exposure_start_date"
@@ -315,7 +315,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
       incidencePrevalenceCohort %>%
         dplyr::filter(.data$gap == 1) %>%
         dplyr::mutate(gap = dplyr::if_else(
-          dbplyr::sql(SqlUtilities::sqlDiffDays(
+          dbplyr::sql(sqlDiffDays(
             CDMConnector::dbms(attr(cdm, "dbcon")),
             "interval_start_date",
             "interval_end_date"
@@ -352,7 +352,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
 
   # Instantiate the cohorts in the database as permanent tables
   cdm[[incidencePrevalenceCohortName]] <-
-    SqlUtilities::computePermanent(
+    computePermanent(
       incidencePrevalenceCohort,
       incidencePrevalenceCohortName,
       schema = attr(cdm, "write_schema"),
@@ -365,7 +365,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   } else {
     fileName <- here::here(conceptSetFolder, "equivalence.csv")
   }
-  write.csv(
+  utils::write.csv(
     conceptList,
     file = fileName,
     row.names = FALSE
@@ -403,7 +403,7 @@ readConceptSets <- function(conceptSets) {
       "cohort_definition_id",
       "concept_id" = "CONCEPT_ID",
       "is_excluded" = "isExcluded",
-      "include_descendants" = "includeDescendants"
+      ".data$include_descendants" = "includeDescendants"
     )
   return(conceptList)
 }

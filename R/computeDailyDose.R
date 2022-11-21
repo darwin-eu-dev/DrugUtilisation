@@ -19,6 +19,7 @@
 #' @param table table
 #' @param cdm cdm
 #' @param verbose verbose
+#' @param ingredient_concept_id ingredient_concept_id
 #'
 #' @return
 #' @export

@@ -24,7 +24,8 @@ Imports:
     lubridate,
     purrr,
     tidyr,
-    tidyselect
-Remotes:
-    darwin-eu/CohortProfiles,
-    darwin-eu/SqlUtilities
+    tidyselect,
+    rlang,
+    here,
+    RJSONIO,
+    tibble

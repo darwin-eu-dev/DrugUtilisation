@@ -43,65 +43,65 @@ generateSummarizedTable <- function(cdm,
     min = min,
     max = max,
     mean = mean,
-    median = median,
-    iqr = IQR,
+    median = stats::median(),
+    iqr = stats::IQR(),
     range = range,
     q5 = function(x) {
-      quantile(x, 0.05)
+      stats::quantile(x, 0.05)
     },
     q10 = function(x) {
-      quantile(x, 0.10)
+      stats::quantile(x, 0.10)
     },
     q15 = function(x) {
-      quantile(x, 0.15)
+      stats::quantile(x, 0.15)
     },
     q20 = function(x) {
-      quantile(x, 0.20)
+      stats::quantile(x, 0.20)
     },
     q25 = function(x) {
-      quantile(x, 0.25)
+      stats::quantile(x, 0.25)
     },
     q30 = function(x) {
-      quantile(x, 0.30)
+      stats::quantile(x, 0.30)
     },
     q35 = function(x) {
-      quantile(x, 0.35)
+      stats::quantile(x, 0.35)
     },
     q40 = function(x) {
-      quantile(x, 0.40)
+      stats::quantile(x, 0.40)
     },
     q45 = function(x) {
-      quantile(x, 0.45)
+      stats::quantile(x, 0.45)
     },
     q50 = function(x) {
-      quantile(x, 0.50)
+      stats::quantile(x, 0.50)
     },
     q55 = function(x) {
-      quantile(x, 0.55)
+      stats::quantile(x, 0.55)
     },
     q60 = function(x) {
-      quantile(x, 0.60)
+      stats::quantile(x, 0.60)
     },
     q65 = function(x) {
-      quantile(x, 0.65)
+      stats::quantile(x, 0.65)
     },
     q70 = function(x) {
-      quantile(x, 0.70)
+      stats::quantile(x, 0.70)
     },
     q75 = function(x) {
-      quantile(x, 0.75)
+      stats::quantile(x, 0.75)
     },
     q80 = function(x) {
-      quantile(x, 0.80)
+      stats::quantile(x, 0.80)
     },
     q85 = function(x) {
-      quantile(x, 0.85)
+      stats::quantile(x, 0.85)
     },
     q90 = function(x) {
-      quantile(x, 0.90)
+      stats::quantile(x, 0.90)
     },
     q95 = function(x) {
-      quantile(x, 0.95)
+      stats::quantile(x, 0.95)
     }
   )
 
