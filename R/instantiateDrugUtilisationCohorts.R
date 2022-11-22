@@ -1334,9 +1334,9 @@ continuousExposures <- function(x,
     } else if (overlapMode == "Maximum") {
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
-        # dplyr::filter(
-        #   .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
-        # )%>%
+        dplyr::filter(
+          .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
+        )%>%
         dplyr::distinct()
       # if the overlapMode is "Sum" (all exposure are considered)
     } else if (overlapMode == "Sum") {
@@ -1348,9 +1348,9 @@ continuousExposures <- function(x,
     } else if (overlapMode == "Minimum") {
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
-        # dplyr::filter(
-        #   .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
-        # ) %>%
+        dplyr::filter(
+          .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
+        ) %>%
         dplyr::distinct()
     }
     multipleExposures <- multipleExposures %>%
