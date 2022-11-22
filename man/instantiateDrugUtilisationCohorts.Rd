@@ -103,7 +103,7 @@ By default: "Previous".}
 start on the same day is solved inside a subexposure. There are five possible
 options:
 "Previous" the considered daily_dose is the one of the earliest exposure.
-"Current" the considered daily_dose is the one of the new exposure that
+"Subsequent" the considered daily_dose is the one of the new exposure that
 starts in that subexposure.
 "Minimum" the considered daily_dose is the minimum of all of the exposures in
 the subexposure.
