@@ -218,6 +218,9 @@ largeScaleCharacterization <- function(cdm,
           "cohort_start_date",
           "end_date"
         )))
+    } else {
+      study_table <- study_table %>%
+        dplyr::mutate(days_difference_end = .data$days_difference_start)
     }
     study_table <- study_table %>%
       dplyr::compute()
@@ -226,23 +229,23 @@ largeScaleCharacterization <- function(cdm,
       windowStart <- temporalWindows$windowStart[i]
       windowEnd <- temporalWindows$windowEnd[i]
       windowId <- temporalWindows$windowId[i]
-      if (isTRUE(overlap)) {
+      if (!is.na(windowEnd) & is.na(windowStart)) {
+        study_table_i <- study_table %>%
+          dplyr::filter(.data$days_difference_start <= .env$windowEnd)
+      } else if (is.na(windowEnd) & !is.na(windowStart)) {
+        study_table_i <- study_table %>%
+          dplyr::filter(.data$days_difference_end >= .env$windowStart)
+      } else if (!is.na(windowEnd) & !is.na(windowStart)){
         study_table_i <- study_table %>%
           dplyr::filter(
             .data$days_difference_start <= .env$windowEnd &
               .data$days_difference_end >= .env$windowStart
           )
-      } else {
-        study_table_i <- study_table %>%
-          dplyr::filter(
-            .data$days_difference_start <= .env$windowEnd &
-              .data$days_difference_start >= .env$windowStart
-          )
       }
       study_table_i <- study_table_i %>%
         dplyr::select("person_id", "concept_id", "cohort_start_date") %>%
         dplyr::distinct() %>%
-        dplyr::mutate(windowId = .env$windowId) %>%
+        dplyr::mutate(window_id = .env$windowId) %>%
         dplyr::compute()
       if (i == 1){
         study_tab <- study_table_i
@@ -251,24 +254,27 @@ largeScaleCharacterization <- function(cdm,
           dplyr::union_all(study_table_i)
       }
     }
-    study_tab <- study_tab %>%
-      dplyr::mutate(table_name = .env$table_name) %>%
-      dplyr::compute()
+    study_tab <- study_tab %>% dplyr::compute()
     return(study_tab)
   })
 
   for (i in 1:length(characterizedTable)){
     if (i == 1){
-      characterizedTables <- characterizedTable[[i]]
+      characterizedTables <- characterizedTable[[i]] %>%
+        dplyr::mutate(table_id = .env$i)
     } else {
       characterizedTables <- characterizedTables %>%
-        dplyr::union_all(characterizedTable[[i]])
+        dplyr::union_all(
+          characterizedTable[[i]]%>%
+            dplyr::mutate(table_id = .env$i)
+        )
     }
   }
 
   result <- list()
-  result$characterization <- characterizedTables
+  result$characterization <- characterizedTables %>% dplyr::compute()
   result$temporalWindows <- temporalWindows
+  result$tablesToCharacterize <- tablesToCharacterize
   result$overlap <- overlap
 
   return(result)
