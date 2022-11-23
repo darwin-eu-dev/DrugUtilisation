@@ -49,8 +49,10 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                              drug_strength = NULL,
                              observation_period = NULL,
                              condition_occurrence = NULL,
+                             concept_ancestor = NULL,
                              person = NULL,
                              drug_concept_id_size = 5,
+                             ancestor_concept_id_size = 5,
                              condition_concept_id_size = 5,
                              ingredient_concept_id_size = 1,
                              drug_exposure_size = 10,
@@ -73,6 +75,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   checkmate::assert_int(drug_exposure_size, lower = 1)
   checkmate::assert_int(patient_size, lower = 1)
   checkmate::assert_int(drug_concept_id_size, lower = 1)
+  checkmate::assert_int(ancestor_concept_id_size, lower = 1)
   checkmate::assert_int(ingredient_concept_id_size, lower = 1)
   checkmate::assertTRUE(drug_exposure_size >= patient_size)
   checkmate::assert_tibble(person, null.ok = TRUE)
@@ -252,7 +255,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
       earliest_observation_start_date <- as.Date("2005-01-01")
     }
     if (is.null(latest_observation_start_date)) {
-      latest_observation_start_date <- as.Date("2020-01-01")
+      latest_observation_start_date <- as.Date("2010-01-01")
     }
     obs_start_date <-
       sample(seq(
@@ -266,10 +269,10 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
 
     # define min and max day to condition end
     if (is.null(min_days_to_observation_end)) {
-      min_days_to_observation_end <- 1
+      min_days_to_observation_end <- 5000
     }
     if (is.null(max_days_to_observation_end)) {
-      max_days_to_observation_end <- 1000
+      max_days_to_observation_end <- 50000
     }
 
     obs_end_date <-
@@ -361,8 +364,17 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
     )
   }
 
+  if (is.null(concept_ancestor)) {
+    ancestor_concept_id <-
+      seq(1:ancestor_concept_id_size)
+    descendant_concept_id <-
+      seq((ancestor_concept_id_size+1):(ancestor_concept_id_size+ancestor_concept_id_size))
+    concept_ancestor <- data.frame(
+      ancestor_concept_id = as.numeric(ancestor_concept_id),
+      descendant_concept_id = as.numeric(descendant_concept_id)
+    )
 
-
+  }
 
 
   # into in-memory database
@@ -399,12 +411,19 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                       overwrite = TRUE)
   })
 
+  DBI::dbWithTransaction(db, {
+    DBI::dbWriteTable(db, "concept_ancestor",
+                      concept_ancestor,
+                      overwrite = TRUE)
+  })
+
   cdm <- CDMConnector::cdm_from_con(
     db,
     cdm_tables = c(
       "drug_strength",
       "drug_exposure",
       "person",
+      "concept_ancestor",
       "observation_period",
       "condition_occurrence"
     )

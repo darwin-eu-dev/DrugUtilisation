@@ -24,19 +24,6 @@
 #' it. It is a compulsory input, no default value is provided.
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
-#' @param specifications Tibble with one to three columns. First column
-#' (drug_concept_id) contains the OMOP drug concept id of the drugs of interest.
-#' The first column is compulsory if the argument is provided. Second column
-#' (default_duration) is only required if 'imputeDuration' = TRUE, then zero,
-#' negative or outside range ('durationRange') durations are imputed by the
-#' provided value. Third column (default_daily_dose) is only required if
-#' 'imputeDailyDose' = TRUE, then negative or outside range ('dailyDoseRange)
-#' daily doses are imputed by the provided value. DrugExposureDiagnostics is a
-#' package that can be used to generate the specifications file. If it is NULL
-#' all drug concept ids that contain the provided ingredientConceptId are
-#' considered, no imputation is allowed in this case. 'drug_strength' table is
-#' used to determine which are the drug_concept_id that contain a certain
-#' ingredient. By default: NULL.
 #' @param studyStartDate Minimum date where the incident exposed eras should
 #' start to be considered. Only incident exposed eras larger than StudyStartDate
 #' are allowed. If it is NULL no restriction is applied. By default: NULL.
@@ -115,14 +102,6 @@
 #' should be equal or smaller than the second one. It is only required if
 #' imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
 #' NULL.
-#' @param drugUtilisationCohortName Name of the table that will be instantiated
-#' in the database in the 'write_schema'. By default: "dus_cohort".
-#' @param overwrite Whether the cohort overwrites the table if it already
-#' exists. By default: TRUE.
-#' @param instantiateInfo Whether the dosage summary is instantiated in the
-#' database or it is maintained as temporal table. The name of this table is the
-#' one provided in drugUtilisationCohortName adding "_dose_info" at the end, so by
-#' default its name is going to be "dus_cohort_dose_info". By default: FALSE.
 #' @param verbose Whether the code should print the process.
 #'
 #' TERMINOLOGY
@@ -143,12 +122,10 @@
 #' continuous exposures and exposed gaps.
 #' See this picture for a descriptive visualization of the terms previously
 #' described:
-#' \if{html}{
-#'   \out{<div style="text-align: center">}\figure{exposures_definitions.png}{options: style="width:750px;max-width:75\%;"}\out{</div>}
-#' }
-#' \if{latex}{
-#'   \out{\begin{center}}\figure{myfigure.png}\out{\end{center}}
-#' }
+#' @param ConceptSetPath
+#' @param doseInformation
+#' @param sexRestriction
+#' @param ageRestriction
 #'
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
@@ -157,7 +134,7 @@
 #' @examples
 instantiateDrugUtilisationCohorts <- function(cdm,
                                               ingredientConceptId,
-                                              specifications = NULL,
+                                              ConceptSetPath = NULL,
                                               studyStartDate = NULL,
                                               studyEndDate = NULL,
                                               summarizeMode = "AllEras",
@@ -167,13 +144,13 @@ instantiateDrugUtilisationCohorts <- function(cdm,
                                               eraJoinMode = "Previous",
                                               overlapMode = "Previous",
                                               sameIndexMode = "Sum",
-                                              imputeDuration = FALSE,
-                                              imputeDailyDose = FALSE,
-                                              durationRange = NULL,
-                                              dailyDoseRange = NULL,
-                                              drugUtilisationCohortName = "dus_cohort",
-                                              overwrite = TRUE,
-                                              instantiateInfo = FALSE,
+                                              doseInformation = TRUE,
+                                              sexRestriction = "Both",
+                                              ageRestriction = c(0, 150),
+                                              imputeDuration = "eliminate",
+                                              imputeDailyDose = "eliminate",
+                                              durationRange = c(1, NA),
+                                              dailyDoseRange = c(0, NA),
                                               verbose = FALSE) {
   messageStore <- checkmate::makeAssertCollection()
 
@@ -188,63 +165,27 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     add = messageStore
   )
 
-  # try to put specification as tibble
-  if (!is.null(specifications)) {
-    try(specifications <- dplyr::as_tibble(specifications))
-  }
 
-  # check specifications
-  checkmate::assertTibble(
-    specifications,
-    min.cols = 1,
-    min.rows = 1,
-    null.ok = TRUE,
-    add = messageStore
-  )
-  if (!is.null(specifications)) {
-    checkmate::assertTRUE(
-      "drug_concept_id" %in% colnames(specifications),
+  if (is.character(imputeDuration)) {
+    checkmate::assertChoice(
+      imputeDuration,
+      choices = c("eliminate", "median", "mean", "quantile25", "quantile75"),
       add = messageStore
     )
-  }
-  if (imputeDuration == TRUE) {
-    checkmate::assertTRUE(
-      "default_duration" %in% colnames(specifications),
-      add = messageStore
-    )
-    if ("default_duration" %in% colnames(specifications)) {
-      checkmate::assertTRUE(
-        all(!is.na(specifications$default_duration)),
-        add = messageStore
-      )
-    }
-  }
-  if (imputeDailyDose == TRUE) {
-    checkmate::assertTRUE(
-      "default_daily_dose" %in% colnames(specifications),
-      add = messageStore
-    )
-    if ("default_daily_dose" %in% colnames(specifications)) {
-      checkmate::assertTRUE(
-        all(!is.na(specifications$default_daily_dose)),
-        add = messageStore
-      )
-    }
+  } else {
+    checkmate::assertCount(imputeDuration, positive = TRUE)
   }
 
-  # check studyStartDate is an integer
-  checkmate::assertDate(
-    studyStartDate,
-    add = messageStore,
-    null.ok = TRUE
-  )
+  if (is.character(imputeDailyDose)) {
+    checkmate::assertChoice(
+      imputeDailyDose,
+      choices = c("eliminate", "median", "mean", "quantile25", "quantile75"),
+      add = messageStore
+    )
+  } else {
+    checkmate::assertNumeric(imputeDailyDose, any.missing = FALSE, len = 1)
+  }
 
-  # check studyEndDate is an integer
-  checkmate::assertDate(
-    studyEndDate,
-    add = messageStore,
-    null.ok = TRUE
-  )
 
   # check summarize mode
   checkmate::assertChoice(
@@ -294,17 +235,19 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     add = messageStore
   )
 
-  # check imputeDuration is a character
-  checkmate::assertLogical(
-    imputeDuration,
-    add = messageStore
-  )
+  checkmate::assertChoice(
+    sexRestriction,
+    choices = c("Both", "Male", "Female"),
+    add = messageStore)
 
-  # check imputeDailyDose is a character
-  checkmate::assertLogical(
-    imputeDailyDose,
-    add = messageStore
-  )
+
+  if(is.numeric(ageRestriction) && length(ageRestriction) == 1){
+    ageRestriction = c(ageRestriction, ageRestriction)
+  }
+
+  checkmate::assertNumeric(
+    ageRestriction, len = 2,
+    add = messageStore)
 
   # check durationRange
   checkmate::assertNumeric(
@@ -313,9 +256,11 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     null.ok = TRUE,
     add = messageStore
   )
+
   if (is.null(durationRange)) {
     durationRange <- c(NA, NA)
   }
+
   if (sum(is.na(durationRange)) == 0) {
     checkmate::assertTRUE(
       durationRange[1] <= durationRange[2],
@@ -340,30 +285,6 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     )
   }
 
-  # check drugUtilisationCohortName is a character
-  checkmate::assertCharacter(
-    drugUtilisationCohortName,
-    add = messageStore
-  )
-
-  # check overwrite
-  checkmate::assertLogical(
-    overwrite,
-    add = messageStore
-  )
-
-  # assert that the cohort can be instantiated (warning if overwrite = TRUE,
-  # error if overwrite = FALSE)
-
-  # check instantiateInfo
-  checkmate::assertLogical(
-    instantiateInfo,
-    add = messageStore
-  )
-  if (isTRUE(instantiateInfo)) {
-    # assert that the second table can be instantiated (warning if
-    # overwrite = TRUE, error if overwrite = FALSE)
-  }
 
   # check verbose
   checkmate::assertLogical(verbose, add = messageStore)
@@ -388,36 +309,70 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
   checkmate::reportAssertions(collection = messageStore)
 
-  if (is.null(specifications)) {
-    specifications <- cdm[["drug_strength"]] %>%
+  if (!is.null(ConceptSetPath)) {
+    conceptSets <- dplyr::tibble(concept_set_path = list.files(
+      path = here::here(ConceptSetPath), full.names = TRUE
+    ))
+    conceptSets <- conceptSets %>%
+      dplyr::filter(tools::file_ext(.data$concept_set_path) == "json")
+    conceptSets <- conceptSets %>%
+      dplyr::mutate(
+        concept_set_name =
+          tools::file_path_sans_ext(basename(.data$concept_set_path))
+      )
+    conceptSets <- conceptSets %>%
+      dplyr::mutate(cohort_definition_id = as.character(dplyr::row_number()))
+
+    tryCatch(
+      expr = conceptList <- readConceptSets(conceptSets),
+      error = function(e) {
+        stop("The json files are not properly formated OMOP concept sets.")
+      }
+    )
+
+    conceptList <- conceptList %>%
+      dplyr::filter(`.data$include_descendants` == FALSE) %>%
+      dplyr::union(
+        cdm[["concept_ancestor"]] %>%
+          dplyr::select(
+            "concept_id" = "ancestor_concept_id",
+            "descendant_concept_id"
+          ) %>%
+          dplyr::inner_join(
+            conceptList %>%
+              dplyr::filter(`.data$include_descendants`== TRUE),
+            copy = TRUE,
+            by = "concept_id"
+          ) %>%
+          dplyr::select(-"concept_id") %>%
+          dplyr::rename("concept_id" = "descendant_concept_id") %>%
+          dplyr::collect()
+      ) %>%
+      dplyr::select(-`.data$include_descendants`) %>%
+      dplyr::rename("drug_concept_id" = "concept_id")
+    # eliminate the ones that is_excluded = TRUE
+    conceptList <- conceptList %>%
+      dplyr::filter(.data$is_excluded == FALSE) %>%
+      dplyr::select("cohort_definition_id", "drug_concept_id") %>%
+      dplyr::anti_join(
+        conceptList %>%
+          dplyr::filter(.data$is_excluded == TRUE),
+        by = "drug_concept_id"
+      )
+
+  } else {
+    conceptList <- cdm[["drug_strength"]] %>%
       dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
       dplyr::select("drug_concept_id") %>%
       dplyr::collect()
   }
 
+
+
   # get sql dialect of the database
   dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
   # get the name of the info table
-  drugUtilisationTableDataName <- paste0(drugUtilisationCohortName, "_info")
 
-  # if specifications is not specified get all drug concept ids that contain a
-  # certain ingredient in drug_strangth table
-  # if (is.null(specifications)) {
-  #   specifications <- cdm[["drug_strength"]] %>%
-  #     dplyr::filter(
-  #       ingredient_concept_id == ingredientConceptId
-  #     ) %>%
-  #     select("drug_concept_id") %>%
-  #     collect()
-  # }
-
-  # select the specification variables that we are interested in
-  specifications <- specifications %>%
-    dplyr::select(
-      "drug_concept_id",
-      tidyselect::matches("default_duration"),
-      tidyselect::matches("default_daily_dose")
-    )
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
@@ -427,11 +382,52 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "drug_exposure_end_date", "quantity", "drug_exposure_id"
     ) %>%
     dplyr::inner_join(
-      specifications,
+      conceptList,
       by = "drug_concept_id",
       copy = TRUE
     ) %>%
     dplyr::compute()
+
+  if(sexRestriction == "Male"){
+    cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort%>%
+      dplyr::mutate(subject_id = person_id) %>%
+      dplyr::select("subject_id")
+
+    genderCohort <- getGender(
+      cdm,
+      "drugUtilisationCohort"
+    )
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::left_join(
+        genderCohort,
+        by = c(
+          "person_id"
+        )
+      ) %>%
+      dplyr::filter(any(.data$gender == "Male"|is.na(.data$gender))) %>%
+      dplyr::compute()
+  }
+
+  if(sexRestriction == "Female"){
+    cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort%>%
+      dplyr::mutate(subject_id = person_id) %>%
+      dplyr::select("subject_id")
+
+    genderCohort <- getGender(
+      cdm,
+      "drugUtilisationCohort"
+    )
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::left_join(
+        genderCohort,
+        by = c(
+          "person_id"
+        )
+      ) %>%
+      dplyr::filter(any(.data$gender == "Female"|is.na(.data$gender))) %>%
+      dplyr::compute()
+  }
+
 
   # if the summarize mode is 'FixedTime' get only the exposures in the certain
   # period of time after the first incident case.
@@ -477,18 +473,8 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     impute = imputeDuration,
     lowerBound = durationRange[1],
     upperBound = durationRange[2],
-    imputeValueName = "default_duration",
-    allowZero = FALSE
+    imputeValueName = "imputeDuration"
   )
-
-  # Compute the new drug_exposure_end_date based on the imputed new duration
-  if (imputeDuration == TRUE) {
-    drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::mutate(
-        drug_exposure_end_date = .data$drug_exposure_start_date +
-          as.integer(.data$days_exposed - 1)
-      )
-  }
 
   # We compute the daily dose using drugExposureDiagnostics function (to be
   # updated in the next interation as drugExposureDiagnostics does not work as
@@ -513,6 +499,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       )
   }
 
+
   # impute or eliminate the exposures that daily_dose does not fulfill the
   # conditions ( <0; <dailyDoseRange[1]; >dailyDoseRange[2])
   drugUtilisationCohort <- imputeVariable(
@@ -521,8 +508,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     impute = imputeDuration,
     lowerBound = dailyDoseRange[1],
     upperBound = dailyDoseRange[2],
-    imputeValueName = "default_daily_dose",
-    allowZero = TRUE
+    imputeValueName = "imputeDailyDose"
   )
 
   # get only the variables that we are interested in
@@ -555,10 +541,44 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     verbose = verbose
   )
 
+
+  cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort %>%
+    dplyr::mutate(cohort_start_date = dplyr::if_else(
+      !is.na(drug_exposure_start_date),drug_exposure_start_date,
+      start_interval),
+      subject_id = person_id
+    ) %>%
+    dplyr::select("cohort_start_date", "subject_id")%>%dplyr::distinct()
+
+
+
+  ageCohort <- getAge(
+    cdm,
+    "drugUtilisationCohort") %>%
+    dplyr::rename(drug_exposure_start_date = date_of_interest)
+
+
+  ageMin = ageRestriction[1]
+  ageMax = ageRestriction[2]
+  drugUtilisationCohort <- drugUtilisationCohort %>%
+    dplyr::mutate(drug_exposure_start_date = dplyr::if_else(
+      !is.na(drug_exposure_start_date),drug_exposure_start_date,
+      start_interval)) %>%
+    dplyr::left_join(
+      ageCohort,
+      by = c(
+        "person_id", "drug_exposure_start_date")) %>%
+    dplyr::filter(any(.data$age >= ageMin|is.na(.data$age)))%>%
+    dplyr::filter(any(.data$age <= ageMax|is.na(.data$age)))%>%
+    dplyr::compute()
+
   # continuousExposures function gets the considered dose for each of the
   # subexposures, solving the overlap between different exposures if multiple
   # exposures contribute to the same subexposure. This function also summarizes
   # the data at summarizeMode level.
+
+
+
   drugUtilisationCohort <- continuousExposures(
     x = drugUtilisationCohort,
     overlapMode = overlapMode,
@@ -571,7 +591,42 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   drugUtilisationCohort <- drugUtilisationCohort %>%
     dplyr::rename("subject_id" = "person_id") %>%
     dplyr::mutate(cohort_definition_id = 1)
+  cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort
 
+  priorDaysCohort <- getPriorHistoryCohortEntry(
+    cdm,
+    "drugUtilisationCohort"
+  )
+  drugUtilisationCohort <- drugUtilisationCohort %>%
+    dplyr::left_join(
+      priorDaysCohort,
+      by = c(
+        "subject_id", "cohort_definition_id",
+        "cohort_start_date", "cohort_end_date"
+      )
+    ) %>%
+    dplyr::filter(any(.data$number_of_days >= .env$cohortEntryPriorHistory|is.na(.data$number_of_days))) %>%
+    dplyr::compute()
+
+
+
+
+
+
+
+  # check studyStartDate is an integer
+  checkmate::assertDate(
+    studyStartDate,
+    add = messageStore,
+    null.ok = TRUE
+  )
+
+  # check studyEndDate is an integer
+  checkmate::assertDate(
+    studyEndDate,
+    add = messageStore,
+    null.ok = TRUE
+  )
 
   if (!is.null(studyStartDate)) {
     drugUtilisationCohort <- drugUtilisationCohort %>%
@@ -589,45 +644,54 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       dplyr::compute()
   }
 
-  # priorDaysCohort <- CohortProfiles::getPriorHistoryCohortEntry(
-  #   cdm,
-  #   drugUtilisationCohortName
-  # )
-  # drugUtilisationCohort <- drugUtilisationCohort %>%
-  #   dplyr::left_join(
-  #     priorDaysCohort,
-  #     by = c(
-  #       "subject_id", "cohort_definition_id",
-  #       "cohort_start_date", "cohort_end_date"
-  #     )
-  #   ) %>%
-  #   dplyr::filter(.data$number_of_days >= .env$cohortEntryPriorHistory) %>%
-  #   dplyr::compute()
+  result <- NULL
 
-
-  cdm[[drugUtilisationCohortName]] <- computePermanent(
+  if(doseInformation == FALSE) {
+  result$cohort <-
     drugUtilisationCohort %>%
       dplyr::select(
         "cohort_definition_id", "subject_id", "cohort_start_date",
         "cohort_end_date"
-      ),
-    drugUtilisationCohortName,
-    schema = attr(cdm, "write_schema"),
-    overwrite = overwrite
-  )
+      )
 
-  if (instantiateInfo == TRUE) {
-    cdm[[drugUtilisationTableDataName]] <- computePermanent(
-      drugUtilisationCohort,
-      drugUtilisationTableDataName,
-      schema = attr(cdm, "write_schema"),
-      overwrite = overwrite
-    )
+  settingAll <- c(as.list(environment()))
+
+
+  settingAll <- settingAll[names(settingAll) %in% c("result", "drugUtilisationCohort",
+                                                    "cdm_drug_str_exists", "cdm_drug_exp_exists", "cdm",
+                                                    "dialect", "ConceptSetPath", "conceptSets",
+                                                    "messageStore") == FALSE]          # Remove list elements %in%
+
+
+  result$settings <- settingAll
   } else {
-    cdm[[drugUtilisationTableDataName]] <- drugUtilisationCohort
+    result$cohort <-
+      drugUtilisationCohort %>%
+      dplyr::select(
+        "cohort_definition_id", "subject_id", "cohort_start_date",
+        "cohort_end_date"
+      )
+
+    result$dose <- drugUtilisationCohort
+
+    settingAll <- c(as.list(environment()))
+
+
+    settingAll <- settingAll[names(settingAll) %in% c("result", "drugUtilisationCohort",
+                                                      "cdm_drug_str_exists", "cdm_drug_exp_exists", "cdm",
+                                                      "dialect", "ConceptSetPath", "conceptSets",
+                                                      "messageStore") == FALSE]          # Remove list elements %in%
+
+
+    result$settings <- settingAll
+
   }
 
-  return(cdm)
+
+
+
+
+  return(result)
 }
 
 #' Impute or eliminate values under a certain conditions
@@ -638,7 +702,6 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 #' @param lowerBound lowerBound
 #' @param upperBound upperBound
 #' @param imputeValueName imputeValueName
-#' @param allowZero allowZero
 #'
 #' @noRd
 imputeVariable <- function(x,
@@ -646,63 +709,96 @@ imputeVariable <- function(x,
                            impute,
                            lowerBound,
                            upperBound,
-                           imputeValueName,
-                           allowZero) {
+                           imputeValueName) {
   # rename the variable of interest to variable
   x <- x %>%
     dplyr::rename("variable" = .env$variableName)
-  # identify (as impute = 1) the values that are smaller than zero (smaller or
-  # equal than zero when allowZero = FALSE)
-  if (isTRUE(allowZero)) {
-    x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        is.na(.data$variable) | .data$variable < 0,
-        1,
-        0
-      ))
-  } else {
-    x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        is.na(.data$variable) | .data$variable <= 0,
-        1,
-        0
-      ))
-  }
+  # identify (as impute = 1)
+  x <- x %>%
+    dplyr::mutate(impute = dplyr::if_else(
+      is.na(.data$variable),
+      1,
+      0))
+
   # identify (as impute = 1) the values smaller than lower bound
   if (!is.na(lowerBound)) {
     x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        .data$variable < .env$lowerBound,
-        1,
-        .data$impute
-      ))
+      dplyr::mutate(impute = dplyr::if_else(is.na(.data$variable),1,
+                                            dplyr::if_else(
+                                              .data$variable < .env$lowerBound,
+                                              1,
+                                              .data$impute)
+                                            ))
   }
   # identify (as impute = 1) the values greater than upper bound
   if (!is.na(upperBound)) {
     x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        .data$variable > .env$upperBound,
-        1,
-        .data$impute
-      ))
+      dplyr::mutate(impute = dplyr::if_else(is.na(.data$variable),1,
+                                            dplyr::if_else(
+                                              .data$variable > .env$upperBound,
+                                              1,
+                                              .data$impute)
+                                            ))
   }
   # if impute is false then all values with impute = 1 are not considered
-  if (isFALSE(impute)) {
+  if (impute == "eliminate") {
     x <- x %>%
       dplyr::filter(.data$impute == 0)
-  } else {
-    # if impute id true then all values with impute = 1 are imputed according to
-    # the imputeValue column
+  }
+
+  if (impute == "median") {
+    x <- x %>% dplyr::mutate(variable = dplyr::if_else(
+          .data$impute == 1,
+          stats::median(x %>% dplyr::filter(.data$impute == 0) %>%
+                          dplyr::pull("variable")),
+          .data$variable
+        ))
+
+  }
+
+
+  if (impute == "mean") {
+    x <- x %>% dplyr::mutate(variable = dplyr::if_else(
+      .data$impute == 1,
+      base::mean(x %>% dplyr::filter(.data$impute == 0) %>%
+             dplyr::pull("variable")),
+      .data$variable))}
+    # %>%
+      # dplyr::rename(!!imputeValueName := "imputeValue")
+
+  if (impute == "quantile25") {
+    x <- x %>% dplyr::mutate(variable = dplyr::if_else(
+      .data$impute == 1,
+      as.numeric(stats::quantile(x %>% dplyr::filter(.data$impute == 0) %>%
+                    dplyr::pull("variable"), 0.25)),
+      .data$variable
+    ))
+  }
+
+
+  if (impute == "quantile75") {
+    x <- x %>% dplyr::mutate(variable = dplyr::if_else(
+      .data$impute == 1,
+      as.numeric(stats::quantile(x %>% dplyr::filter(.data$impute == 0) %>%
+                        dplyr::pull("variable"), 0.75)),
+      .data$variable
+    ))
+  }
+
+
+  if (is.numeric(impute)) {
     x <- x %>%
       dplyr::rename("imputeValue" = .env$imputeValueName) %>%
       dplyr::mutate(variable = dplyr::if_else(
         .data$impute == 1,
         .data$imputeValue,
-        .data$variable
-      )) %>%
-      dplyr::rename(!!imputeValueName := "imputeValue")
+        .data$variable))
   }
-  # impute value id eliminated and variable name is renamed to its original name
+
+  if (imputeValueName == "imputeDuration") {
+    x <- x %>% dplyr::mutate(variable = as.integer(variable))
+  }
+
   x <- x %>%
     dplyr::select(-"impute") %>%
     dplyr::rename(!!variableName := "variable")
@@ -1334,9 +1430,9 @@ continuousExposures <- function(x,
     } else if (overlapMode == "Maximum") {
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
-        # dplyr::filter(
-        #   .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
-        # )%>%
+        dplyr::filter(
+          .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
+        )%>%
         dplyr::distinct()
       # if the overlapMode is "Sum" (all exposure are considered)
     } else if (overlapMode == "Sum") {
@@ -1348,9 +1444,9 @@ continuousExposures <- function(x,
     } else if (overlapMode == "Minimum") {
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
-        # dplyr::filter(
-        #   .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
-        # ) %>%
+        dplyr::filter(
+          .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
+        ) %>%
         dplyr::distinct()
     }
     multipleExposures <- multipleExposures %>%
@@ -1404,4 +1500,36 @@ continuousExposures <- function(x,
     dplyr::compute()
 
   return(personSummary)
+}
+
+
+
+
+readConceptSets <- function(conceptSets) {
+  for (k in 1:nrow(conceptSets)) {
+    conceptSetName <- conceptSets$concept_set_name[k]
+    conceptSet <- RJSONIO::fromJSON(conceptSets$concept_set_path[k])
+    conceptSet <- lapply(conceptSet$items, function(x) {
+      x <- append(x, x[["concept"]])
+      x[["concept"]] <- NULL
+      return(x)
+    }) %>%
+      dplyr::bind_rows() %>%
+      dplyr::mutate(
+        cohort_definition_id = .env$conceptSets$cohort_definition_id[k]
+      )
+    if (k == 1) {
+      conceptList <- conceptSet
+    } else {
+      conceptList <- rbind(conceptList, conceptSet)
+    }
+  }
+  conceptList <- conceptList %>%
+    dplyr::select(
+      "cohort_definition_id",
+      "concept_id" = "CONCEPT_ID",
+      "is_excluded" = "isExcluded",
+      ".data$include_descendants" = "includeDescendants"
+    )
+  return(conceptList)
 }

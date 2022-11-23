@@ -8,7 +8,7 @@
 instantiateDrugUtilisationCohorts(
   cdm,
   ingredientConceptId,
-  specifications = NULL,
+  ConceptSetPath = NULL,
   studyStartDate = NULL,
   studyEndDate = NULL,
   summarizeMode = "AllEras",
@@ -18,13 +18,13 @@ instantiateDrugUtilisationCohorts(
   eraJoinMode = "Previous",
   overlapMode = "Previous",
   sameIndexMode = "Sum",
-  imputeDuration = FALSE,
-  imputeDailyDose = FALSE,
-  durationRange = NULL,
-  dailyDoseRange = NULL,
-  drugUtilisationCohortName = "dus_cohort",
-  overwrite = TRUE,
-  instantiateInfo = FALSE,
+  doseInformation = TRUE,
+  sexRestriction = "Both",
+  ageRestriction = c(0, 150),
+  imputeDuration = "eliminate",
+  imputeDailyDose = "eliminate",
+  durationRange = c(1, NA),
+  dailyDoseRange = c(0, NA),
   verbose = FALSE
 )
 }
@@ -37,20 +37,6 @@ it. It is a compulsory input, no default value is provided.}
 
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
-
-\item{specifications}{Tibble with one to three columns. First column
-(drug_concept_id) contains the OMOP drug concept id of the drugs of interest.
-The first column is compulsory if the argument is provided. Second column
-(default_duration) is only required if 'imputeDuration' = TRUE, then zero,
-negative or outside range ('durationRange') durations are imputed by the
-provided value. Third column (default_daily_dose) is only required if
-'imputeDailyDose' = TRUE, then negative or outside range ('dailyDoseRange)
-daily doses are imputed by the provided value. DrugExposureDiagnostics is a
-package that can be used to generate the specifications file. If it is NULL
-all drug concept ids that contain the provided ingredientConceptId are
-considered, no imputation is allowed in this case. 'drug_strength' table is
-used to determine which are the drug_concept_id that contain a certain
-ingredient. By default: NULL.}
 
 \item{studyStartDate}{Minimum date where the incident exposed eras should
 start to be considered. Only incident exposed eras larger than StudyStartDate
@@ -103,7 +89,7 @@ By default: "Previous".}
 start on the same day is solved inside a subexposure. There are five possible
 options:
 "Previous" the considered daily_dose is the one of the earliest exposure.
-
+"Subsequent" the considered daily_dose is the one of the new exposure that
 starts in that subexposure.
 "Minimum" the considered daily_dose is the minimum of all of the exposures in
 the subexposure.
@@ -112,9 +98,6 @@ the subexposure.
 "Sum" the considered daily_dose is the sum of all the exposures present in
 the subexposure.
 By default: "Previous".}
-
-=======
-
 
 \item{sameIndexMode}{How the overlapping between two exposures that start on
 the same day is solved inside a subexposure. There are five possible options:
@@ -125,6 +108,8 @@ the subexposure.
 "Sum" the considered daily_dose is the sum of all the exposures present in
 the subexposure.
 By default: "Sum".}
+
+\item{ageRestriction}{}
 
 \item{imputeDuration}{Whether the duration should be imputed (imputeDuration
 = TRUE) or the exposure should be dismissed (imputeDuration = FALSE) when the
@@ -145,17 +130,6 @@ should be a numeric vector of length two, with no NAs and the first value
 should be equal or smaller than the second one. It is only required if
 imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
 NULL.}
-
-\item{drugUtilisationCohortName}{Name of the table that will be instantiated
-in the database in the 'write_schema'. By default: "dus_cohort".}
-
-\item{overwrite}{Whether the cohort overwrites the table if it already
-exists. By default: TRUE.}
-
-\item{instantiateInfo}{Whether the dosage summary is instantiated in the
-database or it is maintained as temporal table. The name of this table is the
-one provided in drugUtilisationCohortName adding "_dose_info" at the end, so by
-default its name is going to be "dus_cohort_dose_info". By default: FALSE.}
 
 \item{verbose}{Whether the code should print the process.
 
@@ -178,12 +152,6 @@ parameter value
 continuous exposures and exposed gaps.
 See this picture for a descriptive visualization of the terms previously
 described:
-\if{html}{
-  \out{<div style="text-align: center">}\figure{exposures_definitions.png}{options: style="width:750px;max-width:75\%;"}\out{</div>}
-}
-\if{latex}{
-  \out{\begin{center}}\figure{myfigure.png}\out{\end{center}}
-}
 }}
 }
 \value{
