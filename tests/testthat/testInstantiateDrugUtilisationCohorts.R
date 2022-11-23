@@ -598,7 +598,7 @@ test_that("test overlap mode", {
 
   expect_true(resultSecond$cumulative_dose == 1 / 2 + 20)
 
- # expect_true(resultMin$cumulative_dose == 1 + 20 / 9 * 8)
+  expect_true(resultMin$cumulative_dose == 1 + 20 / 9 * 8)
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
@@ -975,8 +975,8 @@ test_that("test not considered dose", {
 
 
 
-test_that("test concept from json",{
-  ConceptSetPath = here::here("extras/")
+test_that("test concept from json is running",{
+  ConceptSetPath = system.file(package = "DrugUtilisation")
 
   concept_ancestor <- dplyr::tibble(
     ancestor_concept_id = c(43144132,43144132,43144132, 40008920, 40008920, 40008920),
@@ -1002,7 +1002,7 @@ test_that("test concept from json",{
                                     verbose = FALSE)
 
 
-
+  expect_true(!is.null(test))
 })
 
 

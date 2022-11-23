@@ -400,14 +400,16 @@ getPriorHistoryCohortEntry <- function(cdm, cohortTable, cohortIds = NULL) {
       dplyr::filter(.data$cohort_start_date < .data$observation_period_end_date) %>%
       dplyr::filter(.data$cohort_start_date >= .data$observation_period_start_date) %>%
       dplyr::mutate(number_of_days = dbplyr::sql(sqlDiffDays(CDMConnector::dbms(attr(cdm, "dbcon")), "observation_period_start_date", "cohort_start_date"))) %>%
-      dplyr::select(cohort_definition_id, subject_id, cohort_start_date, cohort_end_date, number_of_days)
+      dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date",
+                    "cohort_end_date", "number_of_days")
   } else {
     cdm[[cohortTable]] %>%
       dplyr::left_join(cdm$observation_period, by = c("subject_id" = "person_id")) %>%
       dplyr::filter(.data$cohort_start_date < .data$observation_period_end_date) %>%
       dplyr::filter(.data$cohort_start_date >= .data$observation_period_start_date) %>%
       dplyr::mutate(number_of_days = dbplyr::sql(sqlDiffDays(CDMConnector::dbms(attr(cdm, "dbcon")), "observation_period_start_date", "cohort_start_date"))) %>%
-      dplyr::select(cohort_definition_id, subject_id, cohort_start_date, cohort_end_date, number_of_days)
+      dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date",
+                    "cohort_end_date", "number_of_days")
   }
 }
 

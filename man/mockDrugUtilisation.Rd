@@ -41,9 +41,13 @@ mockDrugUtilisation(
 
 \item{condition_occurrence}{default null user can define its own table}
 
+\item{concept_ancestor}{the concept ancestor table}
+
 \item{person}{default null user can define its own table}
 
 \item{drug_concept_id_size}{number of unique drug concept id}
+
+\item{ancestor_concept_id_size}{the size of ceoncept ancestor table}
 
 \item{condition_concept_id_size}{number of unique row in the concept table}
 

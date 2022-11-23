@@ -156,7 +156,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
         dplyr::rename("concept_id" = "descendant_concept_id") %>%
         dplyr::collect()
     ) %>%
-    dplyr::select(-".data$include_descendants") %>%
+    dplyr::select(-"include_descendants") %>%
     dplyr::rename("drug_concept_id" = "concept_id")
   # eliminate the ones that is_excluded = TRUE
   conceptList <- conceptList %>%
@@ -403,7 +403,7 @@ readConceptSets <- function(conceptSets) {
       "cohort_definition_id",
       "concept_id" = "CONCEPT_ID",
       "is_excluded" = "isExcluded",
-      ".data$include_descendants" = "includeDescendants"
+      "include_descendants" = "includeDescendants"
     )
   return(conceptList)
 }

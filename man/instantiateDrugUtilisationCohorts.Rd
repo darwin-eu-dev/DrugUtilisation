@@ -38,6 +38,8 @@ it. It is a compulsory input, no default value is provided.}
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
 
+\item{ConceptSetPath}{File or path to json file of concept}
+
 \item{studyStartDate}{Minimum date where the incident exposed eras should
 start to be considered. Only incident exposed eras larger than StudyStartDate
 are allowed. If it is NULL no restriction is applied. By default: NULL.}
@@ -109,7 +111,11 @@ the subexposure.
 the subexposure.
 By default: "Sum".}
 
-\item{ageRestriction}{}
+\item{doseInformation}{Whether output dose information or not, default as TRUE}
+
+\item{sexRestriction}{restriction for sex in output, default as "both", could be "female" or "male"}
+
+\item{ageRestriction}{restriction for age range, should be a list of two numbers, default as c(0, 150)}
 
 \item{imputeDuration}{Whether the duration should be imputed (imputeDuration
 = TRUE) or the exposure should be dismissed (imputeDuration = FALSE) when the

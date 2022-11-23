@@ -40,6 +40,8 @@
 #' @param latest_condition_start_date the latest condition start date for patient format "dd-mm-yyyy"
 #' @param min_days_to_condition_end the minimum number of days of the condition integer
 #' @param max_days_to_condition_end the maximum number of days of the condition integer
+#' @param concept_ancestor the concept ancestor table
+#' @param ancestor_concept_id_size the size of ceoncept ancestor table
 #'
 #' @return
 #' @export

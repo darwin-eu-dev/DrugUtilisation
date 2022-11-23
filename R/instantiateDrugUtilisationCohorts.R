@@ -122,10 +122,10 @@
 #' continuous exposures and exposed gaps.
 #' See this picture for a descriptive visualization of the terms previously
 #' described:
-#' @param ConceptSetPath
-#' @param doseInformation
-#' @param sexRestriction
-#' @param ageRestriction
+#' @param ConceptSetPath File or path to json file of concept
+#' @param doseInformation Whether output dose information or not, default as TRUE
+#' @param sexRestriction restriction for sex in output, default as "both", could be "female" or "male"
+#' @param ageRestriction restriction for age range, should be a list of two numbers, default as c(0, 150)
 #'
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
@@ -331,7 +331,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     )
 
     conceptList <- conceptList %>%
-      dplyr::filter(`.data$include_descendants` == FALSE) %>%
+      dplyr::filter(.data$include_descendants == FALSE) %>%
       dplyr::union(
         cdm[["concept_ancestor"]] %>%
           dplyr::select(
@@ -340,7 +340,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
           ) %>%
           dplyr::inner_join(
             conceptList %>%
-              dplyr::filter(`.data$include_descendants`== TRUE),
+              dplyr::filter(.data$include_descendants == TRUE),
             copy = TRUE,
             by = "concept_id"
           ) %>%
@@ -348,7 +348,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
           dplyr::rename("concept_id" = "descendant_concept_id") %>%
           dplyr::collect()
       ) %>%
-      dplyr::select(-`.data$include_descendants`) %>%
+      dplyr::select(-"include_descendants") %>%
       dplyr::rename("drug_concept_id" = "concept_id")
     # eliminate the ones that is_excluded = TRUE
     conceptList <- conceptList %>%
@@ -390,7 +390,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
   if(sexRestriction == "Male"){
     cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort%>%
-      dplyr::mutate(subject_id = person_id) %>%
+      dplyr::mutate(subject_id = .data$person_id) %>%
       dplyr::select("subject_id")
 
     genderCohort <- getGender(
@@ -410,7 +410,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
   if(sexRestriction == "Female"){
     cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort%>%
-      dplyr::mutate(subject_id = person_id) %>%
+      dplyr::mutate(subject_id = .data$person_id) %>%
       dplyr::select("subject_id")
 
     genderCohort <- getGender(
@@ -544,9 +544,9 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
   cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort %>%
     dplyr::mutate(cohort_start_date = dplyr::if_else(
-      !is.na(drug_exposure_start_date),drug_exposure_start_date,
-      start_interval),
-      subject_id = person_id
+      !is.na(.data$drug_exposure_start_date),.data$drug_exposure_start_date,
+      .data$start_interval),
+      subject_id = .data$person_id
     ) %>%
     dplyr::select("cohort_start_date", "subject_id")%>%dplyr::distinct()
 
@@ -555,15 +555,15 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   ageCohort <- getAge(
     cdm,
     "drugUtilisationCohort") %>%
-    dplyr::rename(drug_exposure_start_date = date_of_interest)
+    dplyr::rename("drug_exposure_start_date" = "date_of_interest")
 
 
   ageMin = ageRestriction[1]
   ageMax = ageRestriction[2]
   drugUtilisationCohort <- drugUtilisationCohort %>%
     dplyr::mutate(drug_exposure_start_date = dplyr::if_else(
-      !is.na(drug_exposure_start_date),drug_exposure_start_date,
-      start_interval)) %>%
+      !is.na(.data$drug_exposure_start_date),.data$drug_exposure_start_date,
+      .data$start_interval)) %>%
     dplyr::left_join(
       ageCohort,
       by = c(
@@ -605,7 +605,8 @@ instantiateDrugUtilisationCohorts <- function(cdm,
         "cohort_start_date", "cohort_end_date"
       )
     ) %>%
-    dplyr::filter(any(.data$number_of_days >= .env$cohortEntryPriorHistory|is.na(.data$number_of_days))) %>%
+    dplyr::filter(any(.data$number_of_days >= .env$cohortEntryPriorHistory|
+                        is.na(.data$number_of_days))) %>%
     dplyr::compute()
 
 
@@ -796,7 +797,7 @@ imputeVariable <- function(x,
   }
 
   if (imputeValueName == "imputeDuration") {
-    x <- x %>% dplyr::mutate(variable = as.integer(variable))
+    x <- x %>% dplyr::mutate(variable = as.integer(.data$variable))
   }
 
   x <- x %>%
@@ -1529,7 +1530,7 @@ readConceptSets <- function(conceptSets) {
       "cohort_definition_id",
       "concept_id" = "CONCEPT_ID",
       "is_excluded" = "isExcluded",
-      ".data$include_descendants" = "includeDescendants"
+      "include_descendants" = "includeDescendants"
     )
   return(conceptList)
 }
