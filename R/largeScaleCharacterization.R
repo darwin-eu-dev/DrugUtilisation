@@ -126,9 +126,9 @@ largeScaleCharacterization <- function(cdm,
   )
 
   # check targetCohortId
-  checkmate::assertCount(
+  checkmate::assertIntegerish(
     targetCohortId,
-    positive = TRUE,
+    lower = 1,
     null.ok = TRUE,
     add = errorMessage
   )

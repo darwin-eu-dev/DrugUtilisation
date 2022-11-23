@@ -1,5 +1,5 @@
-devtools::load_all()
-test_that("mock db: checks inputs", {
+
+test_that("mock db: checks example", {
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 2),
@@ -76,8 +76,68 @@ test_that("mock db: checks inputs", {
   )
 
   resC <- res$characterization %>% dplyr::collect()
+  expect_true(nrow(resC) == 9)
+  expect_true(unique(resC$table_id) == 1)
+  expect_true(all(resC$window_id %in% c(1, 2, 3, 4, 9, 10, 11)))
+  expect_true(all(resC$window_id[resC$person_id == 1] %in% c(1, 9, 10, 11)))
+  expect_true(all(resC$window_id[resC$person_id == 2] %in% c(1, 2, 3, 4)))
+  expect_true(sum(resC$person_id == 2) == 4)
+  expect_true(sum(resC$person_id == 1) == 5)
+  expect_true(unique(resC$person_id[resC$cohort_start_date ==
+                                      as.Date("2020-03-01")]) == 2)
+  expect_true(unique(resC$person_id[resC$cohort_start_date ==
+                                      as.Date("2020-01-01")]) == 1)
+  expect_true(sum(resC$concept_id == 1) == 7)
+  expect_true(sum(resC$concept_id == 2) == 1)
+  expect_true(sum(resC$concept_id == 3) == 1)
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 2,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = FALSE
+  )
+  resC <- res$characterization %>% dplyr::collect()
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 2,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = TRUE
+  )
+  resC <- res$characterization %>% dplyr::collect()
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 1:2,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = FALSE
+  )
+  resC <- res$characterization %>% dplyr::collect()
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 1:2,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = TRUE
+  )
+  resC <- res$characterization %>% dplyr::collect()
+
+  resNULL <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = NULL,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = TRUE
+  )
+  expect_true(identical(resNULL$temporalWindows, res$temporalWindows))
+  expect_true(identical(resNULL$tablesToCharacterize, res$tablesToCharacterize))
+  expect_true(identical(resNULL$overlap, res$overlap))
+  expect_true(identical(resNULL$characterization %>% dplyr::collect(),
+                        res$characterization %>% dplyr::collect()))
 
 })
-
-library(ggplot2)
-ggplot(data = cdm$person)
