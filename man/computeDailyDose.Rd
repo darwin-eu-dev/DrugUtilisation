@@ -16,6 +16,8 @@ computeDailyDose(
 
 \item{cdm}{cdm}
 
+\item{ingredient_concept_id}{ingredient_concept_id}
+
 \item{verbose}{verbose}
 }
 \description{

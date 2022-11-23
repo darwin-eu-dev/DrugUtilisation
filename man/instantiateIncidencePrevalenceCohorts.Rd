@@ -2,36 +2,66 @@
 % Please edit documentation in R/instantiateIncidencePrevalenceCohorts.R
 \name{instantiateIncidencePrevalenceCohorts}
 \alias{instantiateIncidencePrevalenceCohorts}
-\title{Get the cohorts to compute incidence and prevalence}
+\title{Get the cohorts to compute incidence and prevalence. WARNING: only Standard
+codes are considered from the concept sets}
 \usage{
 instantiateIncidencePrevalenceCohorts(
   cdm,
-  conceptIds,
-  gapEra,
-  incidencePrevalenceCohortName,
-  cohortDefinitionId = NULL,
-  append = FALSE,
-  overWrite = TRUE,
-  verbose
+  conceptIds = NULL,
+  conceptSetFolder = NULL,
+  gapEra = 0,
+  incidencePrevalenceCohortName = "incidence_prevalence_dus_tables",
+  overwrite = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
-\item{cdm}{drug_exposure table from cdm}
+\item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
+must contain at least 'drug_exposure' and 'concept_ancestor' table. The 'cdm'
+object must contain the 'write_schema' as attribute and  the user should have
+permission to write on it. It is a compulsory input, no default value is
+provided.}
 
-\item{conceptIds}{conceptIds users want to compute era}
+\item{conceptIds}{List or vector of drug concept ids that form the concept
+set(s). Each element of the list is instantiated as as different cohort.
+'conceptIds' or 'conceptSetFolder' are compulsory inputs and one of them
+should be provided to instantiate the cohort(s).}
 
-\item{gapEra}{Maxmium gap for the gap Era}
+\item{conceptSetFolder}{Relative path from the root of the project to the
+folder where the concept set .json files are contained. It will be
+instantiated one cohort for each .json file. 'conceptIds' or
+'conceptSetFolder' are compulsory inputs and one of them should be provided
+to instantiate the cohort(s).}
 
-\item{incidencePrevalenceCohortName}{incidencePrevalenceCohortName}
+\item{gapEra}{Gap threshold between two consecutive exposures. If the number
+of non exposed days between two exposures is smaller or equal to 'gapEra'
+this non exposed days in between will be considered exposed. The input can be
+a vector then cohorts with the combinations of all concept sets and gaps will
+be instantiated. By default: 0.}
 
-\item{cohortDefinitionId}{cohortDefinitionId}
+\item{incidencePrevalenceCohortName}{Name of the table to be instantiated in
+the 'write_schema' of the database. By default:
+"incidence_prevalence_dus_tables".}
 
-\item{append}{append or compute table in cdm}
+\item{overwrite}{Weather or not overwrite the table if something is written
+there. By default: FALSE.}
 
-\item{overWrite}{overWrite}
-
-\item{verbose}{verbose}
+\item{verbose}{Weather or not the code should print the steps of the process.
+By default: FALSE.}
+}
+\value{
+This function return the reference of the cdm with the instantiated
+table. The instantiated table is a cohort table in OMOP format
+(cohort_definition_id, subject_id, cohort_start_date, cohort_end_date). The
+individuals will be in the cohort while considered exposed by the concept
+set used to create that cohort. This function also writes a csv file with
+the relation between the different cohort_definition_id, the name of the
+concept sets used and the gap between exposures considered. The file is named
+"equivalences.csv" and is written in the project origin (if no
+'conceptSetFolder' is provided) or in the same folder where the concept sets
+are.
 }
 \description{
-Get the cohorts to compute incidence and prevalence
+Get the cohorts to compute incidence and prevalence. WARNING: only Standard
+codes are considered from the concept sets
 }

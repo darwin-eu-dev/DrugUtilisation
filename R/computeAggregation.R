@@ -25,8 +25,7 @@
 #' @param indexYearMonthAggregation indexYearMonthAggregation
 #' @param initialDoseAggregation initialDoseAggregation
 #' @param meanDoseAggregation meanDoseAggregation
-#' @param indicationAggregation indicationAggregation
-#' @param indicationTableName indicationTableName
+#' @param cohortid cohortid stupid paramater
 #' @param aggregationTableName aggregationTableName
 #' @param verbose verbose
 #'
@@ -68,24 +67,24 @@ computeAggregation <- function(cdm,
   #check table inside cdm
   cdm_inherits_check <- inherits(cdm, "cdm_reference")
   checkmate::assertTRUE(cdm_inherits_check,
-                        add = error_message)
+                        add = errorMessage)
   if (!isTRUE(cdm_inherits_check)) {
-    error_message$push("- cdm must be a CDMConnector CDM reference object")
+    errorMessage$push("- cdm must be a CDMConnector CDM reference object")
   }
 
   #check if personsummaryname table exist
   cdm_personSummaryName_exists <-
     inherits(cdm$personSummaryName, "tbl_dbi")
-  checkmate::assertTRUE(cdm_personSummaryName_exists, add = error_message)
+  checkmate::assertTRUE(cdm_personSummaryName_exists, add = errorMessage)
   if (!isTRUE(cdm_personSummaryName_exists)) {
-    error_message$push("- person summary table is not found")
+    errorMessage$push("- person summary table is not found")
   }
   #check if patient table exist
   if (genderAggregation == TRUE | ageGroupsAgregation == TRUE) {
     cdm_person_exists <- inherits(cdm$person, "tbl_dbi")
-    checkmate::assertTRUE(cdm_person_exists, add = error_message)
+    checkmate::assertTRUE(cdm_person_exists, add = errorMessage)
     if (!isTRUE(cdm_person_exists)) {
-      error_message$push("- table `person` is not found")
+      errorMessage$push("- table `person` is not found")
     }
   }
 
@@ -93,9 +92,9 @@ computeAggregation <- function(cdm,
 
   cdm_aggregationTableName_exists <-
     inherits(cdm$aggregationTableName, "tbl_dbi")
-  checkmate::assertTRUE(cdm_aggregationTableName_exists, add = error_message)
+  checkmate::assertTRUE(cdm_aggregationTableName_exists, add = errorMessage)
   if (!isFALSE(cdm_aggregationTableName_exists)) {
-    error_message$push("output table already exist in database please specified a different name")
+    errorMessage$push("output table already exist in database please specified a different name")
   }
 
 
@@ -111,14 +110,14 @@ computeAggregation <- function(cdm,
   if (genderAggregation == TRUE) {
     #get gender from cohortprofile
     get_gender <-
-      CohortProfiles::getSex(cdm = cdm,
-                             cohortId = cohortid,
-                             cohortTable = personSummaryName)
+      getGender(cdm = cdm,
+        cohortId = cohortid,
+        cohortTable = personSummaryName)
 
 
     #join gender to input table
     get_gender <-
-      cdm[[personSummaryName]] %>% dplyr::left_join(get_gender %>% dplyr::select("subject_id", "sex"),
+      cdm[[personSummaryName]] %>% dplyr::left_join(get_gender %>% dplyr::select("subject_id", "gender"),
                                                     by = c("subject_id" = "person_id"))
 
 
@@ -126,7 +125,6 @@ computeAggregation <- function(cdm,
       dplyr::left_join(
         get_gender %>%
           ##dplyr::mutate(aggregation = "Gender") %>%
-          dplyr::mutate(gender = .data$sex) %>%
           dplyr::select("subject_id", "gender")
       )
   }
@@ -134,9 +132,9 @@ computeAggregation <- function(cdm,
   if (ageGroupsAgregation == TRUE) {
     #get age from cohortprofile
     get_age <-
-      CohortProfiles::getAge(cdm = cdm,
-                             cohortId = cohortid,
-                             cohortTable = personSummaryName)
+      getAge(cdm = cdm,
+        cohortId = cohortid,
+        cohortTable = personSummaryName)
 
 
     #join age to input table
@@ -148,8 +146,8 @@ computeAggregation <- function(cdm,
       groupName <- paste0(x[1], ";", x[2])
       return(
         get_age %>%
-          dplyr::filter(.data$age >= .env$x[1]) %>%
-          dplyr::filter(.data$age <= .env$x[2]) %>%
+          dplyr::filter(.data$age >= x[1]) %>%
+          dplyr::filter(.data$age <= x[2]) %>%
           ##dplyr::mutate(aggregation = "Age groups") %>%
           dplyr::mutate(age_group = groupName) %>%
           dplyr::select("subject_id", "age_group") %>%

@@ -38,13 +38,11 @@ computeAggregation(
 
 \item{meanDoseAggregation}{meanDoseAggregation}
 
+\item{cohortid}{cohortid stupid paramater}
+
 \item{aggregationTableName}{aggregationTableName}
 
 \item{verbose}{verbose}
-
-\item{indicationAggregation}{indicationAggregation}
-
-\item{indicationTableName}{indicationTableName}
 }
 \description{
 Explain function
