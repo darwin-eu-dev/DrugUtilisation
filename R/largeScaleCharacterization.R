@@ -16,100 +16,159 @@
 
 #' Explain function
 #'
-#' @param cdm cdm connection created with CDMConnector package
+#' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
+#' must contain the 'targetCohort' table and all the tables that we want to
+#' characterize. It is a compulsory input, no default value is provided.
 #' @param targetCohortName Name of the table in the cdm that contains the
-#' target cohort
-#' @param targetCohortId Cohort definition id for the analyzed target cohorts
-#' @param temporalWindows Temporal windows that we want to characterize
+#' target cohort that we want to characterize. It is a compulsory input, no
+#' default value is provided.
+#' @param targetCohortId Cohort definition id for the analyzed target cohorts.
+#' It can be a vector or a number. If it is NULL all cohorts are analyzed. By
+#' default: NULL.
+#' @param temporalWindows Temporal windows that we want to characterize. It must
+#' be a list of numeric vectors of length two. The tables will be characterized
+#' between the first element and the second element respect to the
+#' cohort_start_date of each individual. To refer to any time prior set NA the
+#' first element of the vector. To refer to any time after the index date set NA
+#' the second element of the vector. By default: list(c(NA, -366), c(-365, -90),
+#' c(-365, -31), c(-90, -1), c(-30, -1), c(0, 0), c(1, 30), c(1, 90),
+#' c(31, 365), c(91, 365), c(366, NA)).
 #' @param tablesToCharacterize Name of the tables in the cdm that we want to
-#' summarize
-#' @param characterizationTableName Name of the table that contains the large
-#' scale characterization
-#' @param permanentCharacterizationTable if we want the table to be instantiated
-#' as a permanent table or not
-#' @param verbose Explain the steps of the program
+#' summarize. The available tables to characterize are: "observation_period",
+#' "visit_occurrence", "condition_occurrence", "drug_exposure",
+#' "procedure_occurrence", "device_exposure", "measurement", "observation",
+#' "drug_era", "condition_era", "specimen" and "death". By default:
+#' c("condition_occurrence", "drug_era", "procedure_occurrence", "measurement").
+#' @param overlap Whether you want to consider overlaping events (overlap =
+#' TRUE) or only incident ones (overlpa = FALSE).
 #'
-#' @return
+#' @return The output of this function is a 3 elements list. First
+#' ("Characterization") is a reference to a temporal table in the database. It
+#' contains the characterization of the desired cohorts of interest. The cohorts
+#' of interest are specified using 'targetCohortId' and 'targetCohortName'. The
+#' characterized tables are the ones specified in 'tablesToChacaterize'. Second
+#' ("temporalWindows") contains the windows used to do the characaterization.
+#' Finally "overlap" is also included in the list.
+#'
 #' @export
 #'
 #' @examples
 largeScaleCharacterization <- function(cdm,
                                        targetCohortName,
                                        targetCohortId = NULL,
-                                       temporalWindows,
-                                       tablesToCharacterize,
-                                       characterizationTableName = "characterization",
-                                       permanentCharacterizationTable = FALSE,
-                                       verbose = FALSE) {
+                                       temporalWindows = list(
+                                         c(NA, -366), c(-365, -91),
+                                         c(-365, -31), c(-90, -1), c(-30, -1),
+                                         c(0, 0), c(1, 30), c(1, 90),
+                                         c(31, 365), c(91, 365), c(366, NA)
+                                       ),
+                                       tablesToCharacterize = c(
+                                         "condition_occurrence", "drug_era",
+                                         "procedure_occurrence", "measurement"
+                                       ),
+                                       overlap = TRUE) {
+  get_start_date <- list(
+    "visit_occurrence" = "visit_start_date",
+    "condition_occurrence" = "condition_start_date",
+    "drug_exposure" = "drug_exposure_start_date",
+    "procedure_occurrence" = "procedure_date",
+    "device_exposure" = "device_exposure_start_date",
+    "measurement" = "measurement_date",
+    "observation" = "observation_date",
+    "drug_era" = "drug_era_start_date",
+    "condition_era" = "condition_era_start_date",
+    "specimen" = "specimen_date"
+  )
+
+  get_end_date <- list(
+    "visit_occurrence" = "visit_end_date",
+    "condition_occurrence" = "condition_end_date",
+    "drug_exposure" = "drug_exposure_start_date",
+    "procedure_occurrence" = NULL,
+    "device_exposure" = "device_exposure_end_date",
+    "measurement" = NULL,
+    "observation" = NULL,
+    "drug_era" = "drug_era_end_date",
+    "condition_era" = "condition_era_end_date",
+    "specimen" = NULL
+  )
+
+  get_concept <- list(
+    "visit_occurrence" = "visit_concept_id",
+    "condition_occurrence" = "condition_concept_id",
+    "drug_exposure" = "drug_exposure_concept_id",
+    "procedure_occurrence" = "procedure_concept_id",
+    "device_exposure" = "device_concept_id",
+    "measurement" = "measurement_concept_id",
+    "observation" = "observation_concept_id",
+    "drug_era" = "drug_concept_id",
+    "condition_era" = "condition_concept_id",
+    "specimen" = "specimen_concept_id"
+  )
 
   errorMessage <- checkmate::makeAssertCollection()
+
   # check cdm
-  cdm_inherits_check <- inherits(cdm, "cdm_reference")
-  checkmate::assertTRUE(cdm_inherits_check, add = errorMessage)
-  if (!isTRUE(cdm_inherits_check)) {
-    errorMessage$push("- cdm must be a CDMConnector CDM reference object")
-  }
+  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
+
   # check targetCohortName
   checkmate::assertCharacter(targetCohortName, len = 1, add = errorMessage)
-  if (length(targetCohortName) == 1 & is.character(targetCohortName)) {
-    targetCohortExist <- targetCohortName %in% names(cdm)
-    if (!isTRUE(targetCohortExist)) {
-      errorMessage$push("- targetCohortName is not in the cdm reference")
-    }
-    if (isTRUE(targetCohortExist)) {
-      checkmate::assertClass(
-        cdm[[targetCohortName]],
-        classes = "tbl_dbi",
-        add = errorMessage
-      )
-      checkmate::assertTRUE(
-        all(c(
-          "cohort_definition_id", "subject_id", "cohort_start_date",
-          "cohort_end_date"
-        ) %in% names(cdm[[targetCohortName]])),
-        add = errorMessage
-      )
-    }
-  }
-  if (is.numeric(targetCohortId)){
-    targetCohortId <- as.character(targetCohortId)
-  }
+
+  # check that targetCohortName point to a table that is a cohort
+  checkmate::assertTRUE(
+    all(c(
+      "cohort_definition_id",
+      "subject_id",
+      "cohort_start_date",
+      "cohort_end_date"
+    ) %in% colnames(cdm[[targetCohortName]])),
+    add = errorMessage
+  )
+
   # check targetCohortId
-  checkmate::assertCharacter(targetCohortId, null.ok = TRUE, add = errorMessage)
+  checkmate::assertIntegerish(
+    targetCohortId,
+    lower = 1,
+    null.ok = TRUE,
+    add = errorMessage
+  )
+
   # check temporalWindows
   checkmate::assertList(temporalWindows, min.len = 1, add = errorMessage)
   checkmate::assertTRUE(
     all(unlist(lapply(temporalWindows, length)) == 2),
     add = errorMessage
   )
+
   # check tablesToCharacterize
   checkmate::assertCharacter(
-    tablesToCharacterize, min.len = 1, add = errorMessage
-    )
-  checkmate::assertTRUE(
-    all(tablesToCharacterize %in% names(cdm)), add = errorMessage
-    )
-  # check characterizationTableName
-  checkmate::assertCharacter(
-    characterizationTableName, len = 1, add = errorMessage
+    tablesToCharacterize,
+    min.len = 1,
+    add = errorMessage
   )
-  #check permanentCharacterizationTable
-  checkmate::assertLogical(permanentCharacterizationTable, add = errorMessage)
-  #check verbose
-  checkmate::assertLogical(verbose, add = errorMessage)
+  checkmate::assertTRUE(
+    all(tablesToCharacterize %in% names(cdm)),
+    add = errorMessage
+  )
+  checkmate::assertTRUE(
+    all(tablesToCharacterize %in% names(get_start_date)),
+    add = errorMessage
+  )
+
+  # overlap
+  checkmate::assertLogical(overlap, len = 1, add = errorMessage)
+
   # report collection of errors
   checkmate::reportAssertions(collection = errorMessage)
 
   # setTemporalWindows inf to 40000
   temporalWindows <- lapply(temporalWindows, function(x) {
-    nam <- paste0(x[1], ";", x[2])
-    id_inf <- is.infinite(x)
-    id_pos <- x > 0
-    x[id_inf & id_pos] <- 99999
-    x[id_inf & !id_pos] <- -99999
-    x <- dplyr::as_tibble(t(x))
-    colnames(x) <- c("windowStart", "windowEnd")
-    x <- dplyr::mutate(x, windowName = nam)
+    nam <- paste0(
+      ifelse(is.na(x[1]), "Any", x[1]),
+      ";",
+      ifelse(is.na(x[2]), "Any", x[2])
+    )
+    x <- dplyr::tibble(windowStart = x[1], windowEnd = x[2], windowName = nam)
     return(x)
   }) %>%
     dplyr::bind_rows() %>%
@@ -123,58 +182,9 @@ largeScaleCharacterization <- function(cdm,
     target_cohort <- cdm[[targetCohortName]]
   }
 
-  target_cohort <- target_cohort %>%
-    dplyr::compute()
-
   subjects <- target_cohort %>%
     dplyr::select("person_id" = "subject_id", "cohort_start_date") %>%
-    dplyr::distinct() %>%
-    dplyr::compute()
-
-  get_start_date <- list(
-    "observation_period" = "observation_period_start_date",
-    "visit_occurrence" = "visit_start_date",
-    "condition_occurrence" = "condition_start_date",
-    "drug_exposure" = "drug_exposure_start_date",
-    "procedure_occurrence" = "procedure_date",
-    "device_exposure" = "device_exposure_start_date",
-    "measurement" = "measurement_date",
-    "observation" = "observation_date",
-    "drug_era" = "drug_era_start_date",
-    "condition_era" = "condition_era_start_date",
-    "specimen" = "specimen_date",
-    "death" = "death_date"
-  )
-
-  get_end_date <- list(
-    "observation_period" = "observation_period_end_date",
-    "visit_occurrence" = "visit_end_date",
-    "condition_occurrence" = "condition_end_date",
-    "drug_exposure" = "drug_exposure_start_date",
-    "procedure_occurrence" = NULL,
-    "device_exposure" = "device_exposure_end_date",
-    "measurement" = NULL,
-    "observation" = NULL,
-    "drug_era" = "drug_era_end_date",
-    "condition_era" = "condition_era_end_date",
-    "specimen" = NULL,
-    "death" = NULL
-  )
-
-  get_concept <- list(
-    "observation_period" = NULL,
-    "visit_occurrence" = "visit_concept_id",
-    "condition_occurrence" = "condition_start_date",
-    "drug_exposure" = "drug_exposure_concept_id",
-    "procedure_occurrence" = "procedure_concept_id",
-    "device_exposure" = "device_concept_id",
-    "measurement" = "measurement_concept_id",
-    "observation" = "observation_concept_id",
-    "drug_era" = "drug_concept_id",
-    "condition_era" = "condition_concept_id",
-    "specimen" = "specimen_concept_id",
-    "death" = NULL
-  )
+    dplyr::distinct()
 
   characterizedTable <- lapply(tablesToCharacterize, function(table_name) {
     start_date <- get_start_date[[table_name]]
@@ -182,10 +192,7 @@ largeScaleCharacterization <- function(cdm,
     concept_id <- get_concept[[table_name]]
 
     study_table <- cdm[[table_name]] %>%
-      dplyr::inner_join(target_cohort %>%
-                          dplyr::mutate(person_id = .data$subject_id),
-                        by = "person_id"
-      ) %>%
+      dplyr::inner_join(subjects, by = "person_id") %>%
       dplyr::rename("start_date" = .env$start_date)
     if (is.null(end_date)) {
       study_table <- study_table %>%
@@ -195,55 +202,80 @@ largeScaleCharacterization <- function(cdm,
         dplyr::rename("end_date" = .env$end_date)
     }
     study_table <- study_table %>%
-      dplyr::rename("covariate" = .env$concept_id) %>%
+      dplyr::rename("concept_id" = .env$concept_id) %>%
       dplyr::select(
         "person_id", "start_date", "end_date", "concept_id", "cohort_start_date"
       ) %>%
-      dplyr::mutate(table_id = dplyr::row_number()) %>%
-      dplyr::compute()
-
-    temporalWindows <- tidyr::expand_grid(
-      study_table$table_id,
-      temporalWindows$windowId
-    ) %>%
-      dplyr::left_join(temporalWindows, by = "windowId")
-
-    study_table <- study_table %>%
-      dplyr::left_join(temporalWindows,
-                       by = "table_id",
-                       copy = TRUE
-      ) %>%
-      dplyr::filter(.data$start_date <= .data$cohort_start_date - .data$window_end) %>%
-      dplyr::filter(.data$end_date >= .data$cohort_start_date - .data$window_start) %>%
-      dplyr::left_join(cdm[["concept"]],
-                       by = "concept_id"
-      ) %>%
-      dplyr::mutate(covariate = paste0(
-        .env$table_name, ": ", .data$concept_name)) %>%
-      dplyr::select(
-        "person_id",
+      dplyr::mutate(days_difference_start = dbplyr::sql(sqlDiffDays(
+        CDMConnector::dbms(attr(cdm, "dbcon")),
         "cohort_start_date",
-        "covariate",
-        "concept_id",
-        "window_name"
-      ) %>%
+        "start_date"
+      )))
+    if (isTRUE(overlap)) {
+      study_table <- study_table %>%
+        dplyr::mutate(days_difference_end = dbplyr::sql(sqlDiffDays(
+          CDMConnector::dbms(attr(cdm, "dbcon")),
+          "cohort_start_date",
+          "end_date"
+        )))
+    } else {
+      study_table <- study_table %>%
+        dplyr::mutate(days_difference_end = .data$days_difference_start)
+    }
+    study_table <- study_table %>%
       dplyr::compute()
 
-    return(study_table)
+    for(i in 1:nrow(temporalWindows)){
+      windowStart <- temporalWindows$windowStart[i]
+      windowEnd <- temporalWindows$windowEnd[i]
+      windowId <- temporalWindows$windowId[i]
+      if (!is.na(windowEnd) & is.na(windowStart)) {
+        study_table_i <- study_table %>%
+          dplyr::filter(.data$days_difference_start <= .env$windowEnd)
+      } else if (is.na(windowEnd) & !is.na(windowStart)) {
+        study_table_i <- study_table %>%
+          dplyr::filter(.data$days_difference_end >= .env$windowStart)
+      } else if (!is.na(windowEnd) & !is.na(windowStart)){
+        study_table_i <- study_table %>%
+          dplyr::filter(
+            .data$days_difference_start <= .env$windowEnd &
+              .data$days_difference_end >= .env$windowStart
+          )
+      }
+      study_table_i <- study_table_i %>%
+        dplyr::select("person_id", "concept_id", "cohort_start_date") %>%
+        dplyr::distinct() %>%
+        dplyr::mutate(window_id = .env$windowId) %>%
+        dplyr::compute()
+      if (i == 1){
+        study_tab <- study_table_i
+      } else {
+        study_tab <- study_tab %>%
+          dplyr::union_all(study_table_i)
+      }
+    }
+    study_tab <- study_tab %>% dplyr::compute()
+    return(study_tab)
   })
 
-  if (length(characterizedTable) > 1) {
-    namesTables <- names(characterizedTable)
-    characterizedTables <- characterizedTable[[namesTables[1]]]
-    for (i in 2:length(characterizedTable)) {
+  for (i in 1:length(characterizedTable)){
+    if (i == 1){
+      characterizedTables <- characterizedTable[[i]] %>%
+        dplyr::mutate(table_id = .env$i)
+    } else {
       characterizedTables <- characterizedTables %>%
-        dplyr::union(characterizedTable[[namesTables[i]]])
+        dplyr::union_all(
+          characterizedTable[[i]]%>%
+            dplyr::mutate(table_id = .env$i)
+        )
     }
-    characterizedTables <- characterizedTables %>%
-      dplyr::compute()
   }
 
-  cdm[[characterizationTableName]] <- characterizedTables
+  result <- list()
+  result$characterization <- characterizedTables %>% dplyr::compute()
+  result$temporalWindows <- temporalWindows
+  result$tablesToCharacterize <- tablesToCharacterize
+  result$overlap <- overlap
 
-  return(cdm)
+  return(result)
 }
