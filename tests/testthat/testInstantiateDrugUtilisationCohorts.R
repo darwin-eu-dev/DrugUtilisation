@@ -598,7 +598,11 @@ test_that("test overlap mode", {
 
   expect_true(resultSecond$cumulative_dose == 1 / 2 + 20)
 
+<<<<<<< HEAD
   expect_true(resultMin$cumulative_dose == 1 + 20 / 9 * 8)
+=======
+ expect_true(resultMin$cumulative_dose == 1 + 20 / 9 * 8)
+>>>>>>> eae547083ee4edf09e43fd18e6b6cfc8c92ec264
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

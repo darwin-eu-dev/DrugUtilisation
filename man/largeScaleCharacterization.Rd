@@ -8,33 +8,53 @@ largeScaleCharacterization(
   cdm,
   targetCohortName,
   targetCohortId = NULL,
-  temporalWindows,
-  tablesToCharacterize,
-  characterizationTableName = "characterization",
-  permanentCharacterizationTable = FALSE,
-  verbose = FALSE
+  temporalWindows = list(c(NA, -366), c(-365, -91), c(-365, -31), c(-90, -1), c(-30, -1),
+    c(0, 0), c(1, 30), c(1, 90), c(31, 365), c(91, 365), c(366, NA)),
+  tablesToCharacterize = c("condition_occurrence", "drug_era", "procedure_occurrence",
+    "measurement"),
+  overlap = TRUE
 )
 }
 \arguments{
-\item{cdm}{cdm connection created with CDMConnector package}
+\item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
+must contain the 'targetCohort' table and all the tables that we want to
+characterize. It is a compulsory input, no default value is provided.}
 
 \item{targetCohortName}{Name of the table in the cdm that contains the
-target cohort}
+target cohort that we want to characterize. It is a compulsory input, no
+default value is provided.}
 
-\item{targetCohortId}{Cohort definition id for the analyzed target cohorts}
+\item{targetCohortId}{Cohort definition id for the analyzed target cohorts.
+It can be a vector or a number. If it is NULL all cohorts are analyzed. By
+default: NULL.}
 
-\item{temporalWindows}{Temporal windows that we want to characterize}
+\item{temporalWindows}{Temporal windows that we want to characterize. It must
+be a list of numeric vectors of length two. The tables will be characterized
+between the first element and the second element respect to the
+cohort_start_date of each individual. To refer to any time prior set NA the
+first element of the vector. To refer to any time after the index date set NA
+the second element of the vector. By default: list(c(NA, -366), c(-365, -90),
+c(-365, -31), c(-90, -1), c(-30, -1), c(0, 0), c(1, 30), c(1, 90),
+c(31, 365), c(91, 365), c(366, NA)).}
 
 \item{tablesToCharacterize}{Name of the tables in the cdm that we want to
-summarize}
+summarize. The available tables to characterize are: "observation_period",
+"visit_occurrence", "condition_occurrence", "drug_exposure",
+"procedure_occurrence", "device_exposure", "measurement", "observation",
+"drug_era", "condition_era", "specimen" and "death". By default:
+c("condition_occurrence", "drug_era", "procedure_occurrence", "measurement").}
 
-\item{characterizationTableName}{Name of the table that contains the large
-scale characterization}
-
-\item{permanentCharacterizationTable}{if we want the table to be instantiated
-as a permanent table or not}
-
-\item{verbose}{Explain the steps of the program}
+\item{overlap}{Whether you want to consider overlaping events (overlap =
+TRUE) or only incident ones (overlpa = FALSE).}
+}
+\value{
+The output of this function is a 3 elements list. First
+("Characterization") is a reference to a temporal table in the database. It
+contains the characterization of the desired cohorts of interest. The cohorts
+of interest are specified using 'targetCohortId' and 'targetCohortName'. The
+characterized tables are the ones specified in 'tablesToChacaterize'. Second
+("temporalWindows") contains the windows used to do the characaterization.
+Finally "overlap" is also included in the list.
 }
 \description{
 Explain function
