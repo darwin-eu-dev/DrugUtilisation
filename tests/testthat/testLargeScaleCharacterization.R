@@ -1,5 +1,5 @@
 
-test_that("mock db: checks example", {
+test_that("mock db: checks example, summarise = FALSE", {
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 2),
@@ -47,7 +47,8 @@ test_that("mock db: checks example", {
     targetCohortName = "person",
     targetCohortId = 1,
     tablesToCharacterize = "condition_occurrence",
-    overlap = FALSE
+    overlap = FALSE,
+    summarise = FALSE
   )
 
   resC <- res$characterization %>% dplyr::collect()
@@ -72,7 +73,8 @@ test_that("mock db: checks example", {
     targetCohortName = "person",
     targetCohortId = 1,
     tablesToCharacterize = "condition_occurrence",
-    overlap = TRUE
+    overlap = TRUE,
+    summarise = FALSE
   )
 
   resC <- res$characterization %>% dplyr::collect()
@@ -96,7 +98,8 @@ test_that("mock db: checks example", {
     targetCohortName = "person",
     targetCohortId = 2,
     tablesToCharacterize = "condition_occurrence",
-    overlap = FALSE
+    overlap = FALSE,
+    summarise = FALSE
   )
   resC <- res$characterization %>% dplyr::collect()
 
@@ -105,7 +108,8 @@ test_that("mock db: checks example", {
     targetCohortName = "person",
     targetCohortId = 2,
     tablesToCharacterize = "condition_occurrence",
-    overlap = TRUE
+    overlap = TRUE,
+    summarise = FALSE
   )
   resC <- res$characterization %>% dplyr::collect()
 
@@ -114,7 +118,8 @@ test_that("mock db: checks example", {
     targetCohortName = "person",
     targetCohortId = 1:2,
     tablesToCharacterize = "condition_occurrence",
-    overlap = FALSE
+    overlap = FALSE,
+    summarise = FALSE
   )
   resC <- res$characterization %>% dplyr::collect()
 
@@ -123,7 +128,8 @@ test_that("mock db: checks example", {
     targetCohortName = "person",
     targetCohortId = 1:2,
     tablesToCharacterize = "condition_occurrence",
-    overlap = TRUE
+    overlap = TRUE,
+    summarise = FALSE
   )
   resC <- res$characterization %>% dplyr::collect()
 
@@ -132,7 +138,8 @@ test_that("mock db: checks example", {
     targetCohortName = "person",
     targetCohortId = NULL,
     tablesToCharacterize = "condition_occurrence",
-    overlap = TRUE
+    overlap = TRUE,
+    summarise = FALSE
   )
   expect_true(identical(resNULL$temporalWindows, res$temporalWindows))
   expect_true(identical(resNULL$tablesToCharacterize, res$tablesToCharacterize))
@@ -140,4 +147,250 @@ test_that("mock db: checks example", {
   expect_true(identical(resNULL$characterization %>% dplyr::collect(),
                         res$characterization %>% dplyr::collect()))
 
+})
+
+test_that("mock db: checks example, summarise = TRUE", {
+  cdm <- mockDrugUtilisation(
+    person = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 2, 2),
+      subject_id = c(1, 2, 1, 2),
+      cohort_start_date = as.Date(c(
+        "2020-01-01",
+        "2020-03-01",
+        "2020-04-01",
+        "2020-05-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-01",
+        "2020-03-01",
+        "2020-04-01",
+        "2020-05-01"
+      ))
+    ),
+    condition_occurrence = dplyr::tibble(
+      condition_occurrence_id = c(1, 2, 3, 4, 5, 6, 7),
+      person_id = c(1, 2, 1, 2, 1, 5, 1),
+      condition_concept_id = c(1, 1, 2, 1, 1, 1, 3),
+      condition_start_date = as.Date(c(
+        "2020-05-06",
+        "2019-09-04",
+        "2021-04-03",
+        "2005-11-12",
+        "2022-12-31",
+        "2020-06-02",
+        "2018-01-01"
+      )),
+      condition_end_date = as.Date(c(
+        "2020-10-06",
+        "2019-12-04",
+        "2021-05-03",
+        "2005-10-12",
+        "2022-12-31",
+        "2020-07-02",
+        "2018-01-01"
+      ))
+    )
+  )
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 1,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = FALSE,
+    summarise = TRUE,
+    minimumCellCount = 5
+  )
+
+  resC <- res$characterization
+
+  expect_true(nrow(resC) == 8)
+  expect_true(unique(resC$table_id) == 1)
+  expect_true(all(resC$window_id %in% c(1, 2, 3, 9, 10, 11)))
+  expect_true(sum(resC$concept_id == 1) == 6)
+  expect_true(sum(resC$concept_id == 2) == 1)
+  expect_true(sum(resC$concept_id == 3) == 1)
+  expect_true(all(resC$obscured == TRUE))
+  expect_true(all(is.na(resC$n)))
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 1,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = FALSE,
+    summarise = TRUE,
+    minimumCellCount = 0
+  )
+
+  resC <- res$characterization
+
+  expect_true(nrow(resC) == 8)
+  expect_true(unique(resC$table_id) == 1)
+  expect_true(all(resC$window_id %in% c(1, 2, 3, 9, 10, 11)))
+  expect_true(sum(resC$concept_id == 1) == 6)
+  expect_true(sum(resC$concept_id == 2) == 1)
+  expect_true(sum(resC$concept_id == 3) == 1)
+  expect_true(all(resC$obscured == FALSE))
+  expect_true(all(resC$n == 1))
+
+  cdm <- mockDrugUtilisation(
+    person = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 2, 2),
+      subject_id = c(1, 2, 1, 2),
+      cohort_start_date = as.Date(c(
+        "2020-01-01",
+        "2020-03-01",
+        "2020-04-01",
+        "2020-05-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-01",
+        "2020-03-01",
+        "2020-04-01",
+        "2020-05-01"
+      ))
+    ),
+    condition_occurrence = dplyr::tibble(
+      condition_occurrence_id = c(1, 2, 3, 4, 5, 6, 7, 8),
+      person_id = c(1, 2, 1, 2, 1, 5, 1, 1),
+      condition_concept_id = c(1, 1, 2, 1, 1, 1, 3, 3),
+      condition_start_date = as.Date(c(
+        "2020-05-06",
+        "2019-09-04",
+        "2021-04-03",
+        "2005-11-12",
+        "2022-12-31",
+        "2020-06-02",
+        "2018-01-01",
+        "2018-01-01"
+      )),
+      condition_end_date = as.Date(c(
+        "2020-10-06",
+        "2019-12-04",
+        "2021-05-03",
+        "2005-10-12",
+        "2022-12-31",
+        "2020-07-02",
+        "2018-01-01",
+        "2018-01-01"
+      ))
+    )
+  )
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 1,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = FALSE,
+    summarise = TRUE,
+    minimumCellCount = 0
+  )
+
+  resC <- res$characterization
+  expect_true(nrow(resC) == 8)
+  expect_true(unique(resC$table_id) == 1)
+  expect_true(all(resC$window_id %in% c(1, 2, 3, 9, 10, 11)))
+  expect_true(sum(resC$concept_id == 1) == 6)
+  expect_true(sum(resC$concept_id == 2) == 1)
+  expect_true(sum(resC$concept_id == 3) == 1)
+  expect_true(all(resC$obscured == FALSE))
+  expect_true(all(resC$n == 1))
+
+  cdm <- mockDrugUtilisation(
+    person = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 2, 2),
+      subject_id = c(1, 2, 1, 2),
+      cohort_start_date = as.Date(c(
+        "2020-01-01",
+        "2020-03-01",
+        "2020-04-01",
+        "2020-05-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-01",
+        "2020-03-01",
+        "2020-04-01",
+        "2020-05-01"
+      ))
+    ),
+    condition_occurrence = dplyr::tibble(
+      condition_occurrence_id = c(1, 2, 3, 4, 5, 6, 7, 8),
+      person_id = c(1, 2, 1, 2, 1, 5, 1, 2),
+      condition_concept_id = c(1, 1, 2, 1, 1, 1, 3, 3),
+      condition_start_date = as.Date(c(
+        "2020-05-06",
+        "2019-09-04",
+        "2021-04-03",
+        "2005-11-12",
+        "2022-12-31",
+        "2020-06-02",
+        "2018-01-01",
+        "2018-01-01"
+      )),
+      condition_end_date = as.Date(c(
+        "2020-10-06",
+        "2019-12-04",
+        "2021-05-03",
+        "2005-10-12",
+        "2022-12-31",
+        "2020-07-02",
+        "2018-01-01",
+        "2018-01-01"
+      ))
+    )
+  )
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 1,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = FALSE,
+    summarise = TRUE,
+    minimumCellCount = 0
+  )
+
+  resC <- res$characterization
+  expect_true(nrow(resC) == 8)
+  expect_true(unique(resC$table_id) == 1)
+  expect_true(all(resC$window_id %in% c(1, 2, 3, 9, 10, 11)))
+  expect_true(sum(resC$concept_id == 1) == 6)
+  expect_true(sum(resC$concept_id == 2) == 1)
+  expect_true(sum(resC$concept_id == 3) == 1)
+  expect_true(all(resC$obscured == FALSE))
+  expect_false(all(resC$n == 1))
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 1,
+    tablesToCharacterize = "condition_occurrence",
+    overlap = FALSE,
+    summarise = TRUE,
+    minimumCellCount = 2
+  )
+
+  resC <- res$characterization
+  expect_true(nrow(resC) == 8)
+  expect_true(unique(resC$table_id) == 1)
+  expect_true(all(resC$window_id %in% c(1, 2, 3, 9, 10, 11)))
+  expect_true(sum(resC$concept_id == 1) == 6)
+  expect_true(sum(resC$concept_id == 2) == 1)
+  expect_true(sum(resC$concept_id == 3) == 1)
+  expect_true(sum(resC$obscured == FALSE) == 1)
+  expect_true(sum(is.na(resC$n)) == 7)
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    tablesToCharacterize = "condition_occurrence",
+    overlap = FALSE,
+    summarise = TRUE,
+    minimumCellCount = 0
+  )
+
+  resC <- res$characterization
+  expect_true(all(c(1,2) %in% resC$cohort_definition_id))
 })
