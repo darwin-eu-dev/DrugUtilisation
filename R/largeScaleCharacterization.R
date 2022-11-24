@@ -294,6 +294,13 @@ largeScaleCharacterization <- function(cdm,
 
   characterizedTables <- characterizedTables %>% dplyr::compute()
 
+  # denominators
+  # denominator <- list()
+  # cdm$observation_period <-
+  # for (k in 1:nrow(temporalWindows)){
+  #
+  # }
+
   if (summarise == TRUE) {
     for (k in 1:length(targetCohortId)) {
       characterizedCohort <- targetCohort %>%
