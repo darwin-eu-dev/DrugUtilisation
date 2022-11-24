@@ -339,7 +339,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     ) %>%
     dplyr::summarise(
       cohort_start_date = min(.data$interval_start_date, na.rm = TRUE),
-      cohort_end_date = min(.data$interval_end_date, na.rm = TRUE),
+      cohort_end_date = max(.data$interval_end_date, na.rm = TRUE),
       .groups = "drop"
     )
   # Select the final variables and compute
@@ -351,7 +351,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::compute()
 
   # Instantiate the cohorts in the database as permanent tables
-  cdm[[incidencePrevalenceCohortName]] <-
+  cdm[[incidencePrevalenceCohortName]] <-incidencePrevalenceCohort
     computePermanent(
       incidencePrevalenceCohort,
       incidencePrevalenceCohortName,

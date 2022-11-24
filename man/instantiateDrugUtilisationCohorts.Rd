@@ -8,12 +8,12 @@
 instantiateDrugUtilisationCohorts(
   cdm,
   ingredientConceptId,
-  ConceptSetPath = NULL,
+  conceptSetPath = NULL,
   studyStartDate = NULL,
   studyEndDate = NULL,
   summarizeMode = "AllEras",
   studyTime,
-  cohortEntryPriorHistory = 180,
+  cohortEntryPriorHistory = 0,
   gapEra = 30,
   eraJoinMode = "Previous",
   overlapMode = "Previous",
@@ -38,7 +38,7 @@ it. It is a compulsory input, no default value is provided.}
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
 
-\item{ConceptSetPath}{File or path to json file of concept}
+\item{conceptSetPath}{File or path to json file of concept}
 
 \item{studyStartDate}{Minimum date where the incident exposed eras should
 start to be considered. Only incident exposed eras larger than StudyStartDate
@@ -64,7 +64,8 @@ ingredient of interest. Argument only considered if 'summarizeMode' =
 
 \item{cohortEntryPriorHistory}{Minimum number of days of prior history
 (observation time) required for the incident eras to be considered. By
-default: 180.}
+default: 0, meaning it has to be in observation_period table.
+When Null, we do not check if in observation_period table.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era. By default: 180.}
@@ -117,14 +118,12 @@ By default: "Sum".}
 
 \item{ageRestriction}{restriction for age range, should be a list of two numbers, default as c(0, 150)}
 
-\item{imputeDuration}{Whether the duration should be imputed (imputeDuration
-= TRUE) or the exposure should be dismissed (imputeDuration = FALSE) when the
-duration is negative, zero or outside durationRange. By default: FALSE.}
+\item{imputeDuration}{Whether/how the duration should be imputed
+"eliminate", "median", "mean", "quantile25", "quantile75".
+. By default: eliminate}
 
-\item{imputeDailyDose}{Whether the daily_dose should be imputed
-(imputeDailyDose = TRUE) or the exposure should be dismissed
-(imputeDailyDose = FALSE) when the daily_dose is negative or outside
-dailyDoseRange. By default: FALSE.}
+\item{imputeDailyDose}{Whether/ how the daily_dose should be imputed
+"eliminate", "median", "mean", "quantile25", "quantile75". By default: eliminate}
 
 \item{durationRange}{Range between the duration must be comprised. It should
 be a numeric vector of length two, with no NAs and the first value should be

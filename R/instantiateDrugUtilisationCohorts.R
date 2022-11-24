@@ -44,7 +44,8 @@
 #' "FixedTime". No default value is provided.
 #' @param cohortEntryPriorHistory Minimum number of days of prior history
 #' (observation time) required for the incident eras to be considered. By
-#' default: 180.
+#' default: 0, meaning it has to be in observation_period table.
+#' When Null, we do not check if in observation_period table.
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era. By default: 180.
 #' @param eraJoinMode How two different continuous exposures are joined in an
@@ -86,13 +87,11 @@
 #' "Sum" the considered daily_dose is the sum of all the exposures present in
 #' the subexposure.
 #' By default: "Sum".
-#' @param imputeDuration Whether the duration should be imputed (imputeDuration
-#' = TRUE) or the exposure should be dismissed (imputeDuration = FALSE) when the
-#' duration is negative, zero or outside durationRange. By default: FALSE.
-#' @param imputeDailyDose Whether the daily_dose should be imputed
-#' (imputeDailyDose = TRUE) or the exposure should be dismissed
-#' (imputeDailyDose = FALSE) when the daily_dose is negative or outside
-#' dailyDoseRange. By default: FALSE.
+#' @param imputeDuration Whether/how the duration should be imputed
+#' "eliminate", "median", "mean", "quantile25", "quantile75".
+#' . By default: eliminate
+#' @param imputeDailyDose Whether/ how the daily_dose should be imputed
+#' "eliminate", "median", "mean", "quantile25", "quantile75". By default: eliminate
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
 #' equal or smaller than the second one. It is only required if imputeDuration
@@ -122,7 +121,7 @@
 #' continuous exposures and exposed gaps.
 #' See this picture for a descriptive visualization of the terms previously
 #' described:
-#' @param ConceptSetPath File or path to json file of concept
+#' @param conceptSetPath File or path to json file of concept
 #' @param doseInformation Whether output dose information or not, default as TRUE
 #' @param sexRestriction restriction for sex in output, default as "both", could be "female" or "male"
 #' @param ageRestriction restriction for age range, should be a list of two numbers, default as c(0, 150)
@@ -134,12 +133,12 @@
 #' @examples
 instantiateDrugUtilisationCohorts <- function(cdm,
                                               ingredientConceptId,
-                                              ConceptSetPath = NULL,
+                                              conceptSetPath = NULL,
                                               studyStartDate = NULL,
                                               studyEndDate = NULL,
                                               summarizeMode = "AllEras",
                                               studyTime,
-                                              cohortEntryPriorHistory = 180,
+                                              cohortEntryPriorHistory = 0,
                                               gapEra = 30,
                                               eraJoinMode = "Previous",
                                               overlapMode = "Previous",
@@ -160,8 +159,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   # To check that cdm contains the desired tables in the desired format
 
   # check ingredient concept id is a count
-  checkmate::assertCount(
-    ingredientConceptId,
+  checkmate::assertCount(ingredientConceptId,
     add = messageStore
   )
 
@@ -188,29 +186,26 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
 
   # check summarize mode
-  checkmate::assertChoice(
-    summarizeMode,
+  checkmate::assertChoice(summarizeMode,
     choices = c("AllEras", "FirstEra", "FixedTime")
   )
 
   # check studyTime
   if (summarizeMode == "FixedTime") {
-    checkmate::assertCount(
-      studyTime,
+    checkmate::assertCount(studyTime,
       positive = TRUE,
       add = messageStore
     )
   }
 
   # check cohortEntryPriorHistory is an integer
-  checkmate::assertCount(
-    cohortEntryPriorHistory,
-    add = messageStore
+  checkmate::assertCount(cohortEntryPriorHistory,
+    add = messageStore,
+    null.ok = TRUE
   )
 
   # check gapEra is an integer
-  checkmate::assertCount(
-    gapEra,
+  checkmate::assertCount(gapEra,
     add = messageStore
   )
 
@@ -229,29 +224,39 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   )
 
   # check sameIndexMode
-  checkmate::assertChoice(
-    sameIndexMode,
+  checkmate::assertChoice(sameIndexMode,
     choices = c("Minimum", "Maximum", "Sum"),
     add = messageStore
   )
 
-  checkmate::assertChoice(
-    sexRestriction,
+  checkmate::assertChoice(sexRestriction,
     choices = c("Both", "Male", "Female"),
-    add = messageStore)
+    add = messageStore
+  )
 
+  # check studyStartDate is an integer
+  checkmate::assertDate(studyStartDate,
+    add = messageStore,
+    null.ok = TRUE
+  )
 
-  if(is.numeric(ageRestriction) && length(ageRestriction) == 1){
-    ageRestriction = c(ageRestriction, ageRestriction)
+  # check studyEndDate is an integer
+  checkmate::assertDate(studyEndDate,
+    add = messageStore,
+    null.ok = TRUE
+  )
+
+  if (is.numeric(ageRestriction) && length(ageRestriction) == 1) {
+    ageRestriction <- c(ageRestriction, ageRestriction)
   }
 
-  checkmate::assertNumeric(
-    ageRestriction, len = 2,
-    add = messageStore)
+  checkmate::assertNumeric(ageRestriction,
+    len = 2,
+    add = messageStore
+  )
 
   # check durationRange
-  checkmate::assertNumeric(
-    durationRange,
+  checkmate::assertNumeric(durationRange,
     len = 2,
     null.ok = TRUE,
     add = messageStore
@@ -262,15 +267,13 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   }
 
   if (sum(is.na(durationRange)) == 0) {
-    checkmate::assertTRUE(
-      durationRange[1] <= durationRange[2],
+    checkmate::assertTRUE(durationRange[1] <= durationRange[2],
       add = messageStore
     )
   }
 
   # check dailyDoseRange
-  checkmate::assertNumeric(
-    dailyDoseRange,
+  checkmate::assertNumeric(dailyDoseRange,
     len = 2,
     null.ok = TRUE,
     add = messageStore
@@ -279,8 +282,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     dailyDoseRange <- c(NA, NA)
   }
   if (sum(is.na(dailyDoseRange)) == 0) {
-    checkmate::assertTRUE(
-      dailyDoseRange[1] <= dailyDoseRange[2],
+    checkmate::assertTRUE(dailyDoseRange[1] <= dailyDoseRange[2],
       add = messageStore
     )
   }
@@ -294,24 +296,24 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   cdm_drug_exp_exists <- inherits(cdm$drug_exposure, "tbl_dbi")
   checkmate::assertTRUE(cdm_drug_exp_exists, add = messageStore)
   if (!isTRUE(cdm_drug_exp_exists)) {
-    messageStore$push(
-      "- table `drug exposure` is not found"
-    )
+    messageStore$push("- table `drug exposure` is not found")
   }
   # check drug strength table exist
   cdm_drug_str_exists <- inherits(cdm$drug_strength, "tbl_dbi")
   checkmate::assertTRUE(cdm_drug_str_exists, add = messageStore)
   if (!isTRUE(cdm_drug_str_exists)) {
-    messageStore$push(
-      "- table `drug strength` is not found"
-    )
+    messageStore$push("- table `drug strength` is not found")
   }
 
   checkmate::reportAssertions(collection = messageStore)
 
-  if (!is.null(ConceptSetPath)) {
+
+  messageStore <- checkmate::makeAssertCollection()
+
+    if (!is.null(conceptSetPath)) {
     conceptSets <- dplyr::tibble(concept_set_path = list.files(
-      path = here::here(ConceptSetPath), full.names = TRUE
+      path = here::here(conceptSetPath),
+      full.names = TRUE
     ))
     conceptSets <- conceptSets %>%
       dplyr::filter(tools::file_ext(.data$concept_set_path) == "json")
@@ -320,8 +322,15 @@ instantiateDrugUtilisationCohorts <- function(cdm,
         concept_set_name =
           tools::file_path_sans_ext(basename(.data$concept_set_path))
       )
+
+    if(dim(conceptSets)[1]>1){
+      messageStore$push("- only allow one json file")
+    }
+
+    checkmate::reportAssertions(collection = messageStore)
+
     conceptSets <- conceptSets %>%
-      dplyr::mutate(cohort_definition_id = as.character(dplyr::row_number()))
+      dplyr::mutate(cohort_definition_id = 1)
 
     tryCatch(
       expr = conceptList <- readConceptSets(conceptSets),
@@ -359,7 +368,6 @@ instantiateDrugUtilisationCohorts <- function(cdm,
           dplyr::filter(.data$is_excluded == TRUE),
         by = "drug_concept_id"
       )
-
   } else {
     conceptList <- cdm[["drug_strength"]] %>%
       dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
@@ -378,18 +386,21 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   # interested in.
   drugUtilisationCohort <- cdm[["drug_exposure"]] %>%
     dplyr::select(
-      "person_id", "drug_concept_id", "drug_exposure_start_date",
-      "drug_exposure_end_date", "quantity", "drug_exposure_id"
+      "person_id",
+      "drug_concept_id",
+      "drug_exposure_start_date",
+      "drug_exposure_end_date",
+      "quantity",
+      "drug_exposure_id"
     ) %>%
-    dplyr::inner_join(
-      conceptList,
+    dplyr::inner_join(conceptList,
       by = "drug_concept_id",
       copy = TRUE
     ) %>%
     dplyr::compute()
 
-  if(sexRestriction == "Male"){
-    cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort%>%
+  if (sexRestriction == "Male") {
+    cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort %>%
       dplyr::mutate(subject_id = .data$person_id) %>%
       dplyr::select("subject_id")
 
@@ -398,18 +409,15 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "drugUtilisationCohort"
     )
     drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::left_join(
-        genderCohort,
-        by = c(
-          "person_id"
-        )
+      dplyr::left_join(genderCohort,
+        by = c("person_id")
       ) %>%
-      dplyr::filter(any(.data$gender == "Male"|is.na(.data$gender))) %>%
+      dplyr::filter(.data$gender == "Male") %>%
       dplyr::compute()
   }
 
-  if(sexRestriction == "Female"){
-    cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort%>%
+  if (sexRestriction == "Female") {
+    cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort %>%
       dplyr::mutate(subject_id = .data$person_id) %>%
       dplyr::select("subject_id")
 
@@ -418,13 +426,10 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       "drugUtilisationCohort"
     )
     drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::left_join(
-        genderCohort,
-        by = c(
-          "person_id"
-        )
+      dplyr::left_join(genderCohort,
+        by = c("person_id")
       ) %>%
-      dplyr::filter(any(.data$gender == "Female"|is.na(.data$gender))) %>%
+      dplyr::filter(.data$gender == "Female") %>%
       dplyr::compute()
   }
 
@@ -435,35 +440,32 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     # first get the first exposure for each person
     drugUtilisationCohort <- drugUtilisationCohort %>%
       dplyr::group_by(.data$person_id) %>%
-      dplyr::mutate(
-        drug_exposure_end_date_max = min(
-          .data$drug_exposure_start_date,
-          na.rm = TRUE
-        )
-      ) %>%
+      dplyr::mutate(drug_exposure_end_date_max = min(.data$drug_exposure_start_date,
+        na.rm = TRUE
+      )) %>%
       dplyr::ungroup() %>%
       # compute its maximum possible end date
-      dplyr::mutate(
-        drug_exposure_end_date_max = as.Date(dbplyr::sql(sql_add_days(
-          CDMConnector::dbms(attr(cdm, "dbcon")),
+      dplyr::mutate(drug_exposure_end_date_max = as.Date(dbplyr::sql(
+        sql_add_days(
+          dialect,
           studyTime - 1,
           "drug_exposure_end_date_max"
-        )))
-      ) %>%
+        )
+      )), na.rm = TRUE) %>%
       # get only the exposures that start before the end date
-      dplyr::filter(
-        .data$drug_exposure_start_date <= .data$drug_exposure_end_date_max
-      )
+      dplyr::filter(.data$drug_exposure_start_date <= .data$drug_exposure_end_date_max)
   }
 
   # compute the number of days exposed according to:
   # days_exposed = end - start + 1
   drugUtilisationCohort <- drugUtilisationCohort %>%
-    dplyr::mutate(days_exposed = dbplyr::sql(sqlDiffDays(
-      CDMConnector::dbms(attr(cdm, "dbcon")),
-      "drug_exposure_start_date",
-      "drug_exposure_end_date"
-    )) + 1)
+    dplyr::mutate(days_exposed = dbplyr::sql(
+      sqlDiffDays(
+        dialect,
+        "drug_exposure_start_date",
+        "drug_exposure_end_date"
+      )
+    ) + 1)
 
   # impute or eliminate the exposures that duration does not fulfill the
   # conditions ( <=0; <durationRange[1]; >durationRange[2])
@@ -475,6 +477,14 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     upperBound = durationRange[2],
     imputeValueName = "imputeDuration"
   )
+
+  drugUtilisationCohort <- drugUtilisationCohort %>%
+    dplyr::mutate(days_to_add =  as.integer(days_exposed - 1)) %>%
+    dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(sql_add_days(
+      dialect,
+      "days_to_add",
+      "drug_exposure_start_date")))) %>%
+    dplyr::select(-days_to_add)
 
   # We compute the daily dose using drugExposureDiagnostics function (to be
   # updated in the next interation as drugExposureDiagnostics does not work as
@@ -505,7 +515,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   drugUtilisationCohort <- imputeVariable(
     x = drugUtilisationCohort,
     variableName = "daily_dose",
-    impute = imputeDuration,
+    impute = imputeDailyDose,
     lowerBound = dailyDoseRange[1],
     upperBound = dailyDoseRange[2],
     imputeValueName = "imputeDailyDose"
@@ -514,8 +524,11 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   # get only the variables that we are interested in
   drugUtilisationCohort <- drugUtilisationCohort %>%
     dplyr::select(
-      "person_id", "drug_exposure_id", "drug_exposure_start_date",
-      "drug_exposure_end_date", "daily_dose"
+      "person_id",
+      "drug_exposure_id",
+      "drug_exposure_start_date",
+      "drug_exposure_end_date",
+      "daily_dose"
     ) %>%
     dplyr::compute()
 
@@ -543,33 +556,41 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
 
   cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort %>%
-    dplyr::mutate(cohort_start_date = dplyr::if_else(
-      !is.na(.data$drug_exposure_start_date),.data$drug_exposure_start_date,
-      .data$start_interval),
+    dplyr::mutate(
+      cohort_start_date = dplyr::if_else(
+        !is.na(.data$drug_exposure_start_date),
+        .data$drug_exposure_start_date,
+        .data$start_interval
+      ),
       subject_id = .data$person_id
     ) %>%
-    dplyr::select("cohort_start_date", "subject_id")%>%dplyr::distinct()
+    dplyr::select("cohort_start_date", "subject_id") %>%
+    dplyr::distinct()
 
 
 
   ageCohort <- getAge(
     cdm,
-    "drugUtilisationCohort") %>%
+    "drugUtilisationCohort"
+  ) %>%
     dplyr::rename("drug_exposure_start_date" = "date_of_interest")
 
 
-  ageMin = ageRestriction[1]
-  ageMax = ageRestriction[2]
+  ageMin <- ageRestriction[1]
+  ageMax <- ageRestriction[2]
   drugUtilisationCohort <- drugUtilisationCohort %>%
-    dplyr::mutate(drug_exposure_start_date = dplyr::if_else(
-      !is.na(.data$drug_exposure_start_date),.data$drug_exposure_start_date,
-      .data$start_interval)) %>%
-    dplyr::left_join(
-      ageCohort,
-      by = c(
-        "person_id", "drug_exposure_start_date")) %>%
-    dplyr::filter(any(.data$age >= ageMin|is.na(.data$age)))%>%
-    dplyr::filter(any(.data$age <= ageMax|is.na(.data$age)))%>%
+    dplyr::mutate(
+      drug_exposure_start_date = dplyr::if_else(
+        !is.na(.data$drug_exposure_start_date),
+        .data$drug_exposure_start_date,
+        .data$start_interval
+      )
+    ) %>%
+    dplyr::left_join(ageCohort,
+      by = c("person_id", "drug_exposure_start_date")
+    ) %>%
+    dplyr::filter(.data$age >= ageMin) %>%
+    dplyr::filter(.data$age <= ageMax) %>%
     dplyr::compute()
 
   # continuousExposures function gets the considered dose for each of the
@@ -588,6 +609,9 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     verbose = verbose
   )
 
+
+
+  if(!is.null(cohortEntryPriorHistory)){
   drugUtilisationCohort <- drugUtilisationCohort %>%
     dplyr::rename("subject_id" = "person_id") %>%
     dplyr::mutate(cohort_definition_id = 1)
@@ -601,75 +625,70 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     dplyr::left_join(
       priorDaysCohort,
       by = c(
-        "subject_id", "cohort_definition_id",
-        "cohort_start_date", "cohort_end_date"
+        "subject_id",
+        "cohort_definition_id",
+        "cohort_start_date",
+        "cohort_end_date"
       )
     ) %>%
-    dplyr::filter(any(.data$number_of_days >= .env$cohortEntryPriorHistory|
-                        is.na(.data$number_of_days))) %>%
+    dplyr::filter(
+      .data$number_of_days >= .env$cohortEntryPriorHistory) %>%
     dplyr::compute()
+  }else{
+  drugUtilisationCohort <- drugUtilisationCohort %>%
+    dplyr::rename("subject_id" = "person_id") %>%
+    dplyr::mutate(cohort_definition_id = 1)}
 
-
-
-
-
-
-
-  # check studyStartDate is an integer
-  checkmate::assertDate(
-    studyStartDate,
-    add = messageStore,
-    null.ok = TRUE
-  )
-
-  # check studyEndDate is an integer
-  checkmate::assertDate(
-    studyEndDate,
-    add = messageStore,
-    null.ok = TRUE
-  )
 
   if (!is.null(studyStartDate)) {
     drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::filter(
-        .data$cohort_start_date >= studyStartDate
-      ) %>%
+      dplyr::filter(.data$cohort_start_date >= studyStartDate) %>%
       dplyr::compute()
   }
 
   if (!is.null(studyEndDate)) {
     drugUtilisationCohort <- drugUtilisationCohort %>%
-      dplyr::filter(
-        .data$cohort_start_date <= studyEndDate
-      ) %>%
+      dplyr::filter(.data$cohort_start_date <= studyEndDate) %>%
       dplyr::compute()
   }
 
   result <- NULL
 
-  if(doseInformation == FALSE) {
-  result$cohort <-
-    drugUtilisationCohort %>%
+  if (doseInformation == FALSE) {
+    result$cohort <-
+      drugUtilisationCohort %>%
       dplyr::select(
-        "cohort_definition_id", "subject_id", "cohort_start_date",
+        "cohort_definition_id",
+        "subject_id",
+        "cohort_start_date",
         "cohort_end_date"
       )
 
-  settingAll <- c(as.list(environment()))
+    settingAll <- c(as.list(environment()))
 
 
-  settingAll <- settingAll[names(settingAll) %in% c("result", "drugUtilisationCohort",
-                                                    "cdm_drug_str_exists", "cdm_drug_exp_exists", "cdm",
-                                                    "dialect", "ConceptSetPath", "conceptSets",
-                                                    "messageStore") == FALSE]          # Remove list elements %in%
+    settingAll <-
+      settingAll[names(settingAll) %in% c(
+        "result",
+        "drugUtilisationCohort",
+        "cdm_drug_str_exists",
+        "cdm_drug_exp_exists",
+        "cdm",
+        "dialect",
+        "conceptSetPath",
+        "conceptSets",
+        "messageStore"
+      ) == FALSE] # Remove list elements %in%
 
 
-  result$settings <- settingAll
+    result$settings <- settingAll
   } else {
     result$cohort <-
       drugUtilisationCohort %>%
       dplyr::select(
-        "cohort_definition_id", "subject_id", "cohort_start_date",
+        "cohort_definition_id",
+        "subject_id",
+        "cohort_start_date",
         "cohort_end_date"
       )
 
@@ -678,18 +697,22 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     settingAll <- c(as.list(environment()))
 
 
-    settingAll <- settingAll[names(settingAll) %in% c("result", "drugUtilisationCohort",
-                                                      "cdm_drug_str_exists", "cdm_drug_exp_exists", "cdm",
-                                                      "dialect", "ConceptSetPath", "conceptSets",
-                                                      "messageStore") == FALSE]          # Remove list elements %in%
+    settingAll <-
+      settingAll[names(settingAll) %in% c(
+        "result",
+        "drugUtilisationCohort",
+        "cdm_drug_str_exists",
+        "cdm_drug_exp_exists",
+        "cdm",
+        "dialect",
+        "conceptSetPath",
+        "conceptSets",
+        "messageStore"
+      ) == FALSE] # Remove list elements %in%
 
 
     result$settings <- settingAll
-
   }
-
-
-
 
 
   return(result)
@@ -716,30 +739,34 @@ imputeVariable <- function(x,
     dplyr::rename("variable" = .env$variableName)
   # identify (as impute = 1)
   x <- x %>%
-    dplyr::mutate(impute = dplyr::if_else(
-      is.na(.data$variable),
+    dplyr::mutate(impute = dplyr::if_else(is.na(.data$variable),
       1,
-      0))
+      0
+    ))
 
   # identify (as impute = 1) the values smaller than lower bound
   if (!is.na(lowerBound)) {
     x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(is.na(.data$variable),1,
-                                            dplyr::if_else(
-                                              .data$variable < .env$lowerBound,
-                                              1,
-                                              .data$impute)
-                                            ))
+      dplyr::mutate(impute = dplyr::if_else(
+        is.na(.data$variable),
+        1,
+        dplyr::if_else(.data$variable < .env$lowerBound,
+          1,
+          .data$impute
+        )
+      ))
   }
   # identify (as impute = 1) the values greater than upper bound
   if (!is.na(upperBound)) {
     x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(is.na(.data$variable),1,
-                                            dplyr::if_else(
-                                              .data$variable > .env$upperBound,
-                                              1,
-                                              .data$impute)
-                                            ))
+      dplyr::mutate(impute = dplyr::if_else(
+        is.na(.data$variable),
+        1,
+        dplyr::if_else(.data$variable > .env$upperBound,
+          1,
+          .data$impute
+        )
+      ))
   }
   # if impute is false then all values with impute = 1 are not considered
   if (impute == "eliminate") {
@@ -749,11 +776,13 @@ imputeVariable <- function(x,
 
   if (impute == "median") {
     x <- x %>% dplyr::mutate(variable = dplyr::if_else(
-          .data$impute == 1,
-          stats::median(x %>% dplyr::filter(.data$impute == 0) %>%
-                          dplyr::pull("variable")),
-          .data$variable
-        ))
+      .data$impute == 1,
+      stats::median(
+        x %>% dplyr::filter(.data$impute == 0) %>%
+          dplyr::pull("variable")
+      ),
+      .data$variable
+    ))
 
   }
 
@@ -761,17 +790,26 @@ imputeVariable <- function(x,
   if (impute == "mean") {
     x <- x %>% dplyr::mutate(variable = dplyr::if_else(
       .data$impute == 1,
-      base::mean(x %>% dplyr::filter(.data$impute == 0) %>%
-             dplyr::pull("variable")),
-      .data$variable))}
-    # %>%
-      # dplyr::rename(!!imputeValueName := "imputeValue")
+      base::mean(
+        x %>% dplyr::filter(.data$impute == 0) %>%
+          dplyr::pull("variable")
+      ),
+      .data$variable
+    ))
+  }
+  # %>%
+  # dplyr::rename(!!imputeValueName := "imputeValue")
 
   if (impute == "quantile25") {
     x <- x %>% dplyr::mutate(variable = dplyr::if_else(
       .data$impute == 1,
-      as.numeric(stats::quantile(x %>% dplyr::filter(.data$impute == 0) %>%
-                    dplyr::pull("variable"), 0.25)),
+      as.numeric(
+        stats::quantile(
+          x %>% dplyr::filter(.data$impute == 0) %>%
+            dplyr::pull("variable"),
+          0.25
+        )
+      ),
       .data$variable
     ))
   }
@@ -780,8 +818,13 @@ imputeVariable <- function(x,
   if (impute == "quantile75") {
     x <- x %>% dplyr::mutate(variable = dplyr::if_else(
       .data$impute == 1,
-      as.numeric(stats::quantile(x %>% dplyr::filter(.data$impute == 0) %>%
-                        dplyr::pull("variable"), 0.75)),
+      as.numeric(
+        stats::quantile(
+          x %>% dplyr::filter(.data$impute == 0) %>%
+            dplyr::pull("variable"),
+          0.75
+        )
+      ),
       .data$variable
     ))
   }
@@ -790,14 +833,14 @@ imputeVariable <- function(x,
   if (is.numeric(impute)) {
     x <- x %>%
       dplyr::rename("imputeValue" = .env$imputeValueName) %>%
-      dplyr::mutate(variable = dplyr::if_else(
-        .data$impute == 1,
+      dplyr::mutate(variable = dplyr::if_else(.data$impute == 1,
         .data$imputeValue,
-        .data$variable))
+        .data$variable
+      ))
   }
 
   if (imputeValueName == "imputeDuration") {
-    x <- x %>% dplyr::mutate(variable = as.integer(.data$variable))
+    x <- x %>% dplyr::mutate(variable = floor(.data$variable))
   }
 
   x <- x %>%
@@ -827,21 +870,19 @@ getPeriods <- function(x, dialect, verbose) {
       x %>%
         dplyr::select("person_id", "drug_exposure_end_date") %>%
         dplyr::distinct() %>%
-        dplyr::mutate(
-          start_interval = as.Date(dbplyr::sql(sql_add_days(
+        dplyr::mutate(start_interval = as.Date(dbplyr::sql(
+          sql_add_days(
             dialect,
             1,
             "drug_exposure_end_date"
-          )))
-        ) %>%
+          )
+        ))) %>%
         dplyr::select(-"drug_exposure_end_date")
     ) %>%
     # we eliminate the last start_interval per person as it corresponds to the
     # day after the end of the last subexposure
     dplyr::group_by(.data$person_id) %>%
-    dplyr::filter(
-      .data$start_interval < max(.data$start_interval, na.rm = TRUE)
-    ) %>%
+    dplyr::filter(.data$start_interval < max(.data$start_interval, na.rm = TRUE)) %>%
     # sort the subexposures by start date
     dbplyr::window_order(.data$start_interval) %>%
     # number the sorted subexsposures within each person
@@ -854,13 +895,12 @@ getPeriods <- function(x, dialect, verbose) {
     # the end of a subexposure can be the day before the start of an exposure
     dplyr::select("person_id", "drug_exposure_start_date") %>%
     dplyr::distinct() %>%
-    dplyr::mutate(
-      end_interval = as.Date(dbplyr::sql(sql_add_days(
-        dialect,
-        -1,
+    dplyr::mutate(end_interval = as.Date(dbplyr::sql(
+      sql_add_days(
+        dialect, -1,
         "drug_exposure_start_date"
-      )))
-    ) %>%
+      )
+    ))) %>%
     dplyr::select(-"drug_exposure_start_date") %>%
     # or the day that an exposure ends
     dplyr::union(
@@ -872,9 +912,7 @@ getPeriods <- function(x, dialect, verbose) {
     # we eliminate the first end per person as it is the day before the start of
     # the first exposure
     dplyr::group_by(.data$person_id) %>%
-    dplyr::filter(
-      .data$end_interval > min(.data$end_interval, na.rm = TRUE)
-    ) %>%
+    dplyr::filter(.data$end_interval > min(.data$end_interval, na.rm = TRUE)) %>%
     # sort the subexposures by end date
     dbplyr::window_order(.data$end_interval) %>%
     # number the sorted subexsposures within each person
@@ -884,8 +922,7 @@ getPeriods <- function(x, dialect, verbose) {
 
   # compute the subexposure intervals joining start and end dates
   x_intervals <- x_start %>%
-    dplyr::inner_join(
-      x_end,
+    dplyr::inner_join(x_end,
       by = c("person_id", "subexposure_id")
     ) %>%
     # compute the number of days in each subexposure
@@ -922,11 +959,13 @@ getPeriods <- function(x, dialect, verbose) {
       by = c("person_id", "subexposure_id")
     ) %>%
     # if index_continuous exposure = NA will be turn to 1
-    dplyr::mutate(index_continuous_exposure = dplyr::if_else(
-      is.na(.data$index_continuous_exposure),
-      1,
-      .data$index_continuous_exposure
-    )) %>%
+    dplyr::mutate(
+      index_continuous_exposure = dplyr::if_else(
+        is.na(.data$index_continuous_exposure),
+        1,
+        .data$index_continuous_exposure
+      )
+    ) %>%
     # we group by person
     dplyr::group_by(.data$person_id) %>%
     # we sort by subexposure_id
@@ -934,9 +973,7 @@ getPeriods <- function(x, dialect, verbose) {
     # index_continuous_exposure is 0 if they have a previous subexposure or 1 if
     # they do not have so doing cumsum all of the exposures in the same
     # continuous exposure wull have the same continuous_exposure_id
-    dplyr::mutate(
-      continuous_exposure_id = cumsum(.data$index_continuous_exposure)
-    ) %>%
+    dplyr::mutate(continuous_exposure_id = cumsum(.data$index_continuous_exposure)) %>%
     dplyr::ungroup() %>%
     # x_intervals_id will contain the continuous_exposure_id for each person_id
     # and subexposure_id
@@ -945,8 +982,7 @@ getPeriods <- function(x, dialect, verbose) {
 
   # we add the continuous_exposure_id to the periods
   x_intervals <- x_intervals %>%
-    dplyr::left_join(
-      x_intervals_ids,
+    dplyr::left_join(x_intervals_ids,
       by = c("person_id", "subexposure_id")
     ) %>%
     dplyr::compute()
@@ -975,12 +1011,9 @@ joinExposures <- function(x,
   gap_start <- x %>%
     dplyr::group_by(.data$person_id) %>%
     # we do not consider the last continuous exposure as this wont be a gap
-    dplyr::filter(
-      .data$continuous_exposure_id < max(
-        .data$continuous_exposure_id,
-        na.rm = TRUE
-      )
-    ) %>%
+    dplyr::filter(.data$continuous_exposure_id < max(.data$continuous_exposure_id,
+      na.rm = TRUE
+    )) %>%
     # get the end of the continuous_exposure_id
     dplyr::group_by(.data$person_id, .data$continuous_exposure_id) %>%
     dplyr::summarise(
@@ -989,13 +1022,13 @@ joinExposures <- function(x,
     ) %>%
     dplyr::ungroup() %>%
     # we compute the day after the end of the continuous_exposure_id
-    dplyr::mutate(
-      start_interval = as.Date(dbplyr::sql(sql_add_days(
+    dplyr::mutate(start_interval = as.Date(dbplyr::sql(
+      sql_add_days(
         dialect,
         1,
         "start_interval"
-      )))
-    ) %>%
+      )
+    ))) %>%
     dplyr::compute()
 
   # Get the end of gaps. The ends of gaps is the day before the start of a
@@ -1003,12 +1036,9 @@ joinExposures <- function(x,
   gap_end <- x %>%
     dplyr::group_by(.data$person_id) %>%
     # we do not consider the first continuous exposure as this wont be a gap
-    dplyr::filter(
-      .data$continuous_exposure_id > min(
-        .data$continuous_exposure_id,
-        na.rm = TRUE
-      )
-    ) %>%
+    dplyr::filter(.data$continuous_exposure_id > min(.data$continuous_exposure_id,
+      na.rm = TRUE
+    )) %>%
     # get the start of the continuous_exposure_id
     dplyr::group_by(.data$person_id, .data$continuous_exposure_id) %>%
     dplyr::summarise(
@@ -1017,13 +1047,12 @@ joinExposures <- function(x,
     ) %>%
     dplyr::ungroup() %>%
     # we compute the day before the start of the continuous_exposure_id
-    dplyr::mutate(
-      end_interval = as.Date(dbplyr::sql(sql_add_days(
-        dialect,
-        -1,
+    dplyr::mutate(end_interval = as.Date(dbplyr::sql(
+      sql_add_days(
+        dialect, -1,
         "end_interval"
-      )))
-    ) %>%
+      )
+    ))) %>%
     # we substract one from continuous exposure id as the end of a gaps will be
     # the day before the start of the subsequent continuous exposure id
     dplyr::mutate(continuous_exposure_id = .data$continuous_exposure_id - 1) %>%
@@ -1031,8 +1060,7 @@ joinExposures <- function(x,
 
   # Get the gaps joining the end and start dates
   gap_period <- gap_start %>%
-    dplyr::inner_join(
-      gap_end,
+    dplyr::inner_join(gap_end,
       by = c("person_id", "continuous_exposure_id")
     ) %>%
     # compute the length of the gap
@@ -1084,8 +1112,7 @@ joinExposures <- function(x,
     dplyr::compute()
   # we add the subexposure id to each of the gaps
   gap_period <- gap_period %>%
-    dplyr::inner_join(
-      subexposure_id,
+    dplyr::inner_join(subexposure_id,
       by = c("person_id", "continuous_exposure_id")
     ) %>%
     # we remove continuous_exposure_id as the gaps are not goint to be part of a
@@ -1105,7 +1132,9 @@ joinExposures <- function(x,
         dplyr::inner_join(
           x %>%
             dplyr::select(
-              "person_id", "subexposure_id", "drug_exposure_start_date",
+              "person_id",
+              "subexposure_id",
+              "drug_exposure_start_date",
               "daily_dose"
             ) %>%
             dplyr::mutate(subexposure_id = .data$subexposure_id + 1),
@@ -1123,9 +1152,7 @@ joinExposures <- function(x,
         dplyr::select("person_id", "subexposure_id") %>%
         dplyr::inner_join(
           x %>%
-            dplyr::select(
-              "person_id", "subexposure_id", "daily_dose"
-            ) %>%
+            dplyr::select("person_id", "subexposure_id", "daily_dose") %>%
             dplyr::mutate(subexposure_id = .data$subexposure_id - 1),
           by = c("person_id", "subexposure_id")
         ) %>%
@@ -1176,8 +1203,7 @@ joinExposures <- function(x,
       daily_dose <- daily_dose %>%
         dplyr::select(-"number_in_group") %>%
         # We eliminate the daily doses with multiple exposures
-        dplyr::anti_join(
-          daily_dose_multiple,
+        dplyr::anti_join(daily_dose_multiple,
           by = c("person_id", "subexposure_id")
         ) %>%
         # We add the daily doses with the selected exposure from the multiple
@@ -1190,8 +1216,7 @@ joinExposures <- function(x,
     }
     # We add the computed gap daily doses to the exposed gaps table
     gap_period <- gap_period %>%
-      dplyr::inner_join(
-        daily_dose,
+      dplyr::inner_join(daily_dose,
         by = c("person_id", "subexposure_id")
       ) %>%
       dplyr::compute()
@@ -1230,8 +1255,7 @@ joinExposures <- function(x,
     dplyr::compute()
   # we add the era id to the current table
   x <- x %>%
-    dplyr::inner_join(
-      era_id,
+    dplyr::inner_join(era_id,
       by = c("person_id", "subexposure_id")
     ) %>%
     dplyr::compute()
@@ -1253,7 +1277,6 @@ continuousExposures <- function(x,
                                 summarizeMode,
                                 dialect,
                                 verbose) {
-
   # if we are only interested in the first era we only keep the first era
   if (summarizeMode == "FirstEra") {
     x <- x %>%
@@ -1279,33 +1302,22 @@ continuousExposures <- function(x,
     dplyr::summarise(
       number_exposures = dplyr::n_distinct(.data$drug_exposure_id),
       number_subexposures = dplyr::n_distinct(.data$subexposure_id),
-      number_subexposures_with_overlap = dplyr::n_distinct(
-        .data$subexposure_id[.data$number_exposures_interval > 1]
-      ),
-      number_continuous_exposures = dplyr::n_distinct(
-        .data$continuous_exposure_id[!is.na(.data$continuous_exposure_id)]
-      ),
-      number_continuous_exposures_with_overlap = dplyr::n_distinct(
-        .data$continuous_exposure_id[.data$number_exposures_interval > 1 &
-          !is.na(.data$continuous_exposure_id)]
-      ),
+      number_subexposures_with_overlap = dplyr::n_distinct(.data$subexposure_id[.data$number_exposures_interval > 1]),
+      number_continuous_exposures = dplyr::n_distinct(.data$continuous_exposure_id[!is.na(.data$continuous_exposure_id)]),
+      number_continuous_exposures_with_overlap = dplyr::n_distinct(.data$continuous_exposure_id[.data$number_exposures_interval > 1 &
+        !is.na(.data$continuous_exposure_id)]),
       number_eras = dplyr::n_distinct(.data$era_id),
-      number_eras_with_overlap = dplyr::n_distinct(
-        .data$era_id[.data$number_exposures_interval > 1]
-      ),
+      number_eras_with_overlap = dplyr::n_distinct(.data$era_id[.data$number_exposures_interval > 1]),
       number_non_exposed_periods = dplyr::n_distinct(.data$era_id),
       number_gaps = sum(.data$gap, na.rm = TRUE),
       number_days_gap = sum(.data$gap * .data$days_exposed, na.rm = TRUE),
-      cumulative_gap_dose = sum(
-        .data$gap * .data$days_exposed * .data$daily_dose,
+      cumulative_gap_dose = sum(.data$gap * .data$days_exposed * .data$daily_dose,
         na.rm = TRUE
       ),
-      all_dose = sum(
-        .data$days_exposed * .data$daily_dose,
+      all_dose = sum(.data$days_exposed * .data$daily_dose,
         na.rm = TRUE
       ),
-      all_exposed_days = sum(
-        .data$days_exposed,
+      all_exposed_days = sum(.data$days_exposed,
         na.rm = TRUE
       ),
       .groups = "drop"
@@ -1329,8 +1341,13 @@ continuousExposures <- function(x,
   uniqueExposures <- x %>%
     dplyr::filter(.data$number_exposures_interval == 1) %>%
     dplyr::select(
-      "person_id", "subexposure_id", "daily_dose", "days_exposed",
-      "start_interval", "end_interval", "era_id"
+      "person_id",
+      "subexposure_id",
+      "daily_dose",
+      "days_exposed",
+      "start_interval",
+      "end_interval",
+      "era_id"
     ) %>%
     dplyr::compute()
 
@@ -1338,17 +1355,24 @@ continuousExposures <- function(x,
   multipleExposures <- x %>%
     dplyr::filter(.data$number_exposures_interval > 1) %>%
     dplyr::select(
-      "person_id", "subexposure_id", "daily_dose", "days_exposed",
-      "start_interval", "end_interval", "drug_exposure_start_date", "era_id"
+      "person_id",
+      "subexposure_id",
+      "daily_dose",
+      "days_exposed",
+      "start_interval",
+      "end_interval",
+      "drug_exposure_start_date",
+      "era_id"
     ) %>%
     dplyr::compute()
 
   if (multipleExposures %>% dplyr::tally() %>% dplyr::pull() > 0) {
-
     # search individuals with same index date in subgroups
     multipleExposuresSameIndex <- multipleExposures %>%
       dplyr::group_by(
-        .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date
+        .data$person_id,
+        .data$subexposure_id,
+        .data$drug_exposure_start_date
       ) %>%
       dplyr::mutate(number_same_index = dplyr::n()) %>%
       dplyr::ungroup() %>%
@@ -1361,8 +1385,11 @@ continuousExposures <- function(x,
       dplyr::anti_join(
         multipleExposuresSameIndex,
         by = c(
-          "person_id", "subexposure_id", "drug_exposure_start_date", "era_id"
-          )
+          "person_id",
+          "subexposure_id",
+          "drug_exposure_start_date",
+          "era_id"
+        )
       ) %>%
       dplyr::compute()
 
@@ -1371,7 +1398,9 @@ continuousExposures <- function(x,
     if (sameIndexMode == "Maximum") {
       multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date,
+          .data$person_id,
+          .data$subexposure_id,
+          .data$drug_exposure_start_date,
           .data$era_id
         ) %>%
         dplyr::filter(.data$daily_dose == max(.data$daily_dose, na.rm = TRUE)) %>%
@@ -1382,7 +1411,9 @@ continuousExposures <- function(x,
     } else if (sameIndexMode == "Sum") {
       multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date,
+          .data$person_id,
+          .data$subexposure_id,
+          .data$drug_exposure_start_date,
           .data$era_id
         ) %>%
         dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
@@ -1393,7 +1424,9 @@ continuousExposures <- function(x,
     } else if (sameIndexMode == "Minimum") {
       multipleExposuresSameIndex <- multipleExposuresSameIndex %>%
         dplyr::group_by(
-          .data$person_id, .data$subexposure_id, .data$drug_exposure_start_date,
+          .data$person_id,
+          .data$subexposure_id,
+          .data$drug_exposure_start_date,
           .data$era_id
         ) %>%
         dplyr::filter(.data$daily_dose == min(.data$daily_dose, na.rm = TRUE)) %>%
@@ -1413,8 +1446,7 @@ continuousExposures <- function(x,
     if (overlapMode == "Previous") {
       multipleExposures <- multipleExposures %>%
         dplyr::filter(
-          .data$drug_exposure_start_date == min(
-            .data$drug_exposure_start_date,
+          .data$drug_exposure_start_date == min(.data$drug_exposure_start_date,
             na.rm = TRUE
           )
         )
@@ -1422,8 +1454,7 @@ continuousExposures <- function(x,
     } else if (overlapMode == "Subsequent") {
       multipleExposures <- multipleExposures %>%
         dplyr::filter(
-          .data$drug_exposure_start_date == max(
-            .data$drug_exposure_start_date,
+          .data$drug_exposure_start_date == max(.data$drug_exposure_start_date,
             na.rm = TRUE
           )
         )
@@ -1431,9 +1462,7 @@ continuousExposures <- function(x,
     } else if (overlapMode == "Maximum") {
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
-        dplyr::filter(
-          .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
-        )%>%
+        dplyr::filter(.data$daily_dose == max(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct()
       # if the overlapMode is "Sum" (all exposure are considered)
     } else if (overlapMode == "Sum") {
@@ -1445,16 +1474,19 @@ continuousExposures <- function(x,
     } else if (overlapMode == "Minimum") {
       multipleExposures <- multipleExposures %>%
         dplyr::select(-"drug_exposure_start_date") %>%
-        dplyr::filter(
-          .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
-        ) %>%
+        dplyr::filter(.data$daily_dose == min(.data$daily_dose, na.rm = TRUE)) %>%
         dplyr::distinct()
     }
     multipleExposures <- multipleExposures %>%
       dplyr::ungroup() %>%
       dplyr::select(
-        "person_id", "subexposure_id", "daily_dose", "days_exposed",
-        "start_interval", "end_interval", "era_id"
+        "person_id",
+        "subexposure_id",
+        "daily_dose",
+        "days_exposed",
+        "start_interval",
+        "end_interval",
+        "era_id"
       ) %>%
       dplyr::compute()
 
@@ -1477,16 +1509,19 @@ continuousExposures <- function(x,
       subexposure_id = min(.data$subexposure_id, na.rm = TRUE),
       .groups = "drop"
     ) %>%
-    dplyr::mutate(study_days = dbplyr::sql(sqlDiffDays(
-      dialect,
-      "cohort_start_date",
-      "cohort_end_date"
-    )) + 1) %>%
+    dplyr::mutate(study_days = dbplyr::sql(
+      sqlDiffDays(
+        dialect,
+        "cohort_start_date",
+        "cohort_end_date"
+      )
+    ) + 1) %>%
     dplyr::mutate(not_exposed_days = .data$study_days - .data$exposed_days) %>%
-    dplyr::inner_join(uniqueExposures %>%
-      dplyr::rename("initial_dose" = "daily_dose") %>%
-      dplyr::select("person_id", "subexposure_id", "initial_dose"),
-    by = c("person_id", "subexposure_id")
+    dplyr::inner_join(
+      uniqueExposures %>%
+        dplyr::rename("initial_dose" = "daily_dose") %>%
+        dplyr::select("person_id", "subexposure_id", "initial_dose"),
+      by = c("person_id", "subexposure_id")
     ) %>%
     dplyr::select(-"subexposure_id") %>%
     dplyr::left_join(exposureCounts,
@@ -1516,9 +1551,7 @@ readConceptSets <- function(conceptSets) {
       return(x)
     }) %>%
       dplyr::bind_rows() %>%
-      dplyr::mutate(
-        cohort_definition_id = .env$conceptSets$cohort_definition_id[k]
-      )
+      dplyr::mutate(cohort_definition_id = .env$conceptSets$cohort_definition_id[k])
     if (k == 1) {
       conceptList <- conceptSet
     } else {
@@ -1534,3 +1567,4 @@ readConceptSets <- function(conceptSets) {
     )
   return(conceptList)
 }
+
