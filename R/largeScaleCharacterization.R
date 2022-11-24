@@ -34,11 +34,11 @@
 #' c(-365, -31), c(-90, -1), c(-30, -1), c(0, 0), c(1, 30), c(1, 90),
 #' c(31, 365), c(91, 365), c(366, NA)).
 #' @param tablesToCharacterize Name of the tables in the cdm that we want to
-#' summarize. The available tables to characterize are: "observation_period",
-#' "visit_occurrence", "condition_occurrence", "drug_exposure",
-#' "procedure_occurrence", "device_exposure", "measurement", "observation",
-#' "drug_era", "condition_era", "specimen" and "death". By default:
-#' c("condition_occurrence", "drug_era", "procedure_occurrence", "measurement").
+#' summarize. The available tables to characterize are: "visit_occurrence",
+#' "condition_occurrence", "drug_exposure", "procedure_occurrence",
+#' "device_exposure", "measurement", "observation", "drug_era", "condition_era"
+#' and "specimen". By default: c("condition_occurrence", "drug_era",
+#' "procedure_occurrence", "measurement").
 #' @param overlap Whether you want to consider overlapping events (overlap =
 #' TRUE) or only incident ones (overlap = FALSE).
 #' @param summarise Whether we want patient-level data (FALSE) or summarised
@@ -90,7 +90,7 @@ largeScaleCharacterization <- function(cdm,
   get_end_date <- list(
     "visit_occurrence" = "visit_end_date",
     "condition_occurrence" = "condition_end_date",
-    "drug_exposure" = "drug_exposure_start_date",
+    "drug_exposure" = "drug_exposure_end_date",
     "procedure_occurrence" = NULL,
     "device_exposure" = "device_exposure_end_date",
     "measurement" = NULL,
@@ -103,7 +103,7 @@ largeScaleCharacterization <- function(cdm,
   get_concept <- list(
     "visit_occurrence" = "visit_concept_id",
     "condition_occurrence" = "condition_concept_id",
-    "drug_exposure" = "drug_exposure_concept_id",
+    "drug_exposure" = "drug_concept_id",
     "procedure_occurrence" = "procedure_concept_id",
     "device_exposure" = "device_concept_id",
     "measurement" = "measurement_concept_id",

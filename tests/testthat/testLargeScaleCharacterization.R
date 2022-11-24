@@ -1,5 +1,5 @@
 
-test_that("mock db: checks example, summarise = FALSE", {
+test_that("checks example, summarise = FALSE", {
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 2),
@@ -149,7 +149,7 @@ test_that("mock db: checks example, summarise = FALSE", {
 
 })
 
-test_that("mock db: checks example, summarise = TRUE", {
+test_that("checks example, summarise = TRUE", {
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 2),
@@ -393,4 +393,46 @@ test_that("mock db: checks example, summarise = TRUE", {
 
   resC <- res$characterization
   expect_true(all(c(1,2) %in% resC$cohort_definition_id))
+})
+
+test_that("check 2 tables",{
+  cdm <- mockDrugUtilisation(
+    person = dplyr::tibble(
+      cohort_definition_id = 1,
+      subject_id = 1,
+      cohort_start_date = as.Date("2020-01-01"),
+      cohort_end_date = as.Date("2020-01-01")
+    ),
+    condition_occurrence = dplyr::tibble(
+      condition_occurrence_id = 1,
+      person_id = 1,
+      condition_concept_id = 1,
+      condition_start_date = as.Date("2020-05-06"),
+      condition_end_date = as.Date("2020-10-06")
+    ),
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1,
+      person_id = 1,
+      drug_concept_id = 1,
+      drug_exposure_start_date = as.Date("2020-05-06"),
+      drug_exposure_end_date = as.Date("2020-10-06")
+    )
+  )
+
+  res <- largeScaleCharacterization(
+    cdm = cdm,
+    targetCohortName = "person",
+    targetCohortId = 1,
+    tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
+    overlap = FALSE,
+    summarise = TRUE,
+    minimumCellCount = 0
+  )
+
+  resC <- res$characterization
+
+  expect_true(nrow(resC) == 4)
+  expect_true(all(resC$table_id %in% c(1,2)))
+  expect_true(length(res$tablesToCharacterize) == 2)
+
 })
