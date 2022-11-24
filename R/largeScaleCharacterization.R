@@ -39,8 +39,13 @@
 #' "procedure_occurrence", "device_exposure", "measurement", "observation",
 #' "drug_era", "condition_era", "specimen" and "death". By default:
 #' c("condition_occurrence", "drug_era", "procedure_occurrence", "measurement").
-#' @param overlap Whether you want to consider overlaping events (overlap =
-#' TRUE) or only incident ones (overlpa = FALSE).
+#' @param overlap Whether you want to consider overlapping events (overlap =
+#' TRUE) or only incident ones (overlap = FALSE).
+#' @param summarise Whether we want patient-level data (FALSE) or summarised
+#' aggregated data (TRUE).
+#' @param minimumCellCount All counts lower than minimumCellCount will be
+#' obscured changing its value by NA. 'obscured' column of characterization
+#' tibble is TRUE when a count has been obscured. Otherwise it is FALSE.
 #'
 #' @return The output of this function is a 3 elements list. First
 #' ("Characterization") is a reference to a temporal table in the database. It
@@ -66,7 +71,9 @@ largeScaleCharacterization <- function(cdm,
                                          "condition_occurrence", "drug_era",
                                          "procedure_occurrence", "measurement"
                                        ),
-                                       overlap = TRUE) {
+                                       overlap = TRUE,
+                                       summarise = TRUE,
+                                       minimumCellCount = 5) {
   get_start_date <- list(
     "visit_occurrence" = "visit_start_date",
     "condition_occurrence" = "condition_start_date",
@@ -151,12 +158,22 @@ largeScaleCharacterization <- function(cdm,
     add = errorMessage
   )
   checkmate::assertTRUE(
-    all(tablesToCharacterize %in% names(get_start_date)),
+    all(tablesToCharacterize %in% c(
+      "visit_occurrence", "condition_occurrence", "drug_exposure",
+      "procedure_occurrence", "device_exposure", "measurement", "observation",
+      "drug_era", "condition_era", "specimen"
+    )),
     add = errorMessage
   )
 
   # overlap
   checkmate::assertLogical(overlap, len = 1, add = errorMessage)
+
+  # summarise
+  checkmate::assertLogical(summarise, len = 1, add = errorMessage)
+
+  # minimumCellCount
+  checkmate::assertCount(minimumCellCount, add = errorMessage)
 
   # report collection of errors
   checkmate::reportAssertions(collection = errorMessage)
@@ -176,13 +193,17 @@ largeScaleCharacterization <- function(cdm,
     dplyr::select("windowId", "windowName", "windowStart", "windowEnd")
 
   if (!is.null(targetCohortId)) {
-    target_cohort <- cdm[[targetCohortName]] %>%
+    targetCohort <- cdm[[targetCohortName]] %>%
       dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId)
   } else {
-    target_cohort <- cdm[[targetCohortName]]
+    targetCohort <- cdm[[targetCohortName]]
+    targetCohortId <- targetCohort %>%
+      dplyr::select("cohort_definition_id") %>%
+      dplyr::distinct() %>%
+      dplyr::pull()
   }
 
-  subjects <- target_cohort %>%
+  subjects <- targetCohort %>%
     dplyr::select("person_id" = "subject_id", "cohort_start_date") %>%
     dplyr::distinct()
 
@@ -225,7 +246,7 @@ largeScaleCharacterization <- function(cdm,
     study_table <- study_table %>%
       dplyr::compute()
 
-    for(i in 1:nrow(temporalWindows)){
+    for (i in 1:nrow(temporalWindows)) {
       windowStart <- temporalWindows$windowStart[i]
       windowEnd <- temporalWindows$windowEnd[i]
       windowId <- temporalWindows$windowId[i]
@@ -235,7 +256,7 @@ largeScaleCharacterization <- function(cdm,
       } else if (is.na(windowEnd) & !is.na(windowStart)) {
         study_table_i <- study_table %>%
           dplyr::filter(.data$days_difference_end >= .env$windowStart)
-      } else if (!is.na(windowEnd) & !is.na(windowStart)){
+      } else if (!is.na(windowEnd) & !is.na(windowStart)) {
         study_table_i <- study_table %>%
           dplyr::filter(
             .data$days_difference_start <= .env$windowEnd &
@@ -247,7 +268,7 @@ largeScaleCharacterization <- function(cdm,
         dplyr::distinct() %>%
         dplyr::mutate(window_id = .env$windowId) %>%
         dplyr::compute()
-      if (i == 1){
+      if (i == 1) {
         study_tab <- study_table_i
       } else {
         study_tab <- study_tab %>%
@@ -258,21 +279,54 @@ largeScaleCharacterization <- function(cdm,
     return(study_tab)
   })
 
-  for (i in 1:length(characterizedTable)){
-    if (i == 1){
+  for (i in 1:length(characterizedTable)) {
+    if (i == 1) {
       characterizedTables <- characterizedTable[[i]] %>%
         dplyr::mutate(table_id = .env$i)
     } else {
       characterizedTables <- characterizedTables %>%
         dplyr::union_all(
-          characterizedTable[[i]]%>%
+          characterizedTable[[i]] %>%
             dplyr::mutate(table_id = .env$i)
         )
     }
   }
 
+  characterizedTables <- characterizedTables %>% dplyr::compute()
+
+  if (summarise == TRUE) {
+    for (k in 1:length(targetCohortId)) {
+      characterizedCohort <- targetCohort %>%
+        dplyr::filter(.data$cohort_definition_id == !!targetCohortId[k]) %>%
+        dplyr::select("person_id" = "subject_id", "cohort_start_date") %>%
+        dplyr::inner_join(
+          characterizedTables,
+          by = c("person_id", "cohort_start_date")
+        ) %>%
+        dplyr::group_by(.data$concept_id, .data$window_id, .data$table_id) %>%
+        dplyr::tally() %>%
+        dplyr::ungroup() %>%
+        dplyr::collect() %>%
+        dplyr::mutate(cohort_definition_id = targetCohortId[k])
+      if (k == 1) {
+        characterizedCohortk <- characterizedCohort
+      } else {
+        characterizedCohortk <- characterizedCohortk %>%
+          dplyr::union_all(characterizedCohort)
+      }
+    }
+    characterizedTables <- characterizedCohortk %>%
+      dplyr::mutate(obscured = dplyr::if_else(
+        .data$n < .env$minimumCellCount, TRUE, FALSE
+      )) %>%
+      dplyr::mutate(n = dplyr::if_else(
+        .data$obscured == TRUE, as.numeric(NA), .data$n
+      )) %>%
+      dplyr::relocate("cohort_definition_id", .before = "concept_id")
+  }
+
   result <- list()
-  result$characterization <- characterizedTables %>% dplyr::compute()
+  result$characterization <- characterizedTables
   result$temporalWindows <- temporalWindows
   result$tablesToCharacterize <- tablesToCharacterize
   result$overlap <- overlap
