@@ -6,32 +6,20 @@
 \usage{
 summariseDoseTable(
   cdm,
-  doseCohortTable,
-  aggegationCohort = NULL,
+  aggegationCohortName = NULL,
   cohortId = NULL,
-  variables = c("cohort_start_date", "cohort_end_date", "exposed_days",
-    "cumulative_dose", "initial_dose", "study_days", "number_exposures",
-    "number_subexposures", "number_continuous_exposures", "cumulative_gap_dose",
-    "prop_cum_gap_dose", "number_non_exposed_periods", "not_exposed_days",
-    "number_days_gaps", "number_gaps", "not_considered_dose",
-    "not_considered_exposed_days", "prop_not_considered_exp_days",
-    "number_subexposures_with_overlap", "number_continuous_exposures_with_overlap",
-    "number_eras_with_overlap", 
-     "number_subexposures_no_overlap",
-    "number_continuous_exposures_no_overlap", "number_eras_no_overlap"),
-  estimates = c("min", "max", "mean", "std", "median", "iqr", "q25", "q75")
+  doseCohortName,
+  variables = NULL,
+  estimates = c("min", "max", "mean", "std", "median", "iqr", "q25", "q75"),
+  minimumCellCounts = 5
 )
 }
 \arguments{
 \item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
-must contain the 'doseCohortTable' table and  also 'aggegationCohort' if
+must contain the 'doseCohortName' table and  also 'aggegationCohortName' if
 specified. It is a compulsory input, no default value is provided.}
 
-\item{doseCohortTable}{Name to point to the cdm table that contains the dose
-cohort information computed using instantiateDrugUtilisationCohorts
-(doseInformation = TRUE).}
-
-\item{aggegationCohort}{Name to point to the cdm table that contains the
+\item{aggegationCohortName}{Name to point to the cdm table that contains the
 aggregation information. To compute this cohort you can use the
 drugUtilisationSettings() function or use any other function that the output
 is a cohort. A warning will be produced if}
@@ -39,13 +27,19 @@ is a cohort. A warning will be produced if}
 \item{cohortId}{cohort definition id of the cohorts in the aggregation or
 dose cohort table that we want to summarise.}
 
+\item{doseCohortName}{Name to point to the cdm table that contains the dose
+cohort information computed using instantiateDrugUtilisationCohorts
+(doseInformation = TRUE).}
+
 \item{variables}{Vector with the variables that we want to summarise. The
-variables must be contained in doseCohortTable.}
+variables must be contained in doseCohortName.}
 
 \item{estimates}{Vector with the names of the functions used to summarise the
 variables. The possible estimates are: "min", "max", "mean", "median", "iqr",
 "range", "q5", "q10", "q15", "q20", "q25", "q30", "q35", "q40", "q45", "q50",
 "q55", "q60", "q65", "q70", "q75", "q80", "q85", "q90", "q95" and "std".}
+
+\item{minimumCellCounts}{Minimum counts that a group can have.}
 }
 \description{
 Explain function

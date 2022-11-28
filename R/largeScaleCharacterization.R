@@ -370,6 +370,7 @@ largeScaleCharacterization <- function(cdm,
         dplyr::collect() %>%
         dplyr::mutate(cohort_definition_id = targetCohortId[k])
       denominator <- targetCohort %>%
+        dplyr::rename("person_id" = "subject_id") %>%
         dplyr::filter(.data$cohort_definition_id == !!targetCohortId[k]) %>%
         dplyr::inner_join(
           subjects_denominator,

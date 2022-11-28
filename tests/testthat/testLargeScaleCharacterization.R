@@ -155,7 +155,14 @@ test_that("checks example, summarise = FALSE", {
 })
 
 test_that("checks example, summarise = TRUE", {
+
   cdm <- mockDrugUtilisation(
+    observation_period = dplyr::tibble(
+      observation_period_id = 1:10,
+      person_id = 1:10,
+      observation_period_start_date = as.Date("1900-01-01"),
+      observation_period_end_date = as.Date("2100-01-01"),
+    ),
     person = dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 2),
       subject_id = c(1, 2, 1, 2),
@@ -215,8 +222,8 @@ test_that("checks example, summarise = TRUE", {
   expect_true(sum(resC$concept_id == 1) == 6)
   expect_true(sum(resC$concept_id == 2) == 1)
   expect_true(sum(resC$concept_id == 3) == 1)
-  expect_true(all(resC$obscured == TRUE))
-  expect_true(all(is.na(resC$n)))
+  expect_true(all(resC$obscured_counts == TRUE))
+  expect_true(all(is.na(resC$counts)))
 
   res <- largeScaleCharacterization(
     cdm = cdm,
@@ -236,10 +243,16 @@ test_that("checks example, summarise = TRUE", {
   expect_true(sum(resC$concept_id == 1) == 6)
   expect_true(sum(resC$concept_id == 2) == 1)
   expect_true(sum(resC$concept_id == 3) == 1)
-  expect_true(all(resC$obscured == FALSE))
-  expect_true(all(resC$n == 1))
+  expect_true(all(resC$obscured_counts == FALSE))
+  expect_true(all(resC$counts == 1))
 
   cdm <- mockDrugUtilisation(
+    observation_period = dplyr::tibble(
+      observation_period_id = 1:10,
+      person_id = 1:10,
+      observation_period_start_date = as.Date("1900-01-01"),
+      observation_period_end_date = as.Date("2100-01-01"),
+    ),
     person = dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 2),
       subject_id = c(1, 2, 1, 2),
@@ -300,10 +313,16 @@ test_that("checks example, summarise = TRUE", {
   expect_true(sum(resC$concept_id == 1) == 6)
   expect_true(sum(resC$concept_id == 2) == 1)
   expect_true(sum(resC$concept_id == 3) == 1)
-  expect_true(all(resC$obscured == FALSE))
-  expect_true(all(resC$n == 1))
+  expect_true(all(resC$obscured_counts == FALSE))
+  expect_true(all(resC$counts == 1))
 
   cdm <- mockDrugUtilisation(
+    observation_period = dplyr::tibble(
+      observation_period_id = 1:10,
+      person_id = 1:10,
+      observation_period_start_date = as.Date("1900-01-01"),
+      observation_period_end_date = as.Date("2100-01-01"),
+    ),
     person = dplyr::tibble(
       cohort_definition_id = c(1, 1, 2, 2),
       subject_id = c(1, 2, 1, 2),
@@ -364,8 +383,8 @@ test_that("checks example, summarise = TRUE", {
   expect_true(sum(resC$concept_id == 1) == 6)
   expect_true(sum(resC$concept_id == 2) == 1)
   expect_true(sum(resC$concept_id == 3) == 1)
-  expect_true(all(resC$obscured == FALSE))
-  expect_false(all(resC$n == 1))
+  expect_true(all(resC$obscured_counts == FALSE))
+  expect_false(all(resC$counts == 1))
 
   res <- largeScaleCharacterization(
     cdm = cdm,
@@ -384,8 +403,8 @@ test_that("checks example, summarise = TRUE", {
   expect_true(sum(resC$concept_id == 1) == 6)
   expect_true(sum(resC$concept_id == 2) == 1)
   expect_true(sum(resC$concept_id == 3) == 1)
-  expect_true(sum(resC$obscured == FALSE) == 1)
-  expect_true(sum(is.na(resC$n)) == 7)
+  expect_true(sum(resC$obscured_counts == FALSE) == 1)
+  expect_true(sum(is.na(resC$counts)) == 7)
 
   res <- largeScaleCharacterization(
     cdm = cdm,
@@ -402,6 +421,12 @@ test_that("checks example, summarise = TRUE", {
 
 test_that("check 2 tables",{
   cdm <- mockDrugUtilisation(
+    observation_period = dplyr::tibble(
+      observation_period_id = 1,
+      person_id = 1,
+      observation_period_start_date = as.Date("2010-01-01"),
+      observation_period_end_date = as.Date("2025-01-01")
+    ),
     person = dplyr::tibble(
       cohort_definition_id = 1,
       subject_id = 1,
@@ -441,3 +466,7 @@ test_that("check 2 tables",{
   expect_true(length(res$tablesToCharacterize) == 2)
 
 })
+
+# events outside observation
+# person not observed at all
+test_that("event outside observation period are not considered",{})
