@@ -44,25 +44,7 @@ summariseDoseTable <- function(cdm,
                                doseCohortName,
                                aggegationCohortName = NULL,
                                cohortId = NULL,
-                               variables = c(
-                                 "cohort_start_date", "cohort_end_date",
-                                 "exposed_days", "cumulative_dose",
-                                 "initial_dose", "study_days",
-                                 "number_exposures", "number_subexposures",
-                                 "number_continuous_exposures",
-                                 "cumulative_gap_dose", "prop_cum_gap_dose",
-                                 "number_non_exposed_periods",
-                                 "not_exposed_days", "number_days_gaps",
-                                 "number_gaps", "not_considered_dose",
-                                 "not_considered_exposed_days",
-                                 "prop_not_considered_exp_days",
-                                 "number_subexposures_with_overlap",
-                                 "number_continuous_exposures_with_overlap",
-                                 "number_eras_with_overlap",
-                                 "number_subexposures_no_overlap",
-                                 "number_continuous_exposures_no_overlap",
-                                 "number_eras_no_overlap"
-                               ),
+                               variables = NULL,
                                estimates = c(
                                  "min", "max", "mean", "std", "median", "iqr",
                                  "q25", "q75"
@@ -107,7 +89,16 @@ summariseDoseTable <- function(cdm,
   )
 
   # check variables
-  checkmate::assertCharacter(variables, add = errorMessage)
+  if (is.null(variables)) {
+    variables <- colnames(cdm[[doseCohortName]])
+  }
+  if (is.character(variables)) {
+    variables <- variables[!(variables %in% c(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ))]
+  }
+  checkmate::assertCharacter(variables, min.len = 1, add = errorMessage)
   checkmate::assertTRUE(
     all(variables %in% colnames(cdm[[doseCohortName]])),
     add = errorMessage
@@ -279,7 +270,7 @@ summariseDoseTable <- function(cdm,
           dplyr::select(dplyr::all_of(.env$variables)) %>%
           dplyr::collect() %>%
           dplyr::summarise(dplyr::across(
-            .cols = variables,
+            .cols = dplyr::all_of(.env$variables),
             .fns = estimates_func,
             .names = "{.col}.{.fn}"
           )) %>%
@@ -307,8 +298,8 @@ summariseDoseTable <- function(cdm,
     dplyr::filter(as.numeric(.data$value) < .env$minimumCellCounts) %>%
     dplyr::pull("cohort_definition_id")
 
-  result$value[result$cohort_definition_id == to_obscure] <- as.character(NA)
-  result$value[result$cohort_definition_id == to_obscure &
+  result$value[result$cohort_definition_id %in% to_obscure] <- as.character(NA)
+  result$value[result$cohort_definition_id %in% to_obscure &
     result$variable == "number_observations" &
     result$estimate == "counts"] <- paste0("<", minimumCellCounts)
 
