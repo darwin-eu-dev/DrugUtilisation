@@ -17,6 +17,11 @@ test_that("checks example, summarise = FALSE", {
         "2020-05-01"
       ))
     ),
+    observation_period = dplyr::tibble(
+      person_id = c(1,2),
+      observation_period_start_date = as.Date(c("2005-01-01", "2000-03-30")),
+      observation_period_end_date = as.Date(c("2024-12-09", "2032-03-03"))
+    ),
     condition_occurrence = dplyr::tibble(
       condition_occurrence_id = c(1, 2, 3, 4, 5, 6, 7),
       person_id = c(1, 2, 1, 2, 1, 5, 1),

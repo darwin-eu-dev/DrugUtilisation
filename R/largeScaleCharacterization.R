@@ -178,20 +178,23 @@ largeScaleCharacterization <- function(cdm,
   # report collection of errors
   checkmate::reportAssertions(collection = errorMessage)
 
-  # setTemporalWindows inf to 40000
+  # write temporal windows tibble
   temporalWindows <- lapply(temporalWindows, function(x) {
     nam <- paste0(
       ifelse(is.na(x[1]), "Any", x[1]),
       ";",
       ifelse(is.na(x[2]), "Any", x[2])
     )
-    x <- dplyr::tibble(windowStart = x[1], windowEnd = x[2], windowName = nam)
+    x <- dplyr::tibble(
+      window_start = x[1], window_end = x[2], window_name = nam
+    )
     return(x)
   }) %>%
     dplyr::bind_rows() %>%
-    dplyr::mutate(windowId = dplyr::row_number()) %>%
-    dplyr::select("windowId", "windowName", "windowStart", "windowEnd")
+    dplyr::mutate(window_id = dplyr::row_number()) %>%
+    dplyr::select("window_id", "window_name", "window_start", "window_end")
 
+  # filter the cohort and get the targetCohortId if not specified
   if (!is.null(targetCohortId)) {
     targetCohort <- cdm[[targetCohortName]] %>%
       dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId)
@@ -203,18 +206,70 @@ largeScaleCharacterization <- function(cdm,
       dplyr::pull()
   }
 
+  # get the distinct subjects with their observation period
   subjects <- targetCohort %>%
-    dplyr::select("person_id" = "subject_id", "cohort_start_date") %>%
-    dplyr::distinct()
+    dplyr::select(
+      "person_id" = "subject_id",
+      "cohort_start_date",
+      "cohort_end_date"
+    ) %>%
+    dplyr::distinct() %>%
+    dplyr::inner_join(
+      cdm[["observation_period"]] %>%
+        dplyr::select(
+          "person_id",
+          "observation_period_start_date",
+          "observation_period_end_date"
+        ),
+      by = "person_id"
+    )
 
+  # for each one of the windows we get which are the subjects contributing to it
+  subjects_denominator <- subjects %>%
+    dplyr::mutate(dif_start = dbplyr::sql(sqlDiffDays(
+      CDMConnector::dbms(attr(cdm, "dbcon")),
+      "cohort_start_date",
+      "observation_period_start_date"
+    ))) %>%
+    dplyr::mutate(dif_end = dbplyr::sql(sqlDiffDays(
+      CDMConnector::dbms(attr(cdm, "dbcon")),
+      "cohort_start_date",
+      "observation_period_end_date"
+    ))) %>%
+    dplyr::mutate(to_merge = 1) %>%
+    dplyr::inner_join(
+      temporalWindows %>%
+        dplyr::mutate(to_merge = 1),
+      by = "to_merge",
+      copy = TRUE
+    ) %>%
+    dplyr::filter(
+      is.na(.data$window_end) | .data$dif_start <= .data$window_end
+    ) %>%
+    dplyr::filter(
+      is.na(.data$window_start) | .data$dif_end >= .data$window_start
+    ) %>%
+    dplyr::select(
+      "person_id", "cohort_start_date", "cohort_end_date", "window_id"
+    ) %>%
+    dplyr::compute()
+
+  # get the codes observed in each window for each one of the subjects, only
+  # events in the observation window will be observed. The result is a
+  # temporary table in the database
   characterizedTable <- lapply(tablesToCharacterize, function(table_name) {
+    # get start date depending on the table
     start_date <- get_start_date[[table_name]]
+    # get end date depending on the table
     end_date <- get_end_date[[table_name]]
+    # get concept id depending on the table
     concept_id <- get_concept[[table_name]]
-
+    # subset the table to the study subjects
     study_table <- cdm[[table_name]] %>%
       dplyr::inner_join(subjects, by = "person_id") %>%
+      # rename start date
       dplyr::rename("start_date" = .env$start_date)
+    # rename or create end date
     if (is.null(end_date)) {
       study_table <- study_table %>%
         dplyr::mutate(end_date = .data$start_date)
@@ -223,15 +278,20 @@ largeScaleCharacterization <- function(cdm,
         dplyr::rename("end_date" = .env$end_date)
     }
     study_table <- study_table %>%
+      # rename concept id
       dplyr::rename("concept_id" = .env$concept_id) %>%
-      dplyr::select(
-        "person_id", "start_date", "end_date", "concept_id", "cohort_start_date"
-      ) %>%
+      # obtain observations inside the observation period only
+      dplyr::filter(.data$start_date <= .data$observation_period_end_date) %>%
+      dplyr::filter(.data$end_date >= .data$observation_period_start_date) %>%
+      # obtain the time difference between the start of the event and the
+      # cohort start date
       dplyr::mutate(days_difference_start = dbplyr::sql(sqlDiffDays(
         CDMConnector::dbms(attr(cdm, "dbcon")),
         "cohort_start_date",
         "start_date"
       )))
+    # obtain the time difference between the end of the event and the cohort
+    # start date
     if (isTRUE(overlap)) {
       study_table <- study_table %>%
         dplyr::mutate(days_difference_end = dbplyr::sql(sqlDiffDays(
@@ -244,41 +304,38 @@ largeScaleCharacterization <- function(cdm,
         dplyr::mutate(days_difference_end = .data$days_difference_start)
     }
     study_table <- study_table %>%
+      # merge the table that we want to characterize with all the temporal
+      # windows
+      dplyr::mutate(to_merge = 1) %>%
+      dplyr::inner_join(
+        temporalWindows %>%
+          dplyr::mutate(to_merge = 1),
+        by = "to_merge",
+        copy = TRUE
+      ) %>%
+      # get only the events that start before the end of the window
+      dplyr::filter(
+        is.na(.data$window_end) |
+          .data$days_difference_start <= .data$window_end
+      ) %>%
+      # get only events that end/start (depending if overlap = TRUE/FALSE) after
+      # the start of the window
+      dplyr::filter(
+        is.na(.data$window_start) |
+          .data$days_difference_end >= .data$window_start
+      ) %>%
+      # get only distinct events per window id
+      dplyr::select(
+        "person_id", "cohort_start_date", "cohort_end_date", "window_id",
+        "concept_id"
+      ) %>%
+      dplyr::distinct() %>%
       dplyr::compute()
 
-    for (i in 1:nrow(temporalWindows)) {
-      windowStart <- temporalWindows$windowStart[i]
-      windowEnd <- temporalWindows$windowEnd[i]
-      windowId <- temporalWindows$windowId[i]
-      if (!is.na(windowEnd) & is.na(windowStart)) {
-        study_table_i <- study_table %>%
-          dplyr::filter(.data$days_difference_start <= .env$windowEnd)
-      } else if (is.na(windowEnd) & !is.na(windowStart)) {
-        study_table_i <- study_table %>%
-          dplyr::filter(.data$days_difference_end >= .env$windowStart)
-      } else if (!is.na(windowEnd) & !is.na(windowStart)) {
-        study_table_i <- study_table %>%
-          dplyr::filter(
-            .data$days_difference_start <= .env$windowEnd &
-              .data$days_difference_end >= .env$windowStart
-          )
-      }
-      study_table_i <- study_table_i %>%
-        dplyr::select("person_id", "concept_id", "cohort_start_date") %>%
-        dplyr::distinct() %>%
-        dplyr::mutate(window_id = .env$windowId) %>%
-        dplyr::compute()
-      if (i == 1) {
-        study_tab <- study_table_i
-      } else {
-        study_tab <- study_tab %>%
-          dplyr::union_all(study_table_i)
-      }
-    }
-    study_tab <- study_tab %>% dplyr::compute()
-    return(study_tab)
+    return(study_table)
   })
 
+  # union all the tables into a temporal table
   for (i in 1:length(characterizedTable)) {
     if (i == 1) {
       characterizedTables <- characterizedTable[[i]] %>%
@@ -291,30 +348,40 @@ largeScaleCharacterization <- function(cdm,
         )
     }
   }
-
   characterizedTables <- characterizedTables %>% dplyr::compute()
 
-  # denominators
-  # denominator <- list()
-  # cdm$observation_period <-
-  # for (k in 1:nrow(temporalWindows)){
-  #
-  # }
-
+  # if we want to summarise the data we count the number of counts for each
+  # event, window and table
   if (summarise == TRUE) {
     for (k in 1:length(targetCohortId)) {
       characterizedCohort <- targetCohort %>%
         dplyr::filter(.data$cohort_definition_id == !!targetCohortId[k]) %>%
-        dplyr::select("person_id" = "subject_id", "cohort_start_date") %>%
+        dplyr::select(
+          "person_id" = "subject_id", "cohort_start_date", "cohort_end_date"
+        ) %>%
         dplyr::inner_join(
           characterizedTables,
-          by = c("person_id", "cohort_start_date")
+          by = c("person_id", "cohort_start_date", "cohort_end_date")
         ) %>%
         dplyr::group_by(.data$concept_id, .data$window_id, .data$table_id) %>%
         dplyr::tally() %>%
         dplyr::ungroup() %>%
+        dplyr::rename("counts" = "n") %>%
         dplyr::collect() %>%
         dplyr::mutate(cohort_definition_id = targetCohortId[k])
+      denominator <- targetCohort %>%
+        dplyr::filter(.data$cohort_definition_id == !!targetCohortId[k]) %>%
+        dplyr::inner_join(
+          subjects_denominator,
+          by = c("person_id", "cohort_start_date", "cohort_end_date")
+        ) %>%
+        dplyr::group_by(.data$window_id) %>%
+        dplyr::tally() %>%
+        dplyr::ungroup() %>%
+        dplyr::rename("in_observation" = "n") %>%
+        dplyr::collect()
+      characterizedCohort <- characterizedCohort %>%
+        dplyr::inner_join(denominator, by = "window_id")
       if (k == 1) {
         characterizedCohortk <- characterizedCohort
       } else {
@@ -323,11 +390,21 @@ largeScaleCharacterization <- function(cdm,
       }
     }
     characterizedTables <- characterizedCohortk %>%
-      dplyr::mutate(obscured = dplyr::if_else(
-        .data$n < .env$minimumCellCount, TRUE, FALSE
+      dplyr::mutate(obscured_counts = dplyr::if_else(
+        .data$counts < .env$minimumCellCount, TRUE, FALSE
       )) %>%
-      dplyr::mutate(n = dplyr::if_else(
-        .data$obscured == TRUE, as.numeric(NA), .data$n
+      dplyr::mutate(counts = dplyr::if_else(
+        .data$obscured_counts == TRUE,
+        as.numeric(NA),
+        .data$counts
+      )) %>%
+      dplyr::mutate(obscured_in_observation = dplyr::if_else(
+        .data$in_observation < .env$minimumCellCount, TRUE, FALSE
+      )) %>%
+      dplyr::mutate(in_observation = dplyr::if_else(
+        .data$obscured_in_observation == TRUE,
+        as.numeric(NA),
+        .data$in_observation
       )) %>%
       dplyr::relocate("cohort_definition_id", .before = "concept_id")
   }
