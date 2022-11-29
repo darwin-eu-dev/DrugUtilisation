@@ -138,6 +138,29 @@ test_that("check all estimates", {
 })
 
 # check aggregation
+test_that("check all estimates", {
+  cdm <- mockDrugUtilisation(person = dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 1),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+    )),
+    number_x = c(1, 2, 3, 6),
+    carcola = c(5, 6, 9, 7),
+    piscina = c(TRUE, FALSE, TRUE, FALSE),
+    cara = c("a", "b", "b", "a")
+  ),
+  condition_occurrence = dplyr::tibble()
+    )
+
+  expect_no_error(result <- summariseDoseTable(
+    cdm = cdm, aggegationCohortName = "condition_occurrence",
+    doseCohortName = "person", variables = c("number_x", "carcola")
+  ))
+})
 
 test_that("check obscure counts", {
   cdm1 <- mockDrugUtilisation(person = dplyr::tibble(
