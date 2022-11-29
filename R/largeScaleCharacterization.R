@@ -270,7 +270,7 @@ largeScaleCharacterization <- function(cdm,
       # rename start date
       dplyr::rename("start_date" = .env$start_date)
     # rename or create end date
-    if (is.null(end_date)) {
+    if (is.null(end_date) || isFALSE(overlap)) {
       study_table <- study_table %>%
         dplyr::mutate(end_date = .data$start_date)
     } else {
@@ -292,16 +292,16 @@ largeScaleCharacterization <- function(cdm,
       )))
     # obtain the time difference between the end of the event and the cohort
     # start date
-    if (isTRUE(overlap)) {
+    if (is.null(end_date) || isFALSE(overlap)) {
+      study_table <- study_table %>%
+        dplyr::mutate(days_difference_end = .data$days_difference_start)
+    } else {
       study_table <- study_table %>%
         dplyr::mutate(days_difference_end = dbplyr::sql(sqlDiffDays(
           CDMConnector::dbms(attr(cdm, "dbcon")),
           "cohort_start_date",
           "end_date"
         )))
-    } else {
-      study_table <- study_table %>%
-        dplyr::mutate(days_difference_end = .data$days_difference_start)
     }
     study_table <- study_table %>%
       # merge the table that we want to characterize with all the temporal
@@ -350,6 +350,8 @@ largeScaleCharacterization <- function(cdm,
   }
   characterizedTables <- characterizedTables %>% dplyr::compute()
 
+
+
   # if we want to summarise the data we count the number of counts for each
   # event, window and table
   if (summarise == TRUE) {
@@ -380,14 +382,16 @@ largeScaleCharacterization <- function(cdm,
         dplyr::tally() %>%
         dplyr::ungroup() %>%
         dplyr::rename("in_observation" = "n") %>%
-        dplyr::collect()
-      characterizedCohort <- characterizedCohort %>%
-        dplyr::inner_join(denominator, by = "window_id")
+        dplyr::collect() %>%
+        dplyr::mutate(cohort_definition_id = targetCohortId[k])
       if (k == 1) {
         characterizedCohortk <- characterizedCohort
+        denominatork <- denominator
       } else {
         characterizedCohortk <- characterizedCohortk %>%
           dplyr::union_all(characterizedCohort)
+        denominatork <- denominatork %>%
+          dplyr::union_all(denominator)
       }
     }
     characterizedTables <- characterizedCohortk %>%
@@ -399,6 +403,8 @@ largeScaleCharacterization <- function(cdm,
         as.numeric(NA),
         .data$counts
       )) %>%
+      dplyr::relocate("cohort_definition_id", .before = "concept_id")
+    subjects_denominator <- denominatork %>%
       dplyr::mutate(obscured_in_observation = dplyr::if_else(
         .data$in_observation < .env$minimumCellCount, TRUE, FALSE
       )) %>%
@@ -407,11 +413,13 @@ largeScaleCharacterization <- function(cdm,
         as.numeric(NA),
         .data$in_observation
       )) %>%
-      dplyr::relocate("cohort_definition_id", .before = "concept_id")
+      dplyr::relocate("cohort_definition_id", .before = "window_id")
+
   }
 
   result <- list()
   result$characterization <- characterizedTables
+  result$denominator <- subjects_denominator
   result$temporalWindows <- temporalWindows
   result$tablesToCharacterize <- tablesToCharacterize
   result$overlap <- overlap
