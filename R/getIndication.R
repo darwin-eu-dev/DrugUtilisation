@@ -294,7 +294,7 @@ getIndication <- function(cdm,
               dplyr::left_join(table_indication,
                                by = c("subject_id" = "person_id")) %>%
               dplyr::mutate(dif_time_unknown_indication = dbplyr::sql(
-                SqlUtilities::sqlDiffDays(
+                sqlDiffDays(
                   CDMConnector::dbms(attr(cdm, "dbcon")),
                   "unknown_indication_start_date",
                   "cohort_start_date"
