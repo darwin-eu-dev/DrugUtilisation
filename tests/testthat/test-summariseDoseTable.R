@@ -121,14 +121,14 @@ test_that("check all estimates", {
     piscina = c(TRUE, FALSE, TRUE, FALSE),
     cara = c("a", "b", "b", "a")
   ))
-  for (k in 1:length(all_estimates)){
+  for (k in 1:length(all_estimates)) {
     expect_no_error(res <- summariseDoseTable(
       cdm = cdm, doseCohortName = "person", cohortId = 1,
       variables = c("number_x", "carcola"), estimates = all_estimates[k]
     ))
-    expect_true(nrow(res[res$variable == c("number_x"),]) == 1)
+    expect_true(nrow(res[res$variable == c("number_x"), ]) == 1)
     expect_true(res$estimate[res$variable == c("number_x")] == all_estimates[k])
-    expect_true(nrow(res[res$variable == c("carcola"),]) == 1)
+    expect_true(nrow(res[res$variable == c("carcola"), ]) == 1)
     expect_true(res$estimate[res$variable == c("carcola")] == all_estimates[k])
   }
   expect_no_error(result <- summariseDoseTable(
@@ -139,22 +139,71 @@ test_that("check all estimates", {
 
 # check aggregation
 test_that("check all estimates", {
-  cdm <- mockDrugUtilisation(person = dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 1),
-    cohort_start_date = as.Date(c(
-      "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-    )),
-    number_x = c(1, 2, 3, 6),
-    carcola = c(5, 6, 9, 7),
-    piscina = c(TRUE, FALSE, TRUE, FALSE),
-    cara = c("a", "b", "b", "a")
-  ),
-  condition_occurrence = dplyr::tibble()
+  cdm <- mockDrugUtilisation(
+    person = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 1, 2),
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      )),
+      number_x = c(1, 2, 3, 6),
+      carcola = c(5, 6, 9, 7)
+    ),
+    condition_occurrence = dplyr::tibble(
+      cohort_definition_id = c(1, 3, 2),
+      subject_id = c(1, 2, 8),
+      cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2020-05-01")),
+      cohort_end_date = as.Date(c("2020-01-10", "2020-01-11", "2020-05-01"))
     )
+  )
+  # dose does not contain cohort_definition_id
+  # N dose N aggregation N cohort --> error
+  expect_error(
+    summariseDoseTable(
+      cdm = cdm,
+      aggegationCohortName = "condition_occurrence",
+      doseCohortName = "person"
+    )
+  )
+  # N dose N aggregation Y cohort --> error
+  # N dose Y aggregation N cohort --> error
+  # N dose Y aggregation Y cohort --> error
+  # Y dose N aggregation N cohort --> okay
+  # Y dose N aggregation Y cohort --> warning
+  # Y dose Y aggregation N cohort --> okay
+  # Y dose Y aggregation Y cohort --> okay
+  # dose does contains cohort_definition_id
+  cdm <- mockDrugUtilisation(
+    person = dplyr::tibble(
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      )),
+      number_x = c(1, 2, 3, 6),
+      carcola = c(5, 6, 9, 7)
+    ),
+    condition_occurrence = dplyr::tibble(
+      cohort_definition_id = c(1, 3, 2),
+      subject_id = c(1, 2, 8),
+      cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2020-05-01")),
+      cohort_end_date = as.Date(c("2020-01-10", "2020-01-11", "2020-05-01"))
+    )
+  )
+  # N dose N aggregation N cohort --> error
+  # N dose N aggregation Y cohort --> error
+  # N dose Y aggregation N cohort --> error
+  # N dose Y aggregation Y cohort --> error
+  # Y dose N aggregation N cohort --> okay
+  # Y dose N aggregation Y cohort --> okay
+  # Y dose Y aggregation N cohort --> warning
+  # Y dose Y aggregation Y cohort --> warning
+  # Empty cohortId behaviour
 
   expect_no_error(result <- summariseDoseTable(
     cdm = cdm, aggegationCohortName = "condition_occurrence",

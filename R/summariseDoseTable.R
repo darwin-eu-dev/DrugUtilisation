@@ -58,11 +58,13 @@ summariseDoseTable <- function(cdm,
 
   # check doseCohortName
   checkmate::assertCharacter(doseCohortName, len = 1, add = errorMessage)
-  checkmate::assertTRUE(all(c(
-    "subject_id", "cohort_start_date", "cohort_end_date"
-  ) %in% colnames(cdm[[doseCohortName]])),
-  add = errorMessage
-  )
+  if (is.character(doseCohortName) && length(doseCohortName) == 1) {
+    checkmate::assertTRUE(all(c(
+      "subject_id", "cohort_start_date", "cohort_end_date"
+    ) %in% colnames(cdm[[doseCohortName]])),
+    add = errorMessage
+    )
+  }
 
   # check aggegationCohortName
   checkmate::assertCharacter(
