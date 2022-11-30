@@ -9,8 +9,12 @@ mockDrugUtilisation(
   drug_strength = NULL,
   observation_period = NULL,
   condition_occurrence = NULL,
+  concept_ancestor = NULL,
   person = NULL,
+  cohort1 = NULL,
+  cohort2 = NULL,
   drug_concept_id_size = 5,
+  ancestor_concept_id_size = 5,
   condition_concept_id_size = 5,
   ingredient_concept_id_size = 1,
   drug_exposure_size = 10,
@@ -39,9 +43,17 @@ mockDrugUtilisation(
 
 \item{condition_occurrence}{default null user can define its own table}
 
+\item{concept_ancestor}{the concept ancestor table}
+
 \item{person}{default null user can define its own table}
 
+\item{cohort1}{cohort table for test to run in getindication}
+
+\item{cohort2}{cohort table for test to run in getindication}
+
 \item{drug_concept_id_size}{number of unique drug concept id}
+
+\item{ancestor_concept_id_size}{the size of ceoncept ancestor table}
 
 \item{condition_concept_id_size}{number of unique row in the concept table}
 

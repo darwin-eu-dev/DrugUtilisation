@@ -7,39 +7,27 @@
 getIndication(
   cdm,
   targetCohortName,
-  targetCohortDefinitionIds = NULL,
+  targetCohortDefinitionIds,
   indicationCohortName,
-  indicationCohortDefinitionIds = NULL,
   indicationDefinitionSet,
-  indicationGap = 0,
-  unknownIndication = TRUE,
-  unknownIndicarionTables = c("condition_occurrence", "observation"),
-  indicationTableName = "indication_table",
-  verbose = FALSE
+  indicationGap,
+  unknownIndicationTables = c("condition_occurrence", "observation")
 )
 }
 \arguments{
-\item{cdm}{cdm}
+\item{cdm}{name of the cdm object}
 
-\item{targetCohortName}{targetCohortName}
+\item{targetCohortName}{cohort table in the cdm contain list of target cohort for patients}
 
-\item{targetCohortDefinitionIds}{targetCohortDefinitionIds}
+\item{targetCohortDefinitionIds}{cohort definition ids to include to generate indication}
 
-\item{indicationCohortName}{indicationCohortName}
+\item{indicationCohortName}{indication table that contain list of indication}
 
-\item{indicationCohortDefinitionIds}{indicationCohortDefinitionIds}
+\item{indicationDefinitionSet}{definition of indication of interest, this function will only get indication for indication contain in this set}
 
-\item{indicationDefinitionSet}{indicationDefinitionSet}
+\item{indicationGap}{the maximum gap between the cohort start date and indication start date}
 
-\item{indicationGap}{indicationGap}
-
-\item{unknownIndication}{unknownIndication}
-
-\item{unknownIndicarionTables}{unknownIndicarionTables}
-
-\item{indicationTableName}{indicationTableName}
-
-\item{verbose}{verbose}
+\item{unknownIndicationTables}{tables to get extra indication from the default is to include condition_occurence and obersvation table in the cdm}
 }
 \description{
 Get indication for a target cohort

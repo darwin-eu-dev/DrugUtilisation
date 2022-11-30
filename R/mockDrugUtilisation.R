@@ -40,39 +40,47 @@
 #' @param latest_condition_start_date the latest condition start date for patient format "dd-mm-yyyy"
 #' @param min_days_to_condition_end the minimum number of days of the condition integer
 #' @param max_days_to_condition_end the maximum number of days of the condition integer
-#'
+#' @param concept_ancestor the concept ancestor table
+#' @param ancestor_concept_id_size the size of ceoncept ancestor table
+#' @param cohort1 cohort table for test to run in getindication
+#' @param cohort2 cohort table for test to run in getindication
 #' @return
 #' @export
 #'
 #' @examples
 mockDrugUtilisation <- function(drug_exposure = NULL,
-                             drug_strength = NULL,
-                             observation_period = NULL,
-                             condition_occurrence = NULL,
-                             person = NULL,
-                             drug_concept_id_size = 5,
-                             condition_concept_id_size = 5,
-                             ingredient_concept_id_size = 1,
-                             drug_exposure_size = 10,
-                             patient_size = 1,
-                             min_drug_exposure_start_date = "2000-01-01",
-                             max_drug_exposure_start_date = "2020-01-01",
-                             earliest_date_of_birth = NULL,
-                             latest_date_of_birth = NULL,
-                             earliest_observation_start_date = NULL,
-                             latest_observation_start_date = NULL,
-                             min_days_to_observation_end = NULL,
-                             max_days_to_observation_end = NULL,
-                             earliest_condition_start_date = NULL,
-                             latest_condition_start_date = NULL,
-                             min_days_to_condition_end = NULL,
-                             max_days_to_condition_end = NULL,
-                             seed = 1) {
+                                drug_strength = NULL,
+                                observation_period = NULL,
+                                condition_occurrence = NULL,
+                                concept_ancestor = NULL,
+                                person = NULL,
+                                cohort1 = NULL,
+                                cohort2 = NULL,
+                                drug_concept_id_size = 5,
+                                ancestor_concept_id_size = 5,
+                                condition_concept_id_size = 5,
+                                ingredient_concept_id_size = 1,
+                                drug_exposure_size = 10,
+                                patient_size = 1,
+                                min_drug_exposure_start_date = "2000-01-01",
+                                max_drug_exposure_start_date = "2020-01-01",
+                                earliest_date_of_birth = NULL,
+                                latest_date_of_birth = NULL,
+                                earliest_observation_start_date = NULL,
+                                latest_observation_start_date = NULL,
+                                min_days_to_observation_end = NULL,
+                                max_days_to_observation_end = NULL,
+                                earliest_condition_start_date = NULL,
+                                latest_condition_start_date = NULL,
+                                min_days_to_condition_end = NULL,
+                                max_days_to_condition_end = NULL,
+                                seed = 1) {
   #checks
   errorMessage <- checkmate::makeAssertCollection()
   checkmate::assert_int(drug_exposure_size, lower = 1)
   checkmate::assert_int(patient_size, lower = 1)
   checkmate::assert_int(drug_concept_id_size, lower = 1)
+  checkmate::assert_int(ancestor_concept_id_size, lower = 1)
   checkmate::assert_int(ingredient_concept_id_size, lower = 1)
   checkmate::assertTRUE(drug_exposure_size >= patient_size)
   checkmate::assert_tibble(person, null.ok = TRUE)
@@ -161,7 +169,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
 
 
 
-   #drug_exposure
+  #drug_exposure
   if (is.null(drug_exposure)) {
     drug_exposure_id <-
       as.integer(seq(1:drug_exposure_size)) #generate number of unique drug_exposure_id
@@ -208,7 +216,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
         drug_exposure_start_date = drug_exposure_start_date,
         drug_exposure_end_date = drug_exposure_end_date,
         quantity = as.numeric(quantity)
-      ##  days_supply = as.numeric(days_supply)
+        ##  days_supply = as.numeric(days_supply)
 
       )
   }
@@ -252,7 +260,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
       earliest_observation_start_date <- as.Date("2005-01-01")
     }
     if (is.null(latest_observation_start_date)) {
-      latest_observation_start_date <- as.Date("2020-01-01")
+      latest_observation_start_date <- as.Date("2010-01-01")
     }
     obs_start_date <-
       sample(seq(
@@ -266,10 +274,10 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
 
     # define min and max day to condition end
     if (is.null(min_days_to_observation_end)) {
-      min_days_to_observation_end <- 1
+      min_days_to_observation_end <- 5000
     }
     if (is.null(max_days_to_observation_end)) {
-      max_days_to_observation_end <- 1000
+      max_days_to_observation_end <- 50000
     }
 
     obs_end_date <-
@@ -330,24 +338,24 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   }
 
 
-    if (is.null(person)) {
-      person <- tibble::tibble(
-        person_id = id,
-        gender_concept_id = gender_id,
-        year_of_birth = DOB_year,
-        month_of_birth = DOB_month,
-        day_of_birth = DOB_day
-      )
-    }
+  if (is.null(person)) {
+    person <- tibble::tibble(
+      person_id = id,
+      gender_concept_id = gender_id,
+      year_of_birth = DOB_year,
+      month_of_birth = DOB_month,
+      day_of_birth = DOB_day
+    )
+  }
 
-    if (is.null(observation_period)) {
-      observation_period <- tibble::tibble(
-        observation_period_id = id,
-        person_id = id,
-        observation_period_start_date = obs_start_date,
-        observation_period_end_date = obs_end_date
-      )
-    }
+  if (is.null(observation_period)) {
+    observation_period <- tibble::tibble(
+      observation_period_id = id,
+      person_id = id,
+      observation_period_start_date = obs_start_date,
+      observation_period_end_date = obs_end_date
+    )
+  }
 
 
 
@@ -361,10 +369,35 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
     )
   }
 
+  if (is.null(concept_ancestor)) {
+    ancestor_concept_id <-
+      seq(1:ancestor_concept_id_size)
+    descendant_concept_id <-
+      seq((ancestor_concept_id_size+1):(ancestor_concept_id_size+ancestor_concept_id_size))
+    concept_ancestor <- data.frame(
+      ancestor_concept_id = as.numeric(ancestor_concept_id),
+      descendant_concept_id = as.numeric(descendant_concept_id)
+    )
 
-
-
-
+  }
+  #cohort table 1
+  if (is.null(cohort1)) {
+    cohort1 <- tibble::tibble(
+      cohort_definition_id = c(1,1,1,2),
+      subject_id = c(1,1,2,3),
+      cohort_start_date = as.Date(c("2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01")),
+      cohort_end_date = as.Date(c("2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"))
+    )
+  }
+  #cohort table 2
+  if (is.null(cohort2)) {
+    cohort2 <- tibble::tibble(
+      cohort_definition_id = c(1,1,2,3,1),
+      subject_id = c(1,3,1,2,1),
+      cohort_start_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25")),
+      cohort_end_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"))
+    )
+  }
   # into in-memory database
   db <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
 
@@ -399,15 +432,35 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                       overwrite = TRUE)
   })
 
+  DBI::dbWithTransaction(db, {
+    DBI::dbWriteTable(db, "concept_ancestor",
+                      concept_ancestor,
+                      overwrite = TRUE)
+  })
+
+  DBI::dbWithTransaction(db, {
+    DBI::dbWriteTable(db, "cohort1",
+                      cohort1,
+                      overwrite = TRUE)
+  })
+
+  DBI::dbWithTransaction(db, {
+    DBI::dbWriteTable(db, "cohort2",
+                      cohort2,
+                      overwrite = TRUE)
+  })
+
   cdm <- CDMConnector::cdm_from_con(
     db,
     cdm_tables = c(
       "drug_strength",
       "drug_exposure",
       "person",
+      "concept_ancestor",
       "observation_period",
       "condition_occurrence"
-    )
+    ),
+    cohort_tables = c("cohort1","cohort2")
   )
 
   return(cdm)
