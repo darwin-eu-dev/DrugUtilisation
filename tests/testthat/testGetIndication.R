@@ -1,4 +1,4 @@
-
+library(testthat)
 
 test_that("test case single indication", {
   targetCohortName = dplyr::tibble(
@@ -58,7 +58,7 @@ test_that("test case single indication", {
   ))
 
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_0$indication[["0"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -83,7 +83,7 @@ test_that("test case single indication", {
     unknownIndicationTables = NULL
   ))
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_1$indication[["1"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -108,7 +108,7 @@ test_that("test case single indication", {
     indicationGap = 2
   ))
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_2$indication[["2"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -135,7 +135,7 @@ test_that("test case single indication", {
 
 
   #check for indication NA all indication after
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_NA$indication[["Any"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 1),
@@ -212,7 +212,7 @@ test_that("test case single indication with unknown indication table", {
   ))
 
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_0$indication[["0"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -237,7 +237,7 @@ test_that("test case single indication with unknown indication table", {
     unknownIndicationTables = "condition_occurrence"
   ))
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_1$indication[["1"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -262,7 +262,7 @@ test_that("test case single indication with unknown indication table", {
     indicationGap = 6
   ))
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_6$indication[["6"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -339,7 +339,7 @@ test_that("test case multiple indication with unknown indication table", {
   ))
 
   #check for indication 0
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_m$indication[["0"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -355,7 +355,7 @@ test_that("test case multiple indication with unknown indication table", {
   ))
 
   #check for indication 1
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_m$indication[["1"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -370,7 +370,7 @@ test_that("test case multiple indication with unknown indication table", {
     )
   ))
   #check for indication 6
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_m$indication[["6"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -448,7 +448,7 @@ test_that("test case multiple indication", {
   ))
 
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_m$indication[["0"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -464,7 +464,7 @@ test_that("test case multiple indication", {
   ))
   #check for indication 1
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_m$indication[["1"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
@@ -480,7 +480,7 @@ test_that("test case multiple indication", {
   ))
   #check for indication 2
 
-  expect_true(setequal(
+  expect_true(dplyr::all_equal(
     res_m$indication[["2"]] %>% dplyr::collect(),
     dplyr::tibble(
       cohort_definition_id = c(1, 1, 1),
