@@ -462,6 +462,21 @@ checkTableExists <- function(cdm, tableName, messageStore) {
 }
 
 
+#' Compute the difference in days between 2 variables in a database table.
+#'
+#' @param dialect the database dialect
+#' @param variable1 first date variable
+#' @param variable2 second date variable
+#'
+#' @return the sql to calculate the difference in days between the 2 variables
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' date_diff_sql_code <- sqlDiffDays(dialect = "duckdb",
+#'                                   variable1 = "date_1",
+#'                                   variable2 = "date_2")
+#' }
 sqlDiffDays <- function(dialect, variable1, variable2) {
   SqlRender::translate(
     SqlRender::render("DATEDIFF(DAY, @variable1, @variable2)",
@@ -471,6 +486,23 @@ sqlDiffDays <- function(dialect, variable1, variable2) {
 }
 
 
+#' Calculate accurate age in different sql
+#'
+#' @param dialect sql dialects: 'Microsoft Sql Server', 'Oracle',
+#' 'PostgreSql', 'Amazon RedShift', 'Apache Impala',
+#' 'IBM Netezza', 'Google BigQuery', 'Microsoft PDW', 'Snowflake',
+#' @param dob the name of date of birth column in data
+#' @param dateOfInterest the name of target date in data
+#'
+#' @return the sql to calculate age
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' sql_age <- sqlGetAge(dialect = "duckdb",
+#'                      dob = "dob",
+#'                      date_of_interest = "date")
+#' }
 sqlGetAge <- function(dialect, dob, dateOfInterest) {
   SqlRender::translate(
     SqlRender::render("((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
