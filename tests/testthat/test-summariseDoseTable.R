@@ -137,11 +137,9 @@ test_that("check all estimates", {
   ))
 })
 
-# check aggregation
 test_that("check all estimates", {
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
-      cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 2, 1),
       cohort_start_date = as.Date(c(
         "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
@@ -153,31 +151,61 @@ test_that("check all estimates", {
       carcola = c(5, 6, 9, 7)
     ),
     condition_occurrence = dplyr::tibble(
-      cohort_definition_id = c(1, 3, 2),
-      subject_id = c(1, 2, 8),
-      cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2020-05-01")),
-      cohort_end_date = as.Date(c("2020-01-10", "2020-01-11", "2020-05-01"))
+      cohort_definition_id = c(1, 3),
+      subject_id = c(1, 1),
+      cohort_start_date = as.Date(c("2020-01-01", "2020-01-01")),
+      cohort_end_date = as.Date(c("2020-01-10", "2020-01-11"))
     )
   )
   # dose does not contain cohort_definition_id
   # N dose N aggregation N cohort --> error
-  expect_error(
-    summariseDoseTable(
-      cdm = cdm,
-      aggegationCohortName = "condition_occurrence",
-      doseCohortName = "person"
-    )
-  )
+  expect_error(summariseDoseTable(
+    cdm = cdm
+  ))
   # N dose N aggregation Y cohort --> error
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    cohortId = 1
+  ))
   # N dose Y aggregation N cohort --> error
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    aggegationCohortName = "condition_occurrence"
+  ))
   # N dose Y aggregation Y cohort --> error
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    aggegationCohortName = "condition_occurrence",
+    cohortId = 1
+  ))
   # Y dose N aggregation N cohort --> okay
+  expect_no_error(summariseDoseTable(
+    cdm = cdm,
+    doseCohortName = "person"
+  ))
   # Y dose N aggregation Y cohort --> warning
+  expect_warning(summariseDoseTable(
+    cdm = cdm,
+    doseCohortName = "person",
+    cohortId = 2
+  ))
   # Y dose Y aggregation N cohort --> okay
+  expect_no_error(summariseDoseTable(
+    cdm = cdm,
+    doseCohortName = "person",
+    aggegationCohortName = "condition_occurrence"
+  ))
   # Y dose Y aggregation Y cohort --> okay
+  expect_no_error(summariseDoseTable(
+    cdm = cdm,
+    doseCohortName = "person",
+    aggegationCohortName = "condition_occurrence",
+    cohortId = 1
+  ))
   # dose does contains cohort_definition_id
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
+      cohort_definition_id = c(1, 2, 1, 3),
       subject_id = c(1, 1, 2, 1),
       cohort_start_date = as.Date(c(
         "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
@@ -189,25 +217,55 @@ test_that("check all estimates", {
       carcola = c(5, 6, 9, 7)
     ),
     condition_occurrence = dplyr::tibble(
-      cohort_definition_id = c(1, 3, 2),
-      subject_id = c(1, 2, 8),
-      cohort_start_date = as.Date(c("2020-01-01", "2020-01-01", "2020-05-01")),
-      cohort_end_date = as.Date(c("2020-01-10", "2020-01-11", "2020-05-01"))
+      cohort_definition_id = c(1, 3),
+      subject_id = c(1, 1),
+      cohort_start_date = as.Date(c("2020-01-01", "2020-01-01")),
+      cohort_end_date = as.Date(c("2020-01-10", "2020-01-11"))
     )
   )
   # N dose N aggregation N cohort --> error
+  expect_error(summariseDoseTable(
+    cdm = cdm
+  ))
   # N dose N aggregation Y cohort --> error
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    cohortId = 1
+  ))
   # N dose Y aggregation N cohort --> error
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    aggegationCohortName = "condition_occurrence"
+  ))
   # N dose Y aggregation Y cohort --> error
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    aggegationCohortName = "condition_occurrence",
+    cohortId = 1
+  ))
   # Y dose N aggregation N cohort --> okay
+  expect_no_error(summariseDoseTable(
+    cdm = cdm,
+    doseCohortName = "person"
+  ))
   # Y dose N aggregation Y cohort --> okay
+  expect_no_error(summariseDoseTable(
+    cdm = cdm,
+    doseCohortName = "person",
+    cohortId = 2
+  ))
   # Y dose Y aggregation N cohort --> warning
+  expect_warning(summariseDoseTable(
+    cdm = cdm,
+    doseCohortName = "person",
+    aggegationCohortName = "condition_occurrence"
+  ))
   # Y dose Y aggregation Y cohort --> warning
-  # Empty cohortId behaviour
-
-  expect_no_error(result <- summariseDoseTable(
-    cdm = cdm, aggegationCohortName = "condition_occurrence",
-    doseCohortName = "person", variables = c("number_x", "carcola")
+  expect_warning(summariseDoseTable(
+    cdm = cdm,
+    doseCohortName = "person",
+    aggegationCohortName = "condition_occurrence",
+    cohortId = 1
   ))
 })
 
