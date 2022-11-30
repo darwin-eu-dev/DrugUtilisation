@@ -156,7 +156,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
         dplyr::rename("concept_id" = "descendant_concept_id") %>%
         dplyr::collect()
     ) %>%
-    dplyr::select(-".data$include_descendants") %>%
+    dplyr::select(-"include_descendants") %>%
     dplyr::rename("drug_concept_id" = "concept_id")
   # eliminate the ones that is_excluded = TRUE
   conceptList <- conceptList %>%
@@ -339,7 +339,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     ) %>%
     dplyr::summarise(
       cohort_start_date = min(.data$interval_start_date, na.rm = TRUE),
-      cohort_end_date = min(.data$interval_end_date, na.rm = TRUE),
+      cohort_end_date = max(.data$interval_end_date, na.rm = TRUE),
       .groups = "drop"
     )
   # Select the final variables and compute
@@ -351,7 +351,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::compute()
 
   # Instantiate the cohorts in the database as permanent tables
-  cdm[[incidencePrevalenceCohortName]] <-
+  cdm[[incidencePrevalenceCohortName]] <-incidencePrevalenceCohort
     computePermanent(
       incidencePrevalenceCohort,
       incidencePrevalenceCohortName,
@@ -403,7 +403,7 @@ readConceptSets <- function(conceptSets) {
       "cohort_definition_id",
       "concept_id" = "CONCEPT_ID",
       "is_excluded" = "isExcluded",
-      ".data$include_descendants" = "includeDescendants"
+      "include_descendants" = "includeDescendants"
     )
   return(conceptList)
 }

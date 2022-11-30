@@ -111,7 +111,7 @@ computeAggregation <- function(cdm,
     #get gender from cohortprofile
     get_gender <-
       getGender(cdm = cdm,
-        cohortId = cohortid,
+        cohortIds = cohortid,
         cohortTable = personSummaryName)
 
 
@@ -133,7 +133,7 @@ computeAggregation <- function(cdm,
     #get age from cohortprofile
     get_age <-
       getAge(cdm = cdm,
-        cohortId = cohortid,
+        cohortIds = cohortid,
         cohortTable = personSummaryName)
 
 
