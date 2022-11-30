@@ -42,6 +42,7 @@
 #' @param max_days_to_condition_end the maximum number of days of the condition integer
 #' @param concept_ancestor the concept ancestor table
 #' @param ancestor_concept_id_size the size of ceoncept ancestor table
+
 #' @param cohort1 cohort table for test to run in getindication
 #' @param cohort2 cohort table for test to run in getindication
 #' @return
@@ -49,6 +50,7 @@
 #'
 #' @examples
 mockDrugUtilisation <- function(drug_exposure = NULL,
+
                                 drug_strength = NULL,
                                 observation_period = NULL,
                                 condition_occurrence = NULL,
@@ -75,6 +77,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                                 min_days_to_condition_end = NULL,
                                 max_days_to_condition_end = NULL,
                                 seed = 1) {
+
   #checks
   errorMessage <- checkmate::makeAssertCollection()
   checkmate::assert_int(drug_exposure_size, lower = 1)
@@ -380,6 +383,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
     )
 
   }
+
   #cohort table 1
   if (is.null(cohort1)) {
     cohort1 <- tibble::tibble(
@@ -398,6 +402,10 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
       cohort_end_date = as.Date(c("2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"))
     )
   }
+
+
+
+
   # into in-memory database
   db <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
 
@@ -438,6 +446,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                       overwrite = TRUE)
   })
 
+
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "cohort1",
                       cohort1,
@@ -449,6 +458,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                       cohort2,
                       overwrite = TRUE)
   })
+
 
   cdm <- CDMConnector::cdm_from_con(
     db,
