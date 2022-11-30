@@ -16,215 +16,263 @@
 
 #' Explain function
 #'
-#' @param cdm cdm
-#' @param personSummaryName personSummaryName
-#' @param genderAggregation genderAggregation
-#' @param ageGroupsAgregation ageGroupsAgregation
-#' @param ageGroups ageGroups the input is a list of user define age group
-#' @param indexYearAggregation indexYearAggregation
-#' @param indexYearMonthAggregation indexYearMonthAggregation
-#' @param initialDoseAggregation initialDoseAggregation
-#' @param meanDoseAggregation meanDoseAggregation
-#' @param cohortid cohortid stupid paramater
-#' @param aggregationTableName aggregationTableName
-#' @param verbose verbose
-#'
 #' @return
 #' @export
 #'
 #' @examples
 computeAggregation <- function(cdm,
-                               personSummaryName,
-                               genderAggregation = TRUE,
-                               ageGroupsAgregation = TRUE,
-                               ageGroups = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)) ,
-                               indexYearAggregation = TRUE,
-                               indexYearMonthAggregation = FALSE,
-                               initialDoseAggregation = TRUE,
-                               meanDoseAggregation = FALSE,
-                               cohortid = NULL,
-                               ## indicationAggregation,
-                               ## indicationTableName,
-                               aggregationTableName = "drug_utilisation_aggregation_table",
-                               verbose
-) {
-  #basic checks
+                               doseCohortName,
+                               sex = NULL,
+                               ageGroup = NULL,
+                               indexYear = NULL,
+                               initialDose = NULL,
+                               indicationCohortName = NULL,
+                               indicationDefinitionSet = NULL,
+                               unknownIndicationTables = NULL,
+                               gapIndication = NULL,
+                               oneStrata = FALSE) {
+  # create initial assertions
   errorMessage <- checkmate::makeAssertCollection()
-  #checkmate::checkDbType(cdm, type = "cdm_reference", errorMessage)
-  checkmate::checkLogical(genderAggregation, errorMessage, null.ok = FALSE)
-  checkmate::checkLogical(ageGroupsAgregation, errorMessage, null.ok = FALSE)
-  checkmate::checkLogical(indexYearAggregation, errorMessage, null.ok = FALSE)
-  checkmate::checkLogical(indexYearMonthAggregation, errorMessage, null.ok = FALSE)
-  checkmate::checkLogical(initialDoseAggregation, errorMessage, null.ok = FALSE)
-  checkmate::checkLogical(meanDoseAggregation, errorMessage, null.ok = FALSE)
-  checkmate::checkLogical(verbose, errorMessage, null.ok = FALSE)
-  checkmate::checkCharacter(personSummaryName, errorMessage, null.ok = FALSE)
-  checkmate::checkCharacter(aggregationTableName, errorMessage, null.ok = FALSE)
-  checkmate::checkList(ageGroups, errorMessage, null.ok = TRUE)
-  checkmate::checkCount(cohortid, errorMessage, null.ok = TRUE)
+  # check cdm
+  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
+  # check doseCohortName
+  checkmate::assertCharacter(doseCohortName, len = 1, add = errorMessage)
+  if (is.character(doseCohortName) && length(doseCohortName) == 1) {
+    checkmate::assertTRUE(all(c(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ) %in% colnames(cdm[[doseCohortName]])),
+    add = errorMessage
+    )
+  }
+  # check sex
+  checkmate::assertTRUE(
+    all(sex %in% c("Both", "Male", "Female")),
+    add = errorMessage
+  )
+  checkmate::assertTRUE(identical(sex, unique(sex)), add = errorMessage)
+  # check ageGroup
+  checkmate::assertList(
+    ageGroup,
+    types = "numeric",
+    min.len = 1,
+    null.ok = TRUE,
+    unique = TRUE,
+    add = errorMessage
+  )
+  if (!is.null(ageGroup)) {
+    tryCatch(expr = {
+      if (unique(unlist(lapply(ageGroup, length))) != 2) {
+        errorMessage$push("length of all element in 'ageGroup' should be 2.")
+      }
+    })
+    tryCatch(expr = {
+      if (all(unlist(lapply(ageGroup, function(x) {
+        if (!is.na(x[1]) && !is.na(x[2]) && x[1] > x[2]) {
+          return(FALSE)
+        } else {
+          return(TRUE)
+        }
+      }))) == FALSE) {
+        errorMessage$push(paste0(
+          "First value should be smaller or equal to second for all 'ageGorup'",
+          " elements."
+        ))
+      }
+    })
+  }
+  # check indexYear
+  checkmate::assertIntegerish(indexYear, null.ok = TRUE, add = errorMessage)
+  # check initialDose
+  checkmate::assertList(
+    initialDose,
+    types = "numeric",
+    min.len = 1,
+    null.ok = TRUE,
+    unique = TRUE,
+    add = errorMessage
+  )
+  if (!is.null(initialDose)) {
+    tryCatch(expr = {
+      if (unique(unlist(lapply(initialDose, length))) != 2) {
+        errorMessage$push("length of all element in 'initialDose' should be 2.")
+      }
+    })
+    tryCatch(expr = {
+      if (all(unlist(lapply(initialDose, function(x) {
+        if (!is.na(x[1]) && !is.na(x[2]) && x[1] > x[2]) {
+          return(FALSE)
+        } else {
+          return(TRUE)
+        }
+      }))) == FALSE) {
+        errorMessage$push(paste0(
+          "First value should be smaller or equal to second for all ",
+          "'initialDose' elements."
+        ))
+      }
+    })
+  }
+  # check indicationCohortName
+  checkmate::assertCharacter(
+    indicationCohortName,
+    len = 1, null.ok = TRUE, add = errorMessage
+  )
+  if (is.null(indicationCohortName)) {
+    if (!is.null(indicationDefinitionSet)) {
+      errorMessage$push(paste0(
+        "if indicationCohortName is NULL indicationDefinitionSet should not ",
+        "be provided."
+      ))
+    }
+    if (!is.null(unknownIndicationTables)) {
+      errorMessage$push(paste0(
+        "if indicationCohortName is NULL unknownIndicationTables should not ",
+        "be provided."
+      ))
+    }
+    if (!is.null(gapIndication)) {
+      errorMessage$push(paste0(
+        "if indicationCohortName is NULL gapIndication should not be provided."
+      ))
+    }
+  } else {
+    # check indicationDefinitionSet
+    checkmate::assertTibble(
+      indicationDefinitionSet,
+      min.rows = 1,
+      ncols = 2,
+      add = errorMessage
+    )
+    checkmate::assertTRUE(
+      all(c("indication_id", "indication_name") %in%
+            colnames(indicationDefinitionSet)),
+      add = errorMessage
+    )
+    try(checkmate::assertIntegerish(
+      indicationDefinitionSet$indication_id,
+      lower = 1,
+      unique = TRUE,
+      any.missing = FALSE,
+      add = errorMessage
+    ))
+    try(checkmate::assertCharacter(
+      indicationDefinitionSet$indication_name,
+      unique = TRUE,
+      any.missing = FALSE,
+      add = errorMessage
+    ))
+    checkmate::assertCharacter(
+      unknownIndicationTables,
+      any.missing = FALSE,
+      null.ok = TRUE,
+      add = errorMessage
+    )
+    checkmate::assertTRUE(
+      all(unknownIndicationTables %in% names(cdm)),
+      add = errorMessage
+    )
+    checkmate::assertCount(gapIndication, add = errorMessage)
+  }
+  checkmate::assertLogical(
+    oneStrata,
+    any.missing = FALSE, len = 1, add = errorMessage
+  )
+  checkmate::assertFALSE(
+    is.null(sex) &&
+      is.null(ageGroup) &&
+      is.null(indexYear) &&
+      is.null(initialDose) &&
+      is.null(indicationCohortName),
+    add = errorMessage
+  )
+
+  # report collection of errors
   checkmate::reportAssertions(collection = errorMessage)
 
-  #check table inside cdm
-  cdm_inherits_check <- inherits(cdm, "cdm_reference")
-  checkmate::assertTRUE(cdm_inherits_check,
-                        add = errorMessage)
-  if (!isTRUE(cdm_inherits_check)) {
-    errorMessage$push("- cdm must be a CDMConnector CDM reference object")
+  # compute sex strata options
+  if (is.null(sex)) {
+    sex <- "Both"
   }
+  sex <- sort(sex)
+  sexStrata <- dplyr::tibble(sex_id = 1:length(sex), sex_name = sex)
 
-  #check if personsummaryname table exist
-  cdm_personSummaryName_exists <-
-    inherits(cdm$personSummaryName, "tbl_dbi")
-  checkmate::assertTRUE(cdm_personSummaryName_exists, add = errorMessage)
-  if (!isTRUE(cdm_personSummaryName_exists)) {
-    errorMessage$push("- person summary table is not found")
-  }
-  #check if patient table exist
-  if (genderAggregation == TRUE | ageGroupsAgregation == TRUE) {
-    cdm_person_exists <- inherits(cdm$person, "tbl_dbi")
-    checkmate::assertTRUE(cdm_person_exists, add = errorMessage)
-    if (!isTRUE(cdm_person_exists)) {
-      errorMessage$push("- table `person` is not found")
+  # compute age strata options
+  ageGroup <- unique(c(list(c(NA, NA)), ageGroup))
+  ageGroupStrata <- lapply(ageGroup, function(x) {
+    nam <- paste0(
+      ifelse(is.na(x[1]), "Any", x[1]),
+      ";",
+      ifelse(is.na(x[2]), "Any", x[2])
+    )
+    x <- dplyr::tibble(
+      min_age = x[1], max_age = x[2], age_group_name = nam
+    )
+    return(x)
+  }) %>%
+    dplyr::bind_rows() %>%
+    dplyr::mutate(age_group_id = dplyr::row_number()) %>%
+    dplyr::select(
+      "age_group_id", "age_group_name", "age_group_min", "age_group_max"
+    )
+
+  indexYear <- unique(c(NA, indexYear))
+  indexYearStrata <- dplyr::tibble(
+    index_year_id = 1:length(indexYear),
+    index_year_name = as.character(indexYear),
+    index_year_min = indexYear,
+    index_year_max = indexYear
+  )
+  if (nrow(indexYearStrata) == 1) {
+    indexYearStrata$index_year_min[1] <- cdm[[doseCohortName]] %>%
+      dplyr::pull("cohort_start_date") %>%
+      base::min() %>%
+      lubridate::year()
+    indexYearStrata$index_year_max[1] <- cdm[[doseCohortName]] %>%
+      dplyr::pull("cohort_start_date") %>%
+      base::max() %>%
+      lubridate::year()
+    if (indexYearStrata$index_year_min[1] == indexYearStrata$index_year_max[1]){
+      indexYearStrata$index_year_name[1] <- as.character(
+        indexYearStrata$index_year_min[1]
+      )
+    } else {
+      indexYearStrata$index_year_name[1] <- paste0(
+        indexYearStrata$index_year_min[1],
+        ";",
+        indexYearStrata$index_year_max[1]
+      )
     }
+  } else {
+    indexYearStrata$index_year_min[1] <- cdm[[doseCohortName]] %>%
+      dplyr::pull("cohort_start_date") %>%
+      base::min() %>%
+      lubridate::year()
   }
 
-  #check if aggregationTableName table exist in database
-
-  cdm_aggregationTableName_exists <-
-    inherits(cdm$aggregationTableName, "tbl_dbi")
-  checkmate::assertTRUE(cdm_aggregationTableName_exists, add = errorMessage)
-  if (!isFALSE(cdm_aggregationTableName_exists)) {
-    errorMessage$push("output table already exist in database please specified a different name")
+  # compute age strata options
+  if (is.null(initialDose)) {
+    initialDose <- list(c(NA, NA))
+  } else {
+    initialDose <- unique(c(list(c(NA, NA)), initialDose))
   }
-
-
-
-
-
-  aggregationTable <- cdm[[personSummaryName]] %>%
-    ##  dplyr::mutate(aggregation = "All") %>%
-    ##  dplyr::mutate(value = as.character(NA)) %>%
-    dplyr::select("subject_id", "cohort_start_date", "cohort_end_date")
-
-
-  if (genderAggregation == TRUE) {
-    #get gender from cohortprofile
-    get_gender <-
-      getGender(cdm = cdm,
-        cohortIds = cohortid,
-        cohortTable = personSummaryName)
-
-
-    #join gender to input table
-    get_gender <-
-      cdm[[personSummaryName]] %>% dplyr::left_join(get_gender %>% dplyr::select("subject_id", "gender"),
-                                                    by = c("subject_id" = "person_id"))
-
-
-    aggregationTable <- aggregationTable %>%
-      dplyr::left_join(
-        get_gender %>%
-          ##dplyr::mutate(aggregation = "Gender") %>%
-          dplyr::select("subject_id", "gender")
-      )
-  }
-
-  if (ageGroupsAgregation == TRUE) {
-    #get age from cohortprofile
-    get_age <-
-      getAge(cdm = cdm,
-        cohortIds = cohortid,
-        cohortTable = personSummaryName)
-
-
-    #join age to input table
-    get_age <-
-      cdm[[personSummaryName]] %>% dplyr::left_join(get_age %>% dplyr::select("subject_id", "age"),
-                                                    by = c("subject_id" = "person_id"))
-
-    aggregationTableAge <- lapply(ageGroups, function(x) {
-      groupName <- paste0(x[1], ";", x[2])
-      return(
-        get_age %>%
-          dplyr::filter(.data$age >= x[1]) %>%
-          dplyr::filter(.data$age <= x[2]) %>%
-          ##dplyr::mutate(aggregation = "Age groups") %>%
-          dplyr::mutate(age_group = groupName) %>%
-          dplyr::select("subject_id", "age_group") %>%
-          dplyr::compute()
-      )
-    })
-
-    aggregationTable <- aggregationTable %>%
-      dplyr::left_join(aggregationTableAge %>% purrr::reduce(union)) %>%
-      dplyr::compute()
-  }
-
-  if (indexYearAggregation == TRUE) {
-    aggregationTable <- aggregationTable %>%
-      dplyr::left_join(
-        cdm[[personSummaryName]] %>%
-          ## dplyr::mutate(aggregation = "Index year") %>%
-          dplyr::mutate(index_year = as.character(
-            base::format(.data$cohort_start_date, format = "%Y")
-          )) %>%
-          dplyr::select("subject_id", "index_year")
-      )
-  }
-
-  if (indexYearMonthAggregation == TRUE) {
-    aggregationTable <- aggregationTable %>%
-      dplyr::left_join(
-        cdm[[personSummaryName]] %>%
-          ## dplyr::mutate(aggregation = "Index month-year") %>%
-          dplyr::mutate(index_month_year = as.character(
-            paste0(
-              base::format(.data$cohort_start_date, format = "%m"),
-              "_",
-              base::format(.data$cohort_start_date, format = "%Y")
-            )
-          )) %>%
-          dplyr::select("subject_id", "index_month_year")
-      )
-  }
-
-  if (initialDoseAggregation == TRUE) {
-    aggregationTable <- aggregationTable %>%
-      dplyr::left_join(
-        cdm[[personSummaryName]] %>%
-          ##dplyr::mutate(aggregation = "Initial dose") %>%
-          dplyr::mutate(initial_dose = as.character(round(
-            .data$initial_dose
-          ))) %>%
-          dplyr::select("subject_id", "initial_dose")
-      )
-  }
-
-  if (meanDoseAggregation == TRUE) {
-    aggregationTable <- aggregationTable %>%
-      dplyr::left_join(
-        cdm[[personSummaryName]] %>%
-          ##  dplyr::mutate(aggregation = "Mean dose") %>%
-          dplyr::mutate(mean_dose = as.character(
-            round(.data$cumulative_dose / .data$exposed_days)
-          )) %>%
-          dplyr::select("subject_id", "mean_dose")
-      )
-  }
-
-  # if (indicationAggregation == TRUE){
-  #   aggregationTable <- aggregationTable %>%
-  #     dplyr::union(
-  #       cdm[[indicationTableName]] %>%
-  #         dplyr::mutate(aggregation = "Indication") %>%
-  #         dplyr::rename("value" = "indication_name") %>%
-  #         dplyr::select("subject_id", "aggregation", "value")
-  #     ) %>%
-  #     dplyr::compute()
-
-  #filter minimum counts
-  cdm[[aggregationTableName]] <- aggregationTable %>%
-    dplyr::compute()
+  ageGroupStrata <- lapply(initialDose, function(x) {
+    nam <- paste0(
+      ifelse(is.na(x[1]), "Any", x[1]),
+      ";",
+      ifelse(is.na(x[2]), "Any", x[2])
+    )
+    x <- dplyr::tibble(
+      min_initial_dose = x[1], max_initial_dose = x[2], initial_dose_name = nam
+    )
+    return(x)
+  }) %>%
+    dplyr::bind_rows() %>%
+    dplyr::mutate(initial_dose_id = dplyr::row_number()) %>%
+    dplyr::select(
+      "initial_dose_id", "initial_dose_name", "initial_dose_min",
+      "initial_dose_max"
+    )
 
   return(cdm)
 }
