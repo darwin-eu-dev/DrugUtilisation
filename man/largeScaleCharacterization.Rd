@@ -40,11 +40,11 @@ c(-365, -31), c(-90, -1), c(-30, -1), c(0, 0), c(1, 30), c(1, 90),
 c(31, 365), c(91, 365), c(366, NA)).}
 
 \item{tablesToCharacterize}{Name of the tables in the cdm that we want to
-summarize. The available tables to characterize are: "observation_period",
-"visit_occurrence", "condition_occurrence", "drug_exposure",
-"procedure_occurrence", "device_exposure", "measurement", "observation",
-"drug_era", "condition_era", "specimen" and "death". By default:
-c("condition_occurrence", "drug_era", "procedure_occurrence", "measurement").}
+summarize. The available tables to characterize are: "visit_occurrence",
+"condition_occurrence", "drug_exposure", "procedure_occurrence",
+"device_exposure", "measurement", "observation", "drug_era", "condition_era"
+and "specimen". By default: c("condition_occurrence", "drug_era",
+"procedure_occurrence", "measurement").}
 
 \item{overlap}{Whether you want to consider overlapping events (overlap =
 TRUE) or only incident ones (overlap = FALSE).}
