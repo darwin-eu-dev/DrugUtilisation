@@ -17,9 +17,9 @@
 #' Explain function
 #'
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
-#' must contain the 'doseCohortName' table and  also 'aggegationCohortName' if
+#' must contain the 'doseCohortName' table and  also 'aggregationCohortName' if
 #' specified. It is a compulsory input, no default value is provided.
-#' @param aggegationCohortName Name to point to the cdm table that contains the
+#' @param aggregationCohortName Name to point to the cdm table that contains the
 #' aggregation information. To compute this cohort you can use the
 #' drugUtilisationSettings() function or use any other function that the output
 #' is a cohort. A warning will be produced if
@@ -41,7 +41,7 @@
 #'
 #' @examples
 summariseDoseTable <- function(cdm,
-                               aggegationCohortName = NULL,
+                               aggregationCohortName = NULL,
                                cohortId = NULL,
                                doseCohortName,
                                variables = NULL,
@@ -66,18 +66,18 @@ summariseDoseTable <- function(cdm,
     )
   }
 
-  # check aggegationCohortName
+  # check aggregationCohortName
   checkmate::assertCharacter(
-    aggegationCohortName,
+    aggregationCohortName,
     len = 1,
     null.ok = TRUE,
     add = errorMessage
   )
-  if (!is.null(aggegationCohortName)) {
+  if (!is.null(aggregationCohortName)) {
     checkmate::assertTRUE(all(c(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
-    ) %in% colnames(cdm[[aggegationCohortName]])),
+    ) %in% colnames(cdm[[aggregationCohortName]])),
     add = errorMessage
     )
   }
@@ -216,7 +216,7 @@ summariseDoseTable <- function(cdm,
 
   doseCohort <- cdm[[doseCohortName]]
 
-  if (is.null(aggegationCohortName)) {
+  if (is.null(aggregationCohortName)) {
     aggegationCohort <- doseCohort
     if (!"cohort_definition_id" %in% colnames(doseCohort)) {
       aggegationCohort <- aggegationCohort %>%
@@ -235,7 +235,7 @@ summariseDoseTable <- function(cdm,
         "cohort_end_date"
       )
   } else {
-    aggegationCohort <- cdm[[aggegationCohortName]]
+    aggegationCohort <- cdm[[aggregationCohortName]]
     if ("cohort_definition_id" %in% colnames(doseCohort)) {
       warning("'cohort_definition_id' of 'doseCohortName' will be dissmissed.")
       doseCohort <- doseCohort %>% dplyr::select(-"cohort_definition_id")

@@ -59,12 +59,12 @@ test_that("expected errors on inputs", {
   expect_error(summariseDoseTable(
     cdm = cdm, doseCohortName = c("person", "person"), variables = c("number_x", "carcola")
   ))
-  # expect error if aggegationCohortName is not a character
+  # expect error if aggregationCohortName is not a character
   expect_error(summariseDoseTable(
     cdm = cdm, doseCohortName = "x", variables = c("number_x", "carcola")
   ))
-  # expect error if aggegationCohortName is a vector
-  # expect error if aggegationCohortName does not contains the required fields
+  # expect error if aggregationCohortName is a vector
+  # expect error if aggregationCohortName does not contains the required fields
   # expect error if cohortId is not numeric
   # expect error if variable is not character
   # expect error if variable contains a non numeric variable
@@ -170,12 +170,12 @@ test_that("check all estimates", {
   # N dose Y aggregation N cohort --> error
   expect_error(summariseDoseTable(
     cdm = cdm,
-    aggegationCohortName = "condition_occurrence"
+    aggregationCohortName = "condition_occurrence"
   ))
   # N dose Y aggregation Y cohort --> error
   expect_error(summariseDoseTable(
     cdm = cdm,
-    aggegationCohortName = "condition_occurrence",
+    aggregationCohortName = "condition_occurrence",
     cohortId = 1
   ))
   # Y dose N aggregation N cohort --> okay
@@ -193,13 +193,13 @@ test_that("check all estimates", {
   expect_no_error(summariseDoseTable(
     cdm = cdm,
     doseCohortName = "person",
-    aggegationCohortName = "condition_occurrence"
+    aggregationCohortName = "condition_occurrence"
   ))
   # Y dose Y aggregation Y cohort --> okay
   expect_no_error(summariseDoseTable(
     cdm = cdm,
     doseCohortName = "person",
-    aggegationCohortName = "condition_occurrence",
+    aggregationCohortName = "condition_occurrence",
     cohortId = 1
   ))
   # dose does contains cohort_definition_id
@@ -235,12 +235,12 @@ test_that("check all estimates", {
   # N dose Y aggregation N cohort --> error
   expect_error(summariseDoseTable(
     cdm = cdm,
-    aggegationCohortName = "condition_occurrence"
+    aggregationCohortName = "condition_occurrence"
   ))
   # N dose Y aggregation Y cohort --> error
   expect_error(summariseDoseTable(
     cdm = cdm,
-    aggegationCohortName = "condition_occurrence",
+    aggregationCohortName = "condition_occurrence",
     cohortId = 1
   ))
   # Y dose N aggregation N cohort --> okay
@@ -258,13 +258,13 @@ test_that("check all estimates", {
   expect_warning(summariseDoseTable(
     cdm = cdm,
     doseCohortName = "person",
-    aggegationCohortName = "condition_occurrence"
+    aggregationCohortName = "condition_occurrence"
   ))
   # Y dose Y aggregation Y cohort --> warning
   expect_warning(summariseDoseTable(
     cdm = cdm,
     doseCohortName = "person",
-    aggegationCohortName = "condition_occurrence",
+    aggregationCohortName = "condition_occurrence",
     cohortId = 1
   ))
 })
