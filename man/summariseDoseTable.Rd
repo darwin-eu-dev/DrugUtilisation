@@ -6,7 +6,7 @@
 \usage{
 summariseDoseTable(
   cdm,
-  aggegationCohortName = NULL,
+  aggregationCohortName = NULL,
   cohortId = NULL,
   doseCohortName,
   variables = NULL,
@@ -16,10 +16,10 @@ summariseDoseTable(
 }
 \arguments{
 \item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
-must contain the 'doseCohortName' table and  also 'aggegationCohortName' if
+must contain the 'doseCohortName' table and  also 'aggregationCohortName' if
 specified. It is a compulsory input, no default value is provided.}
 
-\item{aggegationCohortName}{Name to point to the cdm table that contains the
+\item{aggregationCohortName}{Name to point to the cdm table that contains the
 aggregation information. To compute this cohort you can use the
 drugUtilisationSettings() function or use any other function that the output
 is a cohort. A warning will be produced if}
