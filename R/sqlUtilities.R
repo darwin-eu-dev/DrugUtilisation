@@ -46,13 +46,6 @@ sql_add_days<-function(dialect, days_to_add, variable){
   return(rendered_translated_sql)
 }
 
-#' Explain function
-#'
-#' @param dialect dialect
-#' @param variable1 variable1
-#' @param variable2 variable2
-#'
-#' @noRd
 sqlDiffDays <- function(dialect, variable1, variable2) {
   SqlRender::translate(
     SqlRender::render("DATEDIFF(DAY, @variable1, @variable2)",
@@ -206,4 +199,284 @@ appendPermanent <- function(x, name, schema = NULL) {
 }
 
 
+
+
+getGender <- function(cdm,
+                      cohortTable,
+                      cohortIds = NULL) {
+  # checks
+  errorMessage <- checkmate::makeAssertCollection()
+  checkDbType(cdm, type = "cdm_reference", errorMessage)
+  checkTableExists(cdm, "person", errorMessage)
+
+  if (!is.null(cohortIds) &&
+      is.numeric(cohortIds)) {
+    cohortIds <- as.character(cohortIds)
+  }
+  checkCharacter(cohortIds, errorMessage, null.ok = TRUE)
+  checkCharacter(cohortTable, errorMessage, null.ok = FALSE)
+
+  personDb <- dplyr::rename_with(cdm$person, tolower) %>%
+    dplyr::compute()
+
+  personDbNames <- c("person_id", "gender_concept_id")
+  personDbNamesCheck <- all(personDbNames %in%
+                              names(personDb %>%
+                                      utils::head(1) %>%
+                                      dplyr::collect() %>%
+                                      dplyr::rename_with(tolower)))
+  checkmate::assertTRUE(personDbNamesCheck, add = errorMessage)
+  checkTableExists(cdm, cohortTable, errorMessage)
+  checkmate::reportAssertions(collection = errorMessage)
+
+  if (isTRUE(is.na(cohortIds))) {
+    cohortIds <- NULL
+  }
+
+  if (!is.null(cohortIds)) {
+    cohortDb <- cdm[[cohortTable]] %>%
+      dplyr::filter(.data$cohort_definition_id %in% .env$cohortIds)
+  } else {
+    cohortDb <- cdm[[cohortTable]]}
+
+
+  personDb <- cohortDb %>% dplyr::rename("person_id" = "subject_id") %>%
+    dplyr::left_join((personDb) %>%
+                       dplyr::distinct(), by = "person_id")
+
+
+  studyPopDb <- personDb %>%
+    dplyr::mutate(gender = ifelse(.data$gender_concept_id == "8507", "Male",
+                                  ifelse(.data$gender_concept_id == "8532", "Female", NA)
+    )) %>%
+    dplyr::compute()
+
+
+  studyPop <- studyPopDb %>%
+    dplyr::select("person_id", "gender", "gender_concept_id")
+
+
+  if ((studyPop %>% dplyr::count() %>% dplyr::pull()) == 0) {
+    message("-- No people found for denominator population")
+  }
+
+  return(studyPop)
+}
+
+
+
+
+
+getAge <- function(cdm,
+                   cohortTable,
+                   ageAtCohortStart = TRUE,
+                   cohortIds = NULL) {
+  # checks
+  errorMessage <- checkmate::makeAssertCollection()
+  checkDbType(cdm, type = "cdm_reference", errorMessage)
+  checkTableExists(cdm, "person", errorMessage)
+  checkLogical(ageAtCohortStart, errorMessage, null.ok = FALSE)
+  if (!is.null(cohortIds) &&
+      is.numeric(cohortIds)) {
+    cohortIds <- as.character(cohortIds)
+  }
+  checkCharacter(cohortIds, errorMessage, null.ok = TRUE)
+  checkCharacter(cohortTable, errorMessage, null.ok = FALSE)
+
+  personDb <- dplyr::rename_with(cdm$person, tolower) %>%
+    dplyr::compute()
+
+  personDbNames <- c("person_id","year_of_birth", "month_of_birth", "day_of_birth")
+  personDbNamesCheck <- all(personDbNames %in%
+                              names(personDb %>%
+                                      utils::head(1) %>%
+                                      dplyr::collect() %>%
+                                      dplyr::rename_with(tolower)))
+  checkmate::assertTRUE(personDbNamesCheck, add = errorMessage)
+  # checkTableExists(cdm, cohortTable, errorMessage)
+
+  cohortHeader <- names(cdm[[cohortTable]] %>%
+                          utils::head(1) %>%
+                          dplyr::collect() %>%
+                          dplyr::rename_with(tolower))
+
+  if (ageAtCohortStart == TRUE) {
+    cohortStartDateExists <- 'cohort_start_date' %in% cohortHeader
+    checkmate::assertTRUE(cohortStartDateExists, add = errorMessage)
+    if (!isTRUE(cohortStartDateExists)) {
+      errorMessage$push("- cohort_start_date column is not found")
+    }
+  }
+
+  if (ageAtCohortStart == FALSE) {
+    cohortEndDateExists <- 'cohort_end_date' %in% cohortHeader
+    checkmate::assertTRUE(cohortEndDateExists, add = errorMessage)
+    if (!isTRUE(cohortEndDateExists)) {
+      errorMessage$push("- cohort_end_date column is not found")
+    }
+  }
+  checkmate::reportAssertions(collection = errorMessage)
+
+  if (isTRUE(is.na(cohortIds))) {
+    cohortIds <- NULL
+  }
+
+  if (!is.null(cohortIds)) {
+    cohortDb <- cdm[[cohortTable]] %>%
+      dplyr::filter(.data$cohort_definition_id %in% .env$cohortIds) %>%
+      dplyr::compute()} else {
+        cohortDb <- cdm[[cohortTable]] %>%
+          dplyr::compute()
+      }
+
+  if (ageAtCohortStart) {
+    cohortDb <- cohortDb %>%
+      dplyr::rename("person_id" = "subject_id") %>%
+      dplyr::mutate(date_of_interest = .data$cohort_start_date) %>%
+      dplyr::compute()
+  } else {
+    cohortDb <- cohortDb %>%
+      dplyr::rename("person_id" = "subject_id") %>%
+      dplyr::mutate(date_of_interest = .data$cohort_end_date) %>%
+      dplyr::compute()}
+
+  personDb <- cohortDb %>%
+    dplyr::left_join((personDb) %>%
+                       dplyr::distinct(), by = "person_id")
+
+  studyPopDbMissingAge <- personDb %>%
+    dplyr::filter(is.na(.data$year_of_birth)) %>%
+    dplyr::mutate(dob=as.Date(NA))
+
+  studyPopDb <- personDb %>%
+    dplyr::filter(!is.na(.data$year_of_birth)) %>%
+    dplyr::mutate(year_of_birth1=as.character(as.integer(.data$year_of_birth))) %>%
+    dplyr::mutate(month_of_birth1=as.character(as.integer(dplyr::if_else(is.na(.data$month_of_birth), "01" , .data$month_of_birth)))) %>%
+    dplyr::mutate(day_of_birth1=as.character(as.integer(dplyr::if_else(is.na(.data$day_of_birth), "01" , .data$day_of_birth)))) %>%
+    dplyr::mutate(dob=as.Date(paste0(.data$year_of_birth1, "/",
+                                     .data$month_of_birth1, "/",
+                                     .data$day_of_birth1))) %>%
+    dplyr::select(!c("year_of_birth1", "month_of_birth1", "day_of_birth1")) %>% dplyr::compute()
+
+
+  studyPop <- studyPopDb %>% dplyr::full_join(studyPopDbMissingAge, by =
+                                                c("cohort_start_date", "person_id", "date_of_interest", "gender_concept_id",
+                                                  "year_of_birth", "month_of_birth", "day_of_birth", "dob"))
+
+  if ((studyPop %>% dplyr::count() %>% dplyr::pull()) == 0) {
+    message("-- No people found for denominator population")
+  }
+
+  sqlAge <- sqlGetAge(
+    dialect = CDMConnector::dbms(attr(cdm, "dbcon")), "dob", "date_of_interest")
+
+  studyPop %>% dplyr::mutate(age = dbplyr::sql(sqlAge)) %>%
+    dplyr::select("person_id", "age", "dob", "date_of_interest") %>%
+    dplyr::compute()
+}
+
+
+
+
+getPriorHistoryCohortEntry <- function(cdm, cohortTable, cohortIds = NULL) {
+  # checks
+  error_message <- checkmate::makeAssertCollection()
+  checkDbType(db = cdm, messageStore = error_message)
+  if (!is.null(cohortIds) &&
+      is.numeric(cohortIds)) {
+    cohortIds <- as.character(cohortIds)
+  }
+  checkCharacter(cohortIds, messageStore = error_message, null.ok = TRUE)
+  checkmate::check_true(cohortTable %in% names(cdm))
+  checkmate::reportAssertions(collection = error_message)
+
+  if (isTRUE(is.na(cohortIds))) {
+    cohortIds <- NULL
+  }
+  if (!is.null(cohortIds)) {
+    cdm[[cohortTable]] %>%
+      dplyr::filter(.data$cohort_definition_id %in% .env$cohortIds) %>%
+      dplyr::left_join(cdm$observation_period, by = c("subject_id" = "person_id")) %>%
+      dplyr::filter(.data$cohort_start_date < .data$observation_period_end_date) %>%
+      dplyr::filter(.data$cohort_start_date >= .data$observation_period_start_date) %>%
+      dplyr::mutate(number_of_days = dbplyr::sql(sqlDiffDays(CDMConnector::dbms(attr(cdm, "dbcon")), "observation_period_start_date", "cohort_start_date"))) %>%
+      dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date",
+                    "cohort_end_date", "number_of_days")
+  } else {
+    cdm[[cohortTable]] %>%
+      dplyr::left_join(cdm$observation_period, by = c("subject_id" = "person_id")) %>%
+      dplyr::filter(.data$cohort_start_date < .data$observation_period_end_date) %>%
+      dplyr::filter(.data$cohort_start_date >= .data$observation_period_start_date) %>%
+      dplyr::mutate(number_of_days = dbplyr::sql(sqlDiffDays(CDMConnector::dbms(attr(cdm, "dbcon")),
+                                                             "observation_period_start_date", "cohort_start_date"))) %>%
+      dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date",
+                    "cohort_end_date", "number_of_days")
+  }
+}
+
+
+
+checkDbType <- function(db, type = "cdm_reference", messageStore) {
+  dbInheritsCheck <- inherits(db, type)
+  checkmate::assertTRUE(dbInheritsCheck,
+                        add = messageStore)
+  if (!isTRUE(dbInheritsCheck)) {
+    messageStore$push(glue::glue("- db must be a CDMConnector {type} object"))
+  }
+}
+
+
+checkDate <- function(date, messageStore, null.ok = TRUE) {
+  checkmate::assert_date(date,
+                         add = messageStore,
+                         null.ok = null.ok)
+}
+
+
+checkNumeric <- function(input, messageStore, null.ok = TRUE) {
+  checkmate::assert_numeric(input,
+                            add = messageStore,
+                            null.ok = null.ok)
+}
+
+checkLogical <- function(input, messageStore, null.ok = TRUE) {
+  checkmate::assert_logical(input,
+                            add = messageStore,
+                            null.ok = null.ok)
+}
+
+
+checkCharacter <- function(input, messageStore, null.ok = TRUE) {
+  checkmate::assert_character(input,
+                              add = messageStore,
+                              null.ok = null.ok)
+}
+
+
+checkTableExists <- function(cdm, tableName, messageStore) {
+  table_exists <- inherits(cdm[[tableName]], 'tbl_dbi')
+  checkmate::assertTRUE(table_exists, add = messageStore)
+  if (!isTRUE(table_exists)) {
+    messageStore$push(glue::glue("- {tableName} is not found"))
+  }
+}
+
+
+sqlDiffDays <- function(dialect, variable1, variable2) {
+  SqlRender::translate(
+    SqlRender::render("DATEDIFF(DAY, @variable1, @variable2)",
+                      variable1 = variable1,
+                      variable2 = variable2),
+    targetDialect = dialect)
+}
+
+
+sqlGetAge <- function(dialect, dob, dateOfInterest) {
+  SqlRender::translate(
+    SqlRender::render("((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
+                      DAY(@date_of_interest)-(YEAR(@dob)* 10000 + MONTH(@dob) * 100 + DAY(@dob))) / 10000)",
+                      dob = dob,
+                      date_of_interest = dateOfInterest),
+    targetDialect = dialect)
+}
 

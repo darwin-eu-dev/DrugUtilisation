@@ -715,6 +715,8 @@ test_that("test multi gap end", {
     day_of_birth = c(01, 02)
   )
 
+  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
+                             drug_strength = drug_strength)
 
   cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
                              drug_strength = drug_strength)
@@ -1325,5 +1327,3 @@ test_that("test dailyDoseRange", {
 #   resultPreviousFunc <- instantiateIncidencePrevalenceCohorts(cdm, conceptIds = list(1,2,3,4))%>% dplyr::collect()
 #   resultPreviousFunc$incidence_prevalence_dus_tables
 #   })
-
-
