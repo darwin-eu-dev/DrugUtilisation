@@ -133,25 +133,25 @@ summariseDoseTable <- function(cdm,
   checkmate::reportAssertions(collection = errorMessage)
 
   estimates_func <- list(
-    "min" = function(x){
+    "min" = function(x) {
       base::min(x, na.rm = TRUE)
     },
-    "max" = function(x){
+    "max" = function(x) {
       base::max(x, na.rm = TRUE)
     },
-    "mean" = function(x){
+    "mean" = function(x) {
       base::mean(x, na.rm = TRUE)
     },
-    "median" = function(x){
+    "median" = function(x) {
       stats::median(x, na.rm = TRUE)
     },
-    "iqr" = function(x){
+    "iqr" = function(x) {
       stats::IQR(x, na.rm = TRUE)
     },
     "range" = function(x) {
       base::diff(base::range(x, na.rm = TRUE))
     },
-    "std" = function(x){
+    "std" = function(x) {
       stats::sd(x, na.rm = TRUE)
     },
     "q5" = function(x) {
@@ -212,16 +212,31 @@ summariseDoseTable <- function(cdm,
 
   estimates_func <- estimates_func[estimates]
 
+  doseCohort <- cdm[[doseCohortName]]
+
   if (is.null(aggegationCohortName)) {
-    aggegationCohort <- cdm[[doseCohortName]] %>%
+    aggegationCohort <- doseCohort
+    if (!"cohort_definition_id" %in% colnames(doseCohort)) {
+      aggegationCohort <- aggegationCohort %>%
+        dplyr::mutate(cohort_definition_id = 1)
+      if (!is.null(cohortId) && cohortId != 1) {
+        warning(paste0(
+          "'cohortId' overwriten as no 'cohort_definion_id' variable is ",
+          "provided."
+        ))
+      }
+      cohortId <- 1
+    }
+    aggegationCohort <- aggegationCohort %>%
       dplyr::select(
         "cohort_definition_id", "subject_id", "cohort_start_date",
         "cohort_end_date"
       )
   } else {
     aggegationCohort <- cdm[[aggegationCohortName]]
-    if ("cohort_definition_id" %in% colnames(cdm[[doseCohortName]])) {
+    if ("cohort_definition_id" %in% colnames(doseCohort)) {
       warning("'cohort_definition_id' of 'doseCohortName' will be dissmissed.")
+      doseCohort <- doseCohort %>% dplyr::select(-"cohort_definition_id")
     }
   }
 
