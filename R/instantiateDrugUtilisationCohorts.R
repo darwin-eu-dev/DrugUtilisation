@@ -658,7 +658,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     result$cohort <-
       drugUtilisationCohort %>%
       dplyr::select(
-        "cohort_definition_id",
+        # "cohort_definition_id",
         "subject_id",
         "cohort_start_date",
         "cohort_end_date"
@@ -686,7 +686,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     result$cohort <-
       drugUtilisationCohort %>%
       dplyr::select(
-        "cohort_definition_id",
+        # "cohort_definition_id",
         "subject_id",
         "cohort_start_date",
         "cohort_end_date"
@@ -1530,8 +1530,8 @@ continuousExposures <- function(x,
     dplyr::mutate(
       not_considered_dose = .data$all_dose - .data$cumulative_dose,
       not_considered_exposed_days = .data$all_exposed_days - .data$exposed_days,
-      prop_cum_gap_dose = .data$cumulative_gap_dose / .data$cumulative_dose,
-      prop_not_considered_exp_days = .data$not_considered_exposed_days / .data$all_exposed_days
+      prop_cum_gap_dose = dplyr::if_else(.data$cumulative_dose != 0,.data$cumulative_gap_dose / .data$cumulative_dose, NA),
+      prop_not_considered_exp_days = dplyr::if_else(.data$all_exposed_days != 0, .data$not_considered_exposed_days / .data$all_exposed_days, NA)
     ) %>%
     dplyr::compute()
 
