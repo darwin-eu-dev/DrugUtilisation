@@ -16,14 +16,17 @@
 
 #' Get indication for a target cohort
 #'
-#' @param cdm name of the cdm object
+#' @param cdm object created with CDMConnector::cdm_from_con.
+#' It must contain the targetCohortName and indicationCohortName table in it.
 #' @param targetCohortName cohort table in the cdm contain list of target cohort for patients
 #' @param targetCohortDefinitionIds cohort definition ids to include to generate indication
 #' @param indicationCohortName indication table that contain list of indication
-#' @param indicationDefinitionSet definition of indication of interest, this function will only get indication for indication contain in this set
+#' @param indicationDefinitionSet definition of indication of interest,
+#' this function will only get indication for indication contain in this set
 #' @param indicationGap the maximum gap between the cohort start date and indication start date
-#' @param unknownIndicationTables tables to get extra indication from the default is to include condition_occurence and obersvation table in the cdm
-#'
+#' @param unknownIndicationTables tables to get extra indication from the default is to include
+#' condition_occurence and obersvation table in the cdm
+#' @param verbose Whether the code should print the process.
 #'
 #'
 #' @return
@@ -37,7 +40,8 @@ getIndication <- function(cdm,
                           indicationCohortName,
                           indicationDefinitionSet,
                           indicationGap,
-                          unknownIndicationTables = c("condition_occurrence", "observation")
+                          unknownIndicationTables = c("condition_occurrence", "observation"),
+                          verbose = FALSE
                           ) {
   get_start_date <- list(
     "observation_period" = "observation_period_start_date",
