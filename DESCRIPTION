@@ -28,4 +28,5 @@ Imports:
     rlang,
     here,
     RJSONIO,
-    tibble
+    tibble,
+    odbc
