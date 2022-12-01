@@ -1006,35 +1006,35 @@ test_that("test not considered dose", {
 
 
 
-# test_that("test concept from json is running",{
-#   ConceptSetPath = system.file(package = "DrugUtilisation")
+test_that("test concept from json is running",{
+  ConceptSetPath = system.file(package = "DrugUtilisation")
 
-#   concept_ancestor <- dplyr::tibble(
-#     ancestor_concept_id = c(43144132,43144132,43144132, 40008920, 40008920, 40008920),
-#     descendant_concept_id = c(1,2,3,4,5,6),
-#   )
+  concept_ancestor <- dplyr::tibble(
+    ancestor_concept_id = c(43144132,43144132,43144132, 40008920, 40008920, 40008920),
+    descendant_concept_id = c(1,2,3,4,5,6),
+  )
 
-#   cdm <- mockDrugUtilisation(
-#     concept_ancestor = concept_ancestor,
-#   )
-#   test <- instantiateDrugUtilisationCohorts(cdm,
-#                                     ingredientConceptId = 1,
-#                                     ConceptSetPath,
-#                                     studyStartDate = NULL,
-#                                     studyEndDate = NULL,
-#                                     summarizeMode = "AllEras",
-#                                     cohortEntryPriorHistory = 180,
-#                                     gapEra = 30,
-#                                     eraJoinMode = "Previous",
-#                                     overlapMode = "Previous",
-#                                     sameIndexMode = "Sum",
-#                                     imputeDuration = "eliminate",
-#                                     imputeDailyDose = "eliminate",
-#                                     verbose = FALSE)
+  cdm <- mockDrugUtilisation(
+    concept_ancestor = concept_ancestor,
+  )
+  test <- instantiateDrugUtilisationCohorts(cdm,
+                                    ingredientConceptId = 1,
+                                    ConceptSetPath,
+                                    studyStartDate = NULL,
+                                    studyEndDate = NULL,
+                                    summarizeMode = "AllEras",
+                                    cohortEntryPriorHistory = 180,
+                                    gapEra = 30,
+                                    eraJoinMode = "Previous",
+                                    overlapMode = "Previous",
+                                    sameIndexMode = "Sum",
+                                    imputeDuration = "eliminate",
+                                    imputeDailyDose = "eliminate",
+                                    verbose = FALSE)
 
 
-#   expect_true(!is.null(test))
-# })
+  expect_true(!is.null(test))
+})
 
 
 
