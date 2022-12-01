@@ -18,7 +18,6 @@ test_that("test on synthea test server", {
                                     write_schema = Sys.getenv("TESTDB_WRITE_SCHEMA"),
                                     cohort_tables = c("cohort"))
 
-  # prior history
   result <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1125315,
