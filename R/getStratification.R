@@ -163,9 +163,26 @@ getStratification <- function(cdm,
   }
   checkmate::reportAssertions(collection = errorMessage)
 
-  #
+  # set default options
+  if (is.null(sex)) {
+    sex = "Both"
+  }
+  if (is.null(ageGroup)) {
+    ageGroup = list(c(0,150))
+  }
+  if (is.null(indexYearGroup)){
+
+  }
+
+  # create the combinations for the different cohorts
+  settings <- tidyr::expand_grid()
+
   cdm[["temp"]] <- targetCohort %>%
     dplyr::filter(.data$cohort_definition_id == .env$targetCohortId)
-  cdm[["temp"]] <- getGender(cdm, "temp")
-  targetCohort <- getAge(cdm, "temp")
+  cdm[["temp"]] <- getSex(cdm, "temp")
+  targetCohort <- getAge(cdm, "temp") %>%
+    dplyr::mutate(indexYear = lubridate::year(.data$cohort_start_date)) %>%
+    dplyr::compute()
+
+
 }
