@@ -37,24 +37,23 @@ test_that("simple checks and sums", {
 
   result <- result$dose %>% dplyr::collect()
 
-  #test not_exposed_days
+  # test not_exposed_days
   expect_true(all(result$exposed_days + result$not_exposed_days == result$study_days))
 
-  #test number_continuous_exposures_no_overlap
+  # test number_continuous_exposures_no_overlap
   expect_true(all(result$number_continuous_exposures_with_overlap +
-                    result$number_continuous_exposures_no_overlap ==
-                    result$number_continuous_exposures))
+    result$number_continuous_exposures_no_overlap ==
+    result$number_continuous_exposures))
 
-  #test number_eras_no_overlap
+  # test number_eras_no_overlap
   expect_true(all(result$number_eras_no_overlap + result$number_eras_with_overlap
-                  == result$number_eras))
+  == result$number_eras))
 
-  #test number_subexposures_no_overlap
+  # test number_subexposures_no_overlap
   expect_true(all(result$number_subexposures_no_overlap + result$number_subexposures_with_overlap
-                  == result$number_subexposures))
+  == result$number_subexposures))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
 })
 
 test_that("all output checks for single era with single gap (less than eraGap)", {
@@ -66,13 +65,16 @@ test_that("all output checks for single era with single gap (less than eraGap)",
       as.Date("2010-01-01"),
       as.Date("2010-09-01"),
       as.Date("2012-01-01"),
-      as.Date("2012-09-05")),
+      as.Date("2012-09-05")
+    ),
     drug_exposure_end_date = c(
       as.Date("2011-01-01"),
       as.Date("2012-09-01"),
       as.Date("2012-01-10"),
-      as.Date("2013-09-05")),
-    quantity = c(1,2,3,4))
+      as.Date("2013-09-05")
+    ),
+    quantity = c(1, 2, 3, 4)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1, 1),
@@ -81,8 +83,10 @@ test_that("all output checks for single era with single gap (less than eraGap)",
     amount_unit_concept_id = c(8576, 8576, 8576, 8576)
   )
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength
+  )
 
   result <- instantiateDrugUtilisationCohorts(
     cdm,
@@ -98,12 +102,13 @@ test_that("all output checks for single era with single gap (less than eraGap)",
   )
   result <- result$dose %>% dplyr::collect()
 
-  #test exposed days
+  # test exposed days
   expect_true(result$exposed_days == as.integer(
-    difftime(as.Date("2013-09-05"), as.Date("2010-01-01")) + 1))
+    difftime(as.Date("2013-09-05"), as.Date("2010-01-01")) + 1
+  ))
 
 
-  #test initial and cumulative dose
+  # test initial and cumulative dose
   testInitialDose <- computeDailyDose(
     table = cdm$drug_exposure,
     cdm = cdm,
@@ -112,16 +117,18 @@ test_that("all output checks for single era with single gap (less than eraGap)",
   ) %>%
     dplyr::select(-"days_exposed")
 
-  initialDose <- testInitialDose %>% dbplyr::window_order(.data$drug_exposure_start_date) %>%
+  initialDose <- testInitialDose %>%
+    dbplyr::window_order(.data$drug_exposure_start_date) %>%
     dplyr::mutate(subexposure_id = dplyr::row_number()) %>%
-    dplyr::filter(subexposure_id == 1) %>% dplyr::collect()
+    dplyr::filter(subexposure_id == 1) %>%
+    dplyr::collect()
 
   expect_true(result$initial_dose == initialDose$daily_dose)
 
 
   testPeriod <- getPeriods(
     x = testInitialDose,
-    dialect =  CDMConnector::dbms(attr(cdm, "dbcon")),
+    dialect = CDMConnector::dbms(attr(cdm, "dbcon")),
     verbose = verbose
   )
 
@@ -130,54 +137,53 @@ test_that("all output checks for single era with single gap (less than eraGap)",
     gapEra = 3,
     eraJoinMode = "Previous",
     sameIndexMode = "Sum",
-    dialect =  CDMConnector::dbms(attr(cdm, "dbcon")),
+    dialect = CDMConnector::dbms(attr(cdm, "dbcon")),
     verbose = verbose
   ) %>% dplyr::collect()
 
-  expect_true(all.equal(result$cumulative_dose,sum(testCumulativeDose$daily_dose *
-                                                     testCumulativeDose$days_exposed)))
+  expect_true(all.equal(result$cumulative_dose, sum(testCumulativeDose$daily_dose *
+    testCumulativeDose$days_exposed)))
 
-  #test study days
+  # test study days
   expect_true(result$study_days == difftime(as.Date("2013-09-05"), as.Date("2010-01-01")) + 1)
 
-  #test number of exposures
+  # test number of exposures
   expect_true(result$number_exposures == 4)
 
-  #test number_subexposures
-  expect_true(result$number_subexposures  == 7)
+  # test number_subexposures
+  expect_true(result$number_subexposures == 7)
 
-  #test number_subexposures_with_overlap
+  # test number_subexposures_with_overlap
   expect_true(result$number_subexposures_with_overlap == 2)
 
-  #test continuous exposre
+  # test continuous exposre
   expect_true(result$number_continuous_exposures == 2)
 
-  #test number_continuous_exposures_with_overlap
+  # test number_continuous_exposures_with_overlap
   expect_true(result$number_continuous_exposures_with_overlap == 1)
 
-  #test number era
+  # test number era
   expect_true(result$number_eras == 1)
 
-  #test number_eras_with_overlap
+  # test number_eras_with_overlap
   expect_true(result$number_eras_with_overlap == 1)
 
-  #test number_non_exposed_periods
+  # test number_non_exposed_periods
   expect_true(result$number_non_exposed_periods == 1)
 
-  #test number_gaps
+  # test number_gaps
   expect_true(result$number_gaps == 1)
 
-  #test number_days_gap
+  # test number_days_gap
   expect_true(result$number_days_gap == 3)
 
-  #test cumulative_gap_dose
+  # test cumulative_gap_dose
   expect_true(result$cumulative_gap_dose == sum(testCumulativeDose$gap *
-                                                  testCumulativeDose$days_exposed * testCumulativeDose$daily_dose))
+    testCumulativeDose$days_exposed * testCumulativeDose$daily_dose))
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test impute and lower upper bound", {
-
   drug_exposure <- dplyr::tibble(
     drug_exposure_id = c(1, 2, 3),
     drug_concept_id = c(1, 2, 3),
@@ -185,12 +191,15 @@ test_that("test impute and lower upper bound", {
     drug_exposure_start_date = c(
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
-      as.Date("2010-01-01")),
+      as.Date("2010-01-01")
+    ),
     drug_exposure_end_date = c(
       as.Date(NA),
       as.Date("2015-01-01"),
-      as.Date("2010-01-01")),
-    quantity = c(1, 2, 3))
+      as.Date("2010-01-01")
+    ),
+    quantity = c(1, 2, 3)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1),
@@ -201,19 +210,21 @@ test_that("test impute and lower upper bound", {
 
 
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength
+  )
 
 
-  eraJoinMode = "Subsequent"
-  overlapMode = "Previous"
+  eraJoinMode <- "Subsequent"
+  overlapMode <- "Previous"
 
-  #when there is no exp with same start, changing sameIndexMode should return same result
+  # when there is no exp with same start, changing sameIndexMode should return same result
   result <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1350, #limit end date to 2013-09-11
+    studyTime = 1350, # limit end date to 2013-09-11
     gapEra = 3,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
@@ -230,14 +241,13 @@ test_that("test impute and lower upper bound", {
 
   expect_true(result$exposed_days == 1350)
 
-  expect_true(result$cumulative_dose == 2000/
-                (as.numeric(difftime(as.Date("2015-01-01"), as.Date("2010-01-01")))+1)*1350)
+  expect_true(result$cumulative_dose == 2000 /
+    (as.numeric(difftime(as.Date("2015-01-01"), as.Date("2010-01-01"))) + 1) * 1350)
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test same index", {
-
   drug_exposure <- dplyr::tibble(
     drug_exposure_id = c(1, 2, 3),
     drug_concept_id = c(1, 2, 3),
@@ -245,12 +255,15 @@ test_that("test same index", {
     drug_exposure_start_date = c(
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
-      as.Date("2010-01-01")),
+      as.Date("2010-01-01")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-02"),
       as.Date("2010-01-05"),
-      as.Date("2010-01-10")),
-    quantity = c(1, 2, 3))
+      as.Date("2010-01-10")
+    ),
+    quantity = c(1, 2, 3)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1),
@@ -268,20 +281,22 @@ test_that("test same index", {
     day_of_birth = c(01, 02)
   )
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength,
-                             person = person)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength,
+    person = person
+  )
 
 
-  eraJoinMode = "Subsequent"
-  overlapMode = "Previous"
+  eraJoinMode <- "Subsequent"
+  overlapMode <- "Previous"
 
-  #when there is no exp with same start, changing sameIndexMode should return same result
+  # when there is no exp with same start, changing sameIndexMode should return same result
   resultMax <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
@@ -297,7 +312,7 @@ test_that("test same index", {
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
@@ -313,7 +328,7 @@ test_that("test same index", {
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
@@ -336,7 +351,6 @@ test_that("test same index", {
 })
 
 test_that("test same index for join exp", {
-
   drug_exposure <- dplyr::tibble(
     drug_exposure_id = c(1, 2, 3),
     drug_concept_id = c(1, 2, 3),
@@ -344,12 +358,15 @@ test_that("test same index for join exp", {
     drug_exposure_start_date = c(
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
-      as.Date("2010-01-05")),
+      as.Date("2010-01-05")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-03"),
       as.Date("2010-01-03"),
-      as.Date("2010-01-10")),
-    quantity = c(1, 2, 3))
+      as.Date("2010-01-10")
+    ),
+    quantity = c(1, 2, 3)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1),
@@ -360,20 +377,22 @@ test_that("test same index for join exp", {
 
 
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength
+  )
 
 
 
-  eraJoinMode = "Previous"
-  overlapMode = "Previous"
+  eraJoinMode <- "Previous"
+  overlapMode <- "Previous"
 
-  #when there is no exp with same start, changing sameIndexMode should return same result
+  # when there is no exp with same start, changing sameIndexMode should return same result
   resultMax <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
@@ -390,7 +409,7 @@ test_that("test same index for join exp", {
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
@@ -407,7 +426,7 @@ test_that("test same index for join exp", {
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = overlapMode,
@@ -430,18 +449,20 @@ test_that("test same index for join exp", {
 })
 
 test_that("test era join mode", {
-
   drug_exposure <- dplyr::tibble(
     drug_exposure_id = c(1, 2),
     drug_concept_id = c(1, 2),
     person_id = c(1, 1),
     drug_exposure_start_date = c(
       as.Date("2010-01-01"),
-      as.Date("2010-01-05")),
+      as.Date("2010-01-05")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-02"),
-      as.Date("2010-01-10")),
-    quantity = c(1, 2))
+      as.Date("2010-01-10")
+    ),
+    quantity = c(1, 2)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1),
@@ -452,19 +473,21 @@ test_that("test era join mode", {
 
 
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength
+  )
 
 
-  sameIndexMode = "Maximum"
-  overlapMode = "Previous"
+  sameIndexMode <- "Maximum"
+  overlapMode <- "Previous"
 
-  #when there is no exp with same start, changing sameIndexMode should return same result
+  # when there is no exp with same start, changing sameIndexMode should return same result
   resultFirst <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = "Previous",
     overlapMode = overlapMode,
@@ -481,7 +504,7 @@ test_that("test era join mode", {
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = "Subsequent",
     overlapMode = overlapMode,
@@ -498,7 +521,7 @@ test_that("test era join mode", {
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = "Zero",
     overlapMode = overlapMode,
@@ -515,7 +538,7 @@ test_that("test era join mode", {
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = "Join",
     overlapMode = overlapMode,
@@ -528,9 +551,9 @@ test_that("test era join mode", {
 
   resultJoin <- resultJoin$dose %>% dplyr::collect()
 
-  expect_true(resultFirst$cumulative_dose == 1 * 1 /2 * 4 + 2 * 10)
+  expect_true(resultFirst$cumulative_dose == 1 * 1 / 2 * 4 + 2 * 10)
 
-  expect_true(resultSecond$cumulative_dose == 1 * 1 /2 * 2 + 2 * 10 / 6 * 8)
+  expect_true(resultSecond$cumulative_dose == 1 * 1 / 2 * 2 + 2 * 10 / 6 * 8)
 
   expect_true(resultJoin$cumulative_dose == 1 * 1 + 2 * 10)
 
@@ -540,18 +563,20 @@ test_that("test era join mode", {
 })
 
 test_that("test overlap mode", {
-
   drug_exposure <- dplyr::tibble(
     drug_exposure_id = c(1, 2),
     drug_concept_id = c(1, 2),
     person_id = c(1, 1),
     drug_exposure_start_date = c(
       as.Date("2010-01-01"),
-      as.Date("2010-01-02")),
+      as.Date("2010-01-02")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-02"),
-      as.Date("2010-01-10")),
-    quantity = c(1, 2))
+      as.Date("2010-01-10")
+    ),
+    quantity = c(1, 2)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1),
@@ -562,19 +587,21 @@ test_that("test overlap mode", {
 
 
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength
+  )
 
 
-  sameIndexMode = "Maximum"
-  eraJoinMode = "Previous"
+  sameIndexMode <- "Maximum"
+  eraJoinMode <- "Previous"
 
-  #when there is no exp with same start, changing sameIndexMode should return same result
+  # when there is no exp with same start, changing sameIndexMode should return same result
   resultSecond <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = "Subsequent",
@@ -591,7 +618,7 @@ test_that("test overlap mode", {
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = "Minimum",
@@ -612,7 +639,6 @@ test_that("test overlap mode", {
 })
 
 test_that("test StudyStartDate and StudyEndDate", {
-
   drug_exposure <- dplyr::tibble(
     drug_exposure_id = c(1, 2, 3, 4, 5, 6),
     drug_concept_id = c(1, 2, 3, 4, 5, 6),
@@ -623,15 +649,18 @@ test_that("test StudyStartDate and StudyEndDate", {
       as.Date("2010-01-03"),
       as.Date("2010-02-02"),
       as.Date("2010-02-01"),
-      as.Date("2010-02-02")),
+      as.Date("2010-02-02")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-02"),
       as.Date("2010-01-10"),
       as.Date("2010-02-04"),
       as.Date("2010-02-05"),
       as.Date("2010-02-10"),
-      as.Date("2010-02-05")),
-    quantity = c(1, 2, 3, 4, 5, 6))
+      as.Date("2010-02-05")
+    ),
+    quantity = c(1, 2, 3, 4, 5, 6)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1, 1, 1, 1),
@@ -642,25 +671,27 @@ test_that("test StudyStartDate and StudyEndDate", {
 
   person <- tibble::tibble(
     person_id = c("1", "2", "3", "4"),
-    gender_concept_id = c("8507", "8507","8507", "8532"),
+    gender_concept_id = c("8507", "8507", "8507", "8532"),
     year_of_birth = c(1990, 1990, 1990, 1990),
     month_of_birth = c(06, 07, NA, 01),
-    day_of_birth = c(01, 02, NA,01)
+    day_of_birth = c(01, 02, NA, 01)
   )
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength,
-                             person = person)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength,
+    person = person
+  )
 
-  sameIndexMode = "Maximum"
-  eraJoinMode = "Previous"
+  sameIndexMode <- "Maximum"
+  eraJoinMode <- "Previous"
 
-  #when there is no exp with same start, changing sameIndexMode should return same result
+  # when there is no exp with same start, changing sameIndexMode should return same result
   resultStudyStart <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = "Subsequent",
@@ -683,7 +714,6 @@ test_that("test StudyStartDate and StudyEndDate", {
 })
 
 test_that("test multi gap end", {
-
   drug_exposure <- dplyr::tibble(
     drug_exposure_id = c(1, 2, 3, 4),
     drug_concept_id = c(1, 2, 3, 4),
@@ -692,13 +722,16 @@ test_that("test multi gap end", {
       as.Date("2010-01-01"),
       as.Date("2010-01-05"),
       as.Date("2010-01-05"),
-      as.Date("2010-01-05")),
+      as.Date("2010-01-05")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-02"),
       as.Date("2010-01-05"),
       as.Date("2010-01-06"),
-      as.Date("2010-01-07")),
-    quantity = c(1, 2, 3, 4))
+      as.Date("2010-01-07")
+    ),
+    quantity = c(1, 2, 3, 4)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1, 1),
@@ -715,21 +748,25 @@ test_that("test multi gap end", {
     day_of_birth = c(01, 02)
   )
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength
+  )
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength
+  )
 
-  sameIndexMode = "Maximum"
-  eraJoinMode = "Subsequent"
+  sameIndexMode <- "Maximum"
+  eraJoinMode <- "Subsequent"
 
-  #when there is no exp with same start, changing sameIndexMode should return same result
+  # when there is no exp with same start, changing sameIndexMode should return same result
   resultMultiGapEnd <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
     summarizeMode = "FixedTime",
-    studyTime = 1000, #limit end date to 2013-09-11
+    studyTime = 1000, # limit end date to 2013-09-11
     gapEra = 10,
     eraJoinMode = eraJoinMode,
     overlapMode = "Subsequent",
@@ -750,10 +787,9 @@ test_that("test multi gap end", {
 })
 
 test_that("test not considered dose", {
-
   cdm <- mockDrugUtilisation()
 
-  #when there is no exp with same start, changing sameIndexMode should return same result
+  # when there is no exp with same start, changing sameIndexMode should return same result
   results <- instantiateDrugUtilisationCohorts(
     cdm,
     ingredientConceptId = 1,
@@ -776,12 +812,14 @@ test_that("test not considered dose", {
       as.Date("2010-01-01"),
       as.Date("2010-01-05"),
       as.Date("2010-01-05"),
-      as.Date("2010-01-05")),
+      as.Date("2010-01-05")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-02"),
       as.Date("2010-01-05"),
       as.Date("2010-01-06"),
-      as.Date("2010-01-07")),
+      as.Date("2010-01-07")
+    ),
     quantity = c(2, 4, 6, 6)
   )
 
@@ -802,7 +840,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Zero",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Sum")
+    sameIndexMode = "Sum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -819,7 +858,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Zero",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Minimum")
+    sameIndexMode = "Minimum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -836,7 +876,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Zero",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Maximum")
+    sameIndexMode = "Maximum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -853,7 +894,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Join",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Sum")
+    sameIndexMode = "Sum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -870,7 +912,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Join",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Minimum")
+    sameIndexMode = "Minimum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -887,7 +930,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Join",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Maximum")
+    sameIndexMode = "Maximum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -904,7 +948,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Previous",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Sum")
+    sameIndexMode = "Sum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -921,7 +966,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Previous",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Minimum")
+    sameIndexMode = "Minimum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -938,7 +984,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Previous",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Maximum")
+    sameIndexMode = "Maximum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -955,7 +1002,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Subsequent",
     overlapMode = "Sum",
     cohortEntryPriorHistory = NULL,
-    sameIndexMode = "Sum")
+    sameIndexMode = "Sum"
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -972,7 +1020,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Subsequent",
     overlapMode = "Sum",
     sameIndexMode = "Minimum",
-    cohortEntryPriorHistory = NULL)
+    cohortEntryPriorHistory = NULL
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -989,7 +1038,8 @@ test_that("test not considered dose", {
     eraJoinMode = "Subsequent",
     overlapMode = "Sum",
     sameIndexMode = "Maximum",
-    cohortEntryPriorHistory = NULL)
+    cohortEntryPriorHistory = NULL
+  )
 
   results <- results$dose %>% dplyr::collect()
 
@@ -1006,31 +1056,32 @@ test_that("test not considered dose", {
 
 
 
-test_that("test concept from json is running",{
-  ConceptSetPath = system.file(package = "DrugUtilisation")
+test_that("test concept from json is running", {
+  ConceptSetPath <- system.file(package = "DrugUtilisation")
 
   concept_ancestor <- dplyr::tibble(
-    ancestor_concept_id = c(43144132,43144132,43144132, 40008920, 40008920, 40008920),
-    descendant_concept_id = c(1,2,3,4,5,6),
+    ancestor_concept_id = c(43144132, 43144132, 43144132, 40008920, 40008920, 40008920),
+    descendant_concept_id = c(1, 2, 3, 4, 5, 6),
   )
 
   cdm <- mockDrugUtilisation(
     concept_ancestor = concept_ancestor,
   )
   test <- instantiateDrugUtilisationCohorts(cdm,
-                                    ingredientConceptId = 1,
-                                    ConceptSetPath,
-                                    studyStartDate = NULL,
-                                    studyEndDate = NULL,
-                                    summarizeMode = "AllEras",
-                                    cohortEntryPriorHistory = 180,
-                                    gapEra = 30,
-                                    eraJoinMode = "Previous",
-                                    overlapMode = "Previous",
-                                    sameIndexMode = "Sum",
-                                    imputeDuration = "eliminate",
-                                    imputeDailyDose = "eliminate",
-                                    verbose = FALSE)
+    ingredientConceptId = 1,
+    ConceptSetPath,
+    studyStartDate = NULL,
+    studyEndDate = NULL,
+    summarizeMode = "AllEras",
+    cohortEntryPriorHistory = 180,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Previous",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    verbose = FALSE
+  )
 
 
   expect_true(!is.null(test))
@@ -1047,13 +1098,16 @@ test_that("test impute", {
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
-      as.Date("2010-01-01")),
+      as.Date("2010-01-01")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-01"),
       as.Date("2010-01-02"),
       as.Date(NA),
-      as.Date("2010-01-03")),
-    quantity = c(1,2,3,NA))
+      as.Date("2010-01-03")
+    ),
+    quantity = c(1, 2, 3, NA)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1, 1),
@@ -1069,9 +1123,11 @@ test_that("test impute", {
     day_of_birth = c(01, 02)
   )
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength,
-                             person = person)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength,
+    person = person
+  )
 
   resultMedian <- instantiateDrugUtilisationCohorts(
     cdm,
@@ -1087,7 +1143,7 @@ test_that("test impute", {
   )
   resultMedian <- resultMedian$dose %>% dplyr::collect()
   expect_true(sum(resultMedian$cumulative_dose) == 1 + 4 + 3 + 4.5)
-  expect_true(all(resultMedian$subject_id %in% c(1,2)))
+  expect_true(all(resultMedian$subject_id %in% c(1, 2)))
 
   resultMedianAge <- instantiateDrugUtilisationCohorts(
     cdm,
@@ -1098,7 +1154,7 @@ test_that("test impute", {
     sameIndexMode = "Sum",
     imputeDuration = "median",
     imputeDailyDose = "median",
-    ageRestriction = c(0,16),
+    ageRestriction = c(0, 16),
     verbose = FALSE,
     cohortEntryPriorHistory = NULL
   )
@@ -1133,13 +1189,16 @@ test_that("test durationRange", {
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
-      as.Date("2010-01-01")),
+      as.Date("2010-01-01")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-01"),
       as.Date("2010-01-02"),
       as.Date("2010-01-03"),
-      as.Date("2010-01-04")),
-    quantity = c(1,2,3,NA))
+      as.Date("2010-01-04")
+    ),
+    quantity = c(1, 2, 3, NA)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1, 1),
@@ -1157,9 +1216,11 @@ test_that("test durationRange", {
     day_of_birth = c(01, 02)
   )
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength,
-                             person = person)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength,
+    person = person
+  )
 
 
   resultDurationRange <- instantiateDrugUtilisationCohorts(
@@ -1172,7 +1233,7 @@ test_that("test durationRange", {
     imputeDuration = "median",
     imputeDailyDose = "median",
     verbose = FALSE,
-    durationRange = c(2,3),
+    durationRange = c(2, 3),
     cohortEntryPriorHistory = NULL
   )
   resultDurationRange <- resultDurationRange$dose %>% dplyr::collect()
@@ -1189,7 +1250,7 @@ test_that("test durationRange", {
     imputeDuration = "median",
     imputeDailyDose = "median",
     verbose = FALSE,
-    durationRange = c(2,NA),
+    durationRange = c(2, NA),
     cohortEntryPriorHistory = NULL
   )
   resultDurationRange2 <- resultDurationRange2$dose %>% dplyr::collect()
@@ -1207,13 +1268,16 @@ test_that("test dailyDoseRange", {
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
       as.Date("2010-01-01"),
-      as.Date("2010-01-01")),
+      as.Date("2010-01-01")
+    ),
     drug_exposure_end_date = c(
       as.Date("2010-01-01"),
       as.Date("2010-01-02"),
       as.Date("2010-01-03"),
-      as.Date("2010-01-04")),
-    quantity = c(1,2,3,NA))
+      as.Date("2010-01-04")
+    ),
+    quantity = c(1, 2, 3, NA)
+  )
 
   drug_strength <- dplyr::tibble(
     ingredient_concept_id = c(1, 1, 1, 1),
@@ -1231,9 +1295,11 @@ test_that("test dailyDoseRange", {
     day_of_birth = c(01, 02)
   )
 
-  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
-                             drug_strength = drug_strength,
-                             person = person)
+  cdm <- mockDrugUtilisation(
+    drug_exposure = drug_exposure,
+    drug_strength = drug_strength,
+    person = person
+  )
 
 
   resultDailyDoseRange <- instantiateDrugUtilisationCohorts(
@@ -1246,7 +1312,7 @@ test_that("test dailyDoseRange", {
     imputeDuration = "median",
     imputeDailyDose = "median",
     verbose = FALSE,
-    dailyDoseRange = c(0,2),
+    dailyDoseRange = c(0, 2),
     cohortEntryPriorHistory = NULL
   )
   resultDailyDoseRange <- resultDailyDoseRange$dose %>% dplyr::collect()
@@ -1263,7 +1329,7 @@ test_that("test dailyDoseRange", {
     imputeDuration = "median",
     imputeDailyDose = "median",
     verbose = FALSE,
-    dailyDoseRange = c(2,NA),
+    dailyDoseRange = c(2, NA),
     cohortEntryPriorHistory = NULL
   )
   resultDailyDoseRange2 <- resultDailyDoseRange2$dose %>% dplyr::collect()

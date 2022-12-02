@@ -1,4 +1,4 @@
-test_that("test getAge",{
+test_that("test getAge", {
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5),
@@ -7,4 +7,5 @@ test_that("test getAge",{
       day_of_birth = c(NA, 10, 15, 25, NA),
     )
   )
+  expect_error(a)
 })

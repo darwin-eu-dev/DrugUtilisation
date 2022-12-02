@@ -310,7 +310,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
   messageStore <- checkmate::makeAssertCollection()
 
-    if (!is.null(conceptSetPath)) {
+  if (!is.null(conceptSetPath)) {
     conceptSets <- dplyr::tibble(concept_set_path = list.files(
       path = here::here(conceptSetPath),
       full.names = TRUE
@@ -323,7 +323,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
           tools::file_path_sans_ext(basename(.data$concept_set_path))
       )
 
-    if(dim(conceptSets)[1]>1){
+    if (dim(conceptSets)[1] > 1) {
       messageStore$push("- only allow one json file")
     }
 
@@ -446,12 +446,11 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       dplyr::ungroup() %>%
       # compute its maximum possible end date
       dplyr::mutate(drug_exposure_end_date_max = as.Date(dbplyr::sql(
-        sql_add_days(
-          dialect,
-          studyTime - 1,
-          "drug_exposure_end_date_max"
+        CDMConnector::dateadd(
+          date = "drug_exposure_end_date_max",
+          number = studyTime - 1
         )
-      )), na.rm = TRUE) %>%
+      ))) %>%
       # get only the exposures that start before the end date
       dplyr::filter(.data$drug_exposure_start_date <= .data$drug_exposure_end_date_max)
   }
@@ -460,10 +459,9 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   # days_exposed = end - start + 1
   drugUtilisationCohort <- drugUtilisationCohort %>%
     dplyr::mutate(days_exposed = dbplyr::sql(
-      sqlDiffDays(
-        dialect,
-        "drug_exposure_start_date",
-        "drug_exposure_end_date"
+      CDMConnector::datediff(
+        start = "drug_exposure_start_date",
+        end = "drug_exposure_end_date"
       )
     ) + 1)
 
@@ -479,12 +477,15 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   )
 
   drugUtilisationCohort <- drugUtilisationCohort %>%
-    dplyr::mutate(days_to_add =  as.integer(days_exposed - 1)) %>%
-    dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(sql_add_days(
-      dialect,
-      "days_to_add",
-      "drug_exposure_start_date")))) %>%
-    dplyr::select(-days_to_add)
+    dplyr::mutate(days_to_add = as.integer(.data$days_exposed - 1)) %>%
+    dplyr::compute() %>%
+    dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(
+      CDMConnector::dateadd(
+        date = "drug_exposure_start_date",
+        number = .data$days_to_add
+      )
+    ))) %>%
+    dplyr::select(-"days_to_add")
 
   # We compute the daily dose using drugExposureDiagnostics function (to be
   # updated in the next interation as drugExposureDiagnostics does not work as
@@ -611,33 +612,35 @@ instantiateDrugUtilisationCohorts <- function(cdm,
 
 
 
-  if(!is.null(cohortEntryPriorHistory)){
-  drugUtilisationCohort <- drugUtilisationCohort %>%
-    dplyr::rename("subject_id" = "person_id") %>%
-    dplyr::mutate(cohort_definition_id = 1)
-  cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort
+  if (!is.null(cohortEntryPriorHistory)) {
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::rename("subject_id" = "person_id") %>%
+      dplyr::mutate(cohort_definition_id = 1)
+    cdm[["drugUtilisationCohort"]] <- drugUtilisationCohort
 
-  priorDaysCohort <- getPriorHistoryCohortEntry(
-    cdm,
-    "drugUtilisationCohort"
-  )
-  drugUtilisationCohort <- drugUtilisationCohort %>%
-    dplyr::left_join(
-      priorDaysCohort,
-      by = c(
-        "subject_id",
-        "cohort_definition_id",
-        "cohort_start_date",
-        "cohort_end_date"
-      )
-    ) %>%
-    dplyr::filter(
-      .data$number_of_days >= .env$cohortEntryPriorHistory) %>%
-    dplyr::compute()
-  }else{
-  drugUtilisationCohort <- drugUtilisationCohort %>%
-    dplyr::rename("subject_id" = "person_id") %>%
-    dplyr::mutate(cohort_definition_id = 1)}
+    priorDaysCohort <- getPriorHistoryCohortEntry(
+      cdm,
+      "drugUtilisationCohort"
+    )
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::left_join(
+        priorDaysCohort,
+        by = c(
+          "subject_id",
+          "cohort_definition_id",
+          "cohort_start_date",
+          "cohort_end_date"
+        )
+      ) %>%
+      dplyr::filter(
+        .data$number_of_days >= .env$cohortEntryPriorHistory
+      ) %>%
+      dplyr::compute()
+  } else {
+    drugUtilisationCohort <- drugUtilisationCohort %>%
+      dplyr::rename("subject_id" = "person_id") %>%
+      dplyr::mutate(cohort_definition_id = 1)
+  }
 
 
   if (!is.null(studyStartDate)) {
@@ -783,7 +786,6 @@ imputeVariable <- function(x,
       ),
       .data$variable
     ))
-
   }
 
 
@@ -871,11 +873,7 @@ getPeriods <- function(x, dialect, verbose) {
         dplyr::select("person_id", "drug_exposure_end_date") %>%
         dplyr::distinct() %>%
         dplyr::mutate(start_interval = as.Date(dbplyr::sql(
-          sql_add_days(
-            dialect,
-            1,
-            "drug_exposure_end_date"
-          )
+          CDMConnector::dateadd(date = "drug_exposure_end_date", number = 1)
         ))) %>%
         dplyr::select(-"drug_exposure_end_date")
     ) %>%
@@ -896,10 +894,7 @@ getPeriods <- function(x, dialect, verbose) {
     dplyr::select("person_id", "drug_exposure_start_date") %>%
     dplyr::distinct() %>%
     dplyr::mutate(end_interval = as.Date(dbplyr::sql(
-      sql_add_days(
-        dialect, -1,
-        "drug_exposure_start_date"
-      )
+      CDMConnector::dateadd(date = "drug_exposure_start_date", number = -1)
     ))) %>%
     dplyr::select(-"drug_exposure_start_date") %>%
     # or the day that an exposure ends
@@ -926,10 +921,9 @@ getPeriods <- function(x, dialect, verbose) {
       by = c("person_id", "subexposure_id")
     ) %>%
     # compute the number of days in each subexposure
-    dplyr::mutate(days_exposed = dbplyr::sql(sqlDiffDays(
-      dialect,
-      "start_interval",
-      "end_interval"
+    dplyr::mutate(days_exposed = dbplyr::sql(CDMConnector::datediff(
+      start = "start_interval",
+      end = "end_interval"
     )) + 1)
 
   # we join the exposures with the overlapping periods and we only consider the
@@ -1023,11 +1017,7 @@ joinExposures <- function(x,
     dplyr::ungroup() %>%
     # we compute the day after the end of the continuous_exposure_id
     dplyr::mutate(start_interval = as.Date(dbplyr::sql(
-      sql_add_days(
-        dialect,
-        1,
-        "start_interval"
-      )
+      CDMConnector::dateadd(date = "start_interval", 1)
     ))) %>%
     dplyr::compute()
 
@@ -1048,10 +1038,7 @@ joinExposures <- function(x,
     dplyr::ungroup() %>%
     # we compute the day before the start of the continuous_exposure_id
     dplyr::mutate(end_interval = as.Date(dbplyr::sql(
-      sql_add_days(
-        dialect, -1,
-        "end_interval"
-      )
+      CDMConnector::dateadd(date = "end_interval", number = -1)
     ))) %>%
     # we substract one from continuous exposure id as the end of a gaps will be
     # the day before the start of the subsequent continuous exposure id
@@ -1064,10 +1051,9 @@ joinExposures <- function(x,
       by = c("person_id", "continuous_exposure_id")
     ) %>%
     # compute the length of the gap
-    dplyr::mutate(days_exposed = dbplyr::sql(sqlDiffDays(
-      dialect,
-      "start_interval",
-      "end_interval"
+    dplyr::mutate(days_exposed = dbplyr::sql(CDMConnector::datediff(
+      start = "start_interval",
+      end = "end_interval"
     )) + 1) %>%
     # if the gap is larger than gapEra remove that gaps
     dplyr::filter(.data$days_exposed <= .env$gapEra) %>%
@@ -1510,10 +1496,9 @@ continuousExposures <- function(x,
       .groups = "drop"
     ) %>%
     dplyr::mutate(study_days = dbplyr::sql(
-      sqlDiffDays(
-        dialect,
-        "cohort_start_date",
-        "cohort_end_date"
+      CDMConnector::datediff(
+        start = "cohort_start_date",
+        end = "cohort_end_date"
       )
     ) + 1) %>%
     dplyr::mutate(not_exposed_days = .data$study_days - .data$exposed_days) %>%
@@ -1530,7 +1515,7 @@ continuousExposures <- function(x,
     dplyr::mutate(
       not_considered_dose = .data$all_dose - .data$cumulative_dose,
       not_considered_exposed_days = .data$all_exposed_days - .data$exposed_days,
-      prop_cum_gap_dose = dplyr::if_else(.data$cumulative_dose != 0,.data$cumulative_gap_dose / .data$cumulative_dose, NA),
+      prop_cum_gap_dose = dplyr::if_else(.data$cumulative_dose != 0, .data$cumulative_gap_dose / .data$cumulative_dose, NA),
       prop_not_considered_exp_days = dplyr::if_else(.data$all_exposed_days != 0, .data$not_considered_exposed_days / .data$all_exposed_days, NA)
     ) %>%
     dplyr::compute()
@@ -1567,4 +1552,3 @@ readConceptSets <- function(conceptSets) {
     )
   return(conceptList)
 }
-

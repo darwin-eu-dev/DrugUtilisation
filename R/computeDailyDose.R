@@ -41,10 +41,9 @@ computeDailyDose <- function(table,
     ) %in% colnames(table)))) {
       table <- table %>%
         dplyr::mutate(
-          days_exposed = dbplyr::sql(sqlDiffDays(
-            CDMConnector::dbms(attr(cdm, "dbcon")),
-            "drug_exposure_start_date",
-            "drug_exposure_end_date"
+          days_exposed = dbplyr::sql(CDMConnector::datediff(
+            start = "drug_exposure_start_date",
+            end = "drug_exposure_end_date"
           )) + 1
         ) %>%
         dplyr::compute()

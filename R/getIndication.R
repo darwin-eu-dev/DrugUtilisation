@@ -165,10 +165,9 @@ getIndication <- function(cdm,
               dplyr::select("indication_id", "subject_id", "indication_start_date"),
             by = c("subject_id")
           ) %>% dplyr::mutate(dif_time_indication = dbplyr::sql(
-            sqlDiffDays(
-              CDMConnector::dbms(attr(cdm, "dbcon")),
-              "cohort_start_date",
-              "indication_start_date"
+            CDMConnector::datediff(
+              start = "cohort_start_date",
+              end = "indication_start_date"
             )
           )) %>%
           dplyr::filter(
@@ -201,10 +200,9 @@ getIndication <- function(cdm,
               by = c("subject_id" = "person_id")
             ) %>%
             dplyr::mutate(dif_time_unknown_indication = dbplyr::sql(
-              sqlDiffDays(
-                CDMConnector::dbms(attr(cdm, "dbcon")),
-                "cohort_start_date",
-                "unknown_indication_start_date"
+              CDMConnector::datediff(
+                start = "cohort_start_date",
+                end = "unknown_indication_start_date"
               )
             )) %>%
             dplyr::filter(.data$dif_time_unknown_indication <= 0) %>%
@@ -268,10 +266,9 @@ getIndication <- function(cdm,
                 dplyr::select("indication_id", "subject_id", "indication_start_date"),
               by = c("subject_id")
             ) %>% dplyr::mutate(dif_time_indication = dbplyr::sql(
-              sqlDiffDays(
-                CDMConnector::dbms(attr(cdm, "dbcon")),
-                "indication_start_date",
-                "cohort_start_date"
+              CDMConnector::datediff(
+                start = "indication_start_date",
+                end = "cohort_start_date"
               )
             )) %>%
             dplyr::filter(
@@ -307,10 +304,9 @@ getIndication <- function(cdm,
                 by = c("subject_id" = "person_id")
               ) %>%
               dplyr::mutate(dif_time_unknown_indication = dbplyr::sql(
-                sqlDiffDays(
-                  CDMConnector::dbms(attr(cdm, "dbcon")),
-                  "unknown_indication_start_date",
-                  "cohort_start_date"
+                CDMConnector::datediff(
+                  start = "unknown_indication_start_date",
+                  end = "cohort_start_date"
                 )
               )) %>%
               dplyr::filter(

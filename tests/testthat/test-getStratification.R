@@ -1,4 +1,4 @@
-test_that("test initial errors",{
+test_that("test initial errors", {
   cdm <- mockDrugUtilisation(
     cohort1 = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 1, 2),
@@ -62,31 +62,31 @@ test_that("test initial errors",{
     targetCohortId = 1
   ))
   expect_error(getStratification(
-    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(-1,1)),
+    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(-1, 1)),
     targetCohortId = 1
   ))
   expect_error(getStratification(
-    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(4,1)),
+    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(4, 1)),
     targetCohortId = 1
   ))
   expect_error(getStratification(
-    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0,19), c(0)),
+    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0, 19), c(0)),
     targetCohortId = 1
   ))
   x <- getStratification(
-    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0,19), c(0,0)),
+    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0, 19), c(0, 0)),
     targetCohortId = 1
   )
   x <- getStratification(
-    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0,19), c(0,NA)),
+    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0, 19), c(0, NA)),
     targetCohortId = 1
   )
   x <- getStratification(
-    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0,19), c(NA,10)),
+    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0, 19), c(NA, 10)),
     targetCohortId = 1
   )
   x <- getStratification(
-    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0,19), c(NA,NA)),
+    cdm = cdm, targetCohortName = "cohort1", ageGroup = list(c(0, 19), c(NA, NA)),
     targetCohortId = 1
   )
   expect_error(getStratification(

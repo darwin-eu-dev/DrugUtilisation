@@ -15,7 +15,8 @@ getGender <- function(cdm,
   }
 
   person <- cdm[["person"]] %>%
-    dplyr::semi_join(cohortDb, by = c("person_id" = "subject_id"))
+    dplyr::rename("subject_id" = "person_id") %>%
+    dplyr::semi_join(cohortDb, by = c("subject_id"))
 
   cohortDb <- cohortDb %>%
     dplyr::left_join(
@@ -25,7 +26,7 @@ getGender <- function(cdm,
           .data$gender_concept_id == 8532 ~ "Female",
           TRUE ~ as.character(NA)
         )) %>%
-        dplyr::select("subject_id" = "person_id", "gender"),
+        dplyr::select("subject_id", "gender"),
       by = "subject_id"
     )
 
@@ -53,12 +54,10 @@ getAge <- function(cdm,
   }
 
   person <- cdm[["person"]] %>%
+    dplyr::rename("subject_id" = "person_id") %>%
     dplyr::inner_join(
       cohortDb %>%
-        dplyr::select(
-          "subject_id" = "person_id",
-          "date_age" = !!ageAt
-        ),
+        dplyr::select("subject_id", "date_age" = !!ageAt),
       by = "subject_id"
     )
 
@@ -76,7 +75,7 @@ getAge <- function(cdm,
 
   if (imposeDay == TRUE) {
     person <- person %>%
-      dplyr::mutate(day_of_birth = .env$dafultDay)
+      dplyr::mutate(day_of_birth = .env$defaultDay)
   } else {
     person <- person %>%
       dplyr::mutate(day_of_birth = dplyr::if_else(
@@ -125,12 +124,10 @@ getPriorHistory <- function(cdm,
   }
 
   observationPeriod <- cdm[["observation_period"]] %>%
+    dplyr::rename("subject_id" = "person_id") %>%
     dplyr::inner_join(
       cohortDb %>%
-        dplyr::select(
-          "subject_id" = "person_id",
-          "date_prior_history" = !!priorHistoryAt
-        ),
+        dplyr::select("subject_id", "date_prior_history" = !!priorHistoryAt),
       by = "subject_id"
     )
 
@@ -169,8 +166,8 @@ getPriorHistory <- function(cdm,
           .data$day_of_birth
         ))) %>%
         dplyr::mutate(prior_history = dbplyr::sql(CDMConnector::datediff(
-          start = "birth_date",
-          end = "date_age",
+          start = "observation_period_start_date",
+          end = "date_prior_history",
           interval = "day"
         ))) %>%
         dplyr::select("subject_id", "prior_history"),

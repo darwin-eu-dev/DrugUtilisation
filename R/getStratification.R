@@ -168,8 +168,4 @@ getStratification <- function(cdm,
     dplyr::filter(.data$cohort_definition_id == .env$targetCohortId)
   cdm[["temp"]] <- getGender(cdm, "temp")
   targetCohort <- getAge(cdm, "temp")
-
-
-
-
 }

@@ -18,7 +18,7 @@ test_that("checks example, summarise = FALSE", {
       ))
     ),
     observation_period = dplyr::tibble(
-      person_id = c(1,2),
+      person_id = c(1, 2),
       observation_period_start_date = as.Date(c("2005-01-01", "2000-03-30")),
       observation_period_end_date = as.Date(c("2024-12-09", "2032-03-03"))
     ),
@@ -91,9 +91,9 @@ test_that("checks example, summarise = FALSE", {
   expect_true(sum(resC$person_id == 2) == 4)
   expect_true(sum(resC$person_id == 1) == 5)
   expect_true(unique(resC$person_id[resC$cohort_start_date ==
-                                      as.Date("2020-03-01")]) == 2)
+    as.Date("2020-03-01")]) == 2)
   expect_true(unique(resC$person_id[resC$cohort_start_date ==
-                                      as.Date("2020-01-01")]) == 1)
+    as.Date("2020-01-01")]) == 1)
   expect_true(sum(resC$concept_id == 1) == 7)
   expect_true(sum(resC$concept_id == 2) == 1)
   expect_true(sum(resC$concept_id == 3) == 1)
@@ -149,13 +149,13 @@ test_that("checks example, summarise = FALSE", {
   expect_true(identical(resNULL$temporalWindows, res$temporalWindows))
   expect_true(identical(resNULL$tablesToCharacterize, res$tablesToCharacterize))
   expect_true(identical(resNULL$overlap, res$overlap))
-  expect_true(identical(resNULL$characterization %>% dplyr::collect(),
-                        res$characterization %>% dplyr::collect()))
-
+  expect_true(identical(
+    resNULL$characterization %>% dplyr::collect(),
+    res$characterization %>% dplyr::collect()
+  ))
 })
 
 test_that("checks example, summarise = TRUE", {
-
   cdm <- mockDrugUtilisation(
     observation_period = dplyr::tibble(
       observation_period_id = 1:10,
@@ -416,10 +416,10 @@ test_that("checks example, summarise = TRUE", {
   )
 
   resC <- res$characterization
-  expect_true(all(c(1,2) %in% resC$cohort_definition_id))
+  expect_true(all(c(1, 2) %in% resC$cohort_definition_id))
 })
 
-test_that("check 2 tables",{
+test_that("check 2 tables", {
   cdm <- mockDrugUtilisation(
     observation_period = dplyr::tibble(
       observation_period_id = 1,
@@ -462,12 +462,11 @@ test_that("check 2 tables",{
   resC <- res$characterization
 
   expect_true(nrow(resC) == 4)
-  expect_true(all(resC$table_id %in% c(1,2)))
+  expect_true(all(resC$table_id %in% c(1, 2)))
   expect_true(length(res$tablesToCharacterize) == 2)
-
 })
 
-test_that("event outside observation period are not considered",{
+test_that("event outside observation period are not considered", {
   # all events observed
   cdm <- mockDrugUtilisation(
     observation_period = dplyr::tibble(
@@ -651,31 +650,34 @@ test_that("event outside observation period are not considered",{
     minimumCellCount = 0
   )
   expect_true(nrow(res$characterization) == 1)
-
 })
 
 # different windows of observation
-test_that("check denominator values",{
+test_that("check denominator values", {
   cdm <- mockDrugUtilisation(
     observation_period = dplyr::tibble(
       observation_period_id = 1:10,
       person_id = 1:10,
       observation_period_start_date = as.Date(c(
         "2010-01-01", "2010-01-01", "2010-01-01", "2010-01-01", "2010-01-01",
-        "2025-01-01", "2026-10-03", "2027-12-02", "2029-01-01", "2010-01-01")),
+        "2025-01-01", "2026-10-03", "2027-12-02", "2029-01-01", "2010-01-01"
+      )),
       observation_period_end_date = as.Date(c(
         "2031-01-01", "2023-01-01", "2023-04-01", "2024-01-31", "2025-01-01",
-        "2026-01-01", "2027-01-01", "2028-01-01", "2029-01-01", "2030-01-01"))
+        "2026-01-01", "2027-01-01", "2028-01-01", "2029-01-01", "2030-01-01"
+      ))
     ),
     person = dplyr::tibble(
       cohort_definition_id = 1,
-      subject_id = c(1:9,11),
+      subject_id = c(1:9, 11),
       cohort_start_date = as.Date(c(
         "2021-01-01", "2022-01-01", "2023-01-01", "2024-01-01", "2025-01-01",
-        "2026-01-01", "2027-01-01", "2028-01-01", "2029-01-01", "2030-01-01")),
+        "2026-01-01", "2027-01-01", "2028-01-01", "2029-01-01", "2030-01-01"
+      )),
       cohort_end_date = as.Date(c(
         "2021-01-01", "2022-01-01", "2023-01-01", "2024-01-01", "2025-01-01",
-        "2026-01-01", "2027-01-01", "2028-01-01", "2029-01-01", "2030-01-01"))
+        "2026-01-01", "2027-01-01", "2028-01-01", "2029-01-01", "2030-01-01"
+      ))
     ),
     condition_occurrence = dplyr::tibble(
       condition_occurrence_id = 1,
@@ -695,24 +697,24 @@ test_that("check denominator values",{
     minimumCellCount = 0
   )
   den <- res$denominator %>% dplyr::collect()
-  expect_true(nrow(den[den$person_id ==  1,]) == 11)
-  expect_true(nrow(den[den$person_id ==  2,]) == 10)
-  expect_true(nrow(den[den$person_id ==  3,]) ==  9)
-  expect_true(nrow(den[den$person_id ==  4,]) ==  8)
-  expect_true(nrow(den[den$person_id ==  5,]) ==  6)
-  expect_true(nrow(den[den$person_id ==  6,]) ==  5)
-  expect_true(nrow(den[den$person_id ==  7,]) ==  4)
-  expect_true(nrow(den[den$person_id ==  8,]) ==  3)
-  expect_true(nrow(den[den$person_id ==  9,]) ==  1)
-  expect_true(nrow(den[den$person_id == 10,]) ==  0)
-  expect_true(nrow(den[den$person_id == 11,]) ==  0)
-  expect_true(all(den$window_id[den$person_id ==  1] %in% 1:11))
-  expect_true(all(den$window_id[den$person_id ==  2] %in% 1:10))
-  expect_true(all(den$window_id[den$person_id ==  3] %in% 1:9))
-  expect_true(all(den$window_id[den$person_id ==  4] %in% 1:8))
-  expect_true(all(den$window_id[den$person_id ==  5] %in% 1:6))
-  expect_true(all(den$window_id[den$person_id ==  6] %in% 2:6))
-  expect_true(all(den$window_id[den$person_id ==  7] %in% 3:6))
-  expect_true(all(den$window_id[den$person_id ==  8] %in% 4:6))
-  expect_true(den$window_id[den$person_id ==  9] == 6)
+  expect_true(nrow(den[den$person_id == 1, ]) == 11)
+  expect_true(nrow(den[den$person_id == 2, ]) == 10)
+  expect_true(nrow(den[den$person_id == 3, ]) == 9)
+  expect_true(nrow(den[den$person_id == 4, ]) == 8)
+  expect_true(nrow(den[den$person_id == 5, ]) == 6)
+  expect_true(nrow(den[den$person_id == 6, ]) == 5)
+  expect_true(nrow(den[den$person_id == 7, ]) == 4)
+  expect_true(nrow(den[den$person_id == 8, ]) == 3)
+  expect_true(nrow(den[den$person_id == 9, ]) == 1)
+  expect_true(nrow(den[den$person_id == 10, ]) == 0)
+  expect_true(nrow(den[den$person_id == 11, ]) == 0)
+  expect_true(all(den$window_id[den$person_id == 1] %in% 1:11))
+  expect_true(all(den$window_id[den$person_id == 2] %in% 1:10))
+  expect_true(all(den$window_id[den$person_id == 3] %in% 1:9))
+  expect_true(all(den$window_id[den$person_id == 4] %in% 1:8))
+  expect_true(all(den$window_id[den$person_id == 5] %in% 1:6))
+  expect_true(all(den$window_id[den$person_id == 6] %in% 2:6))
+  expect_true(all(den$window_id[den$person_id == 7] %in% 3:6))
+  expect_true(all(den$window_id[den$person_id == 8] %in% 4:6))
+  expect_true(den$window_id[den$person_id == 9] == 6)
 })
