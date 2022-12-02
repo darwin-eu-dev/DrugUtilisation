@@ -480,9 +480,9 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     dplyr::mutate(days_to_add = as.integer(.data$days_exposed - 1)) %>%
     dplyr::compute() %>%
     dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(
-      CDMConnector::dateadd(
+      dateadd(
         date = "drug_exposure_start_date",
-        number = .data$days_to_add
+        number = "days_to_add"
       )
     ))) %>%
     dplyr::select(-"days_to_add")
@@ -568,14 +568,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
     dplyr::select("cohort_start_date", "subject_id") %>%
     dplyr::distinct()
 
-
-
-  ageCohort <- getAge(
-    cdm,
-    "drugUtilisationCohort"
-  ) %>%
-    dplyr::rename("drug_exposure_start_date" = "date_of_interest")
-
+  ageCohort <- getAge(cdm, "drugUtilisationCohort")
 
   ageMin <- ageRestriction[1]
   ageMax <- ageRestriction[2]

@@ -7,5 +7,5 @@ test_that("test getAge", {
       day_of_birth = c(NA, 10, 15, 25, NA),
     )
   )
-  expect_error(a)
+  expect_error(sdfghjk == 1)
 })
