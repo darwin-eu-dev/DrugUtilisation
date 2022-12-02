@@ -38,10 +38,12 @@ getAge <- function(cdm,
                    cohortTable,
                    ageAt = "cohort_start_date",
                    cohortIds = NULL,
-                   dafultMonth = 1,
+                   defaultMonth = 1,
                    defaultDay = 1,
                    imposeMonth = TRUE,
                    imposeDay = TRUE) {
+  defaultMonth <- as.integer(defaultMonth)
+  defaultDay <- as.integer(defaultDay)
   if (isTRUE(is.na(cohortIds))) {
     cohortIds <- NULL
   }
@@ -57,18 +59,18 @@ getAge <- function(cdm,
     dplyr::rename("subject_id" = "person_id") %>%
     dplyr::inner_join(
       cohortDb %>%
-        dplyr::select("subject_id", "date_age" = !!ageAt),
+        dplyr::select("subject_id", dplyr::all_of(ageAt)),
       by = "subject_id"
     )
 
   if (imposeMonth == TRUE) {
     person <- person %>%
-      dplyr::mutate(month_of_birth = .env$dafultMonth)
+      dplyr::mutate(month_of_birth = .env$defaultMonth)
   } else {
     person <- person %>%
       dplyr::mutate(month_of_birth = dplyr::if_else(
         is.na(.data$month_of_birth),
-        .env$dafultMonth,
+        .env$defaultMonth,
         .data$month_of_birth
       ))
   }
@@ -80,28 +82,31 @@ getAge <- function(cdm,
     person <- person %>%
       dplyr::mutate(day_of_birth = dplyr::if_else(
         is.na(.data$day_of_birth),
-        .env$dafultDay,
+        .env$defaultDay,
         .data$day_of_birth
       ))
   }
 
+  person <- person %>%
+    dplyr::mutate(birth_date = as.Date(paste0(
+      .data$year_of_birth,
+      "-",
+      .data$month_of_birth,
+      "-",
+      .data$day_of_birth
+    ))) %>%
+    dplyr::mutate(age = dbplyr::sql(sqlGetAge(
+      dialect = CDMConnector::dbms(cdm),
+      dob = "birth_date",
+      dateOfInterest = ageAt
+    ))) %>%
+    dplyr::select("subject_id", dplyr::all_of(ageAt), "age") %>%
+
+
   cohortDb <- cohortDb %>%
     dplyr::left_join(
-      person %>%
-        dplyr::mutate(birth_date = as.Date(paste0(
-          .data$year_of_birth,
-          "-",
-          .data$month_of_birth,
-          "-",
-          .data$day_of_birth
-        ))) %>%
-        dplyr::mutate(age = dbplyr::sql(sqlGetAge(
-          dialect = CDMConnector::dbms(cdm),
-          dob = "birth_date",
-          dateOfInterest = "date_age"
-        ))) %>%
-        dplyr::select("subject_id", "age"),
-      by = "subject_id"
+      person,
+      by = toJoin
     )
 
   return(cohortDb)
@@ -123,56 +128,29 @@ getPriorHistory <- function(cdm,
     cohortDb <- cdm[[cohortTable]]
   }
 
-  observationPeriod <- cdm[["observation_period"]] %>%
-    dplyr::rename("subject_id" = "person_id") %>%
+  variables <- colnames(cohortDb)
+
+  cohortDb  <- cdm[["observation_period"]] %>%
+    dplyr::select(
+      "subject_id" = "person_id", "observation_period_start_date"
+    ) %>%
     dplyr::inner_join(
       cohortDb %>%
-        dplyr::select("subject_id", "date_prior_history" = !!priorHistoryAt),
+        dplyr::select("subject_id", dplyr::all_of(priorHistoryAt)),
       by = "subject_id"
-    )
-
-  if (imposeMonth == TRUE) {
-    person <- person %>%
-      dplyr::mutate(month_of_birth = .env$dafultMonth)
-  } else {
-    person <- person %>%
-      dplyr::mutate(month_of_birth = dplyr::if_else(
-        is.na(.data$month_of_birth),
-        .env$dafultMonth,
-        .data$month_of_birth
-      ))
-  }
-
-  if (imposeDay == TRUE) {
-    person <- person %>%
-      dplyr::mutate(day_of_birth = .env$dafultDay)
-  } else {
-    person <- person %>%
-      dplyr::mutate(day_of_birth = dplyr::if_else(
-        is.na(.data$day_of_birth),
-        .env$dafultDay,
-        .data$day_of_birth
-      ))
-  }
-
-  cohortDb <- cohortDb %>%
-    dplyr::left_join(
-      person %>%
-        dplyr::mutate(birth_date = as.Date(paste0(
-          .data$year_of_birth,
-          "-",
-          .data$month_of_birth,
-          "-",
-          .data$day_of_birth
-        ))) %>%
-        dplyr::mutate(prior_history = dbplyr::sql(CDMConnector::datediff(
-          start = "observation_period_start_date",
-          end = "date_prior_history",
-          interval = "day"
-        ))) %>%
-        dplyr::select("subject_id", "prior_history"),
-      by = "subject_id"
-    )
+    ) %>%
+    dplyr::mutate(prior_history = CDMConnector::datediff(
+      start = "observation_period_start_date",
+      end = !!priorHistoryAt
+    )) %>%
+    dplyr::select(
+      "subject_id", dplyr::all_of(priorHistoryAt), "prior_history"
+    ) %>%
+    dplyr::right_join(
+      cohortDb,
+      by = c("subject_id", priorHistoryAt)
+    ) %>%
+    dplyr::select(dplyr::all_of(variables), "prior_history")
 
   return(cohortDb)
 }
