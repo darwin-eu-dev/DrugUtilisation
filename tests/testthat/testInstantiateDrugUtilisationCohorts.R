@@ -420,13 +420,13 @@ test_that("test same index for join exp", {
   resultSum <- resultSum$dose %>% dplyr::collect()
 
   #
-    expect_true(resultMax$cumulative_dose == 20 + 20 / 3 + 20 * 3)
+  expect_true(resultMax$cumulative_dose == 20 + 20 / 3 + 20 * 3)
 
-    expect_true(resultMin$cumulative_dose == 1 + 1 / 3 + 20 * 3)
+  expect_true(resultMin$cumulative_dose == 1 + 1 / 3 + 20 * 3)
 
-    expect_true(resultSum$cumulative_dose == 21 + 21 / 3 + 20 * 3)
+  expect_true(resultSum$cumulative_dose == 21 + 21 / 3 + 20 * 3)
 
-    DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test era join mode", {
@@ -715,6 +715,8 @@ test_that("test multi gap end", {
     day_of_birth = c(01, 02)
   )
 
+  cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
+                             drug_strength = drug_strength)
 
   cdm <- mockDrugUtilisation(drug_exposure = drug_exposure,
                              drug_strength = drug_strength)
@@ -1325,6 +1327,3 @@ test_that("test dailyDoseRange", {
 #   resultPreviousFunc <- instantiateIncidencePrevalenceCohorts(cdm, conceptIds = list(1,2,3,4))%>% dplyr::collect()
 #   resultPreviousFunc$incidence_prevalence_dus_tables
 #   })
-
-
-

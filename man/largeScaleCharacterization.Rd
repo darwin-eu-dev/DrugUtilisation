@@ -12,7 +12,9 @@ largeScaleCharacterization(
     c(0, 0), c(1, 30), c(1, 90), c(31, 365), c(91, 365), c(366, NA)),
   tablesToCharacterize = c("condition_occurrence", "drug_era", "procedure_occurrence",
     "measurement"),
-  overlap = TRUE
+  overlap = TRUE,
+  summarise = TRUE,
+  minimumCellCount = 5
 )
 }
 \arguments{
@@ -38,14 +40,21 @@ c(-365, -31), c(-90, -1), c(-30, -1), c(0, 0), c(1, 30), c(1, 90),
 c(31, 365), c(91, 365), c(366, NA)).}
 
 \item{tablesToCharacterize}{Name of the tables in the cdm that we want to
-summarize. The available tables to characterize are: "observation_period",
-"visit_occurrence", "condition_occurrence", "drug_exposure",
-"procedure_occurrence", "device_exposure", "measurement", "observation",
-"drug_era", "condition_era", "specimen" and "death". By default:
-c("condition_occurrence", "drug_era", "procedure_occurrence", "measurement").}
+summarize. The available tables to characterize are: "visit_occurrence",
+"condition_occurrence", "drug_exposure", "procedure_occurrence",
+"device_exposure", "measurement", "observation", "drug_era", "condition_era"
+and "specimen". By default: c("condition_occurrence", "drug_era",
+"procedure_occurrence", "measurement").}
 
-\item{overlap}{Whether you want to consider overlaping events (overlap =
-TRUE) or only incident ones (overlpa = FALSE).}
+\item{overlap}{Whether you want to consider overlapping events (overlap =
+TRUE) or only incident ones (overlap = FALSE).}
+
+\item{summarise}{Whether we want patient-level data (FALSE) or summarised
+aggregated data (TRUE).}
+
+\item{minimumCellCount}{All counts lower than minimumCellCount will be
+obscured changing its value by NA. 'obscured' column of characterization
+tibble is TRUE when a count has been obscured. Otherwise it is FALSE.}
 }
 \value{
 The output of this function is a 3 elements list. First
