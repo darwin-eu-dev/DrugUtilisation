@@ -1,6 +1,6 @@
 # Copyright 2022 DARWIN EU®
 #
-# This file is part of CohortProfile
+# This file is part of DrugUtilisation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,25 +31,22 @@
 #' library(DBI)
 #' library(duckdb)
 #' library(tibble)
-#' library(CohortProfiles)
-#' person_example <- tibble(
-#'   person_id = "1",
-#'   gender_concept_id = "8507",
-#'   year_of_birth = 2000,
-#'   month_of_birth = 06,
-#'   day_of_birth = 01
-#' )
-#' observation_period_example <- tibble(
-#'   observation_period_id = "1",
-#'   person_id = "1",
-#'   observation_period_start_date = as.Date("2010-01-01"),
-#'   observation_period_end_date = as.Date("2015-06-01")
-#' )
-#' cdm <- generateMockCohortProfilesDb(
-#'   person = person_example,
-#'   observation_period = observation_period_example
-#' )
-#' getOverlappingCohortSubjects(cdm, "1", "cohort", "2", "cohort", 0)
+#' cohort <- tibble::tibble(
+#' cohort_definition_id = c("1", "2","1", "2", "2"),
+#' subject_id = c("1", "1", "2", "2", "3"),
+#' cohort_start_date = c(
+#' as.Date("2010-01-01"), as.Date("2009-12-01"),
+#' as.Date("2010-01-01"), as.Date("2009-01-01"),
+#' as.Date("2010-01-01")), cohort_end_date = c(
+#' as.Date("2015-01-01"), as.Date("2013-01-01"),
+#' as.Date("2015-01-01"), as.Date("2009-01-02"),
+#' as.Date("2015-01-01")))
+#' cdm <- mockDrugUtilisation(
+#'   cohort = cohort)
+#' getOverlappingCohortSubjects(cdm = cdm, targetCohortId = "2",
+#' targetCohortTable = "cohort",
+#' interestCohortId = "1",
+#' interestCohortTable = "cohort", lookbackWindow = c(0,180))
 #' }
 #'
 getOverlappingCohortSubjects <- function(cdm, targetCohortId, targetCohortTable,
@@ -57,37 +54,57 @@ getOverlappingCohortSubjects <- function(cdm, targetCohortId, targetCohortTable,
   # checks
   errorMessage <- checkmate::makeAssertCollection()
   checkDbType(db = cdm, messageStore = errorMessage)
-  if (!is.null(cohortId1) &&
-      is.numeric(cohortId1)) {
-    cohortId <- as.character(cohortId1)
+  if (!is.null(targetCohortId) &&
+      is.numeric(targetCohortId)) {
+    cohortId <- as.character(targetCohortId)
   }
-  checkCharacter(cohortId1, messageStore = errorMessage)
-  if (!is.null(cohortId2) &&
-      is.numeric(cohortId2)) {
-    cohortId <- as.character(cohortId2)
+  checkCharacter(targetCohortId, messageStore = errorMessage)
+  if (!is.null(interestCohortId) &&
+      is.numeric(interestCohortId)) {
+    cohortId <- as.character(interestCohortId)
   }
-  checkCharacter(cohortId2, messageStore = errorMessage)
-  checkmate::check_true(cohortTable1 %in% names(cdm))
-  checkmate::check_true(cohortTable2 %in% names(cdm))
-  checkNumeric(lookbackDays, messageStore = errorMessage)
+  checkCharacter(interestCohortId, messageStore = errorMessage)
+  checkmate::check_true(targetCohortTable %in% names(cdm))
+  checkmate::check_true(interestCohortTable %in% names(cdm))
+  checkmate::assertNumeric(lookbackWindow, len = 2, add = errorMessage)
   checkmate::reportAssertions(collection = errorMessage)
 
-  cohort1 <- cdm[[cohortTable1]] %>%
-    dplyr::filter(.data$cohort_definition_id == .env$cohortId1)
+  cohort1 <- cdm[[targetCohortTable]] %>%
+    dplyr::filter(.data$cohort_definition_id == .env$targetCohortId) %>%
+    dplyr::rename("target_start_date" = "cohort_start_date") %>%
+    dplyr::rename("target_end_date" = "cohort_end_date")
 
-  cohort2 <- cdm[[cohortTable2]] %>%
-    dplyr::filter(.data$cohort_definition_id == .env$cohortId2)
 
-  # get rows in common based on subject_id and filter by cohort period
-  cohort1 %>%
-    dplyr::inner_join(cohort2, by = c("subject_id" = "subject_id")) %>%
-    dplyr::collect() %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(cohort_diff = min(abs(as.numeric(.data$cohort_start_date.x - .data$cohort_start_date.y)),
-                                    abs(as.numeric(.data$cohort_start_date.x - .data$cohort_end_date.y)))) %>%
-    dplyr::filter(.data$cohort_diff <= .env$lookbackDays) %>%
+  cohort2 <- cdm[[interestCohortTable]] %>%
+    dplyr::filter(.data$cohort_definition_id == .env$interestCohortId) %>%
+    dplyr::rename("interest_start_date" = "cohort_start_date") %>%
+    dplyr::rename("interest_end_date" = "cohort_end_date")
+
+
+  result <- cohort2 %>% dplyr::left_join(cohort1, by = "subject_id") %>%
+    dplyr::group_by(.data$subject_id) %>%
+    dplyr::mutate(min_start_date = min(.data$interest_start_date, na.rm = TRUE))%>%
+    dplyr::mutate(overlap_end_date = dbplyr::sql(sql_add_days(CDMConnector::dbms(attr(cdm, "dbcon")),
+                                                              -lookbackWindow[1], "min_start_date")),
+                  overlap_start_date = dbplyr::sql(sql_add_days(CDMConnector::dbms(attr(cdm, "dbcon")),
+                                                                -lookbackWindow[2], "min_start_date")),
+                  target_end_date_max = max(.data$target_end_date, na.rm = TRUE),
+                  target_start_date_min = min(.data$target_start_date, na.rm = TRUE)) %>%
+    dplyr::mutate(indicator =
+                    dplyr::case_when(
+                      is.na(.data$target_start_date) ~ 0,
+                      is.na(.data$target_end_date) ~ 0,
+                      .data$target_end_date_max < .data$overlap_start_date ~ 0,
+                      .data$target_start_date_min > .data$overlap_end_date ~ 0,
+                      TRUE ~ 1
+                    )) %>%
+    dplyr::rename(!!paste("overlap_", targetCohortTable, sep = "") := "indicator",
+                  "cohort_start_date" = "interest_start_date",
+                  "cohort_end_date" = "interest_end_date",
+                  "cohort_definition_id" = "cohort_definition_id.x") %>%
     dplyr::ungroup() %>%
-    dplyr::select(cohort_definition_id.x, subject_id, cohort_start_date.x, cohort_end_date.x, cohort_definition_id.y) %>%
-    setNames(names(.) %>% stringr::str_replace(".x", "")) %>%
-    setNames(names(.) %>% stringr::str_replace(".y", "2"))
+    dplyr::select("cohort_definition_id", "subject_id",
+                  "cohort_start_date", "cohort_end_date",
+                  paste("overlap_", targetCohortTable, sep = ""))
+  return(result)
 }
