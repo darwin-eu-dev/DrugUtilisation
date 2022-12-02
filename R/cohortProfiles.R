@@ -1,6 +1,6 @@
 
 #' @noRd
-getGender <- function(cdm,
+getSex <- function(cdm,
                       cohortTable,
                       cohortIds = NULL) {
   if (isTRUE(is.na(cohortIds))) {
@@ -16,21 +16,20 @@ getGender <- function(cdm,
 
   person <- cdm[["person"]] %>%
     dplyr::rename("subject_id" = "person_id") %>%
-    dplyr::semi_join(cohortDb, by = c("subject_id"))
+    dplyr::inner_join(
+      cohortDb %>% dplyr::select("subject_id") %>% dplyr::distinct(),
+      by = c("subject_id")
+    ) %>%
+    dplyr::mutate(sex = dplyr::case_when(
+      .data$gender_concept_id == 8507 ~ "Male",
+      .data$gender_concept_id == 8532 ~ "Female",
+      TRUE ~ as.character(NA)
+    )) %>%
+    dplyr::select("subject_id", "sex") %>%
+    dplyr::right_join(cohortDb, by = "subject_id") %>%
+    dplyr::select(dplyr::all_of(colnames(cohortDb)), "sex")
 
-  cohortDb <- cohortDb %>%
-    dplyr::left_join(
-      person %>%
-        dplyr::mutate(gender = dplyr::case_when(
-          .data$gender_concept_id == 8507 ~ "Male",
-          .data$gender_concept_id == 8532 ~ "Female",
-          TRUE ~ as.character(NA)
-        )) %>%
-        dplyr::select("subject_id", "gender"),
-      by = "subject_id"
-    )
-
-  return(cohortDb)
+  return(person)
 }
 
 #' @noRd
@@ -59,7 +58,8 @@ getAge <- function(cdm,
     dplyr::rename("subject_id" = "person_id") %>%
     dplyr::inner_join(
       cohortDb %>%
-        dplyr::select("subject_id", dplyr::all_of(ageAt)),
+        dplyr::select("subject_id", dplyr::all_of(ageAt)) %>%
+        dplyr::distinct(),
       by = "subject_id"
     )
 
@@ -101,15 +101,10 @@ getAge <- function(cdm,
       dateOfInterest = ageAt
     ))) %>%
     dplyr::select("subject_id", dplyr::all_of(ageAt), "age") %>%
+    dplyr::right_join(cohortDb, by = c("subject_id", ageAt)) %>%
+    dplyr::select(dplyr::all_of(colnames(cohortDb)), "age")
 
-
-  cohortDb <- cohortDb %>%
-    dplyr::left_join(
-      person,
-      by = toJoin
-    )
-
-  return(cohortDb)
+  return(person)
 }
 
 #' @noRd
@@ -128,29 +123,25 @@ getPriorHistory <- function(cdm,
     cohortDb <- cdm[[cohortTable]]
   }
 
-  variables <- colnames(cohortDb)
-
-  cohortDb  <- cdm[["observation_period"]] %>%
+  cohortDb <- cdm[["observation_period"]] %>%
     dplyr::select(
       "subject_id" = "person_id", "observation_period_start_date"
     ) %>%
     dplyr::inner_join(
       cohortDb %>%
-        dplyr::select("subject_id", dplyr::all_of(priorHistoryAt)),
+        dplyr::select("subject_id", dplyr::all_of(priorHistoryAt)) %>%
+        dplyr::distinct(),
       by = "subject_id"
     ) %>%
     dplyr::mutate(prior_history = CDMConnector::datediff(
       start = "observation_period_start_date",
       end = !!priorHistoryAt
     )) %>%
-    dplyr::select(
-      "subject_id", dplyr::all_of(priorHistoryAt), "prior_history"
-    ) %>%
     dplyr::right_join(
       cohortDb,
       by = c("subject_id", priorHistoryAt)
     ) %>%
-    dplyr::select(dplyr::all_of(variables), "prior_history")
+    dplyr::select(dplyr::all_of(colnames(cohortDb)), "prior_history")
 
   return(cohortDb)
 }
@@ -175,7 +166,7 @@ dateadd <- function(date, number, interval = "day") {
   checkmate::assertCharacter(interval, len = 1)
   checkmate::assertSubset(interval, choices = c("day", "year"))
   checkmate::assertCharacter(date, len = 1)
-  #checkmate::assertIntegerish(number)
+  # checkmate::assertIntegerish(number)
   dot <- get(".", envir = parent.frame())
   targetDialect <- CDMConnector::dbms(dot$src$con)
   sql <- glue::glue("DATEADD({interval}, {number}, {date})")
