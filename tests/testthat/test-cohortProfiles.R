@@ -88,13 +88,13 @@ test_that("test getPriorHistory", {
   resAddPriorHistory <- getPriorHistory(cdm, "cohort1")
   expect_true(
     resAddPriorHistory %>%
-      filter(cohort_definition_id == 1) %>%
+      dplyr::filter(cohort_definition_id == 1) %>%
       dplyr::tally() %>%
       dplyr::pull("n") == 2
   )
   expect_true(
     resAddPriorHistory %>%
-      filter(cohort_definition_id == 2) %>%
+      dplyr::filter(cohort_definition_id == 2) %>%
       dplyr::tally() %>%
       dplyr::pull("n") == 5
   )
