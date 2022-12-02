@@ -162,4 +162,14 @@ getStratification <- function(cdm,
     errorMessage$push("No counts in the targetCohortId")
   }
   checkmate::reportAssertions(collection = errorMessage)
+
+  #
+  cdm[["temp"]] <- targetCohort %>%
+    dplyr::filter(.data$cohort_definition_id == .env$targetCohortId)
+  cdm[["temp"]] <- getGender(cdm, "temp")
+  targetCohort <- getAge(cdm, "temp")
+
+
+
+
 }
