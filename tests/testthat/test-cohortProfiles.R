@@ -40,9 +40,16 @@ test_that("test getAge", {
     c(9, 30, 20, 10, 20, 23, 23)))
   expect_true(all(resNoImpose %>% dplyr::pull("age") ==
     c(9, 30, 19, 9, 20, 23, 23)))
-  expect_true(getAge(cdm, "cohort1", cohortIds = 1) %>% tally() %>% pull() == 2)
-  expect_true(getAge(cdm, "cohort1", cohortIds = 2) %>% tally() %>% pull() == 5)
-
+  expect_true(
+    getAge(cdm, "cohort1", cohortIds = 1) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 2
+  )
+  expect_true(
+    getAge(cdm, "cohort1", cohortIds = 2) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 5
+  )
 })
 
 test_that("test getPriorHistory", {
@@ -93,7 +100,7 @@ test_that("test getPriorHistory", {
   )
   expect_true(
     all(resAddPriorHistory %>% dplyr::pull("prior_history") ==
-          c(0, 7305, 4462, 1, 4724, 5404, 4784))
+      c(0, 7305, 4462, 1, 4724, 5404, 4784))
   )
   expect_true(
     getPriorHistory(cdm, "cohort1", cohortIds = 1) %>%
@@ -105,7 +112,6 @@ test_that("test getPriorHistory", {
       dplyr::tally() %>%
       dplyr::pull() == 5
   )
-
 })
 
 test_that("test getSex", {
@@ -143,8 +149,8 @@ test_that("test getSex", {
 
   expect_true(
     all(getSex(cdm, "cohort1") %>%
-          dplyr::pull("sex") %in%
-          c("Female", "Male", NA))
+      dplyr::pull("sex") %in%
+      c("Female", "Male", NA))
   )
   expect_true(
     getSex(cdm, "cohort1") %>%
@@ -154,8 +160,8 @@ test_that("test getSex", {
   )
   expect_true(
     all(getSex(cdm, "cohort1") %>%
-          dplyr::filter(!is.na(.data$sex)) %>%
-          dplyr::pull("sex") == c("Female", "Male", "Female", "Female"))
+      dplyr::filter(!is.na(.data$sex)) %>%
+      dplyr::pull("sex") == c("Female", "Male", "Female", "Female"))
   )
   expect_true(
     getSex(cdm, "cohort1", cohortIds = 1) %>%
@@ -167,5 +173,4 @@ test_that("test getSex", {
       dplyr::tally() %>%
       dplyr::pull() == 5
   )
-
 })
