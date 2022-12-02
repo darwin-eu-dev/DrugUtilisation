@@ -33,7 +33,6 @@
 #' @export
 #'
 #' @examples
-
 getIndication <- function(cdm,
                           targetCohortName,
                           targetCohortDefinitionIds,
@@ -41,8 +40,7 @@ getIndication <- function(cdm,
                           indicationDefinitionSet,
                           indicationGap,
                           unknownIndicationTables = c("condition_occurrence", "observation"),
-                          verbose = FALSE
-                          ) {
+                          verbose = FALSE) {
   get_start_date <- list(
     "observation_period" = "observation_period_start_date",
     "visit_occurrence" = "visit_start_date",
@@ -57,15 +55,16 @@ getIndication <- function(cdm,
     "specimen" = "specimen_date"
   )
 
-  ##checks
+  ## checks
   messageStore <- checkmate::makeAssertCollection()
-  #check for cdm have the correct classes
+  # check for cdm have the correct classes
   checkmate::assertClass(cdm, classes = "cdm_reference", add = messageStore)
 
-  #check targetCohortName type is character of length 1
+  # check targetCohortName type is character of length 1
   checkmate::assertCharacter(targetCohortName,
-                             len = 1,
-                             add = messageStore)
+    len = 1,
+    add = messageStore
+  )
 
   # check targetCohortName table exist
   cdm_targetCohortName_exists <-
@@ -76,15 +75,17 @@ getIndication <- function(cdm,
     messageStore$push("- table `targetCohortName` is not found")
   }
 
-  #check targetCohortDefinitionIds is a vector of integers
+  # check targetCohortDefinitionIds is a vector of integers
   checkmate::assertIntegerish(targetCohortDefinitionIds,
-                              null.ok = TRUE,
-                              add = messageStore)
+    null.ok = TRUE,
+    add = messageStore
+  )
 
-  #check indicationCohortName type is character of length 1
+  # check indicationCohortName type is character of length 1
   checkmate::assertCharacter(indicationCohortName,
-                             len = 1,
-                             add = messageStore)
+    len = 1,
+    add = messageStore
+  )
 
   # check indicationCohortName table exist
   cdm_indicationCohortName_exists <-
@@ -97,10 +98,12 @@ getIndication <- function(cdm,
 
   # indicationDefinitionSet check is a tibble of contain two columns indication id and indication name
   checkmate::assertTibble(indicationDefinitionSet,
-                          ncols = 2, add = messageStore)
+    ncols = 2, add = messageStore
+  )
   checkmate::assertSubset(
     colnames(indicationDefinitionSet),
-    c("indication_id", "indication_name"), add = messageStore
+    c("indication_id", "indication_name"),
+    add = messageStore
   )
 
   # indicationGap check if is a vector of integer or NA
@@ -112,7 +115,8 @@ getIndication <- function(cdm,
 
   # unknownIndicationTables is vector of characters
   checkmate::assertCharacter(unknownIndicationTables,
-                          null.ok = TRUE, add = messageStore)
+    null.ok = TRUE, add = messageStore
+  )
 
   # unknownIndicationTables is only contain elements in get_start_date
   if (is.null(unknownIndicationTables) != TRUE) {
@@ -122,17 +126,15 @@ getIndication <- function(cdm,
   checkmate::reportAssertions(collection = messageStore)
 
 
-  #warning for different cohort start and end date in indicationCohortName
+  # warning for different cohort start and end date in indicationCohortName
   if (cdm[[targetCohortName]] %>%
-
-      dplyr::mutate(equal = dplyr::if_else(.data$cohort_start_date == .data$cohort_end_date, 0, 1)) %>%
-
-      dplyr::pull("equal") %>%
-      sum() > 0) {
+    dplyr::mutate(equal = dplyr::if_else(.data$cohort_start_date == .data$cohort_end_date, 0, 1)) %>%
+    dplyr::pull("equal") %>%
+    sum() > 0) {
     warning("only cohort_start_date will be taken into account to compute indication")
   }
 
-  #define result as a list
+  # define result as a list
   result <- list()
   result$indication <- list()
 
@@ -143,7 +145,7 @@ getIndication <- function(cdm,
     target_db <- cdm[[targetCohortName]]
     indication_db <- cdm[[indicationCohortName]]
 
-    #Filter indication_db by id in indicationDefinitionSet
+    # Filter indication_db by id in indicationDefinitionSet
     indicationDefinitionSet_id <- indicationDefinitionSet$indication_id
     indication_db <- indication_db %>%
       dplyr::filter(.data$cohort_definition_id %in% .env$indicationDefinitionSet_id)
@@ -151,7 +153,6 @@ getIndication <- function(cdm,
     if (!is.null(targetCohortDefinitionIds)) {
       target_db <- target_db %>%
         dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortDefinitionIds)
-
     }
 
     target_db <- target_db %>%
@@ -163,21 +164,22 @@ getIndication <- function(cdm,
               dplyr::rename("indication_start_date" = "cohort_start_date") %>%
               dplyr::select("indication_id", "subject_id", "indication_start_date"),
             by = c("subject_id")
-          ) %>% dplyr::mutate(dif_time_indication =  dbplyr::sql(
+          ) %>% dplyr::mutate(dif_time_indication = dbplyr::sql(
             sqlDiffDays(
               CDMConnector::dbms(attr(cdm, "dbcon")),
               "cohort_start_date",
               "indication_start_date"
-
             )
           )) %>%
-
           dplyr::filter(
-            .data$dif_time_indication <= 0) %>%
-
-          dplyr::select(-"dif_time_indication",-"indication_start_date") %>%
+            .data$dif_time_indication <= 0
+          ) %>%
+          dplyr::select(-"dif_time_indication", -"indication_start_date") %>%
           dplyr::distinct(),
-        by = c()
+        by = c(
+          "cohort_definition_id", "subject_id", "cohort_start_date",
+          "cohort_end_date"
+        )
       ) %>%
       dplyr::compute()
 
@@ -196,27 +198,30 @@ getIndication <- function(cdm,
 
           target_db_unknown <- target_db_unknown %>%
             dplyr::left_join(table_indication,
-                             by = c("subject_id" = "person_id")) %>%
+              by = c("subject_id" = "person_id")
+            ) %>%
             dplyr::mutate(dif_time_unknown_indication = dbplyr::sql(
               sqlDiffDays(
                 CDMConnector::dbms(attr(cdm, "dbcon")),
                 "cohort_start_date",
                 "unknown_indication_start_date"
-
               )
             )) %>%
-            dplyr::filter(.data$dif_time_unknown_indication <= 0)  %>%
-            dplyr::select(-"dif_time_unknown_indication",
-                          -"unknown_indication_start_date") %>%
+            dplyr::filter(.data$dif_time_unknown_indication <= 0) %>%
+            dplyr::select(
+              -"dif_time_unknown_indication",
+              -"unknown_indication_start_date"
+            ) %>%
             dplyr::distinct() %>%
             dplyr::compute()
 
 
           target_db <- target_db %>%
             dplyr::anti_join(target_db_unknown,
-                             by = c("subject_id", "cohort_start_date")) %>%
+              by = c("subject_id", "cohort_start_date")
+            ) %>%
             dplyr::union(target_db_unknown %>%
-                           dplyr::mutate(indication_id = 0)) %>%
+              dplyr::mutate(indication_id = 0)) %>%
             dplyr::compute()
         }
       }
@@ -224,7 +229,8 @@ getIndication <- function(cdm,
 
 
     target_db <-
-      target_db %>% dplyr::mutate(indication_id = ifelse(is.na(.data$indication_id),-1, .data$indication_id)) %>%
+      target_db %>%
+      dplyr::mutate(indication_id = ifelse(is.na(.data$indication_id), -1, .data$indication_id)) %>%
       dplyr::inner_join(
         indicationDefinitionSet %>%
           dplyr::select("indication_id") %>%
@@ -236,13 +242,12 @@ getIndication <- function(cdm,
 
 
     result$indication[["Any"]] <- target_db
-
   } else {
     for (gap in indicationGap) {
       # define variable in the function from inputs
       target_db <- cdm[[targetCohortName]]
       indication_db <- cdm[[indicationCohortName]]
-      #Filter indication_db by id in indicationDefinitionSet
+      # Filter indication_db by id in indicationDefinitionSet
       indicationDefinitionSet_id <- indicationDefinitionSet$indication_id
       indication_db <- indication_db %>%
         dplyr::filter(.data$cohort_definition_id %in% .env$indicationDefinitionSet_id)
@@ -262,7 +267,7 @@ getIndication <- function(cdm,
                 dplyr::rename("indication_start_date" = "cohort_start_date") %>%
                 dplyr::select("indication_id", "subject_id", "indication_start_date"),
               by = c("subject_id")
-            ) %>% dplyr::mutate(dif_time_indication =  dbplyr::sql(
+            ) %>% dplyr::mutate(dif_time_indication = dbplyr::sql(
               sqlDiffDays(
                 CDMConnector::dbms(attr(cdm, "dbcon")),
                 "indication_start_date",
@@ -270,14 +275,17 @@ getIndication <- function(cdm,
               )
             )) %>%
             dplyr::filter(
-              .data$dif_time_indication <= .env$gap) %>%
-
+              .data$dif_time_indication <= .env$gap
+            ) %>%
             dplyr::filter(
-              .data$dif_time_indication >= 0) %>%
-
-            dplyr::select(-"dif_time_indication",-"indication_start_date") %>%
+              .data$dif_time_indication >= 0
+            ) %>%
+            dplyr::select(-"dif_time_indication", -"indication_start_date") %>%
             dplyr::distinct(),
-          by = c()
+          by = c(
+            "cohort_definition_id", "subject_id", "cohort_start_date",
+            "cohort_end_date"
+          )
         ) %>%
         dplyr::compute()
 
@@ -296,7 +304,8 @@ getIndication <- function(cdm,
 
             target_db_unknown <- target_db_unknown %>%
               dplyr::left_join(table_indication,
-                               by = c("subject_id" = "person_id")) %>%
+                by = c("subject_id" = "person_id")
+              ) %>%
               dplyr::mutate(dif_time_unknown_indication = dbplyr::sql(
                 sqlDiffDays(
                   CDMConnector::dbms(attr(cdm, "dbcon")),
@@ -305,28 +314,33 @@ getIndication <- function(cdm,
                 )
               )) %>%
               dplyr::filter(
-                .data$dif_time_unknown_indication <= .env$gap) %>%
+                .data$dif_time_unknown_indication <= .env$gap
+              ) %>%
               dplyr::filter(
-                  .data$dif_time_unknown_indication >= 0) %>%
-
-              dplyr::select(-"dif_time_unknown_indication",
-                            -"unknown_indication_start_date") %>%
+                .data$dif_time_unknown_indication >= 0
+              ) %>%
+              dplyr::select(
+                -"dif_time_unknown_indication",
+                -"unknown_indication_start_date"
+              ) %>%
               dplyr::distinct() %>%
               dplyr::compute()
 
 
             target_db <- target_db %>%
               dplyr::anti_join(target_db_unknown,
-                               by = c("subject_id", "cohort_start_date")) %>%
+                by = c("subject_id", "cohort_start_date")
+              ) %>%
               dplyr::union(target_db_unknown %>%
-                             dplyr::mutate(indication_id = 0)) %>%
+                dplyr::mutate(indication_id = 0)) %>%
               dplyr::compute()
           }
         }
       }
 
       target_db <-
-        target_db %>% dplyr::mutate(indication_id = ifelse(is.na(.data$indication_id),-1, .data$indication_id)) %>%
+        target_db %>%
+        dplyr::mutate(indication_id = ifelse(is.na(.data$indication_id), -1, .data$indication_id)) %>%
         dplyr::inner_join(
           indicationDefinitionSet %>%
             dplyr::select("indication_id") %>%
@@ -338,7 +352,6 @@ getIndication <- function(cdm,
 
 
       result$indication[[as.character(gap)]] <- target_db
-
     }
   }
 
@@ -346,7 +359,7 @@ getIndication <- function(cdm,
   indicationDefinitionSet <- indicationDefinitionSet %>%
     dplyr::select("indication_id", "indication_name") %>%
     rbind(dplyr::tibble(
-      indication_id = c(0,-1),
+      indication_id = c(0, -1),
       indication_name = c("Unkown indication", "No indication")
     ))
 
