@@ -1,70 +1,110 @@
 # THE FOLLOWONG ERRORS MUST BE IMPROVED TO PROVIDE MORE ACCURATE INFORMATION
 test_that("expected errors on inputs", {
-  # intantiate 2 cdm, cdm1 with different types of variables, cdm2 with only
-  # numeric variables
-  cdm1 <- mockDrugUtilisation(person = dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 1),
-    cohort_start_date = as.Date(c(
-      "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-    )),
-    number_x = c(1, 2, 3, 6),
-    carcola = c(5, 6, 9, 7),
-    piscina = c(TRUE, FALSE, TRUE, FALSE),
-    cara = c("a", "b", "b", "a")
-  ))
-  cdm2 <- mockDrugUtilisation(person = dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 1),
-    cohort_start_date = as.Date(c(
-      "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-    )),
-    number_x = c(1, 2, 3, 6),
-    carcola = c(5, 6, 9, 7)
-  ))
+  # condition_occurrence is going to be the strataCohortTable, person the
+  # doseTable
+  cdm <- mockDrugUtilisation(
+    condition_occurrence = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 1, 2),
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      ))
+    ),
+    person = dplyr::tibble(
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      )),
+      number_x = c(1, 2, 3, 6),
+      carcola = c(5, 6, 9, 7),
+      piscina = c(TRUE, FALSE, TRUE, FALSE),
+      cara = c("a", "b", "b", "a")
+    )
+  )
   # no inputs
   expect_error(result <- summariseDoseTable())
   # only cdm
   expect_error(result <- summariseDoseTable(
-    cdm = cdm1,
+    cdm = cdm,
   ))
-  # only cdm & doseCohortName with non numeric should fail
+  # only cdm only dose table should fail
   expect_error(result <- summariseDoseTable(
-    cdm = cdm1, doseCohortName = "person"
+    cdm = cdm, doseTableName = "person"
   ))
-  # only cdm & doseCohortName works with only numeric
-  result <- summariseDoseTable(
-    cdm = cdm2, doseCohortName = "person"
-  )
-  expect_equal(summariseDoseTable(
-    cdm = cdm2, doseCohortName = "person"
-  ), summariseDoseTable(
-    cdm = cdm1, doseCohortName = "person", variables = c("number_x", "carcola")
+  # only cdm only strata table should fail
+  expect_error(result <- summariseDoseTable(
+    cdm = cdm, strataCohortName = "condition_occurrence"
   ))
   # expect error if cdm is not a cdm_ref
   expect_error(summariseDoseTable(
-    cdm = 1, doseCohortName = "person", variables = c("number_x", "carcola")
+    cdm = cdm,
+    strataCohortName = "condition_occurrence",
+    doseTableName = "person"
   ))
-  # expect error if doseCohortName is not a character
+  # NO ERROR
+  expect_no_error(summariseDoseTable(
+    cdm = cdm,
+    strataCohortName = "condition_occurrence",
+    doseTableName = "person",
+    variables = c("number_x", "carcola")
+  ))
+  # expect error if cdm is not a cdm_ref
   expect_error(summariseDoseTable(
-    cdm = cdm, doseCohortName = 1, variables = c("number_x", "carcola")
+    cdm = 1,
+    strataCohortName = "condition_occurrence",
+    doseTableName = "person",
+    variables = c("number_x", "carcola")
   ))
-  # expect error if doseCohortName is a vector
+  # expect error if doseTableName is not a character
   expect_error(summariseDoseTable(
-    cdm = cdm, doseCohortName = c("person", "person"), variables = c("number_x", "carcola")
+    cdm = cdm,
+    strataCohortName = "condition_occurrence",
+    doseTableName = 1,
+    variables = c("number_x", "carcola")
   ))
-  # expect error if aggregationCohortName is not a character
+  # expect error if strataCohortName is not a character
   expect_error(summariseDoseTable(
-    cdm = cdm, doseCohortName = "x", variables = c("number_x", "carcola")
+    cdm = cdm,
+    strataCohortName = 1,
+    doseTableName = "person",
+    variables = c("number_x", "carcola")
   ))
-  # expect error if aggregationCohortName is a vector
-  # expect error if aggregationCohortName does not contains the required fields
+  # expect error if doseTableName is a vector
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    strataCohortName = c("condition_occurrence", "drug_exposure"),
+    doseTableName = "person",
+    variables = c("number_x", "carcola")
+  ))
+  # expect error if doseTableName is a vector
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    strataCohortName = "condition_occurrence",
+    doseTableName = c("person", "drug_exposure"),
+    variables = c("number_x", "carcola")
+  ))
+  # expect error if doseTableName is not a contained in cdm
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    strataCohortName = "condition_occurrence",
+    doseTableName = "x",
+    variables = c("number_x", "carcola")
+  ))
+  # expect error if strataCohortName is not a contained in cdm
+  expect_error(summariseDoseTable(
+    cdm = cdm,
+    strataCohortName = "x",
+    doseTableName = "person",
+    variables = c("number_x", "carcola")
+  ))
+  # expect error if strataCohortName is a vector
+  # expect error if strataCohortName does not contains the required fields
   # expect error if cohortId is not numeric
   # expect error if variable is not character
   # expect error if variable contains a non numeric variable
@@ -77,22 +117,36 @@ test_that("expected errors on inputs", {
 })
 
 test_that("check output format", {
-  cdm <- mockDrugUtilisation(person = dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 1),
-    cohort_start_date = as.Date(c(
-      "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-    )),
-    number_x = c(1, 2, 3, 6),
-    carcola = c(5, 6, 9, 7),
-    piscina = c(TRUE, FALSE, TRUE, FALSE),
-    cara = c("a", "b", "b", "a")
-  ))
+  cdm <- mockDrugUtilisation(
+    condition_occurrence = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 1, 2),
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      ))
+    ),
+    person = dplyr::tibble(
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      )),
+      number_x = c(1, 2, 3, 6),
+      carcola = c(5, 6, 9, 7),
+      piscina = c(TRUE, FALSE, TRUE, FALSE),
+      cara = c("a", "b", "b", "a")
+    )
+  )
   result <- summariseDoseTable(
-    cdm = cdm, doseCohortName = "person", variables = c("number_x", "carcola")
+    cdm = cdm,
+    strataCohortName = "condition_occurrence",
+    doseTableName = "person",
+    variables = c("number_x", "carcola")
   )
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
   expect_true(length(result) == 4)
@@ -107,188 +161,90 @@ test_that("check all estimates", {
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "std"
   )
-  cdm <- mockDrugUtilisation(person = dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 1),
-    cohort_start_date = as.Date(c(
-      "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-    )),
-    number_x = c(1, 2, 3, 6),
-    carcola = c(5, 6, 9, 7),
-    piscina = c(TRUE, FALSE, TRUE, FALSE),
-    cara = c("a", "b", "b", "a")
-  ))
+  cdm <- mockDrugUtilisation(
+    condition_occurrence = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 1, 2),
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      ))
+    ),
+    person = dplyr::tibble(
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      )),
+      number_x = c(1, 2, 3, 6),
+      carcola = c(5, 6, 9, 7),
+      piscina = c(TRUE, FALSE, TRUE, FALSE),
+      cara = c("a", "b", "b", "a")
+    )
+  )
   for (k in 1:length(all_estimates)) {
     expect_no_error(res <- summariseDoseTable(
-      cdm = cdm, doseCohortName = "person", cohortId = 1,
-      variables = c("number_x", "carcola"), estimates = all_estimates[k]
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      cohortId = 1,
+      variables = c("number_x", "carcola"),
+      estimates = all_estimates[k]
     ))
     expect_true(nrow(res[res$variable == c("number_x"), ]) == 1)
     expect_true(res$estimate[res$variable == c("number_x")] == all_estimates[k])
     expect_true(nrow(res[res$variable == c("carcola"), ]) == 1)
     expect_true(res$estimate[res$variable == c("carcola")] == all_estimates[k])
   }
-  expect_no_error(result <- summariseDoseTable(
-    cdm = cdm, doseCohortName = "person",
-    variables = c("number_x", "carcola"), estimates = all_estimates
-  ))
-})
-
-test_that("check all estimates", {
-  cdm <- mockDrugUtilisation(
-    person = dplyr::tibble(
-      subject_id = c(1, 1, 2, 1),
-      cohort_start_date = as.Date(c(
-        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-      )),
-      cohort_end_date = as.Date(c(
-        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-      )),
-      number_x = c(1, 2, 3, 6),
-      carcola = c(5, 6, 9, 7)
-    ),
-    condition_occurrence = dplyr::tibble(
-      cohort_definition_id = c(1, 3),
-      subject_id = c(1, 1),
-      cohort_start_date = as.Date(c("2020-01-01", "2020-01-01")),
-      cohort_end_date = as.Date(c("2020-01-10", "2020-01-11"))
-    )
-  )
-  # dose does not contain cohort_definition_id
-  # N dose N aggregation N cohort --> error
-  expect_error(summariseDoseTable(
-    cdm = cdm
-  ))
-  # N dose N aggregation Y cohort --> error
-  expect_error(summariseDoseTable(
+  expect_no_error(res <- summariseDoseTable(
     cdm = cdm,
-    cohortId = 1
-  ))
-  # N dose Y aggregation N cohort --> error
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    aggregationCohortName = "condition_occurrence"
-  ))
-  # N dose Y aggregation Y cohort --> error
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    aggregationCohortName = "condition_occurrence",
-    cohortId = 1
-  ))
-  # Y dose N aggregation N cohort --> okay
-  expect_no_error(summariseDoseTable(
-    cdm = cdm,
-    doseCohortName = "person"
-  ))
-  # Y dose N aggregation Y cohort --> warning
-  expect_warning(summariseDoseTable(
-    cdm = cdm,
-    doseCohortName = "person",
-    cohortId = 2
-  ))
-  # Y dose Y aggregation N cohort --> okay
-  expect_no_error(summariseDoseTable(
-    cdm = cdm,
-    doseCohortName = "person",
-    aggregationCohortName = "condition_occurrence"
-  ))
-  # Y dose Y aggregation Y cohort --> okay
-  expect_no_error(summariseDoseTable(
-    cdm = cdm,
-    doseCohortName = "person",
-    aggregationCohortName = "condition_occurrence",
-    cohortId = 1
-  ))
-  # dose does contains cohort_definition_id
-  cdm <- mockDrugUtilisation(
-    person = dplyr::tibble(
-      cohort_definition_id = c(1, 2, 1, 3),
-      subject_id = c(1, 1, 2, 1),
-      cohort_start_date = as.Date(c(
-        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-      )),
-      cohort_end_date = as.Date(c(
-        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-      )),
-      number_x = c(1, 2, 3, 6),
-      carcola = c(5, 6, 9, 7)
-    ),
-    condition_occurrence = dplyr::tibble(
-      cohort_definition_id = c(1, 3),
-      subject_id = c(1, 1),
-      cohort_start_date = as.Date(c("2020-01-01", "2020-01-01")),
-      cohort_end_date = as.Date(c("2020-01-10", "2020-01-11"))
-    )
-  )
-  # N dose N aggregation N cohort --> error
-  expect_error(summariseDoseTable(
-    cdm = cdm
-  ))
-  # N dose N aggregation Y cohort --> error
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    cohortId = 1
-  ))
-  # N dose Y aggregation N cohort --> error
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    aggregationCohortName = "condition_occurrence"
-  ))
-  # N dose Y aggregation Y cohort --> error
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    aggregationCohortName = "condition_occurrence",
-    cohortId = 1
-  ))
-  # Y dose N aggregation N cohort --> okay
-  expect_no_error(summariseDoseTable(
-    cdm = cdm,
-    doseCohortName = "person"
-  ))
-  # Y dose N aggregation Y cohort --> okay
-  expect_no_error(summariseDoseTable(
-    cdm = cdm,
-    doseCohortName = "person",
-    cohortId = 2
-  ))
-  # Y dose Y aggregation N cohort --> warning
-  expect_warning(summariseDoseTable(
-    cdm = cdm,
-    doseCohortName = "person",
-    aggregationCohortName = "condition_occurrence"
-  ))
-  # Y dose Y aggregation Y cohort --> warning
-  expect_warning(summariseDoseTable(
-    cdm = cdm,
-    doseCohortName = "person",
-    aggregationCohortName = "condition_occurrence",
-    cohortId = 1
+    strataCohortName = "condition_occurrence",
+    doseTableName = "person",
+    cohortId = 1,
+    variables = c("number_x", "carcola"),
+    estimates = all_estimates
   ))
 })
 
 test_that("check obscure counts", {
-  cdm1 <- mockDrugUtilisation(person = dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 1),
-    cohort_start_date = as.Date(c(
-      "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-    )),
-    number_x = c(1, 2, 3, 6),
-    carcola = c(5, 6, 9, 7),
-    piscina = c(TRUE, FALSE, TRUE, FALSE),
-    cara = c("a", "b", "b", "a")
-  ))
+  cdm <- mockDrugUtilisation(
+    condition_occurrence = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 1, 2),
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      ))
+    ),
+    person = dplyr::tibble(
+      subject_id = c(1, 1, 2, 1),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+      )),
+      number_x = c(1, 2, 3, 6),
+      carcola = c(5, 6, 9, 7),
+      piscina = c(TRUE, FALSE, TRUE, FALSE),
+      cara = c("a", "b", "b", "a")
+    )
+  )
   # expect obscure for cohort_id = 1 when minimumCellCounts >= 4
   expect_true(
     summariseDoseTable(
-      cdm = cdm1, doseCohortName = "person", cohortId = 1,
-      variables = c("number_x", "carcola"), minimumCellCounts = 3
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      cohortId = 1,
+      variables = c("number_x", "carcola"),
+      minimumCellCounts = 3
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -296,8 +252,12 @@ test_that("check obscure counts", {
   )
   expect_true(
     summariseDoseTable(
-      cdm = cdm1, doseCohortName = "person", cohortId = 1,
-      variables = c("number_x", "carcola"), minimumCellCounts = 4
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      cohortId = 1,
+      variables = c("number_x", "carcola"),
+      minimumCellCounts = 4
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -306,8 +266,12 @@ test_that("check obscure counts", {
   # expect obscure for cohort_id = 2 when minimumCellCounts >= 2
   expect_true(
     summariseDoseTable(
-      cdm = cdm1, doseCohortName = "person", cohortId = 2,
-      variables = c("number_x", "carcola"), minimumCellCounts = 1
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      cohortId = 2,
+      variables = c("number_x", "carcola"),
+      minimumCellCounts = 1
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -315,8 +279,12 @@ test_that("check obscure counts", {
   )
   expect_true(
     summariseDoseTable(
-      cdm = cdm1, doseCohortName = "person", cohortId = 2,
-      variables = c("number_x", "carcola"), minimumCellCounts = 2
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      cohortId = 2,
+      variables = c("number_x", "carcola"),
+      minimumCellCounts = 2
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -326,7 +294,10 @@ test_that("check obscure counts", {
   # obscured. If it is 4 both cohorts are obscured
   expect_true(
     summariseDoseTable(
-      cdm = cdm1, doseCohortName = "person", variables = c("number_x", "carcola"),
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      variables = c("number_x", "carcola"),
       minimumCellCounts = 1
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -335,7 +306,10 @@ test_that("check obscure counts", {
   )
   expect_true(
     summariseDoseTable(
-      cdm = cdm1, doseCohortName = "person", variables = c("number_x", "carcola"),
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      variables = c("number_x", "carcola"),
       minimumCellCounts = 2
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -344,7 +318,10 @@ test_that("check obscure counts", {
   )
   expect_true(
     summariseDoseTable(
-      cdm = cdm1, doseCohortName = "person", variables = c("number_x", "carcola"),
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      variables = c("number_x", "carcola"),
       minimumCellCounts = 3
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -353,7 +330,10 @@ test_that("check obscure counts", {
   )
   expect_true(
     summariseDoseTable(
-      cdm = cdm1, doseCohortName = "person", variables = c("number_x", "carcola"),
+      cdm = cdm,
+      strataCohortName = "condition_occurrence",
+      doseTableName = "person",
+      variables = c("number_x", "carcola"),
       minimumCellCounts = 4
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
