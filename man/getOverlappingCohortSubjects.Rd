@@ -16,15 +16,15 @@ getOverlappingCohortSubjects(
 \arguments{
 \item{cdm}{CDMConnector CDM reference object}
 
-\item{targetCohortId}{id of the first cohort}
+\item{targetCohortId}{id or list of ids, of the target cohort, including information we want to check our cohort against}
 
-\item{targetCohortTable}{name of the first cohort table}
+\item{targetCohortTable}{name of the target cohort table}
 
-\item{interestCohortId}{id of the second cohort}
+\item{interestCohortId}{id or list of ids, of the cohort we are interested in checking the prior history of each patient}
 
-\item{interestCohortTable}{name of the second cohort table}
+\item{interestCohortTable}{name of the interest cohort table}
 
-\item{lookbackWindow}{lookback period in days}
+\item{lookbackWindow}{lookback period window in days, a list consist of two numbers}
 }
 \value{
 a tibble describing if the people in cohort1 where in cohort2 at that time (and some specified lookback period).
@@ -38,21 +38,27 @@ library(DBI)
 library(duckdb)
 library(tibble)
 cohort <- tibble::tibble(
-cohort_definition_id = c("1", "2","1", "2", "2"),
-subject_id = c("1", "1", "2", "2", "3"),
-cohort_start_date = c(
-as.Date("2010-01-01"), as.Date("2009-12-01"),
-as.Date("2010-01-01"), as.Date("2009-01-01"),
-as.Date("2010-01-01")), cohort_end_date = c(
-as.Date("2015-01-01"), as.Date("2013-01-01"),
-as.Date("2015-01-01"), as.Date("2009-01-02"),
-as.Date("2015-01-01")))
+  cohort_definition_id = c("1", "2", "1", "2", "2"),
+  subject_id = c("1", "1", "2", "2", "3"),
+  cohort_start_date = c(
+    as.Date("2010-01-01"), as.Date("2009-12-01"),
+    as.Date("2010-01-01"), as.Date("2009-01-01"),
+    as.Date("2010-01-01")
+  ), cohort_end_date = c(
+    as.Date("2015-01-01"), as.Date("2013-01-01"),
+    as.Date("2015-01-01"), as.Date("2009-01-02"),
+    as.Date("2015-01-01")
+  )
+)
 cdm <- mockDrugUtilisation(
-  cohort = cohort)
-getOverlappingCohortSubjects(cdm = cdm, targetCohortId = "2",
-targetCohortTable = "cohort",
-interestCohortId = "1",
-interestCohortTable = "cohort", lookbackWindow = c(0,180))
+  cohort = cohort
+)
+getOverlappingCohortSubjects(
+  cdm = cdm, targetCohortId = "2",
+  targetCohortTable = "cohort",
+  interestCohortId = "1",
+  interestCohortTable = "cohort", lookbackWindow = c(0, 180)
+)
 }
 
 }
