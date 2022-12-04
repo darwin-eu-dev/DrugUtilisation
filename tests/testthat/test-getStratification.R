@@ -116,10 +116,16 @@ test_that("test initial errors", {
     indexYearGroup = list(100, c(10:20), as.numeric(NA)),
     targetCohortId = 1
   ))
-  x <- getStratification(
+  expect_error(getStratification(
     cdm = cdm,
     targetCohortName = "cohort1",
     indexYearGroup = list(100, c(10:20), c(20, 45)),
+    targetCohortId = 1
+  ))
+  x <- getStratification(
+    cdm = cdm,
+    targetCohortName = "cohort1",
+    indexYearGroup = list(100, c(10, 20), c(20, 45)),
     targetCohortId = 1
   )
 })

@@ -119,6 +119,14 @@ getStratification <- function(cdm,
       any.missing = FALSE,
       add = errorMessage
     )
+    for (k in 1:length(indexYearGroup)) {
+      if (length(indexYearGroup[[k]]) > 2) {
+        errorMessage$push(paste0(
+          "Length of indexYear groups should be 1 ",
+          "(only one year) or 2 (a period: provide min and max)"
+        ))
+      }
+    }
   }
   if (!is.null(indicationTable)) {
     if (!all(unlist(lapply(indicationTable, function(x) {
@@ -142,6 +150,7 @@ getStratification <- function(cdm,
   ) %in% colnames(targetCohort)),
   add = errorMessage
   )
+  checkmate::assertTRUE(length(colnames(targetCohort)) == 4, add = errorMessage)
   if (is.null(targetCohortId)) {
     targetCohortId <- targetCohort %>%
       dplyr::select("cohort_definition_id") %>%
@@ -165,24 +174,202 @@ getStratification <- function(cdm,
 
   # set default options
   if (is.null(sex)) {
-    sex = "Both"
+    sex <- "Both"
   }
   if (is.null(ageGroup)) {
-    ageGroup = list(c(0,150))
+    ageGroup <- list(c(0, 150))
   }
-  if (is.null(indexYearGroup)){
+  if (is.null(indexYearGroup)) {
+    indexYearGroup <- list(c(
+      targetCohort %>%
+        dplyr::pull("cohort_start_date") %>%
+        lubridate::year() %>%
+        base::min(),
+      targetCohort %>%
+        dplyr::pull("cohort_start_date") %>%
+        lubridate::year() %>%
+        base::max()
+    ))
+  }
 
+  # create tibbles to add the groups
+  # sex
+  sexGroup <- dplyr::tibble(sex_group = sex) %>%
+    dplyr::left_join(
+      dplyr::tibble(
+        sex_group = c("Both", "Both", "Male", "Female"),
+        sex = c("Male", "Female", "Male", "Female")
+      ),
+      by = "sex_group"
+    )
+  # age group
+  ageGroup <- lapply(ageGroup, function(x) {
+    if (is.na(x[1])) {
+      x[1] <- 0
+    }
+    if (is.na(x[2])) {
+      x[2] <- 150
+    }
+    return(dplyr::tibble(
+      age_group = paste0(x[1], ";", x[2]),
+      age_min = x[1],
+      age_max = x[2]
+    ))
+  }) %>%
+    dplyr::bind_rows() %>%
+    dplyr::mutate(to_join = 1) %>%
+    dplyr::inner_join(
+      dplyr::tibble(to_join = 1, age = 0:150),
+      by = "to_join"
+    ) %>%
+    dplyr::filter(.data$age >= .data$age_min) %>%
+    dplyr::filter(.data$age <= .data$age_max) %>%
+    dplyr::select("age_group", "age")
+  # index year
+  indexYearGroup <- lapply(indexYearGroup, function(x) {
+    if (length(x) == 1) {
+      return(dplyr::tibble(index_year_group = as.character(x), index_year = x))
+    } else {
+      return(dplyr::tibble(
+        index_year_group = paste0(x[1], "-", x[2]),
+        index_year = x[1]:x[2]
+      ))
+    }
+  }) %>%
+    dplyr::bind_rows()
+  # indication
+  if (!is.null(indicationTable)) {
+    gaps <- names(indicationTable$indication)
+    indicationNames <- indicationTable$indicationDefinitionSet$indication_name
+    indicationGroup <- dplyr::tibble(indication_group = "Any") %>%
+      dplyr::union_all(tidyr::expand_grid(
+        gap = gaps,
+        indication_name = indicationNames
+      ) %>%
+        dplyr::mutate(indication_group = paste0(
+          "gap:", !!gaps[k], "; ", .data$indication_name
+        )) %>%
+        dplyr::select("indication_group"))
+  } else {
+    indicationGroup <- dplyr::tibble(indication_group = "Any")
   }
+
+  # get the groups
+  sexGroups <- unique(sexGroup$sex_group)
+  ageGroups <- unique(ageGroup$age_group)
+  indexYearGroups <- unique(indexYearGroup$index_year_group)
+  indicationGroups <- unique(indicationGroup$indication_group)
 
   # create the combinations for the different cohorts
-  settings <- tidyr::expand_grid()
+  settings <- tidyr::expand_grid(
+    sex_group = sexGroups,
+    age_group = ageGroups,
+    index_year_group = indexYearGroups,
+    indication_group = indicationGroups
+  )
+  if (oneStrata == TRUE) {
+    settings <- settings %>%
+      dplyr::mutate(
+        sex_def = dplyr::if_else(
+          .data$sex_group == .env$sexGroups[1],
+          1,
+          0
+        ),
+        age_def = dplyr::if_else(
+          .data$age_group == .env$ageGroups[1],
+          1,
+          0
+        ),
+        idy_def = dplyr::if_else(
+          .data$index_year_group == .env$indexYearGroups[1],
+          1,
+          0
+        ),
+        ind_def = dplyr::if_else(
+          .data$indication_group == .env$indicationGroups[1],
+          1,
+          0
+        )
+      ) %>%
+      dplyr::mutate(
+        sum_def = .data$sex_def + .data$age_def + .data$idy_def + .data$ind_def
+      ) %>%
+      dplyr::filter(.data$sum_def >= 3) %>%
+      dplyr::select(
+        "sex_group", "age_group", "index_year_group", "indication_group"
+      )
+  }
+
+  settings <- settings %>%
+    dplyr::mutate(cohort_definition_id = dplyr::row_number()) %>%
+    dplyr::relocate("cohort_definition_id", .before = "sex_group")
+
+  # prepare indicationTable
+  if (!is.null(indicationTable)) {
+    for (k in 1:length(gaps)) {
+      indicationTab <- indicationTable$indication[[k]] %>%
+        dplyr::select(
+          "subject_id", "cohort_start_date", "cohort_end_date", "indication_id"
+        ) %>%
+        dplyr::distinct() %>%
+        dplyr::inner_join(
+          indicationTable$indicationDefinitionSet,
+          by = "indication_id",
+          copy = TRUE
+        ) %>%
+        dplyr::mutate(indication_group = paste0(
+          "gap:", !!gaps[k], "; ", .data$indication_name
+        )) %>%
+        dplyr::select(
+          "subject_id", "cohort_start_date", "cohort_end_date",
+          "indication_group"
+        )
+      if (k == 1) {
+        indication <- indicationTab
+      } else {
+        indication <- indication %>% dplyr::union_all(indicationTab)
+      }
+    }
+    indication <- indication %>% dplyr::compute()
+  }
 
   cdm[["temp"]] <- targetCohort %>%
     dplyr::filter(.data$cohort_definition_id == .env$targetCohortId)
   cdm[["temp"]] <- getSex(cdm, "temp")
   targetCohort <- getAge(cdm, "temp") %>%
-    dplyr::mutate(indexYear = lubridate::year(.data$cohort_start_date)) %>%
+    dplyr::mutate(index_year = lubridate::year(.data$cohort_start_date)) %>%
+    dplyr::select(
+      "subject_id", "cohort_start_date", "cohort_end_date", "sex", "age",
+      "index_year"
+    )
+
+  if (!is.null(indicationTable)) {
+    targetCohort <- targetCohort %>%
+      dplyr::inner_join(
+        indication,
+        by = c("subject_id", "cohort_start_date", "cohort_end_date")
+      )
+  } else {
+    targetCohort <- targetCohort %>% dplyr::mutate(indication_group = "Any")
+  }
+
+  targetCohort <- targetCohort %>%
+    dplyr::compute() %>%
+    dplyr::inner_join(sexGroup, by = "sex", copy = TRUE) %>%
+    dplyr::inner_join(ageGroup, by = "age", copy = TRUE) %>%
+    dplyr::inner_join(indexYearGroup, by = "index_year", copy = TRUE) %>%
+    dplyr::inner_join(
+      settings,
+      by = c("sex_group", "age_group", "index_year_group", "indication_group"),
+      copy = TRUE
+    ) %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ) %>%
     dplyr::compute()
 
+  attr(targetCohort, "settings") <- settings
 
+  return(targetCohort)
 }
