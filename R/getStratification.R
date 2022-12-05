@@ -129,9 +129,10 @@ getStratification <- function(cdm,
     }
   }
   if (!is.null(indicationTable)) {
-    if (!all(unlist(lapply(indicationTable, function(x) {
+    if (!all(unlist(lapply(indicationTable$indication, function(x) {
       c(
-        "indication_id", "subject_id", "cohort_start_date", "cohort_end_date"
+        "cohort_definition_id", "indication_id", "subject_id",
+        "cohort_start_date", "cohort_end_date"
       ) %in% colnames(x)
     })))) {
       errorMessage$push(paste0(
@@ -247,7 +248,7 @@ getStratification <- function(cdm,
         indication_name = indicationNames
       ) %>%
         dplyr::mutate(indication_group = paste0(
-          "gap:", !!gaps[k], "; ", .data$indication_name
+          "gap:", .data$gap, "; ", .data$indication_name
         )) %>%
         dplyr::select("indication_group"))
   } else {
@@ -330,7 +331,13 @@ getStratification <- function(cdm,
         indication <- indication %>% dplyr::union_all(indicationTab)
       }
     }
-    indication <- indication %>% dplyr::compute()
+    indication <- indication %>%
+      dplyr::union_all(
+        indicationTab %>%
+          dplyr::mutate(indication_group = "Any") %>%
+          dplyr::distinct()
+      ) %>%
+      dplyr::compute()
   }
 
   cdm[["temp"]] <- targetCohort %>%
