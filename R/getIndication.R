@@ -110,7 +110,8 @@ getIndication <- function(cdm,
   if (length(indicationGap) == 1) {
     checkmate::assertCount(indicationGap, na.ok = TRUE, add = messageStore)
   } else {
-    checkmate::assertIntegerish(indicationGap, add = messageStore)
+
+    checkmate::assertIntegerish(indicationGap[!is.na(indicationGap)], add = messageStore)
   }
 
   # unknownIndicationTables is vector of characters
@@ -240,8 +241,14 @@ getIndication <- function(cdm,
 
 
     result$indication[["Any"]] <- target_db
-  } else {
-    for (gap in indicationGap) {
+
+  }
+
+  if (length(indicationGap[!is.na(indicationGap)])>0){
+  # exclude NA in indicatioGap
+    indicationGapExcludeNA <- indicationGap[!is.na(indicationGap)]
+
+    for (gap in indicationGapExcludeNA) {
       # define variable in the function from inputs
       target_db <- cdm[[targetCohortName]]
       indication_db <- cdm[[indicationCohortName]]
