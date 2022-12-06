@@ -404,7 +404,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       dplyr::mutate(subject_id = .data$person_id) %>%
       dplyr::select("subject_id")
 
-    genderCohort <- getGender(
+    genderCohort <- getSex(
       cdm,
       "drugUtilisationCohort"
     )
@@ -421,7 +421,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
       dplyr::mutate(subject_id = .data$person_id) %>%
       dplyr::select("subject_id")
 
-    genderCohort <- getGender(
+    genderCohort <- getSex(
       cdm,
       "drugUtilisationCohort"
     )

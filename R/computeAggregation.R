@@ -110,7 +110,7 @@ computeAggregation <- function(cdm,
   if (genderAggregation == TRUE) {
     # get gender from cohortprofile
     get_gender <-
-      getGender(
+      getSex(
         cdm = cdm,
         cohortIds = cohortid,
         cohortTable = personSummaryName
