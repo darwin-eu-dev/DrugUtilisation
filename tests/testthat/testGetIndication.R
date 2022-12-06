@@ -577,8 +577,8 @@ test_that("test case indicationCohortName error message", {
   expect_warning(
     getIndication(
       cdm = cdm,
-      targetCohortName = "cohort1",
-      indicationCohortName = "cohort2",
+      targetCohortName = "cohort2",
+      indicationCohortName = "cohort1",
       targetCohortDefinitionIds = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = 0,
