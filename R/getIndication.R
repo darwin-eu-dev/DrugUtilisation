@@ -128,7 +128,7 @@ getIndication <- function(cdm,
 
 
   # warning for different cohort start and end date in indicationCohortName
-  if (cdm[[targetCohortName]] %>%
+  if (cdm[[indicationCohortName]] %>%
     dplyr::mutate(equal = dplyr::if_else(.data$cohort_start_date == .data$cohort_end_date, 0, 1)) %>%
     dplyr::pull("equal") %>%
     sum() > 0) {
