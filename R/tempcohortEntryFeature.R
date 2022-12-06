@@ -59,17 +59,16 @@ getOverlappingCohortSubjects <- function(cdm, targetCohortId, targetCohortTable,
                                          interestCohortId, interestCohortTable, lookbackWindow) {
   # checks
   errorMessage <- checkmate::makeAssertCollection()
-  checkDbType(db = cdm, messageStore = errorMessage)
   if (!is.null(targetCohortId) &&
     is.numeric(targetCohortId)) {
     cohortId <- as.character(targetCohortId)
   }
-  checkCharacter(targetCohortId, messageStore = errorMessage)
+  checkmate::assertCharacter(targetCohortId, add = errorMessage)
   if (!is.null(interestCohortId) &&
     is.numeric(interestCohortId)) {
     cohortId <- as.character(interestCohortId)
   }
-  checkCharacter(interestCohortId, messageStore = errorMessage)
+  checkmate::assertCharacter(interestCohortId, add = errorMessage)
   checkmate::check_true(targetCohortTable %in% names(cdm))
   checkmate::check_true(interestCohortTable %in% names(cdm))
   checkmate::assertNumeric(lookbackWindow, len = 2, add = errorMessage)
@@ -90,13 +89,13 @@ getOverlappingCohortSubjects <- function(cdm, targetCohortId, targetCohortTable,
   result <- cohort2 %>%
     dplyr::left_join(cohort1, by = "subject_id") %>%
     dplyr::mutate(
-      overlap_end_date = dbplyr::sql(sql_add_days(
-        CDMConnector::dbms(attr(cdm, "dbcon")),
-        -lookbackWindow[1], "interest_start_date"
+      overlap_end_date = dbplyr::sql(CDMConnector::dateadd(
+        date = "interest_start_date",
+        number = !!-lookbackWindow[1]
       )),
-      overlap_start_date = dbplyr::sql(sql_add_days(
-        CDMConnector::dbms(attr(cdm, "dbcon")),
-        -lookbackWindow[2], "interest_start_date"
+      overlap_start_date = dbplyr::sql(CDMConnector::dateadd(
+        date = "interest_start_date",
+        number = !!-lookbackWindow[2]
       ))
     ) %>%
     dplyr::group_by(.data$subject_id, .data$cohort_definition_id.y) %>%
