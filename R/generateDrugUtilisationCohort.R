@@ -322,7 +322,7 @@ generateDrugUtilisationCohort <- function(cdm,
         dplyr::select("person_id", "date_event", "date_id")
     ) %>%
     dplyr::group_by(.data$person_id) %>%
-    dbplpyr::window_order(.data$date_event, .data$date_id) %>%
+    dbplyr::window_order(.data$date_event, .data$date_id) %>%
     dplyr::mutate(cum_id = cumsum(.dat$date_id)) %>%
     dplyr::ungroup() %>%
     dplyr::filter(
