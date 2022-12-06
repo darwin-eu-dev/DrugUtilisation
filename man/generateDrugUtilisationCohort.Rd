@@ -7,7 +7,7 @@
 \usage{
 generateDrugUtilisationCohort(
   cdm,
-  ingredientConceptId,
+  ingredientConceptId = NULL,
   conceptSetPath = NULL,
   studyStartDate = NULL,
   studyEndDate = NULL,
