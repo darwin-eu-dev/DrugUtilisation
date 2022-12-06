@@ -1,8 +1,7 @@
-
 #' @noRd
 getSex <- function(cdm,
-                      cohortTable,
-                      cohortIds = NULL) {
+                   cohortTable,
+                   cohortIds = NULL) {
   if (isTRUE(is.na(cohortIds))) {
     cohortIds <- NULL
   }
@@ -14,7 +13,94 @@ getSex <- function(cdm,
     cohortDb <- cdm[[cohortTable]]
   }
 
-  person <- cdm[["person"]] %>%
+  return(addSex(cohortDb = cohortDb, cdm = cdm))
+}
+
+#' @noRd
+getAge <- function(cdm,
+                   cohortTable,
+                   cohortIds = NULL,
+                   ageAt = "cohort_start_date",
+                   defaultMonth = 1,
+                   defaultDay = 1,
+                   imposeMonth = TRUE,
+                   imposeDay = TRUE) {
+  if (isTRUE(is.na(cohortIds))) {
+    cohortIds <- NULL
+  }
+
+  if (!is.null(cohortIds)) {
+    cohortDb <- cdm[[cohortTable]] %>%
+      dplyr::filter(.data$cohort_definition_id %in% .env$cohortIds)
+  } else {
+    cohortDb <- cdm[[cohortTable]]
+  }
+
+  return(addAge(
+    cohortDb = cohortDb,
+    cdm = cdm,
+    ageAt = ageAt,
+    defaultMonth = defaultMonth,
+    defaultDay = defaultDay,
+    imposeMonth = imposeMonth,
+    imposeDay = imposeDay
+  ))
+}
+
+#' @noRd
+getPriorHistory <- function(cdm,
+                            cohortTable,
+                            cohortIds = NULL,
+                            priorHistoryAt = "cohort_start_date") {
+  if (isTRUE(is.na(cohortIds))) {
+    cohortIds <- NULL
+  }
+
+  if (!is.null(cohortIds)) {
+    cohortDb <- cdm[[cohortTable]] %>%
+      dplyr::filter(.data$cohort_definition_id %in% .env$cohortIds)
+  } else {
+    cohortDb <- cdm[[cohortTable]]
+  }
+
+  return(addPriorHistory(
+    cohortDb = cohortDb,
+    cdm = cdm,
+    priorHistoryAt = priorHistoryAt
+  ))
+}
+
+#' @noRd
+sqlGetAge <- function(dialect,
+                      dob,
+                      dateOfInterest) {
+  SqlRender::translate(
+    SqlRender::render("((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
+                      DAY(@date_of_interest)-(YEAR(@dob)* 10000 + MONTH(@dob) * 100 + DAY(@dob))) / 10000)",
+      dob = dob,
+      date_of_interest = dateOfInterest
+    ),
+    targetDialect = dialect
+  )
+}
+
+#' @noRd
+dateadd <- function(date, number, interval = "day") {
+  rlang::check_installed("SqlRender")
+  checkmate::assertCharacter(interval, len = 1)
+  checkmate::assertSubset(interval, choices = c("day", "year"))
+  checkmate::assertCharacter(date, len = 1)
+  # checkmate::assertIntegerish(number)
+  dot <- get(".", envir = parent.frame())
+  targetDialect <- CDMConnector::dbms(dot$src$con)
+  sql <- glue::glue("DATEADD({interval}, {number}, {date})")
+  sql <- SqlRender::translate(sql = as.character(sql), targetDialect = targetDialect)
+  dbplyr::sql(sql)
+}
+
+#' @noRd
+addSex <- function(cohortDb, cdm) {
+  cdm[["person"]] %>%
     dplyr::rename("subject_id" = "person_id") %>%
     dplyr::inner_join(
       cohortDb %>% dplyr::select("subject_id") %>% dplyr::distinct(),
@@ -28,13 +114,11 @@ getSex <- function(cdm,
     dplyr::select("subject_id", "sex") %>%
     dplyr::right_join(cohortDb, by = "subject_id") %>%
     dplyr::select(dplyr::all_of(colnames(cohortDb)), "sex")
-
-  return(person)
 }
 
 #' @noRd
-getAge <- function(cdm,
-                   cohortTable,
+addAge <- function(cohortDb,
+                   cdm,
                    ageAt = "cohort_start_date",
                    cohortIds = NULL,
                    defaultMonth = 1,
@@ -43,16 +127,6 @@ getAge <- function(cdm,
                    imposeDay = TRUE) {
   defaultMonth <- as.integer(defaultMonth)
   defaultDay <- as.integer(defaultDay)
-  if (isTRUE(is.na(cohortIds))) {
-    cohortIds <- NULL
-  }
-
-  if (!is.null(cohortIds)) {
-    cohortDb <- cdm[[cohortTable]] %>%
-      dplyr::filter(.data$cohort_definition_id %in% .env$cohortIds)
-  } else {
-    cohortDb <- cdm[[cohortTable]]
-  }
 
   person <- cdm[["person"]] %>%
     dplyr::rename("subject_id" = "person_id") %>%
@@ -108,22 +182,10 @@ getAge <- function(cdm,
 }
 
 #' @noRd
-getPriorHistory <- function(cdm,
-                            cohortTable,
-                            cohortIds = NULL,
+addPriorHistory <- function(cohortDb,
+                            cdm,
                             priorHistoryAt = "cohort_start_date") {
-  if (isTRUE(is.na(cohortIds))) {
-    cohortIds <- NULL
-  }
-
-  if (!is.null(cohortIds)) {
-    cohortDb <- cdm[[cohortTable]] %>%
-      dplyr::filter(.data$cohort_definition_id %in% .env$cohortIds)
-  } else {
-    cohortDb <- cdm[[cohortTable]]
-  }
-
-  cohortDb <- cdm[["observation_period"]] %>%
+  cdm[["observation_period"]] %>%
     dplyr::select(
       "subject_id" = "person_id", "observation_period_start_date"
     ) %>%
@@ -142,34 +204,4 @@ getPriorHistory <- function(cdm,
       by = c("subject_id", priorHistoryAt)
     ) %>%
     dplyr::select(dplyr::all_of(colnames(cohortDb)), "prior_history")
-
-  return(cohortDb)
-}
-
-#' @noRd
-sqlGetAge <- function(dialect,
-                      dob,
-                      dateOfInterest) {
-  SqlRender::translate(
-    SqlRender::render("((YEAR(@date_of_interest) * 10000 + MONTH(@date_of_interest) * 100 +
-                      DAY(@date_of_interest)-(YEAR(@dob)* 10000 + MONTH(@dob) * 100 + DAY(@dob))) / 10000)",
-      dob = dob,
-      date_of_interest = dateOfInterest
-    ),
-    targetDialect = dialect
-  )
-}
-
-#' @noRd
-dateadd <- function(date, number, interval = "day") {
-  rlang::check_installed("SqlRender")
-  checkmate::assertCharacter(interval, len = 1)
-  checkmate::assertSubset(interval, choices = c("day", "year"))
-  checkmate::assertCharacter(date, len = 1)
-  # checkmate::assertIntegerish(number)
-  dot <- get(".", envir = parent.frame())
-  targetDialect <- CDMConnector::dbms(dot$src$con)
-  sql <- glue::glue("DATEADD({interval}, {number}, {date})")
-  sql <- SqlRender::translate(sql = as.character(sql), targetDialect = targetDialect)
-  dbplyr::sql(sql)
 }

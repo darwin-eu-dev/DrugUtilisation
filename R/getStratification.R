@@ -340,10 +340,10 @@ getStratification <- function(cdm,
       dplyr::compute()
   }
 
-  cdm[["temp"]] <- targetCohort %>%
-    dplyr::filter(.data$cohort_definition_id == .env$targetCohortId)
-  cdm[["temp"]] <- getSex(cdm, "temp")
-  targetCohort <- getAge(cdm, "temp") %>%
+  targetCohort <- targetCohort %>%
+    dplyr::filter(.data$cohort_definition_id == .env$targetCohortId) %>%
+    addSex(cdm = cdm) %>%
+    addAge(cdm = cdm) %>%
     dplyr::mutate(index_year = lubridate::year(.data$cohort_start_date)) %>%
     dplyr::select(
       "subject_id", "cohort_start_date", "cohort_end_date", "sex", "age",
