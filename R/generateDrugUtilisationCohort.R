@@ -120,12 +120,10 @@ generateDrugUtilisationCohort <- function(cdm,
   }
   checkmate::assertCount(
     daysPriorHistory,
-    positive = TRUE,
     add = errorMessage
   )
   checkmate::assertCount(
     gapEra,
-    positive = TRUE,
     add = errorMessage
   )
   if (is.character(imputeDuration)) {
@@ -263,7 +261,7 @@ generateDrugUtilisationCohort <- function(cdm,
   # interested in.
   cohort <- cdm[["drug_exposure"]] %>%
     dplyr::select(
-      "person_id",
+      "subject_id" = "person_id",
       "drug_concept_id",
       "drug_exposure_start_date",
       "drug_exposure_end_date"
@@ -311,32 +309,45 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::union_all(addAttitionLine(cohort, "Imputation"))
 
   cohort <- cohort %>%
-    dplyr::select("person_id", "date_event" = "drug_exposure_start_date") %>%
+    dplyr::select("subject_id", "date_event" = "drug_exposure_start_date") %>%
     dplyr::mutate(date_id = -1) %>%
     dplyr::union_all(
       cohort %>%
         dplyr::mutate(
-          date_event = .data$drug_exposure_end_date + env$gapEra,
+          date_event = !!CDMConnector::dateadd(
+            date = "drug_exposure_end_date",
+            number = gapEra
+          ),
           date_id = 1
         ) %>%
-        dplyr::select("person_id", "date_event", "date_id")
+        dplyr::select("subject_id", "date_event", "date_id")
     ) %>%
-    dplyr::group_by(.data$person_id) %>%
+    dplyr::group_by(.data$subject_id) %>%
     dbplyr::window_order(.data$date_event, .data$date_id) %>%
-    dplyr::mutate(cum_id = cumsum(.dat$date_id)) %>%
-    dplyr::ungroup() %>%
+    dplyr::mutate(cum_id = cumsum(.data$date_id)) %>%
     dplyr::filter(
-      .data$cum_id == 0 || (.data$cum_id == 1 && .data$date_id == 1)
+      .data$cum_id == 0 || (.data$cum_id == -1 && .data$date_id == -1)
     ) %>%
-    dplyr::mutate(name = dplyr::if_else(
-      .data$date_id == 1,
+    dplyr::mutate(
+      name = dplyr::if_else(
+      .data$date_id == -1,
       "cohort_start_date",
       "cohort_end_date"
+    ),
+    era_id = dplyr::if_else(
+      .data$date_id == -1,
+      1,
+      0
     )) %>%
+    dplyr::mutate(era_id = cumsum(.data$era_id)) %>%
+    dplyr::ungroup() %>%
+    dplyr::select("subject_id", "era_id", "name", "date_event") %>%
     tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
-    dplyr::select(
-      "subject_id" = "person_id", "cohort_start_date", "cohort_end_date"
-    ) %>%
+    dplyr::mutate(cohort_end_date = !!CDMConnector::dateadd(
+      date = "cohort_end_date",
+      number = -gapEra
+    )) %>%
+    dplyr::select(-"era_id") %>%
     dplyr::compute()
 
   attrition <- attrition %>%
@@ -365,7 +376,7 @@ generateDrugUtilisationCohort <- function(cdm,
   }
 
   if (!is.null(daysPriorHistory)) {
-    cohort <- addPriorHistory(cohort) %>%
+    cohort <- addPriorHistory(cohort, cdm = cdm) %>%
       dplyr::filter(.data$prior_history >= .env$daysPriorHistory) %>%
       dplyr::select(-"prior_history")
 
@@ -549,7 +560,7 @@ imputeVariable <- function(x,
 addAttitionLine <- function(cohort, reason) {
   cohort %>%
     dplyr::summarise(
-      number_subjects = dplyr::n_distinct(.data$person_id),
+      number_subjects = dplyr::n_distinct(.data$subject_id),
       number_records = dplyr::n()
     ) %>%
     dplyr::collect() %>%
