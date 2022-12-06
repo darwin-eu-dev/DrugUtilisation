@@ -65,7 +65,7 @@
 #'
 #' @examples
 generateDrugUtilisationCohort <- function(cdm,
-                                          ingredientConceptId,
+                                          ingredientConceptId = NULL,
                                           conceptSetPath = NULL,
                                           studyStartDate = NULL,
                                           studyEndDate = NULL,
@@ -90,8 +90,14 @@ generateDrugUtilisationCohort <- function(cdm,
   )
   checkmate::assertCount(
     ingredientConceptId,
+    null.ok = TRUE,
     add = errorMessage
   )
+  if (is.null(conceptSetPath) && is.null(ingredientConceptId)){
+    errorMessage$push(
+      "'conceptSetPath' or 'ingredientConceptId' should be provided"
+    )
+  }
   checkmate::assertDate(
     studyStartDate,
     any.missing = FALSE,
@@ -120,6 +126,7 @@ generateDrugUtilisationCohort <- function(cdm,
   }
   checkmate::assertCount(
     daysPriorHistory,
+    null.ok = TRUE,
     add = errorMessage
   )
   checkmate::assertCount(
@@ -159,7 +166,7 @@ generateDrugUtilisationCohort <- function(cdm,
     add = errorMessage
   )
   if (!is.null(conceptSetPath)) {
-    if (!file.exist(conceptSetPath)) {
+    if (!file.exists(conceptSetPath)) {
       stop(glue::glue("Invalid concept set path {conceptSetPath}"))
     } else {
       if (dir.exists(conceptSetPath)) {
@@ -168,7 +175,7 @@ generateDrugUtilisationCohort <- function(cdm,
           full.names = TRUE
         )
         conceptSetPathFiles <- conceptSetPathFiles[
-          tools::file_path_sans_ext(conceptSetPathFiles) == "json"
+          tools::file_ext(conceptSetPathFiles) == "json"
         ]
         if (length(conceptSetPathFiles) == 0) {
           stop(glue::glue("No 'json' file found in {conceptSetPath}"))
@@ -182,17 +189,6 @@ generateDrugUtilisationCohort <- function(cdm,
         }
       }
     }
-  }
-  if (!(cdm$drug_strength %>%
-    dplyr::filter(
-      .data$ingredient_concept_id == .env$ingredientConceptId
-    ) %>%
-    dplyr::tally() %>%
-    dplyr::pull("n") > 0)) {
-    errorMessage$push(glue::glue(
-      "Ingredient concept id ({ingredientConceptId}) has not counts in ",
-      "drug_stregth table."
-    ))
   }
   if (sum(is.na(durationRange)) == 0) {
     checkmate::assertTRUE(
@@ -246,11 +242,23 @@ generateDrugUtilisationCohort <- function(cdm,
           dplyr::filter(.data$is_excluded == TRUE),
         by = "drug_concept_id"
       )
+    if (!is.null(ingredientConceptId)) {
+      conceptList <- cdm[["drug_strength"]] %>%
+        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
+        dplyr::select("drug_concept_id") %>%
+        dplyr::collect() %>%
+        dplyr::inner_join(conceptList, by = "drug_concept_id")
+    }
+
   } else {
     conceptList <- cdm[["drug_strength"]] %>%
       dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
       dplyr::select("drug_concept_id") %>%
       dplyr::collect()
+  }
+
+  if (nrow(conceptList) == 0) {
+    stop("No concepts were not found in the vocabulary using this settings")
   }
 
   # get sql dialect of the database
@@ -272,6 +280,12 @@ generateDrugUtilisationCohort <- function(cdm,
       copy = TRUE
     ) %>%
     dplyr::compute()
+
+  if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
+    stop(
+      "No record found with the current specifications in drug_exposure table"
+    )
+  }
 
   attrition <- addAttitionLine(cohort, "Initial Exposures")
 
@@ -330,15 +344,16 @@ generateDrugUtilisationCohort <- function(cdm,
     ) %>%
     dplyr::mutate(
       name = dplyr::if_else(
-      .data$date_id == -1,
-      "cohort_start_date",
-      "cohort_end_date"
-    ),
-    era_id = dplyr::if_else(
-      .data$date_id == -1,
-      1,
-      0
-    )) %>%
+        .data$date_id == -1,
+        "cohort_start_date",
+        "cohort_end_date"
+      ),
+      era_id = dplyr::if_else(
+        .data$date_id == -1,
+        1,
+        0
+      )
+    ) %>%
     dplyr::mutate(era_id = cumsum(.data$era_id)) %>%
     dplyr::ungroup() %>%
     dplyr::select("subject_id", "era_id", "name", "date_event") %>%
@@ -404,18 +419,22 @@ generateDrugUtilisationCohort <- function(cdm,
       ) %>%
       dplyr::mutate(cohort_end_date = !!CDMConnector::dateadd(
         "cohort_start_date",
-        studyTime - 1
+        fixedTime - 1
       )) %>%
       dplyr::ungroup()
     attrition <- attrition %>%
       dplyr::union_all(addAttitionLine(
         cohort,
-        paste0("Only first era; studyTime = ", studyTime, " days")
+        paste0("Only first era; fixedTime = ", fixedTime, " days")
       ))
   }
 
   cohort <- cohort %>%
     dplyr::mutate(cohort_definition_id = 1) %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ) %>%
     dplyr::compute()
 
   attr(cohort, "attrition") <- attrition
