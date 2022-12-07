@@ -283,63 +283,12 @@ getDoseInformation <- function(cdm,
   }
   checkmate::reportAssertions(collection = errorMessage)
 
-  if (!is.null(conceptSetPath)) {
-    conceptSets <- dplyr::tibble(concept_set_path = .env$conceptSetPath) %>%
-      dplyr::mutate(
-        concept_set_name =
-          tools::file_path_sans_ext(basename(.data$concept_set_path))
-      ) %>%
-      dplyr::mutate(cohort_definition_id = 1)
-
-    tryCatch(
-      expr = conceptList <- readConceptSets(conceptSets),
-      error = function(e) {
-        stop("The json file is not a properly formated OMOP concept set.")
-      }
-    )
-
-    conceptList <- conceptList %>%
-      dplyr::filter(.data$include_descendants == FALSE) %>%
-      dplyr::union(
-        cdm[["concept_ancestor"]] %>%
-          dplyr::select(
-            "concept_id" = "ancestor_concept_id",
-            "descendant_concept_id"
-          ) %>%
-          dplyr::inner_join(
-            conceptList %>%
-              dplyr::filter(.data$include_descendants == TRUE),
-            copy = TRUE,
-            by = "concept_id"
-          ) %>%
-          dplyr::select(-"concept_id") %>%
-          dplyr::rename("concept_id" = "descendant_concept_id") %>%
-          dplyr::collect()
-      ) %>%
-      dplyr::select(-"include_descendants") %>%
-      dplyr::rename("drug_concept_id" = "concept_id")
-    # eliminate the ones that is_excluded = TRUE
-    conceptList <- conceptList %>%
-      dplyr::filter(.data$is_excluded == FALSE) %>%
-      dplyr::select("drug_concept_id") %>%
-      dplyr::anti_join(
-        conceptList %>%
-          dplyr::filter(.data$is_excluded == TRUE),
-        by = "drug_concept_id"
-      )
-    if (!is.null(ingredientConceptId)) {
-      conceptList <- cdm[["drug_strength"]] %>%
-        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-        dplyr::select("drug_concept_id") %>%
-        dplyr::collect() %>%
-        dplyr::inner_join(conceptList, by = "drug_concept_id")
-    }
-  } else {
-    conceptList <- cdm[["drug_strength"]] %>%
-      dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-      dplyr::select("drug_concept_id") %>%
-      dplyr::collect()
-  }
+  # Get the list of drug concept id to us
+  conceptList <- getConceptList(
+    conceptSetPath = conceptSetPath,
+    ingredientConceptId = ingredientConceptId,
+    cdm = cdm
+  )
 
   if (nrow(conceptList) == 0) {
     stop("No concepts were not found in the vocabulary using this settings")
@@ -347,7 +296,6 @@ getDoseInformation <- function(cdm,
 
   # get sql dialect of the database
   dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
-  # get the name of the info table
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
@@ -399,6 +347,7 @@ getDoseInformation <- function(cdm,
   attrition <- attrition %>%
     dplyr::union_all(addAttitionLine(cohort, "Impute Duration"))
 
+  # correct drug exposure end date according to the new duration
   cohort <- cohort %>%
     dplyr::mutate(days_to_add = as.integer(.data$days_exposed - 1)) %>%
     dplyr::compute() %>%
@@ -414,14 +363,14 @@ getDoseInformation <- function(cdm,
   # updated in the next interation as drugExposureDiagnostics does not work as
   # we want)
   cohort <- cohort %>%
-    addDailyDose(cdm = cdm, ingredientConceptId = ingredientConceptId)
+    addDailyDose(cohort, cdm = cdm, ingredientConceptId = ingredientConceptId)
 
   # impute or eliminate the exposures that daily_dose does not fulfill the
   # conditions ( <0; <dailyDoseRange[1]; >dailyDoseRange[2])
   cohort <- imputeVariable(
     x = cohort,
     variableName = "daily_dose",
-    impute = imputeDailyDose,
+    impute = imputeDuration,
     lowerBound = dailyDoseRange[1],
     upperBound = dailyDoseRange[2],
     imputeValueName = "imputeDailyDose"
@@ -434,18 +383,31 @@ getDoseInformation <- function(cdm,
   cohort <- cohort %>%
     dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_end_date) %>%
     dplyr::filter(.data$drug_exposure_end_date >= .data$cohort_start_date) %>%
-    dplyr::mutate(drug_exposure_start_date = dplyr::if_else(
-      .data$drug_exposure_start_date < .data$cohort_start_date,
-      .data$cohort_start_date,
-      .data$drug_exposure_start_date
-    )) %>%
-    dplyr::mutate(drug_exposure_end_date = dplyr::if_else(
-      .data$drug_exposure_end_date > .data$cohort_end_date,
-      .data$cohort_end_date,
-      .data$drug_exposure_end_date
-    )) %>%
     dplyr::select(-"quantity", -"days_exposed", -"days_to_add") %>%
     dplyr::compute()
+
+  # split the exposures in subexposures inside each cohort
+  cohort <- splitSubexposures(cohort)
+
+  # add the grouping
+  cohort <- cohort %>%
+    dplyr::group_by(
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+      .data$subexposure_id
+    ) %>%
+    # add the overlapping flag
+    cohort() <- addOverlappingFlag(cohort)
+
+  # add the type of subexposure
+  cohort <- addTypeSubexposure(cohort)
+
+  # add era_id
+  cohort <- addEraId(cohort)
+
+  # add daily dose to gaps
+  cohort <- addGapDailyDose(cohort)
+
+  return(cohort)
 }
 
 #' @noRd
@@ -567,11 +529,8 @@ splitSubexposures <- function(x) {
 #' @noRd
 addOverlappingFlag <- function(x) {
   x <- x %>%
-    dplyr::group_by(
-      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
-      .data$subexposure_id
-    ) %>%
     dplyr::mutate(overlapping = dplyr::n())
+  return(x)
 }
 
 #' @noRd
@@ -587,5 +546,296 @@ addTypeSubexposure <- function(x) {
           "gap",
         TRUE ~ "unexposed"
       )
+    ) %>%
+    dplyr::ungroup()
+  return(x)
+}
+
+#' @noRd
+addEraId <- function(x) {
+  x <- x %>%
+    dplyr::mutate(era_id = dplyr::if_else(
+      .data$type_subexposure == "unexposed" & .data$subexposure_id > 1,
+      1,
+      0
+    )) %>%
+    dbplyr::window_order(.data$subexposure_start_date) %>%
+    dplyr::mutate(era_id = cumsum(.data$era_id, na.rm = TRUE)) %>%
+    dplyr::mutate(era_id = dplyr::if_else(
+      .data$type_subexposure == "unexposed",
+      as.numeric(NA),
+      .data$era_id
+    ))
+  return(x)
+}
+
+#' @noRd
+addContinuousExposureId <- function(x) {
+  x <- x %>%
+    dplyr::mutate(continuous_exposure_id = dplyr::if_else(
+      .data$type_subexposure != "exposed" & .data$subexposure_id > 1,
+      1,
+      0
+    )) %>%
+    dbplyr::window_order(.data$subexposure_start_date) %>%
+    dplyr::mutate(continuous_exposure_id = cumsum(
+      .data$continuous_exposure_id,
+      na.rm = TRUE
+    )) %>%
+    dplyr::mutate(continuous_exposure_id = dplyr::if_else(
+      .data$type_subexposure != "exposed",
+      as.numeric(NA),
+      .data$continuous_exposure_id
+    ))
+  return(x)
+}
+
+#' @noRd
+solveSameIndexOverlap <- function(x, sameIndexMode) {
+  x_same_index <- x %>%
+    dplyr::group_by(
+      .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
+      .data$drugdrug_exposure_start_date
+    ) %>%
+    dplyr::filter(dplyr::n() > 1)
+  if (sameIndexMode == "Minimum") {
+    x_same_index <- x_same_index %>%
+      dplyr::left_join(
+        x_same_index %>%
+          dplyr::filter(
+            .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
+          ) %>%
+          dplyr::filter(
+            .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
+          ) %>%
+          dplyr::mutate(considered_subexposure = "yes"),
+        by = colnames(x_same_index)
+      ) %>%
+      dplyr::mutate(considered_subexposure = dplyr::if_else(
+        is.na(.data$considered_subexposure),
+        "no",
+        "yes"
+      ))
+  } else if (sameIndexMode == "Maximum") {
+    x_same_index <- x_same_index %>%
+      dplyr::left_join(
+        x_same_index %>%
+          dplyr::filter(
+            .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
+          ) %>%
+          dplyr::filter(
+            .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
+          ) %>%
+          dplyr::mutate(considered_subexposure = "yes"),
+        by = colnames(x_same_index)
+      ) %>%
+      dplyr::mutate(considered_subexposure = dplyr::if_else(
+        is.na(.data$considered_subexposure),
+        "no",
+        "yes"
+      ))
+  } else if (sameIndexMode == "Sum") {
+    x_same_index <- x_same_index %>%
+      dplyr::mutate(considered_subexposure = "yes")
+  }
+
+  x <- x %>%
+    dplyr::left_join(x_same_index, by = colnames(x))
+
+  return(x)
+}
+
+#' @noRd
+solveOverlap <- function(x, overlapMode) {
+  x_overlap <- x %>%
+    dplyr::group_by(
+      .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
+    ) %>%
+    dplyr::filter(
+      is.na(.data$considered_subexposure) | .data$considered_exposure == "yes"
+    ) %>%
+    dplyr::filter(dplyr::n() > 1)
+  if (overlapMode == "Minimum") {
+    x_overlap <- x_overlap %>%
+      dplyr::left_join(
+        x_overlap %>%
+          dplyr::filter(
+            .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
+          ) %>%
+          dplyr::filter(
+            .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
+          ) %>%
+          dplyr::mutate(considered_subexposure = "yes"),
+        by = colnames(x_overlap)
+      ) %>%
+      dplyr::mutate(considered_subexposure = dplyr::if_else(
+        is.na(.data$considered_subexposure),
+        "no",
+        "yes"
+      ))
+  } else if (overlapMode == "Maximum") {
+    x_overlap <- x_overlap %>%
+      dplyr::left_join(
+        x_overlap %>%
+          dplyr::filter(
+            .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
+          ) %>%
+          dplyr::filter(
+            .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
+          ) %>%
+          dplyr::mutate(considered_subexposure = "yes"),
+        by = colnames(x_overlap)
+      ) %>%
+      dplyr::mutate(considered_subexposure = dplyr::if_else(
+        is.na(.data$considered_subexposure),
+        "no",
+        "yes"
+      ))
+  } else if (overlapMode == "Sum") {
+    x_overlap <- x_overlap %>%
+      dplyr::mutate(considered_subexposure = "yes")
+  } else if (overlapMode == "Previous") {
+    x_overlap <- x_overlap %>%
+      dplyr::mutate(considered_subexposure = dplyr::if_else(
+        .data$drug_exposure_start_date) ==
+          min(.data$drug_exposure_start_date, na.rm = TRUE),
+        "yes",
+        "no"
+      )
+  } else if (overlapMode == "Subsequent") {
+    x_overlap <- x_overlap %>%
+      dplyr::mutate(considered_subexposure = dplyr::if_else(
+        .data$drug_exposure_start_date) ==
+          max(.data$drug_exposure_start_date, na.rm = TRUE),
+        "yes",
+        "no"
+      )
+  }
+
+  x <- x %>%
+    # left_join wont work
+    dplyr::left_join(x_overlap, by = colnames(x))
+
+  return(x)
+}
+
+#' @noRd
+addGapDailyDose <- function(x, eraJoinMode) {
+  x_gaps_dose <- x %>%
+    dplyr::filter(.data$typeSubexposure == "gap")
+  if (eraJoinMode == "Zero") {
+    x_gaps_dose <- x_gaps_dose %>%
+      dplyr::mutate(daily_dose = as.numeric(0))
+  } else if (eraJoinMode == "Previous") {
+    x_gaps_dose <- x_gaps_dose %>%
+      dplyr::select(-"daily_dose") %>%
+      dplyr::inner_join(
+        x %>%
+          dplyr::mutate(subexposure_id = .data$subexposure_id + 1) %>%
+          dplyr::filter(considered_subexposure = "yes") %>%
+          dplyr::select(
+            "subject_id", "cohort_start_date", "cohort_end_date",
+            "subexposure_id", "daily_dose"
+          ),
+        by = c(
+          "subject_id", "cohort_start_date", "cohort_end_date",
+          "subexposure_id"
+        )
+      )
+  } else if (eraJoinMode == "Subsequent") {
+    x_gaps_dose <- x_gaps_dose %>%
+      dplyr::select(-"daily_dose") %>%
+      dplyr::inner_join(
+        x %>%
+          dplyr::mutate(subexposure_id = .data$subexposure_id - 1) %>%
+          dplyr::filter(considered_subexposure = "yes") %>%
+          dplyr::select(
+            "subject_id", "cohort_start_date", "cohort_end_date",
+            "subexposure_id", "daily_dose"
+          ),
+        by = c(
+          "subject_id", "cohort_start_date", "cohort_end_date",
+          "subexposure_id"
+        )
+      )
+  }
+
+  x <- x %>%
+    dplyr::anti_join(
+      x_gaps_dose,
+      by = c(
+        "subject_id", "cohort_start_date", "cohort_end_date",
+        "subexposure_id"
+      )
+    ) %>%
+    dplyr::left_join(
+      x_gaps_dose,
+      by = c(
+        "subject_id", "cohort_start_date", "cohort_end_date",
+        "subexposure_id"
+      )
     )
+  return(x)
+}
+
+#' @noRd
+getConceptList <- function(conceptSetPath, ingredientConceptId, cdm) {
+  if (!is.null(conceptSetPath)) {
+    conceptSets <- dplyr::tibble(concept_set_path = .env$conceptSetPath) %>%
+      dplyr::mutate(
+        concept_set_name =
+          tools::file_path_sans_ext(basename(.data$concept_set_path))
+      ) %>%
+      dplyr::mutate(cohort_definition_id = 1)
+
+    tryCatch(
+      expr = conceptList <- readConceptSets(conceptSets),
+      error = function(e) {
+        stop("The json file is not a properly formated OMOP concept set.")
+      }
+    )
+
+    conceptList <- conceptList %>%
+      dplyr::filter(.data$include_descendants == FALSE) %>%
+      dplyr::union(
+        cdm[["concept_ancestor"]] %>%
+          dplyr::select(
+            "concept_id" = "ancestor_concept_id",
+            "descendant_concept_id"
+          ) %>%
+          dplyr::inner_join(
+            conceptList %>%
+              dplyr::filter(.data$include_descendants == TRUE),
+            copy = TRUE,
+            by = "concept_id"
+          ) %>%
+          dplyr::select(-"concept_id") %>%
+          dplyr::rename("concept_id" = "descendant_concept_id") %>%
+          dplyr::collect()
+      ) %>%
+      dplyr::select(-"include_descendants") %>%
+      dplyr::rename("drug_concept_id" = "concept_id")
+    # eliminate the ones that is_excluded = TRUE
+    conceptList <- conceptList %>%
+      dplyr::filter(.data$is_excluded == FALSE) %>%
+      dplyr::select("drug_concept_id") %>%
+      dplyr::anti_join(
+        conceptList %>%
+          dplyr::filter(.data$is_excluded == TRUE),
+        by = "drug_concept_id"
+      )
+    if (!is.null(ingredientConceptId)) {
+      conceptList <- cdm[["drug_strength"]] %>%
+        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
+        dplyr::select("drug_concept_id") %>%
+        dplyr::collect() %>%
+        dplyr::inner_join(conceptList, by = "drug_concept_id")
+    }
+  } else {
+    conceptList <- cdm[["drug_strength"]] %>%
+      dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
+      dplyr::select("drug_concept_id") %>%
+      dplyr::collect()
+  }
+  return(conceptList)
 }
