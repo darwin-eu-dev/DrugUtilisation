@@ -493,8 +493,7 @@ instantiateDrugUtilisationCohorts <- function(cdm,
   drugUtilisationCohort <- computeDailyDose(
     table = drugUtilisationCohort,
     cdm = cdm,
-    ingredient_concept_id = ingredientConceptId,
-    verbose = verbose
+    ingredientConceptId = ingredientConceptId
   )
 
   # if summarizeMode == "FixedTime" we cut the exposures that end later than the

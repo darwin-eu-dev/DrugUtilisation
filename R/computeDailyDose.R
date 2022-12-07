@@ -18,66 +18,55 @@
 #'
 #' @param table table
 #' @param cdm cdm
-#' @param verbose verbose
-#' @param ingredient_concept_id ingredient_concept_id
+#' @param ingredientConceptId ingredientConceptId
 #'
 #' @return
 #' @export
 #'
 #' @examples
-computeDailyDose <- function(table,
-                             cdm = cdm,
-                             ingredient_concept_id = ingredient_concept_id,
-                             verbose = FALSE) {
+addDailyDose <- function(table,
+                         cdm,
+                         ingredientConceptId) {
+  errorMessage <- checkmate::makeAssertCollection()
   # initial checks
-  checkmate::assertClass(cdm, "cdm_reference")
-  checkmate::assertLogical(verbose)
-  if (isFALSE(all(c(
-    "person_id", "quantity", "drug_concept_id", "days_exposed"
-  ) %in% colnames(table)))) {
-    if (isTRUE(all(c(
-      "person_id", "quantity", "drug_concept_id", "drug_exposure_start_date",
-      "drug_exposure_end_date"
-    ) %in% colnames(table)))) {
-      table <- table %>%
-        dplyr::mutate(
-          days_exposed = dbplyr::sql(CDMConnector::datediff(
-            start = "drug_exposure_start_date",
-            end = "drug_exposure_end_date"
-          )) + 1
-        ) %>%
-        dplyr::compute()
-    } else {
-      stop("'table' must contain as columns 'days_exposed' or 'drug_exposure_start_date' and 'drug_exposure_end_date'")
-    }
-  }
-  checkmate::assertFALSE(c("daily_dose") %in% colnames(table))
-  checkmate::assertTRUE(c("drug_strength") %in% names(cdm))
-  # add daily dose column
+  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
+  checkmate::assertCount(ingredientConceptId, add = errorMessage)
+  checkmate::assertFALSE(c("daily_dose") %in% colnames(table), add = errorMessage)
+  checkmate::assertTRUE(c("drug_strength") %in% names(cdm), add = errorMessage)
+  checkmate::reportAssertions(collection = errorMessage)
+
   table <- table %>%
-    dplyr::left_join(
-      table %>%
-        dplyr::select(
-          "person_id", "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id"
-        ) %>%
-        dplyr::inner_join(
-          cdm$drug_strength,
-          by = c("drug_concept_id")
-        ) %>%
-        dplyr::mutate(
-          daily_dose = .data$quantity * .data$amount_value / .data$days_exposed
-        ) %>%
-        dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
-        dplyr::select(
-          "person_id", "daily_dose", "drug_concept_id", "ingredient_concept_id",
-          "drug_exposure_id"
-        ),
-      by = c(
-        "person_id", "drug_concept_id",
-        "drug_exposure_id"
-      )
-    ) %>%
-    dplyr::compute()
+    dplyr::mutate(daily_dose = 100)
 
   return(table)
+}
+
+#' Explain function
+#'
+#' @param cdm cdm
+#' @param tableName tableName
+#' @param ingredientConceptId ingredientConceptId
+#'
+#' @return
+#' @export
+#'
+#' @examples
+computeDailyDose <- function(cdm,
+                             tableName,
+                             ingredientConceptId) {
+  errorMessage <- checkmate::makeAssertCollection()
+  # initial checks
+  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
+  checkmate::assertCount(ingredientConceptId, add = errorMessage)
+  checkmate::assertFALSE(c("daily_dose") %in% colnames(table), add = errorMessage)
+  checkmate::assertTRUE(c("drug_strength") %in% names(cdm), add = errorMessage)
+  checkmate::reportAssertions(collection = errorMessage)
+
+  cdm[[tableName]] <- addDailyDose(
+    table = cdm[[tableName]],
+    cdm = cdm,
+    ingredientConceptId = ingredientConceptId
+  )
+
+  return(cdm)
 }
