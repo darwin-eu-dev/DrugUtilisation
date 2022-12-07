@@ -38,16 +38,16 @@ test_that("test input parameters errors", {
 test_that("simple functionality", {
   cdm <- mockDrugUtilisation(
     drug_exposure = dplyr::tibble(
-      drug_exposure_id = 1:8,
-      person_id = c(1, 1, 1, 1, 1, 2, 2, 2),
-      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2),
+      drug_exposure_id = 1:9,
+      person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
+      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
       drug_exposure_start_date = as.Date(c(
         "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
-        "2000-01-10", "2000-01-15", "2000-02-15"
+        "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
       )),
       drug_exposure_end_date = as.Date(c(
         "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
-        "2000-01-25", "2000-02-05", "2000-02-15"
+        "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
       )),
       quantity = 1
     ),

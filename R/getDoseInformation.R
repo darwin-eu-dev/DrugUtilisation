@@ -398,6 +398,15 @@ getDoseInformation <- function(cdm,
   # add era_id
   cohort <- addEraId(cohort)
 
+  # add continuous_exposure_id
+  cohort <- addContinuousExposureId(cohort)
+
+  # solve same index day overlapping
+  cohort <- solveSameIndexOverlap(cohort, sameIndexMode)
+
+  # solve not same index overlapping
+  cohort <- solveOverlap(cohort, overlapMode)
+
   # add daily dose to gaps
   cohort <- addGapDailyDose(cohort)
 
@@ -540,21 +549,19 @@ addOverlappingFlag <- function(x) {
 addTypeSubexposure <- function(x) {
   x <- x %>%
     dplyr::group_by(
-      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
-      .data$subexposure_id
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
     ) %>%
     dplyr::mutate(
       type_subexposure = dplyr::case_when(
-        .data$overlapping > 0 ~ "exposed",
-        .data$overlapping == 0 &
+        !is.na(.data$drug_concept_id) ~ "exposed",
+        is.na(.data$drug_concept_id) &
           .data$subexposed_days <= .env$gapEra &
           .data$subexposure_id > 1 &
           .data$subexposure_id < max(.data$subexposure_id, na.rm = TRUE) ~
           "gap",
         TRUE ~ "unexposed"
       )
-    ) %>%
-    dplyr::ungroup()
+    )
   return(x)
 }
 
@@ -567,11 +574,11 @@ addEraId <- function(x) {
       0
     )) %>%
     dbplyr::window_order(.data$subexposure_start_date) %>%
-    dplyr::mutate(era_id = cumsum(.data$era_id, na.rm = TRUE)) %>%
+    dplyr::mutate(era_id = cumsum(.data$era_id)) %>%
     dplyr::mutate(era_id = dplyr::if_else(
       .data$type_subexposure == "unexposed",
       as.numeric(NA),
-      .data$era_id
+      .data$era_id + 1
     ))
   return(x)
 }
@@ -586,14 +593,14 @@ addContinuousExposureId <- function(x) {
     )) %>%
     dbplyr::window_order(.data$subexposure_start_date) %>%
     dplyr::mutate(continuous_exposure_id = cumsum(
-      .data$continuous_exposure_id,
-      na.rm = TRUE
+      .data$continuous_exposure_id
     )) %>%
     dplyr::mutate(continuous_exposure_id = dplyr::if_else(
       .data$type_subexposure != "exposed",
       as.numeric(NA),
-      .data$continuous_exposure_id
-    ))
+      .data$continuous_exposure_id + 1
+    )) %>%
+    dplyr::ungroup()
   return(x)
 }
 
@@ -602,7 +609,7 @@ solveSameIndexOverlap <- function(x, sameIndexMode) {
   x_same_index <- x %>%
     dplyr::group_by(
       .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
-      .data$drugdrug_exposure_start_date
+      .data$drug_exposure_start_date
     ) %>%
     dplyr::filter(dplyr::n() > 1)
   if (sameIndexMode == "Minimum") {
@@ -647,7 +654,8 @@ solveSameIndexOverlap <- function(x, sameIndexMode) {
   }
 
   x <- x %>%
-    dplyr::left_join(x_same_index, by = colnames(x))
+    dplyr::left_join(x_same_index, by = colnames(x)) %>%
+    dplyr::compute()
 
   return(x)
 }
@@ -659,7 +667,7 @@ solveOverlap <- function(x, overlapMode) {
       .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
     ) %>%
     dplyr::filter(
-      is.na(.data$considered_subexposure) | .data$considered_exposure == "yes"
+      is.na(.data$considered_subexposure) | .data$considered_subexposure == "yes"
     ) %>%
     dplyr::filter(dplyr::n() > 1)
   if (overlapMode == "Minimum") {
