@@ -36,7 +36,7 @@ addDailyDose <- function(table,
   checkmate::reportAssertions(collection = errorMessage)
 
   table <- table %>%
-    dplyr::mutate(daily_dose = 100)
+    dplyr::mutate(daily_dose = .data$drug_concept_id * 10)
 
   return(table)
 }

@@ -1,4 +1,80 @@
-test_that("test subfunctions: splitSubexposures", {
+
+test_that("test input parameters errors", {
+  cdm <- mockDrugUtilisation(
+    cohort1 = dplyr::tibble(
+      cohort_definition_id = c(1, 1, 1, 2),
+      subject_id = c(1, 1, 1, 2),
+      cohort_start_date = as.Date(c(
+        "2020-01-01", "2022-01-01", "2020-01-01", "2020-01-01"
+      )),
+      cohort_end_date = as.Date(c(
+        "2020-05-01", "2022-09-06", "2020-05-01", "2020-05-01"
+      ))
+    )
+  )
+
+  expect_error(getDoseInformation())
+  expect_error(getDoseInformation(cdm = cdm))
+  expect_error(getDoseInformation(cdm = cdm, dusCohortName = "cohort1"))
+  expect_error(getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    ingredientConceptId = 1,
+    conceptSetPath = "hint"
+  ))
+  expect_error(getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    ingredientConceptId = "1"
+  ))
+  expect_error(getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    ingredientConceptId = 1,
+    eraJoinMode = "dummy"
+  ))
+})
+
+test_that("simple functionality", {
+  cdm <- mockDrugUtilisation(
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:8,
+      person_id = c(1, 1, 1, 1, 1, 2, 2, 2),
+      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
+        "2000-01-10", "2000-01-15", "2000-02-15"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
+        "2000-01-25", "2000-02-05", "2000-02-15"
+      )),
+      quantity = 1
+    ),
+    cohort1 = dplyr::tibble(
+      cohort_definition_id = 1,
+      subject_id = c(1, 1, 2),
+      cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
+      cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    )
+  )
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Previous",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+})
+
+test_that("test splitSubexposures", {
   x <- dplyr::tibble(
     subject_id = as.integer(c(
       1,
@@ -112,9 +188,9 @@ test_that("test subfunctions: splitSubexposures", {
         .data$subject_id == 1
     )
   numberExpectedSubexposures <- 4
-  countsPerSubexposure <- c( 1,  2,  1,  0)
-  dayStartSubexposure  <- c( 5,  6,  7, 11)
-  dayEndSubexposure    <- c( 5,  6, 10, 12)
+  countsPerSubexposure <- c(1, 2, 1, 0)
+  dayStartSubexposure <- c(5, 6, 7, 11)
+  dayEndSubexposure <- c(5, 6, 10, 12)
   expect_true(length(unique(yy$subexposure_id)) == numberExpectedSubexposures)
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy %>% dplyr::filter(.data$subexposure_id == k)
@@ -140,9 +216,9 @@ test_that("test subfunctions: splitSubexposures", {
         .data$subject_id == 1
     )
   numberExpectedSubexposures <- 6
-  countsPerSubexposure <- c( 0,  1,  2,  3,  1,  0)
-  dayStartSubexposure  <- c( 1,  8,  9, 11, 12, 16)
-  dayEndSubexposure    <- c( 7,  8, 10, 11, 15, 21)
+  countsPerSubexposure <- c(0, 1, 2, 3, 1, 0)
+  dayStartSubexposure <- c(1, 8, 9, 11, 12, 16)
+  dayEndSubexposure <- c(7, 8, 10, 11, 15, 21)
   expect_true(length(unique(yy$subexposure_id)) == numberExpectedSubexposures)
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy %>% dplyr::filter(.data$subexposure_id == k)
@@ -168,9 +244,9 @@ test_that("test subfunctions: splitSubexposures", {
         .data$subject_id == 1
     )
   numberExpectedSubexposures <- 5
-  countsPerSubexposure <- c( 2,  1,  0,  1,  2)
-  dayStartSubexposure  <- c( 1,  2,  6,  9, 11)
-  dayEndSubexposure    <- c( 1,  5,  8, 10, 11)
+  countsPerSubexposure <- c(2, 1, 0, 1, 2)
+  dayStartSubexposure <- c(1, 2, 6, 9, 11)
+  dayEndSubexposure <- c(1, 5, 8, 10, 11)
   expect_true(length(unique(yy$subexposure_id)) == numberExpectedSubexposures)
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy %>% dplyr::filter(.data$subexposure_id == k)
@@ -196,9 +272,9 @@ test_that("test subfunctions: splitSubexposures", {
         .data$subject_id == 2
     )
   numberExpectedSubexposures <- 5
-  countsPerSubexposure <- c( 2,  0,  1,  0,  1)
-  dayStartSubexposure  <- c( 3,  4,  9, 16, 20)
-  dayEndSubexposure    <- c( 3,  8, 15, 19, 20)
+  countsPerSubexposure <- c(2, 0, 1, 0, 1)
+  dayStartSubexposure <- c(3, 4, 9, 16, 20)
+  dayEndSubexposure <- c(3, 8, 15, 19, 20)
   expect_true(length(unique(yy$subexposure_id)) == numberExpectedSubexposures)
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy %>% dplyr::filter(.data$subexposure_id == k)
@@ -224,9 +300,9 @@ test_that("test subfunctions: splitSubexposures", {
         .data$subject_id == 2
     )
   numberExpectedSubexposures <- 2
-  countsPerSubexposure <- c( 0,  1)
-  dayStartSubexposure  <- c( 1,  8)
-  dayEndSubexposure    <- c( 7, 10)
+  countsPerSubexposure <- c(0, 1)
+  dayStartSubexposure <- c(1, 8)
+  dayEndSubexposure <- c(7, 10)
   expect_true(length(unique(yy$subexposure_id)) == numberExpectedSubexposures)
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy %>% dplyr::filter(.data$subexposure_id == k)
@@ -244,9 +320,9 @@ test_that("test subfunctions: splitSubexposures", {
       expect_true(sum(is.na(yyy)) == 0)
     }
   }
-
 })
 
-test_that("test input parameters errors", {
-
+test_that("test solveSameIndexOverlap", {
+  a <- 1
+  expect_true(TRUE)
 })

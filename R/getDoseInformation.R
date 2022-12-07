@@ -212,18 +212,18 @@ getDoseInformation <- function(cdm,
     add = errorMessage
   )
   checkmate::assertTRUE(
-    length(names(cdm[[dusCohortName]])) == 4,
+    length(colnames(cdm[[dusCohortName]])) == 4,
     add = errorMessage
   )
   checkmate::assertTRUE(
-    all(unique(names(cdm[[dusCohortName]])) %in% c(
+    all(colnames(cdm[[dusCohortName]]) %in% c(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
     )),
     add = errorMessage
   )
   if (!is.null(conceptSetPath)) {
-    if (!file.exist(conceptSetPath)) {
+    if (!file.exists(conceptSetPath)) {
       stop(glue::glue("Invalid concept set path {conceptSetPath}"))
     } else {
       if (dir.exists(conceptSetPath)) {
@@ -303,7 +303,7 @@ getDoseInformation <- function(cdm,
     dplyr::select(
       "subject_id" = "person_id",
       "drug_concept_id",
-      "drug_exposure_id ",
+      "drug_exposure_id",
       "drug_exposure_start_date",
       "drug_exposure_end_date",
       "quantity"
@@ -357,13 +357,16 @@ getDoseInformation <- function(cdm,
         number = "days_to_add"
       )
     ))) %>%
-    dplyr::select(-"days_to_add")
+    dplyr::select(-"days_to_add", -"days_exposed")
 
   # We compute the daily dose using drugExposureDiagnostics function (to be
   # updated in the next interation as drugExposureDiagnostics does not work as
   # we want)
   cohort <- cohort %>%
-    addDailyDose(cohort, cdm = cdm, ingredientConceptId = ingredientConceptId)
+    addDailyDose(cdm = cdm, ingredientConceptId = ingredientConceptId) %>%
+    dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_end_date) %>%
+    dplyr::filter(.data$drug_exposure_end_date >= .data$cohort_start_date) %>%
+    dplyr::select(-"quantity")
 
   # impute or eliminate the exposures that daily_dose does not fulfill the
   # conditions ( <0; <dailyDoseRange[1]; >dailyDoseRange[2])
@@ -374,29 +377,20 @@ getDoseInformation <- function(cdm,
     lowerBound = dailyDoseRange[1],
     upperBound = dailyDoseRange[2],
     imputeValueName = "imputeDailyDose"
-  )
+  ) %>%
+    dplyr::compute()
 
   attrition <- attrition %>%
     dplyr::union_all(addAttitionLine(cohort, "Impute DailyDose"))
 
-  # get only the variables that we are interested in
-  cohort <- cohort %>%
-    dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_end_date) %>%
-    dplyr::filter(.data$drug_exposure_end_date >= .data$cohort_start_date) %>%
-    dplyr::select(-"quantity", -"days_exposed", -"days_to_add") %>%
-    dplyr::compute()
-
+  if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
+    stop("No exposure found inside the studied periods.")
+  }
   # split the exposures in subexposures inside each cohort
   cohort <- splitSubexposures(cohort)
 
-  # add the grouping
-  cohort <- cohort %>%
-    dplyr::group_by(
-      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
-      .data$subexposure_id
-    ) %>%
-    # add the overlapping flag
-    cohort() <- addOverlappingFlag(cohort)
+  # add the overlapping flag
+  cohort <- addOverlappingFlag(cohort)
 
   # add the type of subexposure
   cohort <- addTypeSubexposure(cohort)
@@ -498,6 +492,9 @@ splitSubexposures <- function(x) {
     dbplyr::window_order(.data$subexposure_start_date) %>%
     dplyr::mutate(subexposure_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
+    dplyr::mutate(subexposed_days = !!CDMConnector::datediff(
+      "subexposure_start_date", "subexposure_end_date"
+    ) + 1) %>%
     dplyr::compute()
 
   # we join the exposures with the overlapping periods and we only consider the
@@ -517,7 +514,8 @@ splitSubexposures <- function(x) {
         ),
       by = c(
         "subject_id", "cohort_start_date", "cohort_end_date",
-        "subexposure_start_date", "subexposure_end_date", "subexposure_id"
+        "subexposure_start_date", "subexposure_end_date", "subexposure_id",
+        "subexposed_days"
       )
     ) %>%
     dplyr::compute()
@@ -529,18 +527,27 @@ splitSubexposures <- function(x) {
 #' @noRd
 addOverlappingFlag <- function(x) {
   x <- x %>%
-    dplyr::mutate(overlapping = dplyr::n())
+    dplyr::group_by(
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+      .data$subexposure_id
+    ) %>%
+    dplyr::mutate(overlapping = dplyr::n()) %>%
+    dplyr::ungroup()
   return(x)
 }
 
 #' @noRd
 addTypeSubexposure <- function(x) {
   x <- x %>%
+    dplyr::group_by(
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+      .data$subexposure_id
+    ) %>%
     dplyr::mutate(
       type_subexposure = dplyr::case_when(
         .data$overlapping > 0 ~ "exposed",
         .data$overlapping == 0 &
-          .data$days_exposed <= .env$gapEra &
+          .data$subexposed_days <= .env$gapEra &
           .data$subexposure_id > 1 &
           .data$subexposure_id < max(.data$subexposure_id, na.rm = TRUE) ~
           "gap",
@@ -696,25 +703,28 @@ solveOverlap <- function(x, overlapMode) {
       dplyr::mutate(considered_subexposure = "yes")
   } else if (overlapMode == "Previous") {
     x_overlap <- x_overlap %>%
-      dplyr::mutate(considered_subexposure = dplyr::if_else(
-        .data$drug_exposure_start_date) ==
+      dplyr::mutate(
+        considered_subexposure = dplyr::if_else(
+          .data$drug_exposure_start_date
+        ) ==
           min(.data$drug_exposure_start_date, na.rm = TRUE),
         "yes",
         "no"
       )
   } else if (overlapMode == "Subsequent") {
     x_overlap <- x_overlap %>%
-      dplyr::mutate(considered_subexposure = dplyr::if_else(
-        .data$drug_exposure_start_date) ==
+      dplyr::mutate(
+        considered_subexposure = dplyr::if_else(
+          .data$drug_exposure_start_date
+        ) ==
           max(.data$drug_exposure_start_date, na.rm = TRUE),
         "yes",
         "no"
       )
   }
-
   x <- x %>%
-    # left_join wont work
-    dplyr::left_join(x_overlap, by = colnames(x))
+    dplyr::anti_join(x_overlap, by = colnames(x)) %>%
+    dplyr::union_all(x_overlap)
 
   return(x)
 }
