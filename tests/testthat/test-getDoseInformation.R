@@ -58,6 +58,20 @@ test_that("simple functionality", {
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
     )
   )
+
+  variables <- c(
+    "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
+    "number_exposures", "number_subexposures", "number_continuous_exposures",
+    "number_eras", "number_gaps", "number_unexposed_periods",
+    "number_subexposures_overlap", "number_eras_overlap",
+    "number_continuous_exposure_overlap", "initial_daily_dose",
+    "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
+    "number_subexposures_no_overlap", "number_eras_no_overlap",
+    "number_continuous_exposures_no_overlap",
+    "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
+  )
+
+  # prev
   x <- getDoseInformation(
     cdm = cdm,
     dusCohortName = "cohort1",
@@ -72,10 +86,127 @@ test_that("simple functionality", {
     durationRange = c(1, NA),
     dailyDoseRange = c(0, NA)
   )
+  value_cohort_1 <- c(
+    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    0, 3, 0, 0,
+    41*10 + 20*20, 0, 32*20+30
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2000-01-01")
+    )
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
+  }
 
-  variables <- c("exposed_days", "unexposed_days", "not_considered_days", "first_era_days", "number_exposures", "number_subexposures", "number_continuous_exposures", "number_eras", "number_gaps", "number_unexposed_periods", "number_subexposures_overlap", "number_eras_overlap", "number_continuous_exposure_overlap", "cumulative_dose", "initial_daily_dose", "cumulative_gap_dose", "cumulative_not_considered_dose", "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days", "number_subexposures_no_overlap", "number_eras_no_overlap", "number_continuous_exposures_no_overlap", "proportion_gap_dose", "proportion_not_considered_dose")
+  # sub
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Subsequent",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  value_cohort_1 <- c(
+    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    0, 3, 0, 0,
+    10*9 + 20*51 + 30*1, 0, 10*32 + 20*1 + 30*0
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2000-01-01")
+    )
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
+  }
 
-  value_cohort_1 <- c(61, 0, 33, 61)
+  # min
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Minimum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  value_cohort_1 <- c(
+    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    0, 3, 0, 0,
+    10*41 + 20*20 + 30*0, 0, 10*0 + 20*32 + 30*1
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2000-01-01")
+    )
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
+  }
+
+  # max
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Maximum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  value_cohort_1 <- c(
+    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    0, 3, 0, 0,
+    9*10 + 51*20 +1*30, 0, 32*10 + 1*20 + 0*30
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2000-01-01")
+    )
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
+  }
+
+  # sum
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  value_cohort_1 <- c(
+    61, 0, 0, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    0, 3, 0, 0,
+    41*10 + 52*20 + 1*30, 0, 0
+  )
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(

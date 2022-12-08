@@ -146,7 +146,7 @@ getDoseInformation <- function(cdm,
   )
   checkmate::assertChoice(
     eraJoinMode,
-    choices = c("Previous", "Subsequent", "Zero", "Join"),
+    choices = c("Previous", "Subsequent", "Zero"),
     add = errorMessage
   )
   checkmate::assertChoice(
@@ -393,7 +393,7 @@ getDoseInformation <- function(cdm,
   cohort <- addOverlappingFlag(cohort)
 
   # add the type of subexposure
-  cohort <- addTypeSubexposure(cohort)
+  cohort <- addTypeSubexposure(cohort, gapEra)
 
   # add era_id
   cohort <- addEraId(cohort)
@@ -551,7 +551,7 @@ addOverlappingFlag <- function(x) {
 }
 
 #' @noRd
-addTypeSubexposure <- function(x) {
+addTypeSubexposure <- function(x, gapEra) {
   x <- x %>%
     dplyr::group_by(
       .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
@@ -677,6 +677,8 @@ solveOverlap <- function(x, overlapMode) {
     dplyr::filter(dplyr::n() > 1)
   if (overlapMode == "Minimum") {
     x_overlap <- x_overlap %>%
+      dplyr::select(-"considered_subexposure")
+    x_overlap <- x_overlap %>%
       dplyr::left_join(
         x_overlap %>%
           dplyr::filter(
@@ -694,6 +696,8 @@ solveOverlap <- function(x, overlapMode) {
         "yes"
       ))
   } else if (overlapMode == "Maximum") {
+    x_overlap <- x_overlap %>%
+      dplyr::select(-"considered_subexposure")
     x_overlap <- x_overlap %>%
       dplyr::left_join(
         x_overlap %>%
@@ -768,10 +772,14 @@ addGapDailyDose <- function(x, eraJoinMode) {
         x %>%
           dplyr::mutate(subexposure_id = .data$subexposure_id + 1) %>%
           dplyr::filter(considered_subexposure == "yes") %>%
+          dplyr::group_by(.data$subexposure_id) %>%
+          dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
+          dplyr::ungroup() %>%
           dplyr::select(
             "subject_id", "cohort_start_date", "cohort_end_date",
             "subexposure_id", "daily_dose"
-          ),
+          ) %>%
+          dplyr::distinct(),
         by = c(
           "subject_id", "cohort_start_date", "cohort_end_date",
           "subexposure_id"
@@ -784,10 +792,14 @@ addGapDailyDose <- function(x, eraJoinMode) {
         x %>%
           dplyr::mutate(subexposure_id = .data$subexposure_id - 1) %>%
           dplyr::filter(considered_subexposure == "yes") %>%
+          dplyr::group_by(.data$subexposure_id) %>%
+          dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
+          dplyr::ungroup() %>%
           dplyr::select(
             "subject_id", "cohort_start_date", "cohort_end_date",
             "subexposure_id", "daily_dose"
-          ),
+          ) %>%
+          dplyr::distinct(),
         by = c(
           "subject_id", "cohort_start_date", "cohort_end_date",
           "subexposure_id"
@@ -878,8 +890,8 @@ summariseCohort <- function(x) {
       .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
     ) %>%
     dplyr::summarise(
-      exposed_days = sum(
-        .data$subexposed_days[.data$considered_subexposure == "yes"],
+      gap_days = sum(
+        .data$subexposed_days[.data$type_subexposure == "gap"],
         na.rm = TRUE
       ),
       unexposed_days = sum(
@@ -925,7 +937,7 @@ summariseCohort <- function(x) {
         .data$continuous_exposure_id[.data$overlapping > 1]
       ),
       cumulative_dose = sum(
-        .data$daily_dose[.data$considered_subexposure == "yes"],
+        .data$exposed_dose[.data$considered_subexposure == "yes"],
         na.rm = TRUE
       ),
       initial_daily_dose = sum(
@@ -955,10 +967,10 @@ summariseCohort <- function(x) {
     dplyr::compute() %>%
     # replace NA
     dplyr::mutate(
-      exposed_days = dplyr::if_else(
-        is.na(.data$exposed_days),
+      gap_days = dplyr::if_else(
+        is.na(.data$gap_days),
         0,
-        .data$exposed_days
+        .data$gap_days
       ),
       unexposed_days = dplyr::if_else(
         is.na(.data$unexposed_days),
@@ -1041,8 +1053,8 @@ summariseCohort <- function(x) {
       "cohort_start_date", "cohort_end_date"
     ) + 1) %>%
     dplyr::mutate(
-      gap_days =
-        .data$follow_up_days - .data$unexposed_days - .data$exposed_days
+      exposed_days =
+        .data$follow_up_days - .data$unexposed_days - .data$gap_days
     ) %>%
     dplyr::mutate(
       number_subexposures_no_overlap =
