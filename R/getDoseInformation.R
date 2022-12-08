@@ -433,7 +433,9 @@ splitSubexposures <- function(x) {
           "date_event" = "drug_exposure_start_date"
         ) %>%
         dplyr::distinct() %>%
-        dplyr::mutate(date_event = !!CDMConnector::dateadd("date_event", -1))
+        dplyr::mutate(date_event = as.Date(!!CDMConnector::dateadd(
+          "date_event", -1
+          )))
     ) %>%
     dplyr::union_all(
       x %>%
@@ -450,7 +452,9 @@ splitSubexposures <- function(x) {
           "date_event" = "drug_exposure_end_date"
         ) %>%
         dplyr::distinct() %>%
-        dplyr::mutate(date_event = !!CDMConnector::dateadd("date_event", 1))
+        dplyr::mutate(date_event = as.Date(!!CDMConnector::dateadd(
+          "date_event", 1
+          )))
     ) %>%
     dplyr::group_by(
       .data$subject_id, .data$cohort_start_date, .data$cohort_end_date

@@ -89,14 +89,14 @@ getOverlappingCohortSubjects <- function(cdm, targetCohortId, targetCohortTable,
   result <- cohort2 %>%
     dplyr::left_join(cohort1, by = "subject_id") %>%
     dplyr::mutate(
-      overlap_end_date = dbplyr::sql(CDMConnector::dateadd(
+      overlap_end_date = as.Date(dbplyr::sql(CDMConnector::dateadd(
         date = "interest_start_date",
         number = !!-lookbackWindow[1]
-      )),
-      overlap_start_date = dbplyr::sql(CDMConnector::dateadd(
+      ))),
+      overlap_start_date = as.Date(dbplyr::sql(CDMConnector::dateadd(
         date = "interest_start_date",
         number = !!-lookbackWindow[2]
-      ))
+      )))
     ) %>%
     dplyr::group_by(.data$subject_id, .data$cohort_definition_id.y) %>%
     dplyr::mutate(
