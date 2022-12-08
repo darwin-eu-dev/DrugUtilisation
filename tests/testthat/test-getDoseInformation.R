@@ -72,6 +72,18 @@ test_that("simple functionality", {
     durationRange = c(1, NA),
     dailyDoseRange = c(0, NA)
   )
+
+  variables <- c("exposed_days", "unexposed_days", "not_considered_days", "first_era_days", "number_exposures", "number_subexposures", "number_continuous_exposures", "number_eras", "number_gaps", "number_unexposed_periods", "number_subexposures_overlap", "number_eras_overlap", "number_continuous_exposure_overlap", "cumulative_dose", "initial_daily_dose", "cumulative_gap_dose", "cumulative_not_considered_dose", "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days", "number_subexposures_no_overlap", "number_eras_no_overlap", "number_continuous_exposures_no_overlap", "proportion_gap_dose", "proportion_not_considered_dose")
+
+  value_cohort_1 <- c(61, 0, 33, 61)
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2000-01-01")
+    )
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
+  }
 })
 
 test_that("test splitSubexposures", {
