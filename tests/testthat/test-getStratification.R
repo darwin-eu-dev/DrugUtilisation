@@ -433,7 +433,7 @@ test_that("test indexYear strata", {
 
 })
 
-test_that("test indexYear strata", {
+test_that("test indication strata", {
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),

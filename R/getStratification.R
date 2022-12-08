@@ -129,7 +129,7 @@ getStratification <- function(cdm,
     }
   }
   if (!is.null(indicationTable)) {
-    if (!all(unlist(lapply(indicationTable$indication, function(x) {
+    if (!all(unlist(lapply(indicationTable, function(x) {
       c(
         "cohort_definition_id", "indication_id", "subject_id",
         "cohort_start_date", "cohort_end_date"
@@ -240,8 +240,9 @@ getStratification <- function(cdm,
     dplyr::bind_rows()
   # indication
   if (!is.null(indicationTable)) {
-    gaps <- names(indicationTable$indication)
-    indicationNames <- indicationTable$indicationDefinitionSet$indication_name
+    gaps <- names(indicationTable)
+    indicationDefinitionSet <- attr(indicationTable, "indicationDefinitionSet")
+    indicationNames <- indicationDefinitionSet$indication_name
     indicationGroup <- dplyr::tibble(indication_group = "Any") %>%
       dplyr::union_all(tidyr::expand_grid(
         gap = gaps,
@@ -308,13 +309,13 @@ getStratification <- function(cdm,
   # prepare indicationTable
   if (!is.null(indicationTable)) {
     for (k in 1:length(gaps)) {
-      indicationTab <- indicationTable$indication[[k]] %>%
+      indicationTab <- indicationTable[[k]] %>%
         dplyr::select(
           "subject_id", "cohort_start_date", "cohort_end_date", "indication_id"
         ) %>%
         dplyr::distinct() %>%
         dplyr::inner_join(
-          indicationTable$indicationDefinitionSet,
+          indicationDefinitionSet,
           by = "indication_id",
           copy = TRUE
         ) %>%

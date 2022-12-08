@@ -21,8 +21,8 @@ test_that("expected errors on inputs", {
       cohort_end_date = as.Date(c(
         "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
       )),
-      number_x = c(1, 2, 3, 6),
-      carcola = c(5, 6, 9, 7),
+      initial_dose = c(1, 2, 3, 6),
+      cumulative_dose = c(5, 6, 9, 7),
       piscina = c(TRUE, FALSE, TRUE, FALSE),
       cara = c("a", "b", "b", "a")
     )
@@ -52,56 +52,56 @@ test_that("expected errors on inputs", {
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   ))
   # expect error if cdm is not a cdm_ref
   expect_error(summariseDoseTable(
     cdm = 1,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   ))
   # expect error if doseTableName is not a character
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = 1,
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   ))
   # expect error if strataCohortName is not a character
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = 1,
     doseTableName = "person",
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   ))
   # expect error if doseTableName is a vector
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = c("condition_occurrence", "drug_exposure"),
     doseTableName = "person",
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   ))
   # expect error if doseTableName is a vector
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = c("person", "drug_exposure"),
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   ))
   # expect error if doseTableName is not a contained in cdm
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "x",
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   ))
   # expect error if strataCohortName is not a contained in cdm
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = "x",
     doseTableName = "person",
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   ))
   # expect error if strataCohortName is a vector
   # expect error if strataCohortName does not contains the required fields
@@ -136,8 +136,8 @@ test_that("check output format", {
       cohort_end_date = as.Date(c(
         "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
       )),
-      number_x = c(1, 2, 3, 6),
-      carcola = c(5, 6, 9, 7),
+      initial_dose = c(1, 2, 3, 6),
+      cumulative_dose = c(5, 6, 9, 7),
       piscina = c(TRUE, FALSE, TRUE, FALSE),
       cara = c("a", "b", "b", "a")
     )
@@ -146,7 +146,7 @@ test_that("check output format", {
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
-    variables = c("number_x", "carcola")
+    variables = c("initial_dose", "cumulative_dose")
   )
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
   expect_true(length(result) == 4)
@@ -180,8 +180,8 @@ test_that("check all estimates", {
       cohort_end_date = as.Date(c(
         "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
       )),
-      number_x = c(1, 2, 3, 6),
-      carcola = c(5, 6, 9, 7),
+      initial_dose = c(1, 2, 3, 6),
+      cumulative_dose = c(5, 6, 9, 7),
       piscina = c(TRUE, FALSE, TRUE, FALSE),
       cara = c("a", "b", "b", "a")
     )
@@ -192,20 +192,20 @@ test_that("check all estimates", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 1,
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       estimates = all_estimates[k]
     ))
-    expect_true(nrow(res[res$variable == c("number_x"), ]) == 1)
-    expect_true(res$estimate[res$variable == c("number_x")] == all_estimates[k])
-    expect_true(nrow(res[res$variable == c("carcola"), ]) == 1)
-    expect_true(res$estimate[res$variable == c("carcola")] == all_estimates[k])
+    expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
+    expect_true(res$estimate[res$variable == c("initial_dose")] == all_estimates[k])
+    expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
+    expect_true(res$estimate[res$variable == c("cumulative_dose")] == all_estimates[k])
   }
   expect_no_error(res <- summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
     cohortId = 1,
-    variables = c("number_x", "carcola"),
+    variables = c("initial_dose", "cumulative_dose"),
     estimates = all_estimates
   ))
 })
@@ -230,8 +230,8 @@ test_that("check obscure counts", {
       cohort_end_date = as.Date(c(
         "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
       )),
-      number_x = c(1, 2, 3, 6),
-      carcola = c(5, 6, 9, 7),
+      initial_dose = c(1, 2, 3, 6),
+      cumulative_dose = c(5, 6, 9, 7),
       piscina = c(TRUE, FALSE, TRUE, FALSE),
       cara = c("a", "b", "b", "a")
     )
@@ -243,7 +243,7 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 1,
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       minimumCellCounts = 3
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -256,7 +256,7 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 1,
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       minimumCellCounts = 4
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -270,7 +270,7 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 2,
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       minimumCellCounts = 1
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -283,7 +283,7 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 2,
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       minimumCellCounts = 2
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -297,7 +297,7 @@ test_that("check obscure counts", {
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       minimumCellCounts = 1
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -309,7 +309,7 @@ test_that("check obscure counts", {
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       minimumCellCounts = 2
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -321,7 +321,7 @@ test_that("check obscure counts", {
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       minimumCellCounts = 3
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
@@ -333,7 +333,7 @@ test_that("check obscure counts", {
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
-      variables = c("number_x", "carcola"),
+      variables = c("initial_dose", "cumulative_dose"),
       minimumCellCounts = 4
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%

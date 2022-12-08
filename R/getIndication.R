@@ -137,7 +137,6 @@ getIndication <- function(cdm,
 
   # define result as a list
   result <- list()
-  result$indication <- list()
 
 
   # get all indications if indicationGap = NA return all indication, if not return indication within indicationGap
@@ -240,7 +239,7 @@ getIndication <- function(cdm,
       )
 
 
-    result$indication[["Any"]] <- target_db
+    result[["Any"]] <- target_db
 
   }
 
@@ -354,7 +353,7 @@ getIndication <- function(cdm,
         )
 
 
-      result$indication[[as.character(gap)]] <- target_db
+      result[[as.character(gap)]] <- target_db
     }
   }
 
@@ -366,7 +365,7 @@ getIndication <- function(cdm,
       indication_name = c("Unkown indication", "No indication")
     ))
 
-  result$indicationDefinitionSet <- indicationDefinitionSet
+  attr(result, "indicationDefinitionSet") <- indicationDefinitionSet
 
   # #save indication
   #  cdm[[indicationTableName]] <-

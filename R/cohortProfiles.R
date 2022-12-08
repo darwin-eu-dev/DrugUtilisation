@@ -169,11 +169,11 @@ addAge <- function(cohortDb,
       "-",
       .data$day_of_birth
     ))) %>%
-    dplyr::mutate(age = dbplyr::sql(sqlGetAge(
+    dplyr::mutate(age = floor(dbplyr::sql(sqlGetAge(
       dialect = CDMConnector::dbms(cdm),
       dob = "birth_date",
       dateOfInterest = ageAt
-    ))) %>%
+    )))) %>%
     dplyr::select("subject_id", dplyr::all_of(ageAt), "age") %>%
     dplyr::right_join(cohortDb, by = c("subject_id", ageAt)) %>%
     dplyr::select(dplyr::all_of(colnames(cohortDb)), "age")
