@@ -36,16 +36,16 @@ cdm <- CDMConnector::generateCohortSet(
 cdm$dus <- generateDrugUtilisationCohort(
   cdm = cdm,
   ingredientConceptId = 745466,
-  conceptSetPath = NULL,
+  conceptSetPath = here::here("inst"),
   studyStartDate = as.Date("2010-01-01"),
-  studyEndDate = ,
-  summariseMode = ,
-  fixedTime = ,
-  daysPriorHistory = ,
-  gapEra = ,
-  imputeDuration = ,
-  durationRange =
-  )
+  studyEndDate = NULL,
+  summariseMode = "AllEras", # "FixedTime, FirstEra
+  fixedTime = 365,
+  daysPriorHistory = NULL,
+  gapEra = 0,
+  imputeDuration = "eliminate", # mean, median, quantile25, quantile75
+  durationRange = c(1, NA)
+)
 
 attrition_dus <- attr(cdm$dus, "attrition")
 
@@ -80,7 +80,7 @@ cdm$stratas <- getStratification(
   targetCohortName = "dus",
   targetCohortId = 1,
   sex = "Both",
-  ageGroup = list(c(0, 24), c(25, 49), c(50, 74), c(75, 150)),
+  ageGroup = list(c(0,150),c(0, 24), c(25, 49), c(50, 74), c(75, 150)),
   indexYearGroup = list(c(2010, 2020), c(2010)),
   indicationTable = indication,
   oneStrata = FALSE
@@ -107,10 +107,10 @@ cdm$dose_table <- getDoseInformation(
 summariseDoseIndicationTable(
   cdm = cdm,
   strataCohortName = "strata",
-  cohortId = NULL,
+  cohortId = 1:5,
   doseTableName = "dose_table",
-  variables = NULL,
-  estimates = NULL,
+  variables = "mean_dose",
+  estimates = c("mean", "q25", "median"),
   indicationList = NULL,
   minimumCellCounts = 5
 )
