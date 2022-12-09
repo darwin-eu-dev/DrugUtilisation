@@ -776,7 +776,9 @@ addGapDailyDose <- function(x, eraJoinMode) {
         x %>%
           dplyr::mutate(subexposure_id = .data$subexposure_id + 1) %>%
           dplyr::filter(.data$considered_subexposure == "yes") %>%
-          dplyr::group_by(.data$subexposure_id) %>%
+          dplyr::group_by(
+            .data$subject_id, .data$cohort_start_date, .data$subexposure_id
+          ) %>%
           dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
           dplyr::ungroup() %>%
           dplyr::select(
@@ -796,7 +798,9 @@ addGapDailyDose <- function(x, eraJoinMode) {
         x %>%
           dplyr::mutate(subexposure_id = .data$subexposure_id - 1) %>%
           dplyr::filter(.data$considered_subexposure == "yes") %>%
-          dplyr::group_by(.data$subexposure_id) %>%
+          dplyr::group_by(
+            .data$subject_id, .data$cohort_start_date, .data$subexposure_id
+          ) %>%
           dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
           dplyr::ungroup() %>%
           dplyr::select(

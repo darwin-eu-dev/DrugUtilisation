@@ -35,7 +35,7 @@ test_that("test input parameters errors", {
   ))
 })
 
-test_that("simple functionality", {
+test_that("test overlapMode", {
   cdm <- mockDrugUtilisation(
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
@@ -216,6 +216,279 @@ test_that("simple functionality", {
     expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
 })
+
+test_that("test gapEra and eraJoinMode", {
+  cdm <- mockDrugUtilisation(
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:9,
+      person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
+      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
+        "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
+        "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
+      )),
+      quantity = 1
+    ),
+    cohort1 = dplyr::tibble(
+      cohort_definition_id = 1,
+      subject_id = c(1, 1, 2),
+      cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
+      cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    )
+  )
+
+  variables <- c(
+    "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
+    "number_exposures", "number_subexposures", "number_continuous_exposures",
+    "number_eras", "number_gaps", "number_unexposed_periods",
+    "number_subexposures_overlap", "number_eras_overlap",
+    "number_continuous_exposure_overlap", "initial_daily_dose",
+    "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
+    "number_subexposures_no_overlap", "number_eras_no_overlap",
+    "number_continuous_exposures_no_overlap",
+    "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
+  )
+
+  # overall functionality
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 0,
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  values <- c(
+    35, 25, 0, 15, 2, 3, 2,
+    2, 0, 1,
+    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    0, 3, 2, 2,
+    15*30+20*20, 0, 0
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
+    )
+  for (k in 1:length(values)) {
+    expect_true(xx[[variables[k]]] == values[k])
+  }
+
+  # gapEra = 24
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 24,
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  values <- c(
+    35, 25, 0, 15, 2, 3, 2,
+    2, 0, 1,
+    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    0, 3, 2, 2,
+    15*30+20*20, 0, 0
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
+    )
+  for (k in 1:length(values)) {
+    expect_true(xx[[variables[k]]] == values[k])
+  }
+
+  # gapEra = 25 & joinMode = Zero
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 25,
+    eraJoinMode = "Zero",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  values <- c(
+    35, 0, 0, 60, 2, 3, 2,
+    1, 1, 0,
+    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    25, 3, 1, 2,
+    15*30+20*20, 0, 0
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
+    )
+  for (k in 1:length(values)) {
+    expect_true(xx[[variables[k]]] == values[k])
+  }
+
+  # gapEra = 25 & joinMode = Previous
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 25,
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  values <- c(
+    35, 0, 0, 60, 2, 3, 2,
+    1, 1, 0,
+    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    25, 3, 1, 2,
+    15*30+20*20+25*30, 25*30, 0
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
+    )
+  for (k in 1:length(values)) {
+    expect_true(xx[[variables[k]]] == values[k])
+  }
+
+  # gapEra = 25 & joinMode = Subsequent
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 25,
+    eraJoinMode = "Subsequent",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  values <- c(
+    35, 0, 0, 60, 2, 3, 2,
+    1, 1, 0,
+    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    25, 3, 1, 2,
+    15*30+20*20+25*20, 25*20, 0
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(
+      subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
+    )
+  for (k in 1:length(values)) {
+    expect_true(xx[[variables[k]]] == values[k])
+  }
+
+
+})
+
+test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
+  cdm <- mockDrugUtilisation(
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:9,
+      person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
+      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
+        "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
+        "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
+      )),
+      quantity = 1
+    ),
+    cohort1 = dplyr::tibble(
+      cohort_definition_id = 1,
+      subject_id = c(1, 1, 2),
+      cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
+      cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    )
+  )
+
+  variables <- c(
+    "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
+    "number_exposures", "number_subexposures", "number_continuous_exposures",
+    "number_eras", "number_gaps", "number_unexposed_periods",
+    "number_subexposures_overlap", "number_eras_overlap",
+    "number_continuous_exposure_overlap", "initial_daily_dose",
+    "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
+    "number_subexposures_no_overlap", "number_eras_no_overlap",
+    "number_continuous_exposures_no_overlap",
+    "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
+  )
+
+  # overall functionality
+  x <- getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 0,
+    eraJoinMode = "Zero",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(0, NA)
+  )
+  values <- c(
+    28, 33, 0, 27, 4, 7, 2,
+    2, 0, 3,
+    2, 1, 1, 0, 30*16+40*22+10*22+20*1, 16+22+22+1, 61,
+    0, 5, 1, 1,
+    30*16+40*22+10*22+20*1, 0, 0
+  )
+  xx <- x %>%
+    dplyr::collect() %>%
+    dplyr::filter(subject_id == 2)
+  for (k in 1:length(values)) {
+    expect_true(xx[[variables[k]]] == values[k])
+  }
+
+  # massive test of 90 escenarios
+  overlapMode	sameIndexMode	eraJoinMode	gap	first_era	not_considered_days	number_eras	number_gaps	unexposed_days	gap_days	cumulative_dose	cumulative_gap_dose	cumulative_not_considered_dose
+  sum	sum	zero	8	27	0	2	1	33	0	1600	0	0
+  prev	min	zero	8	27	33	2	1	33	0	610	0	990
+  sub	max	prev	16	37	33	1	0	24	9	1410	360	550
+  min	sum	zero	8	27	33	2	1	33	0	830	0	770
+  max	sum	zero	16	37	33	1	0	24	9	1610	450	440
+  sum	min	sub	16	37	22	1	0	24	9		90	1600	1600
+  sum	min	prev	16	37	22	1	0	24	9		90	1600	1600
+
+
+})
+
 
 test_that("test splitSubexposures", {
   x <- dplyr::tibble(
@@ -465,7 +738,3 @@ test_that("test splitSubexposures", {
   }
 })
 
-test_that("test solveSameIndexOverlap", {
-  a <- 1
-  expect_true(TRUE)
-})
