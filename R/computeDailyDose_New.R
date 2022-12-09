@@ -36,7 +36,55 @@ addDailyDose <- function(table,
   checkmate::reportAssertions(collection = errorMessage)
 
   table <- table %>%
-    dplyr::mutate(daily_dose = 100)
+    dplyr::left_join(
+      table %>%
+        dplyr::mutate(days_exposed = dbplyr::sql(sqlDiffDays(
+          CDMConnector::dbms(attr(cdm, "dbcon")),
+          "drug_exposure_start_date",
+          "drug_exposure_end_date"
+        )) + 1) %>%
+        dplyr::select(
+          "person_id", "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id"
+        ) %>%
+        dplyr::inner_join(
+          cdm$drug_strength,
+          by = c("drug_concept_id")
+        ) %>%
+        dplyr::mutate(drugDoseType := dplyr::case_when(
+          # 1. Tablets and other fixed amount formulations
+          is.na(denominator_unit_concept_id) == TRUE ~ "tablets",
+          # 2. Puffs of an inhaler
+          denominator_unit_concept_id == 45744809  ~ "puffs",
+          # 3. Quantified Drugs which are formulated as a concentration
+          denominator_unit_concept_id %in% c(8576, 8587) && denominator_value != 1 && is.na(denominator_value)==FALSE ~ "quantified",
+          # 4. Drugs with the total amount provided in quantity, e.g. chemotherapeutics
+          denominator_unit_concept_id %in% c(8576, 8587) && (denominator_value == 1 | is.na(denominator_value)==TRUE) ~ "quantity",
+          # 5. Compounded drugs
+          denominator_unit_concept_id == 8576 & amount_value == 1 ~ "compounded",
+          # 6. Drugs with the active ingredient released over time, e.g. patches
+          denominator_unit_concept_id == 8505 ~ "timeBased")
+        ) %>%
+        dplyr::mutate(
+          daily_dose := dplyr::case_when(is.na(drugDoseType) ~ NA,
+                                         days_exposed == 0 ~ NA,
+                                         drugDoseType == "tablets" ~  .data$quantity * .data$amount_value / .data$days_exposed,
+                                         drugDoseType == "quantified" ~ .data$quantity * .data$numerator_value / .data$days_exposed,
+                                         drugDoseType == "puffs" ~ .data$quantity * .data$numerator_value / .data$days_exposed,
+                                         drugDoseType == "compounded" ~ .data$quantity * .data$numerator_value / .data$days_exposed,
+                                         drugDoseType == "quantity" ~ .data$quantity * .data$numerator_value / .data$days_exposed,
+                                         drugDoseType == "timeBased" ~ 24 * .data$numerator_value)
+          ) %>%
+        # dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
+        dplyr::select(
+          "person_id", "drugDoseType", "daily_dose", "drug_concept_id", "ingredient_concept_id",
+          "drug_exposure_id"
+        ),
+      by = c(
+        "person_id", "drug_concept_id",
+        "drug_exposure_id"
+      )
+    ) %>%
+    dplyr::compute()
 
   return(table)
 }
