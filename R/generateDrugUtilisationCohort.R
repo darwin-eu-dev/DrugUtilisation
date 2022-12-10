@@ -328,10 +328,10 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::union_all(
       cohort %>%
         dplyr::mutate(
-          date_event = as.Date(!!CDMConnector::dateadd(
+          date_event = !!CDMConnector::dateadd(
             date = "drug_exposure_end_date",
             number = gapEra
-          )),
+          ),
           date_id = 1
         ) %>%
         dplyr::select("subject_id", "date_event", "date_id")
@@ -358,10 +358,10 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::ungroup() %>%
     dplyr::select("subject_id", "era_id", "name", "date_event") %>%
     tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
-    dplyr::mutate(cohort_end_date = as.Date(!!CDMConnector::dateadd(
+    dplyr::mutate(cohort_end_date = !!CDMConnector::dateadd(
       date = "cohort_end_date",
       number = -gapEra
-    ))) %>%
+    )) %>%
     dplyr::select(-"era_id") %>%
     dplyr::compute()
 
@@ -417,10 +417,10 @@ generateDrugUtilisationCohort <- function(cdm,
       dplyr::summarise(
         cohort_start_date = min(.data$cohort_start_date, na.rm = TRUE)
       ) %>%
-      dplyr::mutate(cohort_end_date = as.Date(!!CDMConnector::dateadd(
+      dplyr::mutate(cohort_end_date = !!CDMConnector::dateadd(
         "cohort_start_date",
         fixedTime - 1
-      ))) %>%
+      )) %>%
       dplyr::ungroup()
     attrition <- attrition %>%
       dplyr::union_all(addAttitionLine(

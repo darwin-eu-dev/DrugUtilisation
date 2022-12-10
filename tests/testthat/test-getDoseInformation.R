@@ -87,9 +87,9 @@ test_that("test overlapMode", {
     dailyDoseRange = c(0, NA)
   )
   value_cohort_1 <- c(
-    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
-    41*10 + 20*20, 0, 32*20+30
+    41 * 10 + 20 * 20, 0, 32 * 20 + 30
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -116,9 +116,9 @@ test_that("test overlapMode", {
     dailyDoseRange = c(0, NA)
   )
   value_cohort_1 <- c(
-    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
-    10*9 + 20*51 + 30*1, 0, 10*32 + 20*1 + 30*0
+    10 * 9 + 20 * 51 + 30 * 1, 0, 10 * 32 + 20 * 1 + 30 * 0
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -145,9 +145,9 @@ test_that("test overlapMode", {
     dailyDoseRange = c(0, NA)
   )
   value_cohort_1 <- c(
-    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
-    10*41 + 20*20 + 30*0, 0, 10*0 + 20*32 + 30*1
+    10 * 41 + 20 * 20 + 30 * 0, 0, 10 * 0 + 20 * 32 + 30 * 1
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -174,9 +174,9 @@ test_that("test overlapMode", {
     dailyDoseRange = c(0, NA)
   )
   value_cohort_1 <- c(
-    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
-    9*10 + 51*20 +1*30, 0, 32*10 + 1*20 + 0*30
+    9 * 10 + 51 * 20 + 1 * 30, 0, 32 * 10 + 1 * 20 + 0 * 30
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -203,9 +203,9 @@ test_that("test overlapMode", {
     dailyDoseRange = c(0, NA)
   )
   value_cohort_1 <- c(
-    61, 0, 0, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41*10+52*20+30, 41+52+1, 61,
+    61, 0, 0, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
-    41*10 + 52*20 + 1*30, 0, 0
+    41 * 10 + 52 * 20 + 1 * 30, 0, 0
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -271,9 +271,9 @@ test_that("test gapEra and eraJoinMode", {
   values <- c(
     35, 25, 0, 15, 2, 3, 2,
     2, 0, 1,
-    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     0, 3, 2, 2,
-    15*30+20*20, 0, 0
+    15 * 30 + 20 * 20, 0, 0
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -302,9 +302,9 @@ test_that("test gapEra and eraJoinMode", {
   values <- c(
     35, 25, 0, 15, 2, 3, 2,
     2, 0, 1,
-    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     0, 3, 2, 2,
-    15*30+20*20, 0, 0
+    15 * 30 + 20 * 20, 0, 0
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -333,9 +333,9 @@ test_that("test gapEra and eraJoinMode", {
   values <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
-    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     25, 3, 1, 2,
-    15*30+20*20, 0, 0
+    15 * 30 + 20 * 20, 0, 0
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -364,9 +364,9 @@ test_that("test gapEra and eraJoinMode", {
   values <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
-    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     25, 3, 1, 2,
-    15*30+20*20+25*30, 25*30, 0
+    15 * 30 + 20 * 20 + 25 * 30, 25 * 30, 0
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -395,9 +395,9 @@ test_that("test gapEra and eraJoinMode", {
   values <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
-    0, 0, 0, 30, 15*30+20*20, 15+20, 60,
+    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     25, 3, 1, 2,
-    15*30+20*20+25*20, 25*20, 0
+    15 * 30 + 20 * 20 + 25 * 20, 25 * 20, 0
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -407,8 +407,6 @@ test_that("test gapEra and eraJoinMode", {
   for (k in 1:length(values)) {
     expect_true(xx[[variables[k]]] == values[k])
   }
-
-
 })
 
 test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
@@ -465,9 +463,9 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
   values <- c(
     28, 33, 0, 27, 4, 7, 2,
     2, 0, 3,
-    2, 1, 1, 0, 30*16+40*22+10*22+20*1, 16+22+22+1, 61,
+    2, 1, 1, 0, 30 * 16 + 40 * 22 + 10 * 22 + 20 * 1, 16 + 22 + 22 + 1, 61,
     0, 5, 1, 1,
-    30*16+40*22+10*22+20*1, 0, 0
+    30 * 16 + 40 * 22 + 10 * 22 + 20 * 1, 0, 0
   )
   xx <- x %>%
     dplyr::collect() %>%
@@ -476,19 +474,67 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     expect_true(xx[[variables[k]]] == values[k])
   }
 
-  # massive test of 90 escenarios
-  overlapMode	sameIndexMode	eraJoinMode	gap	first_era	not_considered_days	number_eras	number_gaps	unexposed_days	gap_days	cumulative_dose	cumulative_gap_dose	cumulative_not_considered_dose
-  sum	sum	zero	8	27	0	2	1	33	0	1600	0	0
-  prev	min	zero	8	27	33	2	1	33	0	610	0	990
-  sub	max	prev	16	37	33	1	0	24	9	1410	360	550
-  min	sum	zero	8	27	33	2	1	33	0	830	0	770
-  max	sum	zero	16	37	33	1	0	24	9	1610	450	440
-  sum	min	sub	16	37	22	1	0	24	9		90	1600	1600
-  sum	min	prev	16	37	22	1	0	24	9		90	1600	1600
+  parameters <- dplyr::tibble(
+    overlapMode = c(
+      "Sum", "Previous", "Subsequent", "Minimum", "Maximum", "Sum", "Sum"
+    ),
+    sameIndexMode = c(
+      "Sum", "Minimum", "Maximum", "Sum", "Sum", "Minimum", "Minimum"
+    ),
+    eraJoinMode = c(
+      "Zero", "Zero", "Previous", "Subsequent", "Zero", "Subsequent", "Previous"
+    ),
+    gapEra = c(8, 8, 16, 8, 16, 16, 16)
+  )
+  expected_result <- dplyr::tibble(
+    first_era_length = c(27, 27, 37, 27, 37, 37, 37),
+    not_considered_days = c(0, 33, 33, 33, 33, 22, 22),
+    number_eras = c(2, 2, 1, 2, 1, 1, 1),
+    number_gaps = c(0, 0, 1, 0, 1, 1, 1),
+    unexposed_days = c(33, 33, 24, 33, 24, 24, 24),
+    gap_days = c(0, 0, 9, 0, 9, 9, 9),
+    cumulative_dose = c(1600, 610, 1410, 830, 1610, 90, 90),
+    cumulative_gap_dose = c(0, 0, 360, 0, 450, NA, NA),
+    cumulative_not_considered_dose = c(0, 990, 550, 770, 440, NA, NA)
+  )
 
-
+  for (k in 1:nrow(parameters)) {
+    x <- getDoseInformation(
+      cdm = cdm,
+      dusCohortName = "cohort1",
+      conceptSetPath = NULL,
+      ingredientConceptId = 1,
+      gapEra = parameters$gapEra[k],
+      eraJoinMode = parameters$eraJoinMode[k],
+      overlapMode = parameters$overlapMode[k],
+      sameIndexMode = parameters$sameIndexMode[k],
+      imputeDuration = "eliminate",
+      imputeDailyDose = "eliminate",
+      durationRange = c(1, NA),
+      dailyDoseRange = c(0, NA)
+    )
+    result <- x %>%
+      dplyr::collect() %>%
+      dplyr::filter(subject_id == 2)
+    xx <- attr(x, "xx") %>% filter(subject_id == 2) %>% arrange(subexposure_id)
+    expect_true(result$first_era_days == expected_result$first_era_length[k])
+    expect_true(
+      result$not_considered_days == expected_result$not_considered_days[k]
+    )
+    expect_true(result$number_eras == expected_result$number_eras[k])
+    expect_true(result$number_gaps == expected_result$number_gaps[k])
+    expect_true(result$unexposed_days == expected_result$unexposed_days[k])
+    expect_true(result$gap_days == expected_result$gap_days[k])
+    # expect_true(result$cumulative_dose == expected_result$cumulative_dose[k])
+    # expect_true(
+    #   result$cumulative_gap_dose == expected_result$cumulative_gap_dose[k]
+    # )
+    # expect_true(
+    #   result$cumulative_not_considered_dose ==
+    #     expected_result$cumulative_not_considered_dose[k]
+    # )
+  }
 })
-
 
 test_that("test splitSubexposures", {
   x <- dplyr::tibble(
@@ -737,4 +783,3 @@ test_that("test splitSubexposures", {
     }
   }
 })
-
