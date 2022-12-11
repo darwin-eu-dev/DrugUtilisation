@@ -467,6 +467,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     0, 5, 1, 1,
     30 * 16 + 40 * 22 + 10 * 22 + 20 * 1, 0, 0
   )
+  xxx <- attr(x, "xx") %>% filter(subject_id == 2) %>% arrange(subexposure_id)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(subject_id == 2)
@@ -476,26 +477,28 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
 
   parameters <- dplyr::tibble(
     overlapMode = c(
-      "Sum", "Previous", "Subsequent", "Minimum", "Maximum", "Sum", "Sum"
+      "Sum", "Previous", "Subsequent", "Minimum", "Maximum", "Sum", "Sum",
+      "Subsequent"
     ),
     sameIndexMode = c(
-      "Sum", "Minimum", "Maximum", "Sum", "Sum", "Minimum", "Minimum"
+      "Sum", "Minimum", "Maximum", "Sum", "Sum", "Minimum", "Minimum", "Sum"
     ),
     eraJoinMode = c(
-      "Zero", "Zero", "Previous", "Subsequent", "Zero", "Subsequent", "Previous"
+      "Zero", "Zero", "Previous", "Subsequent", "Previous", "Subsequent",
+      "Previous", "Previous"
     ),
-    gapEra = c(8, 8, 16, 8, 16, 16, 16)
+    gapEra = c(8, 8, 16, 8, 16, 16, 16, 16)
   )
   expected_result <- dplyr::tibble(
-    first_era_length = c(27, 27, 37, 27, 37, 37, 37),
-    not_considered_days = c(0, 33, 33, 33, 33, 22, 22),
-    number_eras = c(2, 2, 1, 2, 1, 1, 1),
-    number_gaps = c(0, 0, 1, 0, 1, 1, 1),
-    unexposed_days = c(33, 33, 24, 33, 24, 24, 24),
-    gap_days = c(0, 0, 9, 0, 9, 9, 9),
-    cumulative_dose = c(1600, 610, 1410, 830, 1610, 90, 90),
-    cumulative_gap_dose = c(0, 0, 360, 0, 450, NA, NA),
-    cumulative_not_considered_dose = c(0, 990, 550, 770, 440, NA, NA)
+    first_era_length = c(27, 27, 37, 27, 37, 37, 37, 37),
+    not_considered_days = c(0, 33, 33, 33, 33, 22, 22, 11),
+    number_eras = c(2, 2, 1, 2, 1, 1, 1, 1),
+    number_gaps = c(0, 0, 1, 0, 1, 1, 1, 1),
+    unexposed_days = c(33, 33, 24, 33, 24, 24, 24, 24),
+    gap_days = c(0, 0, 9, 0, 9, 9, 9, 9),
+    cumulative_dose = c(1600, 610, 1410, 1050, 1720, 900, 810, 1720),
+    cumulative_gap_dose = c(0, 0, 360, 0, 450, 180, 90, 450),
+    cumulative_not_considered_dose = c(0, 990, 550, 550, 330, 880, 880, 330)
   )
 
   for (k in 1:nrow(parameters)) {
@@ -525,14 +528,14 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     expect_true(result$number_gaps == expected_result$number_gaps[k])
     expect_true(result$unexposed_days == expected_result$unexposed_days[k])
     expect_true(result$gap_days == expected_result$gap_days[k])
-    # expect_true(result$cumulative_dose == expected_result$cumulative_dose[k])
-    # expect_true(
-    #   result$cumulative_gap_dose == expected_result$cumulative_gap_dose[k]
-    # )
-    # expect_true(
-    #   result$cumulative_not_considered_dose ==
-    #     expected_result$cumulative_not_considered_dose[k]
-    # )
+    expect_true(result$cumulative_dose == expected_result$cumulative_dose[k])
+    expect_true(
+      result$cumulative_gap_dose == expected_result$cumulative_gap_dose[k]
+    )
+    expect_true(
+      result$cumulative_not_considered_dose ==
+        expected_result$cumulative_not_considered_dose[k]
+    )
   }
 })
 

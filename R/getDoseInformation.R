@@ -435,7 +435,7 @@ splitSubexposures <- function(x) {
         dplyr::distinct() %>%
         dplyr::mutate(date_event = as.Date(!!CDMConnector::dateadd(
           "date_event", -1
-          )))
+        )))
     ) %>%
     dplyr::union_all(
       x %>%
@@ -454,7 +454,7 @@ splitSubexposures <- function(x) {
         dplyr::distinct() %>%
         dplyr::mutate(date_event = as.Date(!!CDMConnector::dateadd(
           "date_event", 1
-          )))
+        )))
     ) %>%
     dplyr::group_by(
       .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
@@ -659,11 +659,28 @@ solveSameIndexOverlap <- function(x, sameIndexMode) {
       ))
   } else if (sameIndexMode == "Sum") {
     x_same_index <- x_same_index %>%
+      dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
+      dplyr::filter(
+        .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
+      ) %>%
+      dplyr::union_all(
+        x_same_index %>%
+          dplyr::filter(
+            .data$drug_exposure_id > min(.data$drug_exposure_id, na.rm = TRUE)
+          ) %>%
+          dplyr::mutate(daily_dose = 0)
+      ) %>%
       dplyr::mutate(considered_subexposure = "yes")
   }
-
   x <- x %>%
-    dplyr::left_join(x_same_index %>% dplyr::ungroup(), by = colnames(x)) %>%
+    dplyr::anti_join(
+      x_same_index,
+      by = c(
+        "subject_id", "cohort_start_date", "cohort_end_date", "subexposure_id",
+        "drug_exposure_start_date"
+      )
+    ) %>%
+    dplyr::union_all(x_same_index %>% dplyr::ungroup()) %>%
     dplyr::compute()
 
   return(x)
@@ -676,7 +693,8 @@ solveOverlap <- function(x, overlapMode) {
       .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
     ) %>%
     dplyr::filter(
-      is.na(.data$considered_subexposure) | .data$considered_subexposure == "yes"
+      is.na(.data$considered_subexposure) |
+        .data$considered_subexposure == "yes"
     ) %>%
     dplyr::filter(dplyr::n() > 1)
   if (overlapMode == "Minimum") {
@@ -685,6 +703,7 @@ solveOverlap <- function(x, overlapMode) {
     x_overlap <- x_overlap %>%
       dplyr::left_join(
         x_overlap %>%
+          dplyr::filter(.data$daily_dose > 0) %>%
           dplyr::filter(
             .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
           ) %>%
@@ -749,12 +768,14 @@ solveOverlap <- function(x, overlapMode) {
   x <- x %>%
     dplyr::anti_join(
       x_overlap,
-      by = c("subject_id", "cohort_start_date", "subexposure_id")
+      by = c(
+        "subject_id", "cohort_start_date", "subexposure_id", "drug_exposure_id"
+      )
     ) %>%
     dplyr::mutate(considered_subexposure = dplyr::if_else(
-      .data$type_subexposure != "unexposed",
+      .data$type_subexposure == "exposed" & is.na(.data$considered_subexposure),
       "yes",
-      "no"
+      .data$considered_subexposure
     )) %>%
     dplyr::union_all(x_overlap) %>%
     dplyr::compute()
@@ -822,7 +843,9 @@ addGapDailyDose <- function(x, eraJoinMode) {
         "subexposure_id"
       )
     ) %>%
-    dplyr::union_all(x_gaps_dose) %>%
+    dplyr::union_all(
+      x_gaps_dose %>% dplyr::mutate(considered_subexposure = "yes")
+    ) %>%
     dplyr::compute()
   return(x)
 }
