@@ -518,7 +518,6 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     result <- x %>%
       dplyr::collect() %>%
       dplyr::filter(subject_id == 2)
-    xx <- attr(x, "xx") %>% filter(subject_id == 2) %>% arrange(subexposure_id)
     expect_true(result$first_era_days == expected_result$first_era_length[k])
     expect_true(
       result$not_considered_days == expected_result$not_considered_days[k]
