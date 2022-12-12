@@ -38,11 +38,10 @@ addDailyDose <- function(table,
   table <- table %>%
     dplyr::left_join(
       table %>%
-        dplyr::mutate(days_exposed = dbplyr::sql(sqlDiffDays(
-          CDMConnector::dbms(attr(cdm, "dbcon")),
-          "drug_exposure_start_date",
-          "drug_exposure_end_date"
-        )) + 1) %>%
+        dplyr::mutate(days_exposed = CDMConnector::datediff(
+          start = "drug_exposure_start_date",
+          end = "drug_exposure_end_date"
+        ) + 1) %>%
         dplyr::select(
           "person_id", "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id"
         ) %>%
