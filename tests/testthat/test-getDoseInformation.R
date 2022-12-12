@@ -1,6 +1,12 @@
 
 test_that("test input parameters errors", {
   cdm <- mockDrugUtilisation(
+    drug_strength = dplyr::tibble(
+      drug_concept_id = c(1, 2, 3, 4),
+      ingredient_concept_id = c(1, 1, 1, 1),
+      amount_value = c(10, 20, 30, 40),
+      amount_unit_concept_id = c(8576, 8576, 8576, 8576)
+    ),
     cohort1 = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 1, 2),
@@ -49,7 +55,17 @@ test_that("test overlapMode", {
         "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
         "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
       )),
-      quantity = 1
+      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+    ),
+    drug_strength = dplyr::tibble(
+      drug_concept_id = c(1, 2, 3, 4),
+      ingredient_concept_id = c(1, 1, 1, 1),
+      amount_value = c(10, 20, 30, 40),
+      amount_unit_concept_id = c(8576, 8576, 8576, 8576),
+      numerator_value = as.numeric(NA),
+      numerator_unit_concept_id = as.numeric(NA),
+      denominator_value = as.numeric(NA),
+      denominator_unit_concept_id = as.numeric(NA)
     ),
     cohort1 = dplyr::tibble(
       cohort_definition_id = 1,
@@ -231,7 +247,17 @@ test_that("test gapEra and eraJoinMode", {
         "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
         "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
       )),
-      quantity = 1
+      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+    ),
+    drug_strength = dplyr::tibble(
+      drug_concept_id = c(1, 2, 3, 4),
+      ingredient_concept_id = c(1, 1, 1, 1),
+      amount_value = c(10, 20, 30, 40),
+      amount_unit_concept_id = c(8576, 8576, 8576, 8576),
+      numerator_value = as.numeric(NA),
+      numerator_unit_concept_id = as.numeric(NA),
+      denominator_value = as.numeric(NA),
+      denominator_unit_concept_id = as.numeric(NA)
     ),
     cohort1 = dplyr::tibble(
       cohort_definition_id = 1,
@@ -423,7 +449,17 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
         "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
         "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
       )),
-      quantity = 1
+      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+    ),
+    drug_strength = dplyr::tibble(
+      drug_concept_id = c(1, 2, 3, 4),
+      ingredient_concept_id = c(1, 1, 1, 1),
+      amount_value = c(10, 20, 30, 40),
+      amount_unit_concept_id = c(8576, 8576, 8576, 8576),
+      numerator_value = as.numeric(NA),
+      numerator_unit_concept_id = as.numeric(NA),
+      denominator_value = as.numeric(NA),
+      denominator_unit_concept_id = as.numeric(NA)
     ),
     cohort1 = dplyr::tibble(
       cohort_definition_id = 1,
