@@ -37,7 +37,7 @@ computeAggregation <- function(cdm,
                                personSummaryName,
                                genderAggregation = TRUE,
                                ageGroupsAgregation = TRUE,
-                               ageGroups = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)) ,
+                               ageGroups = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
                                indexYearAggregation = TRUE,
                                indexYearMonthAggregation = FALSE,
                                initialDoseAggregation = TRUE,
@@ -46,11 +46,10 @@ computeAggregation <- function(cdm,
                                ## indicationAggregation,
                                ## indicationTableName,
                                aggregationTableName = "drug_utilisation_aggregation_table",
-                               verbose
-) {
-  #basic checks
+                               verbose) {
+  # basic checks
   errorMessage <- checkmate::makeAssertCollection()
-  #checkmate::checkDbType(cdm, type = "cdm_reference", errorMessage)
+  # checkmate::checkDbType(cdm, type = "cdm_reference", errorMessage)
   checkmate::checkLogical(genderAggregation, errorMessage, null.ok = FALSE)
   checkmate::checkLogical(ageGroupsAgregation, errorMessage, null.ok = FALSE)
   checkmate::checkLogical(indexYearAggregation, errorMessage, null.ok = FALSE)
@@ -64,22 +63,23 @@ computeAggregation <- function(cdm,
   checkmate::checkCount(cohortid, errorMessage, null.ok = TRUE)
   checkmate::reportAssertions(collection = errorMessage)
 
-  #check table inside cdm
+  # check table inside cdm
   cdm_inherits_check <- inherits(cdm, "cdm_reference")
   checkmate::assertTRUE(cdm_inherits_check,
-                        add = errorMessage)
+    add = errorMessage
+  )
   if (!isTRUE(cdm_inherits_check)) {
     errorMessage$push("- cdm must be a CDMConnector CDM reference object")
   }
 
-  #check if personsummaryname table exist
+  # check if personsummaryname table exist
   cdm_personSummaryName_exists <-
     inherits(cdm$personSummaryName, "tbl_dbi")
   checkmate::assertTRUE(cdm_personSummaryName_exists, add = errorMessage)
   if (!isTRUE(cdm_personSummaryName_exists)) {
     errorMessage$push("- person summary table is not found")
   }
-  #check if patient table exist
+  # check if patient table exist
   if (genderAggregation == TRUE | ageGroupsAgregation == TRUE) {
     cdm_person_exists <- inherits(cdm$person, "tbl_dbi")
     checkmate::assertTRUE(cdm_person_exists, add = errorMessage)
@@ -88,7 +88,7 @@ computeAggregation <- function(cdm,
     }
   }
 
-  #check if aggregationTableName table exist in database
+  # check if aggregationTableName table exist in database
 
   cdm_aggregationTableName_exists <-
     inherits(cdm$aggregationTableName, "tbl_dbi")
@@ -108,39 +108,45 @@ computeAggregation <- function(cdm,
 
 
   if (genderAggregation == TRUE) {
-    #get gender from cohortprofile
+    # get gender from cohortprofile
     get_gender <-
-      getGender(cdm = cdm,
+      getSex(
+        cdm = cdm,
         cohortIds = cohortid,
-        cohortTable = personSummaryName)
+        cohortTable = personSummaryName
+      )
 
 
-    #join gender to input table
+    # join gender to input table
     get_gender <-
       cdm[[personSummaryName]] %>% dplyr::left_join(get_gender %>% dplyr::select("subject_id", "gender"),
-                                                    by = c("subject_id" = "person_id"))
+        by = c("subject_id" = "person_id")
+      )
 
 
     aggregationTable <- aggregationTable %>%
       dplyr::left_join(
         get_gender %>%
-          ##dplyr::mutate(aggregation = "Gender") %>%
+          ## dplyr::mutate(aggregation = "Gender") %>%
           dplyr::select("subject_id", "gender")
       )
   }
 
   if (ageGroupsAgregation == TRUE) {
-    #get age from cohortprofile
+    # get age from cohortprofile
     get_age <-
-      getAge(cdm = cdm,
+      getAge(
+        cdm = cdm,
         cohortIds = cohortid,
-        cohortTable = personSummaryName)
+        cohortTable = personSummaryName
+      )
 
 
-    #join age to input table
+    # join age to input table
     get_age <-
       cdm[[personSummaryName]] %>% dplyr::left_join(get_age %>% dplyr::select("subject_id", "age"),
-                                                    by = c("subject_id" = "person_id"))
+        by = c("subject_id" = "person_id")
+      )
 
     aggregationTableAge <- lapply(ageGroups, function(x) {
       groupName <- paste0(x[1], ";", x[2])
@@ -148,7 +154,7 @@ computeAggregation <- function(cdm,
         get_age %>%
           dplyr::filter(.data$age >= x[1]) %>%
           dplyr::filter(.data$age <= x[2]) %>%
-          ##dplyr::mutate(aggregation = "Age groups") %>%
+          ## dplyr::mutate(aggregation = "Age groups") %>%
           dplyr::mutate(age_group = groupName) %>%
           dplyr::select("subject_id", "age_group") %>%
           dplyr::compute()
@@ -192,7 +198,7 @@ computeAggregation <- function(cdm,
     aggregationTable <- aggregationTable %>%
       dplyr::left_join(
         cdm[[personSummaryName]] %>%
-          ##dplyr::mutate(aggregation = "Initial dose") %>%
+          ## dplyr::mutate(aggregation = "Initial dose") %>%
           dplyr::mutate(initial_dose = as.character(round(
             .data$initial_dose
           ))) %>%
@@ -222,7 +228,7 @@ computeAggregation <- function(cdm,
   #     ) %>%
   #     dplyr::compute()
 
-  #filter minimum counts
+  # filter minimum counts
   cdm[[aggregationTableName]] <- aggregationTable %>%
     dplyr::compute()
 
