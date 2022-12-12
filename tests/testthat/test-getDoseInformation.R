@@ -467,7 +467,6 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     0, 5, 1, 1,
     30 * 16 + 40 * 22 + 10 * 22 + 20 * 1, 0, 0
   )
-  xxx <- attr(x, "xx") %>% filter(subject_id == 2) %>% arrange(subexposure_id)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(subject_id == 2)
