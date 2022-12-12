@@ -365,35 +365,3 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   return(cdm)
 }
 
-#' Function to read the concept sets and export a tibble with
-#' cohort_definition_id and drug_concept_id with the list of drug_concept_id
-#' included in each concept set
-#' @noRd
-readConceptSets <- function(conceptSets) {
-  for (k in 1:nrow(conceptSets)) {
-    conceptSetName <- conceptSets$concept_set_name[k]
-    conceptSet <- RJSONIO::fromJSON(conceptSets$concept_set_path[k])
-    conceptSet <- lapply(conceptSet$items, function(x) {
-      x <- append(x, x[["concept"]])
-      x[["concept"]] <- NULL
-      return(x)
-    }) %>%
-      dplyr::bind_rows() %>%
-      dplyr::mutate(
-        cohort_definition_id = .env$conceptSets$cohort_definition_id[k]
-      )
-    if (k == 1) {
-      conceptList <- conceptSet
-    } else {
-      conceptList <- rbind(conceptList, conceptSet)
-    }
-  }
-  conceptList <- conceptList %>%
-    dplyr::select(
-      "cohort_definition_id",
-      "concept_id" = "CONCEPT_ID",
-      "is_excluded" = "isExcluded",
-      "include_descendants" = "includeDescendants"
-    )
-  return(conceptList)
-}

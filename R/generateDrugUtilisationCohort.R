@@ -93,7 +93,7 @@ generateDrugUtilisationCohort <- function(cdm,
     null.ok = TRUE,
     add = errorMessage
   )
-  if (is.null(conceptSetPath) && is.null(ingredientConceptId)){
+  if (is.null(conceptSetPath) && is.null(ingredientConceptId)) {
     errorMessage$push(
       "'conceptSetPath' or 'ingredientConceptId' should be provided"
     )
@@ -170,23 +170,22 @@ generateDrugUtilisationCohort <- function(cdm,
       stop(glue::glue("Invalid concept set path {conceptSetPath}"))
     } else {
       if (dir.exists(conceptSetPath)) {
-        conceptSetPathFiles <- list.files(
+        conceptSets <- dplyr::tibble(concept_set_path = list.files(
           path = conceptSetPath,
           full.names = TRUE
-        )
-        conceptSetPathFiles <- conceptSetPathFiles[
-          tools::file_ext(conceptSetPathFiles) == "json"
-        ]
-        if (length(conceptSetPathFiles) == 0) {
-          stop(glue::glue("No 'json' file found in {conceptSetPath}"))
-        } else if (length(conceptSetPathFiles) > 1) {
-          stop(glue::glue(
-            "More than one 'json' file found in {conceptSetPath}",
-            ". Please provide the path to one of them."
-          ))
-        } else {
-          conceptSetPath <- conceptSetPathFiles
-        }
+        ))
+      } else {
+        conceptSets <- dplyr::tibble(concept_set_path = .env$conceptSetPath)
+      }
+      conceptSets <- conceptSets%>%
+        dplyr::filter(tools::file_ext(.data$concept_set_path) == "json") %>%
+        dplyr::mutate(
+          concept_set_name =
+            tools::file_path_sans_ext(basename(.data$concept_set_path))
+        ) %>%
+        dplyr::mutate(cohort_definition_id = dplyr::row_number())
+      if (conceptSets %>% nrow() == 0) {
+        stop(glue::glue("No 'json' file found in {conceptSetPath}"))
       }
     }
   }
@@ -199,13 +198,6 @@ generateDrugUtilisationCohort <- function(cdm,
   checkmate::reportAssertions(collection = errorMessage)
 
   if (!is.null(conceptSetPath)) {
-    conceptSets <- dplyr::tibble(concept_set_path = .env$conceptSetPath) %>%
-      dplyr::mutate(
-        concept_set_name =
-          tools::file_path_sans_ext(basename(.data$concept_set_path))
-      ) %>%
-      dplyr::mutate(cohort_definition_id = 1)
-
     tryCatch(
       expr = conceptList <- readConceptSets(conceptSets),
       error = function(e) {
@@ -236,7 +228,7 @@ generateDrugUtilisationCohort <- function(cdm,
     # eliminate the ones that is_excluded = TRUE
     conceptList <- conceptList %>%
       dplyr::filter(.data$is_excluded == FALSE) %>%
-      dplyr::select("drug_concept_id") %>%
+      dplyr::select("cohort_definition_id", "drug_concept_id") %>%
       dplyr::anti_join(
         conceptList %>%
           dplyr::filter(.data$is_excluded == TRUE),
@@ -249,12 +241,12 @@ generateDrugUtilisationCohort <- function(cdm,
         dplyr::collect() %>%
         dplyr::inner_join(conceptList, by = "drug_concept_id")
     }
-
   } else {
     conceptList <- cdm[["drug_strength"]] %>%
       dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
       dplyr::select("drug_concept_id") %>%
-      dplyr::collect()
+      dplyr::collect() %>%
+      dplyr::mutate(cohort_definition_id = 1)
   }
 
   if (nrow(conceptList) == 0) {
@@ -323,7 +315,11 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::union_all(addAttitionLine(cohort, "Imputation"))
 
   cohort <- cohort %>%
-    dplyr::select("subject_id", "date_event" = "drug_exposure_start_date") %>%
+    dplyr::select(
+      "cohort_definition_id",
+      "subject_id",
+      "date_event" = "drug_exposure_start_date"
+    ) %>%
     dplyr::mutate(date_id = -1) %>%
     dplyr::union_all(
       cohort %>%
@@ -334,9 +330,11 @@ generateDrugUtilisationCohort <- function(cdm,
           ),
           date_id = 1
         ) %>%
-        dplyr::select("subject_id", "date_event", "date_id")
+        dplyr::select(
+          "cohort_definition_id", "subject_id", "date_event", "date_id"
+        )
     ) %>%
-    dplyr::group_by(.data$subject_id) %>%
+    dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
     dbplyr::window_order(.data$date_event, .data$date_id) %>%
     dplyr::mutate(cum_id = cumsum(.data$date_id)) %>%
     dplyr::filter(
@@ -356,7 +354,9 @@ generateDrugUtilisationCohort <- function(cdm,
     ) %>%
     dplyr::mutate(era_id = cumsum(.data$era_id)) %>%
     dplyr::ungroup() %>%
-    dplyr::select("subject_id", "era_id", "name", "date_event") %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "era_id", "name", "date_event"
+    ) %>%
     tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
     dplyr::mutate(cohort_end_date = !!CDMConnector::dateadd(
       date = "cohort_end_date",
@@ -404,7 +404,7 @@ generateDrugUtilisationCohort <- function(cdm,
 
   if (summariseMode == "FirstEra") {
     cohort <- cohort %>%
-      dplyr::group_by(.data$subject_id) %>%
+      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
       dplyr::filter(
         .data$cohort_start_date == min(.data$cohort_start_date, na.rm = TRUE)
       ) %>%
@@ -413,7 +413,7 @@ generateDrugUtilisationCohort <- function(cdm,
       dplyr::union_all(addAttitionLine(cohort, "Only first era"))
   } else if (summariseMode == "FixedTime") {
     cohort <- cohort %>%
-      dplyr::group_by(.data$subject_id) %>%
+      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
       dplyr::summarise(
         cohort_start_date = min(.data$cohort_start_date, na.rm = TRUE)
       ) %>%
@@ -430,7 +430,6 @@ generateDrugUtilisationCohort <- function(cdm,
   }
 
   cohort <- cohort %>%
-    dplyr::mutate(cohort_definition_id = 1) %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
@@ -584,4 +583,37 @@ addAttitionLine <- function(cohort, reason) {
     ) %>%
     dplyr::collect() %>%
     dplyr::mutate(reason = .env$reason)
+}
+
+#' Function to read the concept sets and export a tibble with
+#' cohort_definition_id and drug_concept_id with the list of drug_concept_id
+#' included in each concept set
+#' @noRd
+readConceptSets <- function(conceptSets) {
+  for (k in 1:nrow(conceptSets)) {
+    conceptSetName <- conceptSets$concept_set_name[k]
+    conceptSet <- RJSONIO::fromJSON(conceptSets$concept_set_path[k])
+    conceptSet <- lapply(conceptSet$items, function(x) {
+      x <- append(x, x[["concept"]])
+      x[["concept"]] <- NULL
+      return(x)
+    }) %>%
+      dplyr::bind_rows() %>%
+      dplyr::mutate(
+        cohort_definition_id = .env$conceptSets$cohort_definition_id[k]
+      )
+    if (k == 1) {
+      conceptList <- conceptSet
+    } else {
+      conceptList <- rbind(conceptList, conceptSet)
+    }
+  }
+  conceptList <- conceptList %>%
+    dplyr::select(
+      "cohort_definition_id",
+      "concept_id" = "CONCEPT_ID",
+      "is_excluded" = "isExcluded",
+      "include_descendants" = "includeDescendants"
+    )
+  return(conceptList)
 }
