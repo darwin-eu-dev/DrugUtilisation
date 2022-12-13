@@ -324,10 +324,10 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::union_all(
       cohort %>%
         dplyr::mutate(
-          date_event = !!CDMConnector::dateadd(
+          date_event = as.Date(!!CDMConnector::dateadd(
             date = "drug_exposure_end_date",
             number = gapEra
-          ),
+          )),
           date_id = 1
         ) %>%
         dplyr::select(
@@ -358,10 +358,10 @@ generateDrugUtilisationCohort <- function(cdm,
       "cohort_definition_id", "subject_id", "era_id", "name", "date_event"
     ) %>%
     tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
-    dplyr::mutate(cohort_end_date = !!CDMConnector::dateadd(
+    dplyr::mutate(cohort_end_date = as.Date(!!CDMConnector::dateadd(
       date = "cohort_end_date",
       number = -gapEra
-    )) %>%
+    ))) %>%
     dplyr::select(-"era_id") %>%
     dplyr::compute()
 
