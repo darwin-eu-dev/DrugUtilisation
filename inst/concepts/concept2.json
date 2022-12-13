@@ -1,0 +1,12 @@
+{
+  "items": [
+    {
+      "concept": {
+        "CONCEPT_ID": 2
+      },
+      "isExcluded": false,
+      "includeDescendants": false,
+      "includeMapped": false
+    }
+  ]
+}

@@ -2,35 +2,48 @@
 % Please edit documentation in R/tempcohortEntryFeature.R
 \name{getOverlappingCohortSubjects}
 \alias{getOverlappingCohortSubjects}
-\title{Get subjects in cohort1 that are also in cohort2 at the same time.}
+\title{This subject if in a certain window the target cohort overlaps with the
+overlap cohort}
 \usage{
 getOverlappingCohortSubjects(
   cdm,
-  targetCohortId,
-  targetCohortTable,
-  interestCohortId,
-  interestCohortTable,
-  lookbackWindow
+  targetCohortName,
+  targetCohortId = NULL,
+  overlapCohortName,
+  overlapCohortId = NULL,
+  lookbackWindow = 0,
+  multipleEvents = FALSE
 )
 }
 \arguments{
 \item{cdm}{CDMConnector CDM reference object}
 
-\item{targetCohortId}{id or list of ids, of the target cohort, including information we want to check our cohort against}
+\item{targetCohortName}{name of the cohort that we want to add the
+overlapping}
 
-\item{targetCohortTable}{name of the target cohort table}
+\item{targetCohortId}{id or vector of ids, of the target cohort}
 
-\item{interestCohortId}{id or list of ids, of the cohort we are interested in checking the prior history of each patient}
+\item{overlapCohortName}{name of the cohort that we want to check if
+overlaps with the target cohort}
 
-\item{interestCohortTable}{name of the interest cohort table}
+\item{overlapCohortId}{id or vector of ids, of the cohort we are interested
+in}
 
-\item{lookbackWindow}{lookback period window in days, a list consist of two numbers}
+\item{lookbackWindow}{lookback period window in days, a list consist of two
+numbers}
+
+\item{multipleEvents}{if we want to count the number of evenets (TRUE) then
+the result is an integer orjust their presence (FALSE) then the result is 1
+or 0.}
 }
 \value{
-a tibble describing if the people in cohort1 where in cohort2 at that time (and some specified lookback period).
+it add a new column to target cohort for each id in overlap cohort.
+The column is numeric and can be 0 if no overlap is observed and 1 if overlap
+is observed.
 }
 \description{
-Get subjects in cohort1 that are also in cohort2 at the same time.
+This subject if in a certain window the target cohort overlaps with the
+overlap cohort
 }
 \examples{
 \dontrun{
@@ -54,10 +67,12 @@ cdm <- mockDrugUtilisation(
   cohort = cohort
 )
 getOverlappingCohortSubjects(
-  cdm = cdm, targetCohortId = "2",
-  targetCohortTable = "cohort",
-  interestCohortId = "1",
-  interestCohortTable = "cohort", lookbackWindow = c(0, 180)
+  cdm = cdm,
+  targetCohortName = "cohort",
+  targetCohortId = 1,
+  overlapCohortName = "cohort",
+  overlapCohortId = c(2, 3),
+  lookbackWindow = c(-180, 0)
 )
 }
 
