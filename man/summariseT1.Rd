@@ -28,13 +28,13 @@ it. It is a compulsory input, no default value is provided.}
 targetCohort that we are interested in. If NULL all cohort_definitions from
 targetCohort are considered By default: NULL.}
 
+\item{covariatesTableName}{covariatesTableName}
+
 \item{covariatesSet}{covariatesSet}
 
 \item{covariatesWindow}{covariatesWindow}
 
 \item{...}{add as many covariates groups as you want}
-
-\item{covariateTableName}{covariateTableName}
 }
 \value{
 The function returns the 'cdm' object with the created tables as

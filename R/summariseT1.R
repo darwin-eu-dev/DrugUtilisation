@@ -26,7 +26,7 @@
 #' @param targetCohortId id or vector of ids of the cohort definitions in
 #' targetCohort that we are interested in. If NULL all cohort_definitions from
 #' targetCohort are considered By default: NULL.
-#' @param covariateTableName covariateTableName
+#' @param covariatesTableName covariatesTableName
 #' @param covariatesSet covariatesSet
 #' @param covariatesWindow covariatesWindow
 #' @param ... add as many covariates groups as you want
