@@ -36,14 +36,12 @@ cdm <- CDMConnector::generateCohortSet(
 cdm$dus <- generateDrugUtilisationCohort(
   cdm = cdm,
   ingredientConceptId = 745466,
-  conceptSetPath = here::here("inst"),
-  studyStartDate = as.Date("2010-01-01"),
+  studyStartDate = NULL,
   studyEndDate = NULL,
-  summariseMode = "AllEras", # "FixedTime, FirstEra
-  fixedTime = 365,
+  summariseMode = "AllEras",
   daysPriorHistory = NULL,
-  gapEra = 0,
-  imputeDuration = "eliminate", # mean, median, quantile25, quantile75
+  gapEra = 30,
+  imputeDuration = "eliminate",
   durationRange = c(1, NA)
 )
 
@@ -79,7 +77,7 @@ cdm$stratas <- getStratification(
   cdm = cdm,
   targetCohortName = "dus",
   targetCohortId = 1,
-  sex = "Both",
+  sex = "Female",
   ageGroup = list(c(0,150),c(0, 24), c(25, 49), c(50, 74), c(75, 150)),
   indexYearGroup = list(c(2010, 2020), c(2010)),
   indicationTable = indication,
@@ -90,9 +88,8 @@ settingsStratas <- attr(cdm$stratas, "settings")
 
 cdm$dose_table <- getDoseInformation(
   cdm = cdm,
-  dusCohortName = "stratas", # also "dus" or any cohort
-  conceptSetPath = NULL,
-  ingredientConceptId = 1,
+  dusCohortName = "stratas",
+  ingredientConceptId = 745466,
   gapEra = 30,
   eraJoinMode = "Zero", # Previous or Subsequent
   overlapMode = "Sum", # Previous, Subsequent, Minimum, Maximum
@@ -104,20 +101,20 @@ cdm$dose_table <- getDoseInformation(
 )
 
 # to summarise
-summariseDoseIndicationTable(
+doseSummary <- summariseDoseIndicationTable(
   cdm = cdm,
-  strataCohortName = "strata",
+  strataCohortName = "stratas",
   cohortId = 1:5,
   doseTableName = "dose_table",
-  variables = "mean_dose",
-  estimates = c("mean", "q25", "median"),
+  variables = "initial_daily_dose",
+  estimates = c("mean", "q25", "median", "q75", "std"),
   indicationList = NULL,
   minimumCellCounts = 5
 )
 
-largeScaleCharacterization(
+lscSummary <- largeScaleCharacterization(
   cdm = cdm,
-  targetCohortName = "strata",
+  targetCohortName = "stratas",
   targetCohortId = NULL,
   temporalWindows = list(
     c(NA, -366), c(-365, -91),

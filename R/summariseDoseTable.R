@@ -153,10 +153,7 @@ summariseDoseIndicationTable <- function(cdm,
         "subject_id", "cohort_start_date", "cohort_end_date"
       ))]
     }
-    checkmate::assertTRUE(
-      all(variable %in% colnames(doseTable)),
-      add = errorMessage
-    )
+    checkmate::assertTRUE(all(variables %in% colnames(doseTable)))
     if (all(unlist(lapply(
       doseTable %>%
         dplyr::select(dplyr::all_of(.env$variables)) %>%
