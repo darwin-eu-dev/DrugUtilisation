@@ -18,19 +18,22 @@
 #' overlap cohort
 #'
 #' @param cdm CDMConnector CDM reference object
-#' @param targetCohortTable name of the cohort that we want to add the
+#' @param targetCohortName name of the cohort that we want to add the
 #' overlapping
 #' @param targetCohortId id or vector of ids, of the target cohort
-#' @param overlapCohortTable name of the cohort that we want to check if
+#' @param overlapCohortName name of the cohort that we want to check if
 #' overlaps with the target cohort
 #' @param overlapCohortId id or vector of ids, of the cohort we are interested
 #' in
 #' @param lookbackWindow lookback period window in days, a list consist of two
 #' numbers
+#' @param multipleEvents if we want to count the number of evenets (TRUE) then
+#' the result is an integer orjust their presence (FALSE) then the result is 1
+#' or 0.
 #'
 #' @return it add a new column to target cohort for each id in overlap cohort.
 #' The column is numeric and can be 0 if no overlap is observed and 1 if overlap
-#' is oberved.
+#' is observed.
 #' @export
 #'
 #' @examples
@@ -56,20 +59,21 @@
 #' )
 #' getOverlappingCohortSubjects(
 #'   cdm = cdm,
-#'   targetCohortTable = "cohort",
+#'   targetCohortName = "cohort",
 #'   targetCohortId = 1,
-#'   overlapCohortTable = "cohort",
+#'   overlapCohortName = "cohort",
 #'   overlapCohortId = c(2, 3),
 #'   lookbackWindow = c(-180, 0)
 #' )
 #' }
 #'
 getOverlappingCohortSubjects <- function(cdm,
-                                         targetCohortTable,
+                                         targetCohortName,
                                          targetCohortId = NULL,
-                                         overlapCohortTable,
+                                         overlapCohortName,
                                          overlapCohortId = NULL,
-                                         lookbackWindow = 0) {
+                                         lookbackWindow = 0,
+                                         multipleEvents = FALSE) {
   if (is.character(targetCohortId)) {
     targetCohortId <- as.numeric(targetCohortId)
   }
@@ -78,18 +82,19 @@ getOverlappingCohortSubjects <- function(cdm,
   }
   # checks
   errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assertTRUE(targetCohortTable %in% names(cdm), add = errorMessage)
+  checkmate::assertTRUE(targetCohortName %in% names(cdm), add = errorMessage)
   checkmate::assertIntegerish(
     targetCohortId,
     null.ok = TRUE, add = errorMessage
   )
-  checkmate::assertTRUE(overlapCohortTable %in% names(cdm), add = errorMessage)
+  checkmate::assertTRUE(overlapCohortName %in% names(cdm), add = errorMessage)
   checkmate::assertIntegerish(
     overlapCohortId,
     null.ok = TRUE, add = errorMessage
   )
   checkmate::assertNumeric(
-    lookbackWindow, min.len = 1, max.len = 2, add = errorMessage
+    lookbackWindow,
+    min.len = 1, max.len = 2, add = errorMessage
   )
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -97,20 +102,20 @@ getOverlappingCohortSubjects <- function(cdm,
     lookbackWindow <- c(lookbackWindow, lookbackWindow)
   }
 
-  checkmate::assertTRUE(lookbackWindow[1] <= lookbackWindow[2])
-
-  overlapCohort <- cdm[[overlapCohortTable]]
+  if (sum(is.na(lookbackWindow)) == 0) {
+    checkmate::assertTRUE(lookbackWindow[1] <= lookbackWindow[2])
+  }
 
   if (is.null(targetCohortId)) {
-    targetCohort <- cdm[[targetCohortTable]]
+    targetCohort <- cdm[[targetCohortName]]
   } else {
-    targetCohort <- cdm[[targetCohortTable]] %>%
+    targetCohort <- cdm[[targetCohortName]] %>%
       dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId)
   }
   if (is.null(overlapCohortId)) {
-    overlapCohort <- cdm[[overlapCohortTable]]
+    overlapCohort <- cdm[[overlapCohortName]]
   } else {
-    overlapCohort <- cdm[[overlapCohortTable]] %>%
+    overlapCohort <- cdm[[overlapCohortName]] %>%
       dplyr::filter(.data$cohort_definition_id %in% .env$overlapCohortId)
   }
 
@@ -122,29 +127,49 @@ getOverlappingCohortSubjects <- function(cdm,
     )
 
   result <- targetCohort %>%
-    dplyr::left_join(overlapCohort, by = "subject_id") %>%
-    dplyr::mutate(
-      overlap_start_date = as.Date(dbplyr::sql(CDMConnector::dateadd(
-        date = "overlap_start_date",
-        number = !!-lookbackWindow[2]
-      ))),
-      overlap_end_date = as.Date(dbplyr::sql(CDMConnector::dateadd(
-        date = "overlap_end_date",
-        number = !!-lookbackWindow[1]
-      )))
-    ) %>%
-    dplyr::filter(
-      .data$cohort_start_date >= .data$overlap_start_date &
-        .data$cohort_start_date <= .data$overlap_end_date
-    ) %>%
+    dplyr::inner_join(overlapCohort, by = "subject_id")
+  if (!is.na(lookbackWindow[2])) {
+    result <- result %>%
+      dplyr::mutate(
+        overlap_start_date = as.Date(dbplyr::sql(CDMConnector::dateadd(
+          date = "overlap_start_date",
+          number = !!-lookbackWindow[2]
+        )))
+      ) %>%
+      dplyr::filter(.data$cohort_start_date >= .data$overlap_start_date)
+  }
+  if (!is.na(lookbackWindow[1])) {
+    result <- result %>%
+      dplyr::mutate(
+        overlap_end_date = as.Date(dbplyr::sql(CDMConnector::dateadd(
+          date = "overlap_end_date",
+          number = !!-lookbackWindow[1]
+        )))
+      ) %>%
+      dplyr::filter(.data$cohort_start_date <= .data$overlap_end_date)
+  }
+  result <- result %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date", "overlap_id"
-    ) %>%
+    )
+  if (multipleEvents == FALSE) {
+    result <- result %>%
+      dplyr::distinct() %>%
+      dplyr::mutate(indicator = 1)
+  } else {
+    result <- result %>%
+      dplyr::group_by(
+        .data$cohort_definition_id, .data$subject_id, .data$cohort_start_date,
+        .data$cohort_end_date, .data$overlap_id
+      ) %>%
+      dplyr::mutate(indicator = dplyr::n()) %>%
+      dplyr::ungroup()
+  }
+  result <- result %>%
     dplyr::mutate(
-      indicator = 1,
       overlap_id = as.numeric(.data$overlap_id),
-      overlapCohortTableName = .env$overlapCohortTable
+      overlapCohortTableName = .env$overlapCohortName
     ) %>%
     tidyr::pivot_wider(
       names_from = c("overlapCohortTableName", "overlap_id"),

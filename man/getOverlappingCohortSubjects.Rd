@@ -7,22 +7,23 @@ overlap cohort}
 \usage{
 getOverlappingCohortSubjects(
   cdm,
-  targetCohortTable,
+  targetCohortName,
   targetCohortId = NULL,
-  overlapCohortTable,
+  overlapCohortName,
   overlapCohortId = NULL,
-  lookbackWindow = 0
+  lookbackWindow = 0,
+  multipleEvents = FALSE
 )
 }
 \arguments{
 \item{cdm}{CDMConnector CDM reference object}
 
-\item{targetCohortTable}{name of the cohort that we want to add the
+\item{targetCohortName}{name of the cohort that we want to add the
 overlapping}
 
 \item{targetCohortId}{id or vector of ids, of the target cohort}
 
-\item{overlapCohortTable}{name of the cohort that we want to check if
+\item{overlapCohortName}{name of the cohort that we want to check if
 overlaps with the target cohort}
 
 \item{overlapCohortId}{id or vector of ids, of the cohort we are interested
@@ -30,11 +31,15 @@ in}
 
 \item{lookbackWindow}{lookback period window in days, a list consist of two
 numbers}
+
+\item{multipleEvents}{if we want to count the number of evenets (TRUE) then
+the result is an integer orjust their presence (FALSE) then the result is 1
+or 0.}
 }
 \value{
 it add a new column to target cohort for each id in overlap cohort.
 The column is numeric and can be 0 if no overlap is observed and 1 if overlap
-is oberved.
+is observed.
 }
 \description{
 This subject if in a certain window the target cohort overlaps with the
@@ -63,9 +68,9 @@ cdm <- mockDrugUtilisation(
 )
 getOverlappingCohortSubjects(
   cdm = cdm,
-  targetCohortTable = "cohort",
+  targetCohortName = "cohort",
   targetCohortId = 1,
-  overlapCohortTable = "cohort",
+  overlapCohortName = "cohort",
   overlapCohortId = c(2, 3),
   lookbackWindow = c(-180, 0)
 )
