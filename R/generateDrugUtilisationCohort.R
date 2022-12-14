@@ -436,7 +436,7 @@ generateDrugUtilisationCohort <- function(cdm,
     ) %>%
     dplyr::compute()
 
-  if (exists(conceptSets)) {
+  if (exists("conceptSets")) {
     attr(cohort, "conceptSets") <- conceptSets
   }
 
