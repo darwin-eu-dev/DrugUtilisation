@@ -440,7 +440,15 @@ generateDrugUtilisationCohort <- function(cdm,
     attr(cohort, "conceptSets") <- conceptSets
   }
 
-  attr(cohort, "attrition") <- attrition
+  attr(cohort, "attrition") <- attrition %>%
+    dplyr::inner_join(
+      dplyr::tibble(
+        order_id = c(1,2,3), reason = c("Initial Exposures", "Imputation", "")
+      ),
+      by = "reason"
+    ) %>%
+    dplyr::arrange(.data$cohort_definition_id, .data$order_id) %>%
+    dplyr::select(-"order_id")
 
   return(cohort)
 }
@@ -581,6 +589,7 @@ imputeVariable <- function(x,
 #' @noRd
 addAttitionLine <- function(cohort, reason) {
   cohort %>%
+    dplyr::group_by(.data$cohort_definition_id) %>%
     dplyr::summarise(
       number_subjects = dplyr::n_distinct(.data$subject_id),
       number_records = dplyr::n()
