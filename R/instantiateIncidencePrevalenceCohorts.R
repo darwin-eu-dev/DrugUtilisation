@@ -71,8 +71,8 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   # check that drug_exposure and concept tables exists is missing, to be
   # implemented when https://github.com/darwin-eu/CDMConnector/issues/28 is
   # adressed.
-  if (is.null(conceptSetFolder) && !is.null(conceptIds)){
-    if(!is.list(conceptIds)){
+  if (is.null(conceptSetFolder) && !is.null(conceptIds)) {
+    if (!is.list(conceptIds)) {
       conceptIds <- list(conceptIds)
     }
     checkmate::assertList(
@@ -85,16 +85,18 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
       add = errorMessage
     )
     checkmate::assertTRUE(
-      all(sapply(conceptIds, function(x){sum(is.na(x)) == 0})),
+      all(sapply(conceptIds, function(x) {
+        sum(is.na(x)) == 0
+      })),
       add = errorMessage
     )
-  } else if (!is.null(conceptSetFolder) && is.null(conceptIds)){
+  } else if (!is.null(conceptSetFolder) && is.null(conceptIds)) {
     checkmate::assertPathForOutput(
       here::here(conceptSetFolder, "equivalence.csv"),
       overwrite = TRUE,
       add = errorMessage
     )
-  } else if (is.null(conceptSetFolder) && is.null(conceptIds)){
+  } else if (is.null(conceptSetFolder) && is.null(conceptIds)) {
     stop("'conceptSetFolder' or 'conceptIds' are compulsory inputs.")
   } else {
     stop("Use only 'conceptSetFolder' or 'conceptIds' as concept input.")
@@ -111,65 +113,63 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
 
   # check that you can write in the database and schema provided
 
-  if (!is.null(conceptSetFolder)){
-  # read the complete file name of the concepts in the specified folder
-  conceptSets <- dplyr::tibble(concept_set_path = list.files(
-    path = here::here(conceptSetFolder), full.names = TRUE
-  ))
-  # only consider the files that end in .json file
-  conceptSets <- conceptSets %>%
-    dplyr::filter(tools::file_ext(.data$concept_set_path) == "json")
-  # obtain the name of the files without the extension
-  conceptSets <- conceptSets %>%
-    dplyr::mutate(
-      concept_set_name =
-        tools::file_path_sans_ext(basename(.data$concept_set_path))
-    )
-  # add the cohort_concept_id number
-  conceptSets <- conceptSets %>%
-    dplyr::mutate(cohort_definition_id = as.character(dplyr::row_number()))
+  if (!is.null(conceptSetFolder)) {
+    # read the complete file name of the concepts in the specified folder
+    conceptSets <- dplyr::tibble(concept_set_path = list.files(
+      path = here::here(conceptSetFolder), full.names = TRUE
+    ))
+    # only consider the files that end in .json file
+    conceptSets <- conceptSets %>%
+      dplyr::filter(tools::file_ext(.data$concept_set_path) == "json")
+    # obtain the name of the files without the extension
+    conceptSets <- conceptSets %>%
+      dplyr::mutate(
+        concept_set_name =
+          tools::file_path_sans_ext(basename(.data$concept_set_path))
+      )
+    # add the cohort_concept_id number
+    conceptSets <- conceptSets %>%
+      dplyr::mutate(cohort_definition_id = as.character(dplyr::row_number()))
 
-  # read concept sets and extract the list of included/excluded codes and
-  # with or without descendants
-  tryCatch(
-    expr = conceptList <- readConceptSets(conceptSets),
-    error = function(e) {
-      stop("The json files are not properly formated OMOP concept sets.")
-    }
-  )
-  # add descendants to the ones that they have include_descendants = TRUE
-  conceptList <- conceptList %>%
-    dplyr::filter(.data$include_descendants == FALSE) %>%
-    dplyr::union(
-      cdm[["concept_ancestor"]] %>%
-        dplyr::select(
-          "concept_id" = "ancestor_concept_id",
-          "descendant_concept_id"
-        ) %>%
-        dplyr::inner_join(
-          conceptList %>%
-            dplyr::filter(.data$include_descendants == TRUE),
-          copy = TRUE,
-          by = "concept_id"
-        ) %>%
-        dplyr::select(-"concept_id") %>%
-        dplyr::rename("concept_id" = "descendant_concept_id") %>%
-        dplyr::collect()
-    ) %>%
-    dplyr::select(-"include_descendants") %>%
-    dplyr::rename("drug_concept_id" = "concept_id")
-  # eliminate the ones that is_excluded = TRUE
-  conceptList <- conceptList %>%
-    dplyr::filter(.data$is_excluded == FALSE) %>%
-    dplyr::select("cohort_definition_id", "drug_concept_id") %>%
-    dplyr::anti_join(
-      conceptList %>%
-        dplyr::filter(.data$is_excluded == TRUE),
-      by = "drug_concept_id"
+    # read concept sets and extract the list of included/excluded codes and
+    # with or without descendants
+    tryCatch(
+      expr = conceptList <- readConceptSets(conceptSets),
+      error = function(e) {
+        stop("The json files are not properly formated OMOP concept sets.")
+      }
     )
-
+    # add descendants to the ones that they have include_descendants = TRUE
+    conceptList <- conceptList %>%
+      dplyr::filter(.data$include_descendants == FALSE) %>%
+      dplyr::union(
+        cdm[["concept_ancestor"]] %>%
+          dplyr::select(
+            "concept_id" = "ancestor_concept_id",
+            "descendant_concept_id"
+          ) %>%
+          dplyr::inner_join(
+            conceptList %>%
+              dplyr::filter(.data$include_descendants == TRUE),
+            copy = TRUE,
+            by = "concept_id"
+          ) %>%
+          dplyr::select(-"concept_id") %>%
+          dplyr::rename("concept_id" = "descendant_concept_id") %>%
+          dplyr::collect()
+      ) %>%
+      dplyr::select(-"include_descendants") %>%
+      dplyr::rename("drug_concept_id" = "concept_id")
+    # eliminate the ones that is_excluded = TRUE
+    conceptList <- conceptList %>%
+      dplyr::filter(.data$is_excluded == FALSE) %>%
+      dplyr::select("cohort_definition_id", "drug_concept_id") %>%
+      dplyr::anti_join(
+        conceptList %>%
+          dplyr::filter(.data$is_excluded == TRUE),
+        by = "drug_concept_id"
+      )
   } else {
-
     conceptList <- dplyr::bind_rows(
       lapply(
         conceptIds,
@@ -179,7 +179,6 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
       ),
       .id = "cohort_definition_id"
     )
-
   }
 
   # select only the variables of interest
@@ -215,11 +214,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
         ) %>%
         dplyr::distinct() %>%
         dplyr::mutate(interval_start_date = as.Date(dbplyr::sql(
-          sql_add_days(
-            CDMConnector::dbms(attr(cdm, "dbcon")),
-            1,
-            "drug_exposure_end_date"
-          )
+          CDMConnector::dateadd(date = "drug_exposure_end_date", number = 1)
         ))) %>%
         dplyr::select(-"drug_exposure_end_date")
     )
@@ -249,11 +244,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     ) %>%
     dplyr::distinct() %>%
     dplyr::mutate(interval_end_date = as.Date(dbplyr::sql(
-      sql_add_days(
-        CDMConnector::dbms(attr(cdm, "dbcon")),
-        -1,
-        "drug_exposure_start_date"
-      )
+      CDMConnector::dateadd(date = "drug_exposure_start_date", number = -1)
     ))) %>%
     dplyr::select(-"drug_exposure_start_date")
   # or at the end of an exposure
@@ -315,10 +306,9 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
       incidencePrevalenceCohort %>%
         dplyr::filter(.data$gap == 1) %>%
         dplyr::mutate(gap = dplyr::if_else(
-          dbplyr::sql(sqlDiffDays(
-            CDMConnector::dbms(attr(cdm, "dbcon")),
-            "interval_start_date",
-            "interval_end_date"
+          dbplyr::sql(CDMConnector::datediff(
+            start = "interval_start_date",
+            end = "interval_end_date"
           )) + 1 <= .env$gapEra,
           0,
           1
@@ -351,16 +341,16 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dplyr::compute()
 
   # Instantiate the cohorts in the database as permanent tables
-  cdm[[incidencePrevalenceCohortName]] <-incidencePrevalenceCohort
-    computePermanent(
-      incidencePrevalenceCohort,
-      incidencePrevalenceCohortName,
-      schema = attr(cdm, "write_schema"),
-      overwrite = overwrite
-    )
+  cdm[[incidencePrevalenceCohortName]] <- incidencePrevalenceCohort
+  CDMConnector::computePermanent(
+    incidencePrevalenceCohort,
+    incidencePrevalenceCohortName,
+    schema = attr(cdm, "write_schema"),
+    overwrite = overwrite
+  )
 
   # Write the equivalence.csv table in the output folder
-  if (is.null(conceptSetFolder)){
+  if (is.null(conceptSetFolder)) {
     fileName <- here::here("equivalence.csv")
   } else {
     fileName <- here::here(conceptSetFolder, "equivalence.csv")
@@ -375,35 +365,3 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   return(cdm)
 }
 
-#' Function to read the concept sets and export a tibble with
-#' cohort_definition_id and drug_concept_id with the list of drug_concept_id
-#' included in each concept set
-#' @noRd
-readConceptSets <- function(conceptSets) {
-  for (k in 1:nrow(conceptSets)) {
-    conceptSetName <- conceptSets$concept_set_name[k]
-    conceptSet <- RJSONIO::fromJSON(conceptSets$concept_set_path[k])
-    conceptSet <- lapply(conceptSet$items, function(x) {
-      x <- append(x, x[["concept"]])
-      x[["concept"]] <- NULL
-      return(x)
-    }) %>%
-      dplyr::bind_rows() %>%
-      dplyr::mutate(
-        cohort_definition_id = .env$conceptSets$cohort_definition_id[k]
-      )
-    if (k == 1) {
-      conceptList <- conceptSet
-    } else {
-      conceptList <- rbind(conceptList, conceptSet)
-    }
-  }
-  conceptList <- conceptList %>%
-    dplyr::select(
-      "cohort_definition_id",
-      "concept_id" = "CONCEPT_ID",
-      "is_excluded" = "isExcluded",
-      "include_descendants" = "includeDescendants"
-    )
-  return(conceptList)
-}

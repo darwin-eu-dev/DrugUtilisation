@@ -226,15 +226,13 @@ largeScaleCharacterization <- function(cdm,
 
   # for each one of the windows we get which are the subjects contributing to it
   subjects_denominator <- subjects %>%
-    dplyr::mutate(dif_start = dbplyr::sql(sqlDiffDays(
-      CDMConnector::dbms(attr(cdm, "dbcon")),
-      "cohort_start_date",
-      "observation_period_start_date"
+    dplyr::mutate(dif_start = dbplyr::sql(CDMConnector::datediff(
+      start = "cohort_start_date",
+      end = "observation_period_start_date"
     ))) %>%
-    dplyr::mutate(dif_end = dbplyr::sql(sqlDiffDays(
-      CDMConnector::dbms(attr(cdm, "dbcon")),
-      "cohort_start_date",
-      "observation_period_end_date"
+    dplyr::mutate(dif_end = dbplyr::sql(CDMConnector::datediff(
+      start = "cohort_start_date",
+      end = "observation_period_end_date"
     ))) %>%
     dplyr::mutate(to_merge = 1) %>%
     dplyr::inner_join(
@@ -285,10 +283,9 @@ largeScaleCharacterization <- function(cdm,
       dplyr::filter(.data$end_date >= .data$observation_period_start_date) %>%
       # obtain the time difference between the start of the event and the
       # cohort start date
-      dplyr::mutate(days_difference_start = dbplyr::sql(sqlDiffDays(
-        CDMConnector::dbms(attr(cdm, "dbcon")),
-        "cohort_start_date",
-        "start_date"
+      dplyr::mutate(days_difference_start = dbplyr::sql(CDMConnector::datediff(
+        start = "cohort_start_date",
+        end = "start_date"
       )))
     # obtain the time difference between the end of the event and the cohort
     # start date
@@ -297,10 +294,9 @@ largeScaleCharacterization <- function(cdm,
         dplyr::mutate(days_difference_end = .data$days_difference_start)
     } else {
       study_table <- study_table %>%
-        dplyr::mutate(days_difference_end = dbplyr::sql(sqlDiffDays(
-          CDMConnector::dbms(attr(cdm, "dbcon")),
-          "cohort_start_date",
-          "end_date"
+        dplyr::mutate(days_difference_end = dbplyr::sql(CDMConnector::datediff(
+          start = "cohort_start_date",
+          end = "end_date"
         )))
     }
     study_table <- study_table %>%
@@ -400,8 +396,8 @@ largeScaleCharacterization <- function(cdm,
       )) %>%
       dplyr::mutate(counts = dplyr::if_else(
         .data$obscured_counts == TRUE,
-        as.numeric(NA),
-        .data$counts
+        as.integer(NA),
+        as.integer(.data$counts)
       )) %>%
       dplyr::relocate("cohort_definition_id", .before = "concept_id")
     subjects_denominator <- denominatork %>%
@@ -410,11 +406,10 @@ largeScaleCharacterization <- function(cdm,
       )) %>%
       dplyr::mutate(in_observation = dplyr::if_else(
         .data$obscured_in_observation == TRUE,
-        as.numeric(NA),
-        .data$in_observation
+        as.integer(NA),
+        as.integer(.data$in_observation)
       )) %>%
       dplyr::relocate("cohort_definition_id", .before = "window_id")
-
   }
 
   result <- list()

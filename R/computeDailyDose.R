@@ -18,67 +18,114 @@
 #'
 #' @param table table
 #' @param cdm cdm
-#' @param verbose verbose
-#' @param ingredient_concept_id ingredient_concept_id
+#' @param ingredientConceptId ingredientConceptId
 #'
 #' @return
 #' @export
 #'
 #' @examples
-computeDailyDose <- function(table,
-                             cdm = cdm,
-                             ingredient_concept_id = ingredient_concept_id,
-                             verbose = FALSE) {
+addDailyDose <- function(table,
+                         cdm,
+                         ingredientConceptId) {
+  errorMessage <- checkmate::makeAssertCollection()
   # initial checks
-  checkmate::assertClass(cdm, "cdm_reference")
-  checkmate::assertLogical(verbose)
-  if (isFALSE(all(c(
-    "person_id", "quantity", "drug_concept_id", "days_exposed"
-  ) %in% colnames(table)))) {
-    if (isTRUE(all(c(
-      "person_id", "quantity", "drug_concept_id", "drug_exposure_start_date",
-      "drug_exposure_end_date"
-    ) %in% colnames(table)))) {
-      table <- table %>%
-        dplyr::mutate(
-          days_exposed = dbplyr::sql(sqlDiffDays(
-            CDMConnector::dbms(attr(cdm, "dbcon")),
-            "drug_exposure_start_date",
-            "drug_exposure_end_date"
-          )) + 1
-        ) %>%
-        dplyr::compute()
-    } else {
-      stop("'table' must contain as columns 'days_exposed' or 'drug_exposure_start_date' and 'drug_exposure_end_date'")
-    }
+  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
+  checkmate::assertCount(ingredientConceptId, add = errorMessage)
+  checkmate::assertFALSE(c("daily_dose") %in% colnames(table), add = errorMessage)
+  checkmate::assertTRUE(c("drug_strength") %in% names(cdm), add = errorMessage)
+  checkmate::reportAssertions(collection = errorMessage)
+
+  if ("days_exposed" %in% colnames(table)) {
+    warning("'days_exposed' will be overwritten.")
   }
-  checkmate::assertFALSE(c("daily_dose") %in% colnames(table))
-  checkmate::assertTRUE(c("drug_strength") %in% names(cdm))
-  # add daily dose column
+
+  table <- table %>%
+    dplyr::mutate(days_exposed = CDMConnector::datediff(
+      start = "drug_exposure_start_date",
+      end = "drug_exposure_end_date"
+    ) + 1)
+
   table <- table %>%
     dplyr::left_join(
       table %>%
         dplyr::select(
-          "person_id", "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id"
+          "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id"
         ) %>%
+        dplyr::distinct() %>%
         dplyr::inner_join(
           cdm$drug_strength,
           by = c("drug_concept_id")
         ) %>%
+        dplyr::mutate(drugDoseType := dplyr::case_when(
+          # 1. Tablets and other fixed amount formulations
+          is.na(denominator_unit_concept_id) == TRUE ~ "tablets",
+          # 2. Puffs of an inhaler
+          denominator_unit_concept_id == 45744809 ~ "puffs",
+          # 3. Quantified Drugs which are formulated as a concentration
+          denominator_unit_concept_id %in% c(8576, 8587) && denominator_value != 1 && is.na(denominator_value) == FALSE ~ "quantified",
+          # 4. Drugs with the total amount provided in quantity, e.g. chemotherapeutics
+          denominator_unit_concept_id %in% c(8576, 8587) && (denominator_value == 1 | is.na(denominator_value) == TRUE) ~ "quantity",
+          # 5. Compounded drugs
+          denominator_unit_concept_id == 8576 & amount_value == 1 ~ "compounded",
+          # 6. Drugs with the active ingredient released over time, e.g. patches
+          denominator_unit_concept_id == 8505 ~ "timeBased"
+        )) %>%
         dplyr::mutate(
-          daily_dose = .data$quantity * .data$amount_value / .data$days_exposed
+          daily_dose = dplyr::case_when(
+            is.na(.data$drugDoseType) ~ as.numeric(NA),
+            .data$days_exposed == 0 ~ as.numeric(NA),
+            .data$drugDoseType == "tablets" ~
+              .data$quantity * .data$amount_value / .data$days_exposed,
+            .data$drugDoseType == "quantified" ~
+              .data$quantity * .data$numerator_value / .data$days_exposed,
+            .data$drugDoseType == "puffs" ~
+              .data$quantity * .data$numerator_value / .data$days_exposed,
+            .data$drugDoseType == "compounded" ~
+              .data$quantity * .data$numerator_value / .data$days_exposed,
+            .data$drugDoseType == "quantity" ~
+              .data$quantity * .data$numerator_value / .data$days_exposed,
+            .data$drugDoseType == "timeBased" ~ 24 * .data$numerator_value,
+            TRUE ~ as.numeric(NA)
+          )
         ) %>%
-        dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
+        # dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
         dplyr::select(
-          "person_id", "daily_dose", "drug_concept_id", "ingredient_concept_id",
-          "drug_exposure_id"
+          "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id",
+          "drugDoseType", "daily_dose"
         ),
-      by = c(
-        "person_id", "drug_concept_id",
-        "drug_exposure_id"
-      )
+      by = c("days_exposed", "quantity", "drug_concept_id", "drug_exposure_id")
     ) %>%
     dplyr::compute()
 
   return(table)
+}
+
+#' Explain function
+#'
+#' @param cdm cdm
+#' @param tableName tableName
+#' @param ingredientConceptId ingredientConceptId
+#'
+#' @return
+#' @export
+#'
+#' @examples
+computeDailyDose <- function(cdm,
+                             tableName,
+                             ingredientConceptId) {
+  errorMessage <- checkmate::makeAssertCollection()
+  # initial checks
+  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
+  checkmate::assertCount(ingredientConceptId, add = errorMessage)
+  checkmate::assertFALSE(c("daily_dose") %in% colnames(table), add = errorMessage)
+  checkmate::assertTRUE(c("drug_strength") %in% names(cdm), add = errorMessage)
+  checkmate::reportAssertions(collection = errorMessage)
+
+  cdm[[tableName]] <- addDailyDose(
+    table = cdm[[tableName]],
+    cdm = cdm,
+    ingredientConceptId = ingredientConceptId
+  )
+
+  return(cdm)
 }
