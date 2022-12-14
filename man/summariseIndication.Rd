@@ -7,7 +7,6 @@ cohorts.}
 \usage{
 summariseIndication(
   cdm,
-  strataCohortName,
   cohortId = NULL,
   indicationList = NULL,
   minimumCellCounts = 5
@@ -18,11 +17,6 @@ summariseIndication(
 must contain the 'doseTableName' table and  also 'strataCohortName' and
 'indicationList' if specified. It is a compulsory input, no default
 value is provided.}
-
-\item{strataCohortName}{Name to point to the cdm table that contains the
-strata information. To compute this cohort you can use the getStratification
-function or use any other function that the output is a cohort. It is a
-compulsory input, no default value is provided.}
 
 \item{cohortId}{cohort definition id of the cohorts in the strata cohort
 table that you want to summarise. By default cohortId = NULL, then all
