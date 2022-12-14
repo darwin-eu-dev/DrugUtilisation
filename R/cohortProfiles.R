@@ -162,13 +162,13 @@ addAge <- function(cohortDb,
   }
 
   person <- person %>%
-    dplyr::mutate(birth_date = as.Date(paste0(
-      .data$year_of_birth,
-      "-",
-      .data$month_of_birth,
-      "-",
-      .data$day_of_birth
-    ))) %>%
+    dplyr::filter(!is.na(.data$year_of_birth)) %>%
+    dplyr::mutate(year_of_birth1 = as.character(as.integer(.data$year_of_birth))) %>%
+    dplyr::mutate(month_of_birth1 = as.character(as.integer(.data$month_of_birth))) %>%
+    dplyr::mutate(day_of_birth1 = as.character(as.integer(.data$day_of_birth))) %>%
+    dplyr::mutate(birth_date = as.Date(paste0(.data$year_of_birth1, "-",
+                                     .data$month_of_birth1, "-",
+                                     .data$day_of_birth1)))  %>%
     dplyr::mutate(age = floor(dbplyr::sql(sqlGetAge(
       dialect = CDMConnector::dbms(cdm),
       dob = "birth_date",
@@ -204,4 +204,29 @@ addPriorHistory <- function(cohortDb,
       by = c("subject_id", priorHistoryAt)
     ) %>%
     dplyr::select(dplyr::all_of(colnames(cohortDb)), "prior_history")
+}
+
+#' @noRd
+addVisit <- function(cohortDb,
+                            cdm, window = c(-365, 0)) {
+  cdm[["visit_occurrence"]] %>%
+    dplyr::select(
+      "subject_id" = "person_id", "visit_concept_id", "visit_start_date"
+    ) %>%
+    dplyr::inner_join(
+      cohortDb %>%
+        dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
+        dplyr::distinct(),
+      by = "subject_id"
+    ) %>%
+    dplyr::filter(CDMConnector::dateadd("cohort_start_date", window[1]) <= visit_start_date) %>%
+    dplyr::filter(CDMConnector::dateadd("cohort_start_date", window[2]) >= visit_start_date) %>%
+    dplyr::group_by(subject_id, cohort_start_date, cohort_end_date) %>%
+    dplyr::summarise(number_visits = dplyr::n()) %>%
+    dplyr::ungroup() %>%
+    dplyr::right_join(
+      cohortDb,
+      by = c("subject_id", "cohort_start_date", "cohort_end_date")
+    ) %>%
+    dplyr::select(dplyr::all_of(colnames(cohortDb)), "number_visits")
 }

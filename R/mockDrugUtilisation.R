@@ -21,6 +21,7 @@
 #' @param drug_strength default null user can define its own table
 #' @param observation_period default null user can define its own table
 #' @param condition_occurrence default null user can define its own table
+#' @param visit_occurrence default null user can define its own visit_occurrence table
 #' @param person default null user can define its own table
 #' @param drug_concept_id_size number of unique drug concept id
 #' @param ingredient_concept_id_size number of unique drug ingredient concept id
@@ -29,7 +30,9 @@
 #' @param min_drug_exposure_start_date user define minimum drug exposure start date
 #' @param max_drug_exposure_start_date user define maximium drug exposure start date
 #' @param seed seed
-#' @param condition_concept_id_size number of unique row in the concept table
+#' @param condition_concept_id_size number of unique row in the condition concept table
+#' @param visit_concept_id_size number of unique visit concept id
+#' @param visit_occurrence_id_size number of unique visit occurrence id
 #' @param earliest_date_of_birth the earliest date of birth of patient in person table format "dd-mm-yyyy"
 #' @param latest_date_of_birth the latest date of birth for patient in person table format "dd-mm-yyyy"
 #' @param earliest_observation_start_date the earliest observation start date for patient format "dd-mm-yyyy"
@@ -37,9 +40,14 @@
 #' @param min_days_to_observation_end the minimum number of days of the observational integer
 #' @param max_days_to_observation_end the maximum number of days of the observation period integer
 #' @param earliest_condition_start_date the earliest condition start date for patient format "dd-mm-yyyy"
+#' @param earliest_visit_start_date the earliest visit start date for patient format "dd-mm-yyyy"
 #' @param latest_condition_start_date the latest condition start date for patient format "dd-mm-yyyy"
+#' @param latest_visit_start_date the latest visit start date for patient format "dd-mm-yyyy"
 #' @param min_days_to_condition_end the minimum number of days of the condition integer
+#' @param min_days_to_visit_end the minimum number of days of the visit integer
 #' @param max_days_to_condition_end the maximum number of days of the condition integer
+#' @param max_days_to_visit_end the maximum number of days of the visit integer
+
 #' @param concept_ancestor the concept ancestor table
 #' @param ancestor_concept_id_size the size of ceoncept ancestor table
 
@@ -53,6 +61,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                                 drug_strength = NULL,
                                 observation_period = NULL,
                                 condition_occurrence = NULL,
+                                visit_occurrence = NULL,
                                 concept_ancestor = NULL,
                                 person = NULL,
                                 cohort1 = NULL,
@@ -60,6 +69,8 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                                 drug_concept_id_size = 5,
                                 ancestor_concept_id_size = 5,
                                 condition_concept_id_size = 5,
+                                visit_concept_id_size = 5,
+                                visit_occurrence_id_size = 5,
                                 ingredient_concept_id_size = 1,
                                 drug_exposure_size = 10,
                                 patient_size = 1,
@@ -75,6 +86,10 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                                 latest_condition_start_date = NULL,
                                 min_days_to_condition_end = NULL,
                                 max_days_to_condition_end = NULL,
+                                earliest_visit_start_date = NULL,
+                                latest_visit_start_date = NULL,
+                                min_days_to_visit_end = NULL,
+                                max_days_to_visit_end = NULL,
                                 seed = 1) {
 
   # checks
@@ -89,6 +104,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   checkmate::assert_tibble(observation_period, null.ok = TRUE)
   checkmate::assert_tibble(drug_exposure, null.ok = TRUE)
   checkmate::assert_tibble(condition_occurrence, null.ok = TRUE)
+  checkmate::assert_tibble(visit_occurrence, null.ok = TRUE)
   checkmate::assert_tibble(drug_strength, null.ok = TRUE)
   checkmate::assert_int(seed, lower = 1)
   checkmate::assertDate(as.Date(earliest_date_of_birth), null.ok = TRUE)
@@ -97,10 +113,14 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   checkmate::assertDate(as.Date(latest_observation_start_date), null.ok = TRUE)
   checkmate::assertDate(as.Date(earliest_condition_start_date), null.ok = TRUE)
   checkmate::assertDate(as.Date(latest_condition_start_date), null.ok = TRUE)
+  checkmate::assertDate(as.Date(earliest_visit_start_date), null.ok = TRUE)
+  checkmate::assertDate(as.Date(latest_visit_start_date), null.ok = TRUE)
   checkmate::assert_int(min_days_to_observation_end, lower = 1, null.ok = TRUE)
   checkmate::assert_int(max_days_to_observation_end, lower = 1, null.ok = TRUE)
   checkmate::assert_int(min_days_to_condition_end, lower = 1, null.ok = TRUE)
   checkmate::assert_int(max_days_to_condition_end, lower = 1, null.ok = TRUE)
+  checkmate::assert_int(min_days_to_visit_end, lower = 1, null.ok = TRUE)
+  checkmate::assert_int(max_days_to_visit_end, lower = 1, null.ok = TRUE)
   if (!is.null(latest_date_of_birth) &
     !is.null(earliest_date_of_birth)) {
     checkmate::assertTRUE(latest_date_of_birth >= earliest_date_of_birth)
@@ -120,6 +140,14 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   if (!is.null(min_days_to_condition_end) &
     !is.null(max_days_to_condition_end)) {
     checkmate::assertTRUE(max_days_to_condition_end >= min_days_to_condition_end)
+  }
+  if (!is.null(earliest_visit_start_date) &
+      !is.null(latest_visit_start_date)) {
+    checkmate::assertTRUE(latest_visit_start_date >= earliest_visit_start_date)
+  }
+  if (!is.null(min_days_to_visit_end) &
+      !is.null(max_days_to_visit_end)) {
+    checkmate::assertTRUE(max_days_to_visit_end >= min_days_to_visit_end)
   }
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -338,12 +366,63 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
 
     c_concept_id <-
       seq(1:condition_concept_id_size)
-    concept_concept_id <- sample(c_concept_id,
+    condition_concept_id <- sample(c_concept_id,
       patient_size,
       replace = TRUE
     )
   }
 
+
+  if (is.null(person) | is.null(visit_occurrence)) {
+    # define earliest and latest visit start date for obs table
+    # if not specified by user
+    if (is.null(earliest_visit_start_date)) {
+      earliest_visit_start_date <- as.Date("2005-01-01")
+    }
+    if (is.null(latest_visit_start_date)) {
+      latest_visit_start_date <- as.Date("2020-01-01")
+    }
+    visit_start_date <-
+      sample(seq(
+        as.Date(earliest_visit_start_date),
+        as.Date(latest_visit_start_date),
+        by = "day"
+      ),
+      patient_size,
+      replace = TRUE
+      ) # start date for the period
+
+
+    # define min and max day to visit end
+    if (is.null(min_days_to_visit_end)) {
+      min_days_to_visit_end <- 1
+    }
+    if (is.null(max_days_to_visit_end)) {
+      max_days_to_visit_end <- 1000
+    }
+
+    visit_end_date <-
+      visit_start_date + lubridate::days(
+        sample(
+          min_days_to_visit_end:max_days_to_visit_end,
+          patient_size,
+          replace = TRUE
+        )
+      )
+
+    v_concept_id <- seq(1:visit_concept_id_size)
+
+    visit_concept_id <- sample(v_concept_id,
+                                 patient_size,
+                                 replace = TRUE)
+
+    v_occurrence_id <- seq(1:visit_occurrence_id_size)
+
+    visit_occurrence_id <- sample(v_occurrence_id,
+                               patient_size,
+                               replace = TRUE)
+
+  }
 
   if (is.null(person)) {
     person <- tibble::tibble(
@@ -370,9 +449,22 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
     condition_occurrence <- tibble::tibble(
       condition_occurrence_id = id,
       person_id = id,
-      condition_concept_id = concept_concept_id,
+      condition_concept_id = condition_concept_id,
       condition_start_date = condition_start_date,
       condition_end_date = condition_end_date
+    )
+  }
+
+
+  if (is.null(visit_occurrence)) {
+    id <- sample(seq(1:patient_size))
+
+    visit_occurrence <- tibble::tibble(
+      visit_occurrence_id = visit_occurrence_id,
+      person_id = id,
+      visit_concept_id = visit_concept_id,
+      visit_start_date = visit_start_date,
+      visit_end_date = visit_end_date
     )
   }
 
@@ -449,6 +541,13 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   })
 
   DBI::dbWithTransaction(db, {
+    DBI::dbWriteTable(db, "visit_occurrence",
+                      visit_occurrence,
+                      overwrite = TRUE
+    )
+  })
+
+  DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "concept_ancestor",
       concept_ancestor,
       overwrite = TRUE
@@ -479,7 +578,8 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
       "person",
       "concept_ancestor",
       "observation_period",
-      "condition_occurrence"
+      "condition_occurrence",
+      "visit_occurrence"
     ),
     cohort_tables = c("cohort1", "cohort2")
   )
