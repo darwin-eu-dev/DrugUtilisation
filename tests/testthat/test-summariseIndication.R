@@ -462,7 +462,7 @@ expect_error(
     )
 )
 
-expect__no_error(
+expect_no_error(
   (result_m <-
     summariseIndication(
       cdm = cdm,
