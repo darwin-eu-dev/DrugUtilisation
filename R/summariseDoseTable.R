@@ -190,14 +190,14 @@ summariseDoseIndicationTable <- function(cdm,
   # checks if indication summary
   if (!is.null(indicationList)) {
     checkmate::assertTRUE(
-      "indicationDefinitionSet" %in% attributes(indicationList),
+      "indicationDefinitionSet" %in% names(attributes(indicationList)),
       add = errorMessage
     )
     for (k in 1:length(indicationList)) {
       checkmate::assertTRUE(
         colnames(indicationList[[k]]) == c(
           "cohort_definition_id", "subject_id", "cohort_start_date",
-          "cohort_end_date"
+          "cohort_end_date", "indication_id"
         ),
         add = errorMessage
       )
