@@ -153,10 +153,7 @@ summariseDoseIndicationTable <- function(cdm,
         "subject_id", "cohort_start_date", "cohort_end_date"
       ))]
     }
-    checkmate::assertTRUE(
-      all(variable %in% colnames(doseTable)),
-      add = errorMessage
-    )
+    checkmate::assertTRUE(all(variables %in% colnames(doseTable)))
     if (all(unlist(lapply(
       doseTable %>%
         dplyr::select(dplyr::all_of(.env$variables)) %>%
@@ -747,10 +744,6 @@ summariseDoseTable <- function(cdm,
 #' must contain the 'doseTableName' table and  also 'strataCohortName' and
 #' 'indicationList' if specified. It is a compulsory input, no default
 #' value is provided.
-#' @param strataCohortName Name to point to the cdm table that contains the
-#' strata information. To compute this cohort you can use the getStratification
-#' function or use any other function that the output is a cohort. It is a
-#' compulsory input, no default value is provided.
 #' @param cohortId cohort definition id of the cohorts in the strata cohort
 #' table that you want to summarise. By default cohortId = NULL, then all
 #' cohorts in strataCohort will be summarised.
@@ -768,7 +761,6 @@ summariseDoseTable <- function(cdm,
 #'
 #' @examples
 summariseIndication <- function(cdm,
-                                strataCohortName,
                                 cohortId = NULL,
                                 indicationList = NULL,
                                 minimumCellCounts = 5) {
@@ -776,18 +768,9 @@ summariseIndication <- function(cdm,
   # start checks
   errorMessage <- checkmate::makeAssertCollection()
   # check cdm
-  checkmate::assertClass(
-    cdm,
-    "cdm_reference",
-    add = errorMessage
-  )
-  # check strataCohortName
-  checkmate::assertCharacter(
-    strataCohortName,
-    len = 1,
-    any.missing = FALSE,
-    add = errorMessage
-  )
+  checkmate::assertClass(cdm,
+                         "cdm_reference",
+                         add = errorMessage)
   # check cohortId
   checkmate::assertIntegerish(
     cohortId,
@@ -797,75 +780,74 @@ summariseIndication <- function(cdm,
     add = errorMessage
   )
   # check indicationList
-  checkmate::assertList(
-    indicationList,
-    any.missing = FALSE,
-    add = errorMessage
-  )
+  checkmate::assertList(indicationList,
+                        any.missing = FALSE,
+                        add = errorMessage)
   # minimum cell counts
-  checkmate::assertCount(
-    minimumCellCounts,
-    add = errorMessage
-  )
+  checkmate::assertCount(minimumCellCounts,
+                         add = errorMessage)
   # report collection of errors
   checkmate::reportAssertions(collection = errorMessage)
 
-  # check strataCohort
-  strataCohort <- cdm[[strataCohortName]]
-  checkmate::assertTRUE(
-    all(c(
-      "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date"
-    ) %in% colnames(strataCohort)),
-    add = errorMessage
-  )
-
   # checks if indication summary
-  checkmate::assertTRUE(
-    "indicationDefinitionSet" %in% attributes(indicationList),
-    add = errorMessage
-  )
-  for (k in 1:length(indicationList)) {
-    checkmate::assertTRUE(
+  checkmate::assertTRUE(!is.null(attr(indicationList, which = "indicationDefinitionSet")),
+                        add = errorMessage)
+  for (k in names(indicationList)) {
+    checkmate::assertTRUE(all(
       colnames(indicationList[[k]]) == c(
-        "cohort_definition_id", "subject_id", "cohort_start_date",
-        "cohort_end_date"
-      ),
-      add = errorMessage
-    )
+        "cohort_definition_id",
+        "subject_id",
+        "cohort_start_date",
+        "cohort_end_date",
+        "indication_id"
+      )
+    ))
   }
 
   checkmate::reportAssertions(collection = errorMessage)
 
+  #define empty cohort table from indicationGap table
+  cohort <- dplyr::tibble()
+
+  for (k in names(indicationList)) {
+
+    cohort <- rbind(cohort,indicationList[[k]] %>% dplyr::select("cohort_definition_id",
+                                                          "subject_id",
+                                                          "cohort_start_date",
+                                                          "cohort_end_date") %>% dplyr::collect())
+  }
+  cohort <- cohort %>% dplyr::distinct()
+
+
+  # Stop if indication cohort don't contain any observation with Id in cohortId
+  if (nrow(cohort %>% dplyr::filter(.data$cohort_definition_id %in% .env$cohortId))==0 &
+      !is.null(cohortId)) {
+    stop("The indication cohort don't contain any observations with Id in cohortId")
+  }
+
   if (is.null(cohortId)) {
-    cohortId <- strataCohort %>%
+    cohortId <- cohort %>%
       dplyr::select("cohort_definition_id") %>%
       dplyr::distinct() %>%
       dplyr::pull()
   }
 
+  #define empty result table
+  result <- dplyr::tibble()
   # get basic data of each cohort
-  for (k in 1:length(cohortId)) {
-    result.k <- strataCohort %>%
-      dplyr::filter(.data$cohort_definition_id == !!cohortId[k]) %>%
+  for (k in cohortId) {
+    result <- rbind(result,cohort %>%
+      dplyr::filter(.data$cohort_definition_id == .env$k) %>%
       dplyr::summarise(
-        number_observations.counts = as.character(dplyr::n()),
-        cohort_start_date.min = as.character(min(
-          .data$cohort_start_date,
-          na.rm = TRUE
-        )),
-        cohort_start_date.max = as.character(max(
-          .data$cohort_start_date,
-          na.rm = TRUE
-        )),
-        cohort_end_date.min = as.character(min(
-          .data$cohort_end_date,
-          na.rm = TRUE
-        )),
-        cohort_end_date.max = as.character(max(
-          .data$cohort_end_date,
-          na.rm = TRUE
-        ))
+        number_unique_observations.counts = as.character(dplyr::n()),
+        cohort_start_date.min = as.character(min(.data$cohort_start_date,
+                                                 na.rm = TRUE)),
+        cohort_start_date.max = as.character(max(.data$cohort_start_date,
+                                                 na.rm = TRUE)),
+        cohort_end_date.min = as.character(min(.data$cohort_end_date,
+                                               na.rm = TRUE)),
+        cohort_end_date.max = as.character(max(.data$cohort_end_date,
+                                               na.rm = TRUE))
       ) %>%
       dplyr::collect() %>%
       tidyr::pivot_longer(
@@ -873,60 +855,72 @@ summariseIndication <- function(cdm,
         names_to = c("variable", "estimate"),
         names_pattern = "([[:alnum:]_]+).([[:alnum:]_]+)"
       ) %>%
-      dplyr::mutate(cohort_definition_id = !!cohortId[k]) %>%
-      dplyr::select(
-        "cohort_definition_id", "variable", "estimate", "value"
-      )
-    if (k == 1) {
-      result <- result.k
-    } else {
-      result <- rbind(result, result.k)
-    }
-  }
+      dplyr::mutate(cohort_definition_id = .env$k) %>%
+      dplyr::select("cohort_definition_id", "variable", "estimate", "value"))
 
+  }
   # get indication data of each cohort
-  indications <- names(indicationList)
-  indicationDefinitionSet <- attr(indicationList, "indicationDefinitionSet")
-  for (i in 1:length(indications)) {
+  indicationDefinitionSet <-
+    attr(indicationList, "indicationDefinitionSet")
+
+
+  for (i in names(indicationList)) {
+
+    # subset indicationList to indication of interests from user
+    indicationList_sub <- indicationList[[i]] %>%
+      dplyr::filter(.data$cohort_definition_id %in% .env$cohortId)
+    # select unique cohortId in the indicationList
+    unique_cohortId <- indicationList_sub %>%
+           dplyr::select("cohort_definition_id") %>%
+           dplyr::distinct() %>%
+           dplyr::pull()
+
+  for (Id in unique_cohortId) {
+
+
     result <- rbind(
       result,
-      strataCohort %>%
-        dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) %>%
-        dplyr::inner_join(
-          indicationList[[i]],
-          by = c("subject_id", "cohort_start_date", "cohort_end_date")
-        ) %>%
+      indicationList_sub %>% dplyr::filter(.data$cohort_definition_id %in% .env$Id) %>%
         dplyr::group_by(.data$cohort_definition_id, .data$indication_id) %>%
         dplyr::tally() %>%
         dplyr::ungroup() %>%
         dplyr::collect() %>%
         dplyr::right_join(indicationDefinitionSet, by = "indication_id") %>%
+        dplyr::mutate(cohort_definition_id = dplyr::if_else(is.na(.data$cohort_definition_id), .env$Id,.data$cohort_definition_id )) %>%
         dplyr::mutate(estimate = "counts") %>%
-        dplyr::mutate(value = dplyr::if_else(is.na(.data$n), 0, .data$n)) %>%
-        dplyr::mutate(value = dplyr::if_else(
-          .data$n > 0 & .data$n < .env$minimumCellCounts,
-          paste0("<", .env$minimumCellCounts),
-          as.character(.data$n)
-        )) %>%
-        dplyr::mutate(variable = paste0(
-          "indication_gap_", indications[i], "_", .data$indication_name
-        )) %>%
-        dplyr::select(
-          "cohort_definition_id", "variable", "estimate", "value"
-        )
+        dplyr::mutate(n = dplyr::if_else(is.na(.data$n), 0, .data$n)) %>%
+        dplyr::mutate(
+          value = dplyr::if_else(
+            .data$n > 0 & .data$n < .env$minimumCellCounts,
+            paste0("<", .env$minimumCellCounts),
+            as.character(.data$n)
+          )
+        ) %>%
+        dplyr::mutate(
+          variable = paste0(
+            "indication_gap_",
+            .env$i,
+            "_",
+            .data$indication_name
+          )
+        ) %>%
+        dplyr::select("cohort_definition_id", "variable", "estimate", "value")
     )
+  }
   }
 
   to_obscure <- result %>%
-    dplyr::filter(.data$variable == "number_observations" &
-      .data$estimate == "counts") %>%
+    dplyr::filter(.data$variable == "number_unique_observations" &
+                    .data$estimate == "counts") %>%
     dplyr::filter(as.numeric(.data$value) < .env$minimumCellCounts) %>%
     dplyr::pull("cohort_definition_id")
 
-  result$value[result$cohort_definition_id %in% to_obscure] <- as.character(NA)
+  result$value[result$cohort_definition_id %in% to_obscure] <-
+    as.character(NA)
   result$value[result$cohort_definition_id %in% to_obscure &
-    result$variable == "number_observations" &
-    result$estimate == "counts"] <- paste0("<", minimumCellCounts)
+                 result$variable == "number_unique_observations" &
+                 result$estimate == "counts"] <-
+    paste0("<", minimumCellCounts)
 
   return(result %>% dplyr::arrange(.data$cohort_definition_id))
 }

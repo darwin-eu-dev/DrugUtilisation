@@ -396,8 +396,8 @@ largeScaleCharacterization <- function(cdm,
       )) %>%
       dplyr::mutate(counts = dplyr::if_else(
         .data$obscured_counts == TRUE,
-        as.numeric(NA),
-        .data$counts
+        as.integer(NA),
+        as.integer(.data$counts)
       )) %>%
       dplyr::relocate("cohort_definition_id", .before = "concept_id")
     subjects_denominator <- denominatork %>%
@@ -406,8 +406,8 @@ largeScaleCharacterization <- function(cdm,
       )) %>%
       dplyr::mutate(in_observation = dplyr::if_else(
         .data$obscured_in_observation == TRUE,
-        as.numeric(NA),
-        .data$in_observation
+        as.integer(NA),
+        as.integer(.data$in_observation)
       )) %>%
       dplyr::relocate("cohort_definition_id", .before = "window_id")
   }

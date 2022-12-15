@@ -177,7 +177,7 @@ generateDrugUtilisationCohort <- function(cdm,
       } else {
         conceptSets <- dplyr::tibble(concept_set_path = .env$conceptSetPath)
       }
-      conceptSets <- conceptSets%>%
+      conceptSets <- conceptSets %>%
         dplyr::filter(tools::file_ext(.data$concept_set_path) == "json") %>%
         dplyr::mutate(
           concept_set_name =
@@ -324,10 +324,10 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::union_all(
       cohort %>%
         dplyr::mutate(
-          date_event = !!CDMConnector::dateadd(
+          date_event = as.Date(!!CDMConnector::dateadd(
             date = "drug_exposure_end_date",
             number = gapEra
-          ),
+          )),
           date_id = 1
         ) %>%
         dplyr::select(
@@ -358,10 +358,10 @@ generateDrugUtilisationCohort <- function(cdm,
       "cohort_definition_id", "subject_id", "era_id", "name", "date_event"
     ) %>%
     tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
-    dplyr::mutate(cohort_end_date = !!CDMConnector::dateadd(
+    dplyr::mutate(cohort_end_date = as.Date(!!CDMConnector::dateadd(
       date = "cohort_end_date",
       number = -gapEra
-    )) %>%
+    ))) %>%
     dplyr::select(-"era_id") %>%
     dplyr::compute()
 
@@ -436,7 +436,24 @@ generateDrugUtilisationCohort <- function(cdm,
     ) %>%
     dplyr::compute()
 
-  attr(cohort, "attrition") <- attrition
+  if (exists("conceptSets")) {
+    attr(cohort, "conceptSets") <- conceptSets %>%
+      dplyr::select(
+        "cohortId" = "cohort_definition_id",
+        "cohortName" = "concept_set_name",
+        "concepSetPath" = "concept_set_path"
+      )
+  }
+
+  attr(cohort, "attrition") <- attrition %>%
+    dplyr::inner_join(
+      dplyr::tibble(
+        order_id = c(1, 2, 3), reason = c("Initial Exposures", "Imputation", "")
+      ),
+      by = "reason"
+    ) %>%
+    dplyr::arrange(.data$cohort_definition_id, .data$order_id) %>%
+    dplyr::select(-"order_id")
 
   return(cohort)
 }
@@ -576,13 +593,18 @@ imputeVariable <- function(x,
 #'
 #' @noRd
 addAttitionLine <- function(cohort, reason) {
-  cohort %>%
-    dplyr::summarise(
-      number_subjects = dplyr::n_distinct(.data$subject_id),
-      number_records = dplyr::n()
-    ) %>%
-    dplyr::collect() %>%
-    dplyr::mutate(reason = .env$reason)
+  if ("cohort_definition_id" %in% colnames(cohort)) {
+    cohort <- cohort %>% dplyr::group_by(.data$cohort_definition_id)
+  }
+  return(
+    cohort %>%
+      dplyr::summarise(
+        number_subjects = dplyr::n_distinct(.data$subject_id),
+        number_records = dplyr::n()
+      ) %>%
+      dplyr::collect() %>%
+      dplyr::mutate(reason = .env$reason)
+  )
 }
 
 #' Function to read the concept sets and export a tibble with
