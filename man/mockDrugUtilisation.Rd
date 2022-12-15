@@ -9,6 +9,7 @@ mockDrugUtilisation(
   drug_strength = NULL,
   observation_period = NULL,
   condition_occurrence = NULL,
+  visit_occurrence = NULL,
   concept_ancestor = NULL,
   person = NULL,
   cohort1 = NULL,
@@ -16,6 +17,8 @@ mockDrugUtilisation(
   drug_concept_id_size = 5,
   ancestor_concept_id_size = 5,
   condition_concept_id_size = 5,
+  visit_concept_id_size = 5,
+  visit_occurrence_id_size = 5,
   ingredient_concept_id_size = 1,
   drug_exposure_size = 10,
   patient_size = 1,
@@ -31,6 +34,10 @@ mockDrugUtilisation(
   latest_condition_start_date = NULL,
   min_days_to_condition_end = NULL,
   max_days_to_condition_end = NULL,
+  earliest_visit_start_date = NULL,
+  latest_visit_start_date = NULL,
+  min_days_to_visit_end = NULL,
+  max_days_to_visit_end = NULL,
   seed = 1
 )
 }
@@ -42,6 +49,8 @@ mockDrugUtilisation(
 \item{observation_period}{default null user can define its own table}
 
 \item{condition_occurrence}{default null user can define its own table}
+
+\item{visit_occurrence}{default null user can define its own visit_occurrence table}
 
 \item{concept_ancestor}{the concept ancestor table}
 
@@ -55,7 +64,11 @@ mockDrugUtilisation(
 
 \item{ancestor_concept_id_size}{the size of ceoncept ancestor table}
 
-\item{condition_concept_id_size}{number of unique row in the concept table}
+\item{condition_concept_id_size}{number of unique row in the condition concept table}
+
+\item{visit_concept_id_size}{number of unique visit concept id}
+
+\item{visit_occurrence_id_size}{number of unique visit occurrence id}
 
 \item{ingredient_concept_id_size}{number of unique drug ingredient concept id}
 
@@ -87,7 +100,18 @@ mockDrugUtilisation(
 
 \item{max_days_to_condition_end}{the maximum number of days of the condition integer}
 
+\item{earliest_visit_start_date}{the earliest visit start date for patient format "dd-mm-yyyy"}
+
+\item{latest_visit_start_date}{the latest visit start date for patient format "dd-mm-yyyy"}
+
+\item{min_days_to_visit_end}{the minimum number of days of the visit integer}
+
+\item{max_days_to_visit_end}{the maximum number of days of the visit integer}
+
 \item{seed}{seed}
+}
+\value{
+
 }
 \description{
 It creates a mock database for testing drugutilisation package
