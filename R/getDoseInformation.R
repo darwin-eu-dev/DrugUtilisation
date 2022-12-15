@@ -232,7 +232,7 @@ getDoseInformation <- function(cdm,
           full.names = TRUE
         )
         conceptSetPathFiles <- conceptSetPathFiles[
-          tools::file_path_sans_ext(conceptSetPathFiles) == "json"
+          tools::file_ext(conceptSetPathFiles) == "json"
         ]
         if (length(conceptSetPathFiles) == 0) {
           stop(glue::glue("No 'json' file found in {conceptSetPath}"))

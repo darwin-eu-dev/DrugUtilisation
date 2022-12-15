@@ -110,9 +110,6 @@ mockDrugUtilisation(
 
 \item{seed}{seed}
 }
-\value{
-
-}
 \description{
 It creates a mock database for testing drugutilisation package
 }
