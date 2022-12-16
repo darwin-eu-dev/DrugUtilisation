@@ -127,6 +127,8 @@ getOverlappingCohortSubjects <- function(cdm,
     )
 
   result <- targetCohort %>%
+    dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
+    dplyr::distinct() %>%
     dplyr::inner_join(overlapCohort, by = "subject_id")
   if (!is.na(lookbackWindow[2])) {
     result <- result %>%
@@ -150,8 +152,7 @@ getOverlappingCohortSubjects <- function(cdm,
   }
   result <- result %>%
     dplyr::select(
-      "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", "overlap_id"
+      "subject_id", "cohort_start_date", "cohort_end_date", "overlap_id"
     )
   if (multipleEvents == FALSE) {
     result <- result %>%
@@ -160,8 +161,8 @@ getOverlappingCohortSubjects <- function(cdm,
   } else {
     result <- result %>%
       dplyr::group_by(
-        .data$cohort_definition_id, .data$subject_id, .data$cohort_start_date,
-        .data$cohort_end_date, .data$overlap_id
+        data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+        .data$overlap_id
       ) %>%
       dplyr::mutate(indicator = dplyr::n()) %>%
       dplyr::ungroup()
@@ -178,11 +179,7 @@ getOverlappingCohortSubjects <- function(cdm,
       values_fill = 0
     ) %>%
     dplyr::right_join(
-      targetCohort,
-      by = c(
-        "cohort_definition_id", "subject_id", "cohort_start_date",
-        "cohort_end_date"
-      )
+      targetCohort, by = c("subject_id", "cohort_start_date","cohort_end_date")
     ) %>%
     dplyr::mutate(dplyr::across(
       dplyr::starts_with("overlap"), ~ dplyr::if_else(is.na(.x), 0, .x)
