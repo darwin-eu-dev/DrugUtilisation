@@ -380,7 +380,8 @@ summariseDoseIndicationTable <- function(cdm,
           dplyr::inner_join(
             indicationList[[i]] %>%
               dplyr::select(
-                "subject_id", "cohort_start_date", "cohort_end_date"
+                "subject_id", "cohort_start_date", "cohort_end_date",
+                "indication_id"
               ),
             by = c("subject_id", "cohort_start_date", "cohort_end_date")
           ) %>%
