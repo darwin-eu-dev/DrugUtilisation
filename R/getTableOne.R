@@ -177,14 +177,17 @@ getTableOne <- function(cdm,
   targetCohort <- targetCohort %>%
     addPriorHistory(cdm = cdm) %>%
     addSex(cdm = cdm) %>%
-    addAge(cdm = cdm)
+    addAge(cdm = cdm) %>%
+    dplyr::compute()
 
   if (!is.null(windowVisitOcurrence)) {
     targetCohort <- targetCohort %>%
-      addVisit(cdm = cdm, window = windowVisitOcurrence)
+      addVisit(cdm = cdm, window = windowVisitOcurrence) %>%
+      dplyr::compute()
     for (k in 1:length(targetCohortId)) {
       result.k.visit_occurrence <- targetCohort %>%
-        dplyr::summarize(
+        dplyr::filter(.data$cohort_definition_id == !!targetCohortId[k]) %>%
+        dplyr::summarise(
           visit_occurrence.mean = as.character(mean(.data$number_visits, na.rm = TRUE)),
           visit_occurrence.std = as.character(sd(.data$number_visits, na.rm = TRUE)),
           visit_occurrence.median = as.character(median(.data$number_visits, na.rm = TRUE)),
@@ -197,7 +200,7 @@ getTableOne <- function(cdm,
           names_to = c("covariate", "estimate"),
           names_sep = "\\."
         ) %>%
-        dplyr::mutate(cohort_definition_id = !!targetCohortId[k]) %>%
+        dplyr::mutate(cohort_definition_id = targetCohortId[k]) %>%
         dplyr::select(
           "cohort_definition_id", "covariate", "estimate", "value"
         )
