@@ -190,15 +190,15 @@ summariseDoseIndicationTable <- function(cdm,
   # checks if indication summary
   if (!is.null(indicationList)) {
     checkmate::assertTRUE(
-      "indicationDefinitionSet" %in% attributes(indicationList),
+      "indicationDefinitionSet" %in% names(attributes(indicationList)),
       add = errorMessage
     )
     for (k in 1:length(indicationList)) {
       checkmate::assertTRUE(
-        colnames(indicationList[[k]]) == c(
+        all(colnames(indicationList[[k]]) == c(
           "cohort_definition_id", "subject_id", "cohort_start_date",
-          "cohort_end_date"
-        ),
+          "cohort_end_date", "indication_id"
+        )),
         add = errorMessage
       )
     }
@@ -378,7 +378,11 @@ summariseDoseIndicationTable <- function(cdm,
         strataCohort %>%
           dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) %>%
           dplyr::inner_join(
-            indicationList[[i]],
+            indicationList[[i]] %>%
+              dplyr::select(
+                "subject_id", "cohort_start_date", "cohort_end_date",
+                "indication_id"
+              ),
             by = c("subject_id", "cohort_start_date", "cohort_end_date")
           ) %>%
           dplyr::group_by(.data$cohort_definition_id, .data$indication_id) %>%
@@ -387,7 +391,9 @@ summariseDoseIndicationTable <- function(cdm,
           dplyr::collect() %>%
           dplyr::right_join(indicationDefinitionSet, by = "indication_id") %>%
           dplyr::mutate(estimate = "counts") %>%
-          dplyr::mutate(value = dplyr::if_else(is.na(.data$n), 0, .data$n)) %>%
+          dplyr::mutate(value = dplyr::if_else(
+            is.na(.data$n), as.integer(0), as.integer(.data$n))
+          ) %>%
           dplyr::mutate(value = dplyr::if_else(
             .data$n > 0 & .data$n < .env$minimumCellCounts,
             paste0("<", .env$minimumCellCounts),
