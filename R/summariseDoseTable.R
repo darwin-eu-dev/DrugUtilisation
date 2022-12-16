@@ -391,7 +391,9 @@ summariseDoseIndicationTable <- function(cdm,
           dplyr::collect() %>%
           dplyr::right_join(indicationDefinitionSet, by = "indication_id") %>%
           dplyr::mutate(estimate = "counts") %>%
-          dplyr::mutate(value = dplyr::if_else(is.na(.data$n), 0, .data$n)) %>%
+          dplyr::mutate(value = dplyr::if_else(
+            is.na(.data$n), as.integer(0), as.integer(.data$n))
+          ) %>%
           dplyr::mutate(value = dplyr::if_else(
             .data$n > 0 & .data$n < .env$minimumCellCounts,
             paste0("<", .env$minimumCellCounts),
