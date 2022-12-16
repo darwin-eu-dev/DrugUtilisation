@@ -161,10 +161,10 @@ getOverlappingCohortSubjects <- function(cdm,
   } else {
     result <- result %>%
       dplyr::group_by(
-        data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+        .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
         .data$overlap_id
       ) %>%
-      dplyr::mutate(indicator = dplyr::n()) %>%
+      dplyr::summarise(indicator = dplyr::n()) %>%
       dplyr::ungroup()
   }
   result <- result %>%
