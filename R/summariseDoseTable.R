@@ -378,7 +378,10 @@ summariseDoseIndicationTable <- function(cdm,
         strataCohort %>%
           dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) %>%
           dplyr::inner_join(
-            indicationList[[i]],
+            indicationList[[i]] %>%
+              dplyr::select(
+                "subject_id", "cohort_start_date", "cohort_end_date"
+              ),
             by = c("subject_id", "cohort_start_date", "cohort_end_date")
           ) %>%
           dplyr::group_by(.data$cohort_definition_id, .data$indication_id) %>%
