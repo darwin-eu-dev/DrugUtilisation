@@ -219,9 +219,17 @@ addVisit <- function(cohortDb,
         dplyr::distinct(),
       by = "subject_id"
     ) %>%
-    dplyr::filter(CDMConnector::dateadd("cohort_start_date", window[1]) <= visit_start_date) %>%
-    dplyr::filter(CDMConnector::dateadd("cohort_start_date", window[2]) >= visit_start_date) %>%
-    dplyr::group_by(subject_id, cohort_start_date, cohort_end_date) %>%
+    dplyr::filter(
+      CDMConnector::dateadd("cohort_start_date", window[1]) <=
+        .data$visit_start_date
+    ) %>%
+    dplyr::filter(
+      CDMConnector::dateadd("cohort_start_date", window[2]) >=
+        .data$visit_start_date
+    ) %>%
+    dplyr::group_by(
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
+    ) %>%
     dplyr::summarise(number_visits = dplyr::n()) %>%
     dplyr::ungroup() %>%
     dplyr::right_join(
