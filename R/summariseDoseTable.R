@@ -195,10 +195,10 @@ summariseDoseIndicationTable <- function(cdm,
     )
     for (k in 1:length(indicationList)) {
       checkmate::assertTRUE(
-        colnames(indicationList[[k]]) == c(
+        all(colnames(indicationList[[k]]) == c(
           "cohort_definition_id", "subject_id", "cohort_start_date",
           "cohort_end_date", "indication_id"
-        ),
+        )),
         add = errorMessage
       )
     }
