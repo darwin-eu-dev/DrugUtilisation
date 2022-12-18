@@ -1,4 +1,3 @@
-library(testthat)
 
 test_that("test case single indication", {
   targetCohortName <- dplyr::tibble(
@@ -397,7 +396,6 @@ test_that("test case multiple indication with unknown indication table", {
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
 
 test_that("test case multiple indication", {
   targetCohortName <- dplyr::tibble(
@@ -850,6 +848,3 @@ test_that("test case multiple indication with NA", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })
-
-
-
