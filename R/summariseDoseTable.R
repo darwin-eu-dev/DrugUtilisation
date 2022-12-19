@@ -229,58 +229,58 @@ summariseDoseIndicationTable <- function(cdm,
       stats::sd(x, na.rm = TRUE)
     },
     "q5" = function(x) {
-      stats::quantile(x, 0.05)
+      stats::quantile(x, 0.05, na.rm = TRUE)
     },
     "q10" = function(x) {
-      stats::quantile(x, 0.10)
+      stats::quantile(x, 0.10, na.rm = TRUE)
     },
     "q15" = function(x) {
-      stats::quantile(x, 0.15)
+      stats::quantile(x, 0.15, na.rm = TRUE)
     },
     "q20" = function(x) {
-      stats::quantile(x, 0.20)
+      stats::quantile(x, 0.20, na.rm = TRUE)
     },
     "q25" = function(x) {
-      stats::quantile(x, 0.25)
+      stats::quantile(x, 0.25, na.rm = TRUE)
     },
     "q30" = function(x) {
-      stats::quantile(x, 0.30)
+      stats::quantile(x, 0.30, na.rm = TRUE)
     },
     "q35" = function(x) {
-      stats::quantile(x, 0.35)
+      stats::quantile(x, 0.35, na.rm = TRUE)
     },
     "q40" = function(x) {
-      stats::quantile(x, 0.40)
+      stats::quantile(x, 0.40, na.rm = TRUE)
     },
     "q45" = function(x) {
-      stats::quantile(x, 0.45)
+      stats::quantile(x, 0.45, na.rm = TRUE)
     },
     "q55" = function(x) {
-      stats::quantile(x, 0.55)
+      stats::quantile(x, 0.55, na.rm = TRUE)
     },
     "q60" = function(x) {
-      stats::quantile(x, 0.60)
+      stats::quantile(x, 0.60, na.rm = TRUE)
     },
     "q65" = function(x) {
-      stats::quantile(x, 0.65)
+      stats::quantile(x, 0.65, na.rm = TRUE)
     },
     "q70" = function(x) {
-      stats::quantile(x, 0.70)
+      stats::quantile(x, 0.70, na.rm = TRUE)
     },
     "q75" = function(x) {
-      stats::quantile(x, 0.75)
+      stats::quantile(x, 0.75, na.rm = TRUE)
     },
     "q80" = function(x) {
-      stats::quantile(x, 0.80)
+      stats::quantile(x, 0.80, na.rm = TRUE)
     },
     "q85" = function(x) {
-      stats::quantile(x, 0.85)
+      stats::quantile(x, 0.85, na.rm = TRUE)
     },
     "q90" = function(x) {
-      stats::quantile(x, 0.90)
+      stats::quantile(x, 0.90, na.rm = TRUE)
     },
     "q95" = function(x) {
-      stats::quantile(x, 0.95)
+      stats::quantile(x, 0.95, na.rm = TRUE)
     }
   )
 
@@ -592,58 +592,58 @@ summariseDoseTable <- function(cdm,
       stats::sd(x, na.rm = TRUE)
     },
     "q5" = function(x) {
-      stats::quantile(x, 0.05)
+      stats::quantile(x, 0.05, na.rm = TRUE)
     },
     "q10" = function(x) {
-      stats::quantile(x, 0.10)
+      stats::quantile(x, 0.10, na.rm = TRUE)
     },
     "q15" = function(x) {
-      stats::quantile(x, 0.15)
+      stats::quantile(x, 0.15, na.rm = TRUE)
     },
     "q20" = function(x) {
-      stats::quantile(x, 0.20)
+      stats::quantile(x, 0.20, na.rm = TRUE)
     },
     "q25" = function(x) {
-      stats::quantile(x, 0.25)
+      stats::quantile(x, 0.25, na.rm = TRUE)
     },
     "q30" = function(x) {
-      stats::quantile(x, 0.30)
+      stats::quantile(x, 0.30, na.rm = TRUE)
     },
     "q35" = function(x) {
-      stats::quantile(x, 0.35)
+      stats::quantile(x, 0.35, na.rm = TRUE)
     },
     "q40" = function(x) {
-      stats::quantile(x, 0.40)
+      stats::quantile(x, 0.40, na.rm = TRUE)
     },
     "q45" = function(x) {
-      stats::quantile(x, 0.45)
+      stats::quantile(x, 0.45, na.rm = TRUE)
     },
     "q55" = function(x) {
-      stats::quantile(x, 0.55)
+      stats::quantile(x, 0.55, na.rm = TRUE)
     },
     "q60" = function(x) {
-      stats::quantile(x, 0.60)
+      stats::quantile(x, 0.60, na.rm = TRUE)
     },
     "q65" = function(x) {
-      stats::quantile(x, 0.65)
+      stats::quantile(x, 0.65, na.rm = TRUE)
     },
     "q70" = function(x) {
-      stats::quantile(x, 0.70)
+      stats::quantile(x, 0.70, na.rm = TRUE)
     },
     "q75" = function(x) {
-      stats::quantile(x, 0.75)
+      stats::quantile(x, 0.75, na.rm = TRUE)
     },
     "q80" = function(x) {
-      stats::quantile(x, 0.80)
+      stats::quantile(x, 0.80, na.rm = TRUE)
     },
     "q85" = function(x) {
-      stats::quantile(x, 0.85)
+      stats::quantile(x, 0.85, na.rm = TRUE)
     },
     "q90" = function(x) {
-      stats::quantile(x, 0.90)
+      stats::quantile(x, 0.90, na.rm = TRUE)
     },
     "q95" = function(x) {
-      stats::quantile(x, 0.95)
+      stats::quantile(x, 0.95, na.rm = TRUE)
     }
   )
 

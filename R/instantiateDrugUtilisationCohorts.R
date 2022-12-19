@@ -801,7 +801,8 @@ imputeVariable <- function(x,
         stats::quantile(
           x %>% dplyr::filter(.data$impute == 0) %>%
             dplyr::pull("variable"),
-          0.25
+          0.25,
+          na.rm = TRUE
         )
       ),
       .data$variable
@@ -816,7 +817,8 @@ imputeVariable <- function(x,
         stats::quantile(
           x %>% dplyr::filter(.data$impute == 0) %>%
             dplyr::pull("variable"),
-          0.75
+          0.75,
+          na.rm = TRUE
         )
       ),
       .data$variable
