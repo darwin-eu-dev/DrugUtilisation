@@ -452,7 +452,10 @@ summariseDoseTable <- function(cdm,
                                cohortId = NULL,
                                doseTableName,
                                variables = NULL,
-                               estimates = NULL,
+                               estimates = c(
+                                 "min", "max", "mean", "std", "median", "iqr",
+                                 "q25", "q75"
+                               ),
                                minimumCellCounts = 5) {
   # first round of assertions CLASS
   # start checks
@@ -496,7 +499,6 @@ summariseDoseTable <- function(cdm,
   # check estimates
   checkmate::assertCharacter(
     estimates,
-    null.ok = TRUE,
     any.missing = FALSE,
     add = errorMessage
   )
@@ -543,9 +545,6 @@ summariseDoseTable <- function(cdm,
     }
   ))) == FALSE) {
     errorMessage$push("-All variables should be numeric")
-  }
-  if (is.null(estimates)) {
-    estimates <- c("min", "max", "mean", "std", "median", "iqr", "q25", "q75")
   }
   checkmate::assertTRUE(
     all(
@@ -909,22 +908,23 @@ summariseIndication <- function(cdm,
 }
 
 #' @noRd
-obscureSummary <- function(result, minimumCellCount){
-  to_obscure <- result %>%
-    dplyr::filter(.data$variable == "number_observations" &
-                    .data$estimate == "counts") %>%
-    dplyr::filter(as.numeric(.data$value) < .env$minimumCellCounts) %>%
-    dplyr::pull("cohort_definition_id")
-
-  result$value[result$cohort_definition_id %in% to_obscure] <- as.character(NA)
-  result$value[result$cohort_definition_id %in% to_obscure &
-                 result$variable == "number_observations" &
-                 result$estimate == "counts"] <- paste0("<", minimumCellCounts)
+obscureSummary <- function(result, minimumCellCounts) {
+  values_to_osbcure <- suppressWarnings(as.numeric(result$value)) <
+    minimumCellCounts &
+    suppressWarnings(as.numeric(result$value)) > 0
+  obscured_values <- result$estimate == "counts" & values_to_osbcure
+  obscured_cohort <- unique(result$cohort_definition_id[
+    result$estimate == "counts" &
+      result$variable == "number_observations" &
+      values_to_osbcure
+  ])
+  result$value[obscured_values] <- paste0("<", minimumCellCounts)
   result$value[
-    as.numeric(result$value) < minimumCellCounts &
-      is.na(result$value) &
-      result$estimate == "counts"
+    result$cohort_definition_id %in% obscured_cohort
+  ] <- as.character(NA)
+  result$value[
+    result$cohort_definition_id %in% obscured_cohort &
+      result$variable == "number_observations"
   ] <- paste0("<", minimumCellCounts)
   return(result)
 }
-
