@@ -40,8 +40,8 @@ test_that("test case single indication table summary", {
   )
 
   indicationDefinitionSet <- dplyr::tibble(
-    indication_id = c(1, 2),
-    indication_name = c("asthma", "covid")
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
   )
 
   cdm <-
@@ -494,8 +494,8 @@ condition_occurrence <- dplyr::tibble(
 )
 
 indicationDefinitionSet <- dplyr::tibble(
-  indication_id = c(1, 2),
-  indication_name = c("asthma", "covid")
+  cohortId = c(1, 2),
+  cohortName = c("asthma", "covid")
 )
 
 cdm <-

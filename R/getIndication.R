@@ -102,7 +102,7 @@ getIndication <- function(cdm,
   )
   checkmate::assertSubset(
     colnames(indicationDefinitionSet),
-    c("indication_id", "indication_name"),
+    c("cohortId", "cohortName"),
     add = messageStore
   )
 
@@ -128,6 +128,10 @@ getIndication <- function(cdm,
 
   checkmate::reportAssertions(collection = messageStore)
 
+  indicationDefinitionSet <- indicationDefinitionSet %>%
+    dplyr::select(
+      "indication_id" = "cohortId", "indication_name" = "cohortName"
+    )
 
   # warning for different cohort start and end date in indicationCohortName
   if (cdm[[indicationCohortName]] %>%

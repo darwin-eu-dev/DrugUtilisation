@@ -38,8 +38,8 @@ test_that("test case single indication", {
   )
 
   indicationDefinitionSet <- dplyr::tibble(
-    indication_id = c(1, 2),
-    indication_name = c("asthma", "covid")
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
   )
 
   cdm <-
@@ -195,8 +195,8 @@ test_that("test case single indication with unknown indication table", {
   )
 
   indicationDefinitionSet <- dplyr::tibble(
-    indication_id = c(1, 2),
-    indication_name = c("asthma", "covid")
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
   )
 
   cdm <-
@@ -325,8 +325,8 @@ test_that("test case multiple indication with unknown indication table", {
   )
 
   indicationDefinitionSet <- dplyr::tibble(
-    indication_id = c(1, 2),
-    indication_name = c("asthma", "covid")
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
   )
 
   cdm <-
@@ -436,8 +436,8 @@ test_that("test case multiple indication", {
   )
 
   indicationDefinitionSet <- dplyr::tibble(
-    indication_id = c(1, 2),
-    indication_name = c("asthma", "covid")
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
   )
 
   cdm <-
@@ -560,8 +560,8 @@ test_that("test case indicationCohortName error message", {
   )
 
   indicationDefinitionSet <- dplyr::tibble(
-    indication_id = c(1, 2),
-    indication_name = c("asthma", "covid")
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
   )
 
   cdm <-
@@ -645,8 +645,8 @@ test_that("test input checks", {
   )
 
   indicationDefinitionSet <- dplyr::tibble(
-    indication_id = c(1, 2),
-    indication_name = c("asthma", "covid")
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
   )
 
   cdm <-
@@ -759,8 +759,8 @@ test_that("test case multiple indication with NA", {
   condition_occurrence = dplyr::tibble(person_id = 1,
                                        condition_start_date = as.Date("2020-05-31"))
 
-  indicationDefinitionSet = dplyr::tibble(indication_id = c(1, 2),
-                                          indication_name = c("asthma", "covid"))
+  indicationDefinitionSet = dplyr::tibble(cohortId = c(1, 2),
+                                          cohortName = c("asthma", "covid"))
 
   cdm <-
     mockDrugUtilisation(

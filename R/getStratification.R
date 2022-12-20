@@ -377,7 +377,7 @@ getStratification <- function(cdm,
     ) %>%
     dplyr::compute()
 
-  attr(targetCohort, "settings") <- settings
+  attr(targetCohort, "cohortSet") <- settings
 
   return(targetCohort)
 }
