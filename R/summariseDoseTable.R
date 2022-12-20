@@ -831,7 +831,7 @@ summariseIndication <- function(cdm,
     result <- rbind(result, cohort %>%
       dplyr::filter(.data$cohort_definition_id == .env$k) %>%
       dplyr::summarise(
-        number_unique_observations.counts = as.character(dplyr::n()),
+        number_observations.counts = as.character(dplyr::n()),
         cohort_start_date.min = as.character(min(.data$cohort_start_date,
           na.rm = TRUE
         )),
