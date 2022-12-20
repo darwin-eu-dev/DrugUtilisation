@@ -241,7 +241,18 @@ generateDrugUtilisationCohort <- function(cdm,
         dplyr::collect() %>%
         dplyr::inner_join(conceptList, by = "drug_concept_id")
     }
+    conceptSets <- conceptSets %>%
+      dplyr::select(
+        "cohortId" = "cohort_definition_id",
+        "cohortName" = "concept_set_name",
+        "concepSetPath" = "concept_set_path"
+      )
   } else {
+    conceptSets <- dplyr::tibble(
+      cohortId = 1,
+      cohortName = paste0("ingredient: ", ingredientConceptId),
+      conceptSetPath = as.character(NA)
+    )
     conceptList <- cdm[["drug_strength"]] %>%
       dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
       dplyr::select("drug_concept_id") %>%
@@ -436,14 +447,7 @@ generateDrugUtilisationCohort <- function(cdm,
     ) %>%
     dplyr::compute()
 
-  if (exists("conceptSets")) {
-    attr(cohort, "conceptSets") <- conceptSets %>%
-      dplyr::select(
-        "cohortId" = "cohort_definition_id",
-        "cohortName" = "concept_set_name",
-        "concepSetPath" = "concept_set_path"
-      )
-  }
+  attr(cohort, "cohortSet") <- conceptSets
 
   attr(cohort, "attrition") <- attrition %>%
     dplyr::inner_join(
