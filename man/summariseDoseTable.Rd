@@ -10,7 +10,7 @@ summariseDoseTable(
   cohortId = NULL,
   doseTableName,
   variables = NULL,
-  estimates = NULL,
+  estimates = c("min", "max", "mean", "std", "median", "iqr", "q25", "q75"),
   minimumCellCounts = 5
 )
 }
