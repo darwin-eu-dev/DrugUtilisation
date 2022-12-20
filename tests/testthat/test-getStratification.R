@@ -210,7 +210,7 @@ test_that("test sex strata", {
     targetCohortId = 1,
                          sex = c("Female", "Male")
     )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 2)
   expect_true(
     x %>%
@@ -231,7 +231,7 @@ test_that("test sex strata", {
     targetCohortId = 1,
     sex = c("Both", "Female", "Male")
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 3)
   expect_true(
     x %>%
@@ -258,7 +258,7 @@ test_that("test sex strata", {
     targetCohortId = 1,
     sex = c("Male")
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 1)
   expect_true(
     x %>%
@@ -319,7 +319,7 @@ test_that("test ageGroup strata", {
     targetCohortId = 1,
     ageGroup = list(c(0,19), c(20, 39), c(40,59), c(0, 150), c(0,50))
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 5)
   expect_true(
     x %>%
@@ -404,7 +404,7 @@ test_that("test indexYear strata", {
     targetCohortId = 1,
     indexYearGroup = list(2010, c(2010,2020), c(2000,2035), 2034)
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 4)
   expect_true(
     x %>%
@@ -483,8 +483,8 @@ test_that("test indication strata", {
     targetCohortDefinitionIds = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
-      indication_id = c(1, 2),
-      indication_name = c("covid", "tuberculosis")
+      cohortId = c(1, 2),
+      cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = c(7, 30, 10000),
     unknownIndicationTables = "condition_occurrence"
@@ -496,7 +496,7 @@ test_that("test indication strata", {
     targetCohortId = 1,
     indicationTable = indicationTable
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 13)
   cdi_counts <- c(9, 2, 0, 1, 6, 4, 1, 1, 3, 6, 3, 1, 2)
   for (k in 1:length(cdi_counts)){
@@ -559,8 +559,8 @@ test_that("test multiple conditions", {
     targetCohortDefinitionIds = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
-      indication_id = c(1, 2),
-      indication_name = c("covid", "tuberculosis")
+      cohortId = c(1, 2),
+      cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = 7,
     unknownIndicationTables = "condition_occurrence"
@@ -575,7 +575,7 @@ test_that("test multiple conditions", {
     indexYearGroup = list(c(2010, 2019), c(2020, 2035)),
     indicationTable = indicationTable
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 60)
   cdi_counts <- c(
     6, 2, 0, 0, 4,
@@ -651,8 +651,8 @@ test_that("test oneStrata option", {
     targetCohortDefinitionIds = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
-      indication_id = c(1, 2),
-      indication_name = c("covid", "tuberculosis")
+      cohortId = c(1, 2),
+      cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = 7,
     unknownIndicationTables = "condition_occurrence"
@@ -668,7 +668,7 @@ test_that("test oneStrata option", {
     indicationTable = indicationTable,
     oneStrata = TRUE
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 9)
   cdi_counts <- c(6, 2, 0, 0, 4, 3, 1, 5, 2)
   for (k in 1:length(cdi_counts)){
