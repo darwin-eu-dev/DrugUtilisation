@@ -73,7 +73,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -108,7 +108,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -144,7 +144,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -180,7 +180,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -217,7 +217,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -269,7 +269,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -307,7 +307,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -356,7 +356,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -393,7 +393,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -523,7 +523,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
@@ -579,7 +579,7 @@ expect_true(dplyr::all_equal(
   dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
-      "number_unique_observations",
+      "number_observations",
       "cohort_start_date",
       "cohort_start_date",
       "cohort_end_date",
