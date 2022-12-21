@@ -167,7 +167,7 @@ largeScaleCharacterization <- function(cdm,
   )
 
   # overlap
-  checkmate::assertLogical(overlap, len = 1, add = errorMessage)
+  checkmate::assertLogical(overlap, any.missing = FALSE, add = errorMessage)
 
   # summarise
   checkmate::assertLogical(summarise, len = 1, add = errorMessage)
@@ -177,6 +177,14 @@ largeScaleCharacterization <- function(cdm,
 
   # report collection of errors
   checkmate::reportAssertions(collection = errorMessage)
+
+  if (length(overlap) > 1) {
+    if(length(overlap) != length(tablesToCharacterize)) {
+      stop("If length(overlap)>1 then length(overlap) = length(tablesToCharacterize)")
+    }
+  } else {
+    overlap <- rep(overlap, length(tablesToCharacterize))
+  }
 
   # write temporal windows tibble
   temporalWindows <- lapply(temporalWindows, function(x) {
@@ -256,6 +264,7 @@ largeScaleCharacterization <- function(cdm,
   # events in the observation window will be observed. The result is a
   # temporary table in the database
   characterizedTable <- lapply(tablesToCharacterize, function(table_name) {
+    overlap.k <- overlap[tablesToCharacterize == table_name]
     # get start date depending on the table
     start_date <- get_start_date[[table_name]]
     # get end date depending on the table
@@ -268,7 +277,7 @@ largeScaleCharacterization <- function(cdm,
       # rename start date
       dplyr::rename("start_date" = .env$start_date)
     # rename or create end date
-    if (is.null(end_date) || isFALSE(overlap)) {
+    if (is.null(end_date) || isFALSE(overlap.k)) {
       study_table <- study_table %>%
         dplyr::mutate(end_date = .data$start_date)
     } else {
@@ -289,7 +298,7 @@ largeScaleCharacterization <- function(cdm,
       )))
     # obtain the time difference between the end of the event and the cohort
     # start date
-    if (is.null(end_date) || isFALSE(overlap)) {
+    if (is.null(end_date) || isFALSE(overlap.k)) {
       study_table <- study_table %>%
         dplyr::mutate(days_difference_end = .data$days_difference_start)
     } else {

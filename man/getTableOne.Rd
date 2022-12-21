@@ -14,7 +14,8 @@ getTableOne(
   covariatesTableName = NULL,
   covariatesSet = NULL,
   covariatesWindow = NULL,
-  ...
+  ...,
+  minimumCellCount = 5
 )
 }
 \arguments{
@@ -42,6 +43,8 @@ age. e.g. \code{list(c(0,10),c(20,30))} Can be NULL. If NULL, do not consider ag
 pattern: xxxTableName, xxxSet, xxxWindow, where xxxTableName would be the
 cohort table name in the cdm, xxxSet the cohortSet and xxxWindow the window
 to asses the covariates. xxx will be the name of}
+
+\item{minimumCellCount}{minimum counts due to obscure}
 }
 \description{
 This function is used to summarise the dose and/or indication over multiple
