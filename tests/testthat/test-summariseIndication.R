@@ -84,15 +84,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "3",
@@ -122,15 +122,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "3",
@@ -161,15 +161,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "3",
@@ -200,15 +200,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "<4",
@@ -240,15 +240,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "<5",
@@ -295,15 +295,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "1",
@@ -336,15 +336,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "<5",
@@ -388,15 +388,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "1",
@@ -428,15 +428,15 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "3",
@@ -570,23 +570,23 @@ expect_true(dplyr::all_equal(
       "indication_gap_2_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "3",
@@ -635,23 +635,23 @@ expect_true(dplyr::all_equal(
       "indication_gap_2_Unkown indication"
     ),
     estimate = c(
-      "counts",
+      "count",
       "min",
       "max",
       "min",
       "max",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts",
-      "counts"
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count",
+      "count"
     ),
     value = c(
       "<5",
