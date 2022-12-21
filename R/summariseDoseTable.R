@@ -298,7 +298,7 @@ summariseDoseIndicationTable <- function(cdm,
     result.k <- strataCohort %>%
       dplyr::filter(.data$cohort_definition_id == !!cohortId[k]) %>%
       dplyr::summarise(
-        number_observations.counts = as.character(dplyr::n()),
+        number_observations.count = as.character(dplyr::n()),
         cohort_start_date.min = as.character(min(
           .data$cohort_start_date,
           na.rm = TRUE
@@ -390,7 +390,7 @@ summariseDoseIndicationTable <- function(cdm,
           dplyr::ungroup() %>%
           dplyr::collect() %>%
           dplyr::right_join(indicationDefinitionSet, by = "indication_id") %>%
-          dplyr::mutate(estimate = "counts") %>%
+          dplyr::mutate(estimate = "count") %>%
           dplyr::mutate(value = dplyr::if_else(
             is.na(.data$n), as.integer(0), as.integer(.data$n)
           )) %>%
@@ -651,7 +651,7 @@ summariseDoseTable <- function(cdm,
     result.k <- strataCohort %>%
       dplyr::filter(.data$cohort_definition_id == !!cohortId[k]) %>%
       dplyr::summarise(
-        number_observations.counts = as.character(dplyr::n()),
+        number_observations.count = as.character(dplyr::n()),
         cohort_start_date.min = as.character(min(
           .data$cohort_start_date,
           na.rm = TRUE
@@ -831,7 +831,7 @@ summariseIndication <- function(cdm,
     result <- rbind(result, cohort %>%
       dplyr::filter(.data$cohort_definition_id == .env$k) %>%
       dplyr::summarise(
-        number_observations.counts = as.character(dplyr::n()),
+        number_observations.count = as.character(dplyr::n()),
         cohort_start_date.min = as.character(min(.data$cohort_start_date,
           na.rm = TRUE
         )),
@@ -880,7 +880,7 @@ summariseIndication <- function(cdm,
           dplyr::collect() %>%
           dplyr::right_join(indicationDefinitionSet, by = "indication_id") %>%
           dplyr::mutate(cohort_definition_id = dplyr::if_else(is.na(.data$cohort_definition_id), .env$Id, .data$cohort_definition_id)) %>%
-          dplyr::mutate(estimate = "counts") %>%
+          dplyr::mutate(estimate = "count") %>%
           dplyr::mutate(n = dplyr::if_else(is.na(.data$n), 0, .data$n)) %>%
           dplyr::mutate(
             value = dplyr::if_else(
@@ -912,9 +912,9 @@ obscureSummary <- function(result, minimumCellCounts) {
   values_to_osbcure <- suppressWarnings(as.numeric(result$value)) <
     minimumCellCounts &
     suppressWarnings(as.numeric(result$value)) > 0
-  obscured_values <- result$estimate == "counts" & values_to_osbcure
+  obscured_values <- result$estimate == "count" & values_to_osbcure
   obscured_cohort <- unique(result$cohort_definition_id[
-    result$estimate == "counts" &
+    result$estimate == "count" &
       result$variable == "number_observations" &
       values_to_osbcure
   ])
