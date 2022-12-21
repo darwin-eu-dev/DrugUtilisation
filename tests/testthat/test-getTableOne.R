@@ -33,14 +33,15 @@ test_that("expected errors on inputs", {
     cdm = cdm,
     targetCohortName = "cohort1",
     ageGroups = list(c(0,20), c(30,50)),
-    windowVisitOcurrence = c(-365,0)
+    windowVisitOcurrence = c(-365,0),
+    minimumCellCount = 1
   )
 
-  expect_true(all(result$value[result$covariate == "age_group_0;20"] == c(2, 3)))
+  expect_true(all(result$value[result$variable == "age_group_0;20"] == c(2, 3)))
 
-  expect_true(result %>% dplyr::filter(covariate == "cohort_start_date",estimate == "max",
+  expect_true(result %>% dplyr::filter(variable == "cohort_start_date",estimate == "max",
                                 cohort_definition_id  == 1) %>% dplyr::pull(value) == as.Date("2010-02-01"))
-  expect_true(result %>% dplyr::filter(covariate == "cohort_start_date",estimate == "max",
+  expect_true(result %>% dplyr::filter(variable == "cohort_start_date",estimate == "max",
                                 cohort_definition_id  == 2) %>% dplyr::pull(value) == as.Date("2010-03-01"))
 
 })
@@ -78,22 +79,23 @@ test_that("test covariates", {
     targetCohortId = c(1, 2),
     covariatesTableName = "cohort2",
     covariatesSet = set,
-    covariatesWindow = c(-180, 0)
+    covariatesWindow = c(-180, 0),
+    minimumCellCount = 1
   )
   expect_true(result$value[
-    result$covariate == "covariates_asthma_-180;0" &
+    result$variable == "covariates_asthma_-180;0" &
       result$cohort_definition_id == 1
   ] == 1)
   expect_true(result$value[
-    result$covariate == "covariates_covid_-180;0" &
+    result$variable == "covariates_covid_-180;0" &
       result$cohort_definition_id == 1
   ] == 3)
   expect_true(result$value[
-    result$covariate == "covariates_asthma_-180;0" &
+    result$variable == "covariates_asthma_-180;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "covariates_covid_-180;0" &
+    result$variable == "covariates_covid_-180;0" &
       result$cohort_definition_id == 2
   ] == 0)
 
@@ -102,30 +104,31 @@ test_that("test covariates", {
     targetCohortName = "cohort1",
     measurementTableName = "cohort2",
     measurementSet = set,
-    measurementWindow = c(-181, 0)
+    measurementWindow = c(-181, 0),
+    minimumCellCount = 1
   )
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-181;0" &
+    result$variable == "measurement_asthma_-181;0" &
       result$cohort_definition_id == 1
   ] == 2)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-181;0" &
+    result$variable == "measurement_covid_-181;0" &
       result$cohort_definition_id == 1
   ] == 3)
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-181;0" &
+    result$variable == "measurement_asthma_-181;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-181;0" &
+    result$variable == "measurement_covid_-181;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-181;0" &
+    result$variable == "measurement_asthma_-181;0" &
       result$cohort_definition_id == 3
   ] == 1)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-181;0" &
+    result$variable == "measurement_covid_-181;0" &
       result$cohort_definition_id == 3
   ] == 1)
 
@@ -137,46 +140,47 @@ test_that("test covariates", {
     covariatesWindow = c(-180, 0),
     measurementTableName = "cohort2",
     measurementSet = set,
-    measurementWindow = c(-181, 0)
+    measurementWindow = c(-181, 0),
+    minimumCellCount = 1
   )
   expect_true(result$value[
-    result$covariate == "covariates_asthma_-180;0" &
+    result$variable == "covariates_asthma_-180;0" &
       result$cohort_definition_id == 1
   ] == 1)
   expect_true(result$value[
-    result$covariate == "covariates_covid_-180;0" &
+    result$variable == "covariates_covid_-180;0" &
       result$cohort_definition_id == 1
   ] == 3)
   expect_true(result$value[
-    result$covariate == "covariates_asthma_-180;0" &
+    result$variable == "covariates_asthma_-180;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "covariates_covid_-180;0" &
+    result$variable == "covariates_covid_-180;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-181;0" &
+    result$variable == "measurement_asthma_-181;0" &
       result$cohort_definition_id == 1
   ] == 2)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-181;0" &
+    result$variable == "measurement_covid_-181;0" &
       result$cohort_definition_id == 1
   ] == 3)
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-181;0" &
+    result$variable == "measurement_asthma_-181;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-181;0" &
+    result$variable == "measurement_covid_-181;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-181;0" &
+    result$variable == "measurement_asthma_-181;0" &
       result$cohort_definition_id == 3
   ] == 1)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-181;0" &
+    result$variable == "measurement_covid_-181;0" &
       result$cohort_definition_id == 3
   ] == 1)
 
@@ -214,30 +218,31 @@ test_that("test NA as Any", {
     targetCohortName = "cohort1",
     measurementTableName = "cohort2",
     measurementSet = set,
-    measurementWindow = c(NA, 0)
+    measurementWindow = c(NA, 0),
+    minimumCellCount = 1
   )
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-Any;0" &
+    result$variable == "measurement_asthma_-Any;0" &
       result$cohort_definition_id == 1
   ] == 2)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-Any;0" &
+    result$variable == "measurement_covid_-Any;0" &
       result$cohort_definition_id == 1
   ] == 3)
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-Any;0" &
+    result$variable == "measurement_asthma_-Any;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-Any;0" &
+    result$variable == "measurement_covid_-Any;0" &
       result$cohort_definition_id == 2
   ] == 0)
   expect_true(result$value[
-    result$covariate == "measurement_asthma_-Any;0" &
+    result$variable == "measurement_asthma_-Any;0" &
       result$cohort_definition_id == 3
   ] == 1)
   expect_true(result$value[
-    result$covariate == "measurement_covid_-Any;0" &
+    result$variable == "measurement_covid_-Any;0" &
       result$cohort_definition_id == 3
   ] == 1)
 })

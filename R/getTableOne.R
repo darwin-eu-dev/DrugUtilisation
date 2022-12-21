@@ -33,6 +33,7 @@
 #' pattern: xxxTableName, xxxSet, xxxWindow, where xxxTableName would be the
 #' cohort table name in the cdm, xxxSet the cohortSet and xxxWindow the window
 #' to asses the covariates. xxx will be the name of
+#' @param minimumCellCount minimum counts due to obscure
 #' @return
 #'
 #' @export
@@ -46,7 +47,8 @@ getTableOne <- function(cdm,
                         covariatesTableName = NULL,
                         covariatesSet = NULL,
                         covariatesWindow = NULL,
-                        ...) {
+                        ...,
+                        minimumCellCount = 5) {
   listTables <- list(...)
   if (!is.null(covariatesTableName) &
     !is.null(covariatesWindow) &
@@ -192,6 +194,8 @@ getTableOne <- function(cdm,
     ) %>%
     dplyr::group_by(.data$cohort_definition_id) %>%
     dplyr::summarise(
+      number_obervations.count = as.character(dplyr::n()),
+      number_subjects.count = as.character(dplyr::n_distinct(.data$subject_id)),
       sex_female.count = as.character(count(.data$sex[.data$sex == "Female"])),
       sex_male.count = as.character(count(.data$sex[.data$sex == "Male"])),
       age.mean = as.character(mean(.data$age, na.rm = TRUE)),
@@ -226,7 +230,7 @@ getTableOne <- function(cdm,
   result <- result %>%
     tidyr::pivot_longer(
       cols = colnames(result)[-1],
-      names_to = c("covariate", "estimate"),
+      names_to = c("variable", "estimate"),
       names_sep = "\\."
     )
 
@@ -248,11 +252,11 @@ getTableOne <- function(cdm,
     result.visit_occurrence <- result.visit_occurrence %>%
       tidyr::pivot_longer(
         cols = colnames(result.visit_occurrence)[-1],
-        names_to = c("covariate", "estimate"),
+        names_to = c("variable", "estimate"),
         names_sep = "\\."
       ) %>%
       dplyr::select(
-        "cohort_definition_id", "covariate", "estimate", "value"
+        "cohort_definition_id", "variable", "estimate", "value"
       )
   } else {
     result.visit_occurrence <- NULL
@@ -281,10 +285,10 @@ getTableOne <- function(cdm,
       dplyr::collect() %>%
       dplyr::mutate(
         estimate = "counts",
-        covariate = paste0("age_group_", .data$age_group)
+        variable = paste0("age_group_", .data$age_group)
       ) %>%
       dplyr::select(
-        "cohort_definition_id", "covariate", "estimate",
+        "cohort_definition_id", "variable", "estimate",
         "value" = "n"
       )
   } else {
@@ -302,17 +306,17 @@ getTableOne <- function(cdm,
       set <- listTables[[paste0(name, "Set")]]
       setRename <- set %>%
         dplyr::mutate(
-          covariate_name = paste0(
+          variable_name = paste0(
             "overlap_", .env$tableName, "_", .data$cohortId
           ),
-          covariate = paste0(
+          variable = paste0(
             .env$name, "_", .data$cohortName, "_",
             ifelse(is.na(.env$lookbackWindow[1]), "-Any", .env$lookbackWindow[1]),
             ";",
             ifelse(is.na(.env$lookbackWindow[2]), "Any", .env$lookbackWindow[2])
           )
         ) %>%
-        dplyr::select("covariate_name", "covariate")
+        dplyr::select("variable_name", "variable")
       result.k <- getOverlappingCohortSubjects(
         cdm = cdm,
         targetCohortName = targetCohortName,
@@ -328,12 +332,12 @@ getTableOne <- function(cdm,
         dplyr::collect() %>%
         tidyr::pivot_longer(
           dplyr::starts_with("overlap"),
-          names_to = "covariate_name",
+          names_to = "variable_name",
           values_to = "value"
         ) %>%
         dplyr::mutate(estimate = "count") %>%
-        dplyr::inner_join(setRename, by = "covariate_name") %>%
-        dplyr::select("cohort_definition_id", "covariate", "estimate", "value")
+        dplyr::inner_join(setRename, by = "variable_name") %>%
+        dplyr::select("cohort_definition_id", "variable", "estimate", "value")
       if (k == 1) {
         result.covariates <- result.k
       } else {
@@ -346,7 +350,7 @@ getTableOne <- function(cdm,
 
   output <- rbind(
     result, result.age, result.visit_occurrence, result.covariates
-  )
+  ) %>% obscureSummary(minimumCellCounts = minimumCellCount)
 
   return(output)
 }
