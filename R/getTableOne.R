@@ -280,7 +280,7 @@ getTableOne <- function(cdm,
         by = c("subject_id", "cohort_start_date", "cohort_end_date")
       ) %>%
       dplyr::group_by(.data$cohort_definition_id, .data$age_group) %>%
-      dplyr::summarise(n = dplyr::n()) %>%
+      dplyr::summarise(n = as.integer(dplyr::n())) %>%
       dplyr::ungroup() %>%
       dplyr::collect() %>%
       dplyr::mutate(
