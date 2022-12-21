@@ -552,7 +552,6 @@ expect_true(dplyr::all_equal(
       "count",
       "count",
       "count",
-      "count",
       "count"
     ),
     value = c(
@@ -601,7 +600,6 @@ expect_true(dplyr::all_equal(
       "max",
       "min",
       "max",
-      "count",
       "count",
       "count",
       "count",
