@@ -97,12 +97,10 @@ getIndication <- function(cdm,
   }
 
   # indicationDefinitionSet check is a tibble of contain two columns indication id and indication name
-  checkmate::assertTibble(indicationDefinitionSet,
-    ncols = 2, add = messageStore
-  )
+  checkmate::assertTibble(indicationDefinitionSet, add = messageStore)
   checkmate::assertSubset(
-    colnames(indicationDefinitionSet),
     c("cohortId", "cohortName"),
+    colnames(indicationDefinitionSet),
     add = messageStore
   )
 
