@@ -36,7 +36,7 @@ test_that("expected errors on inputs", {
     windowVisitOcurrence = c(-365,0)
   )
 
-  expect_true(all(result[result$covariate =="ageGroup_0;20",]$value == 5))
+  expect_true(all(result$value[result$covariate == "age_group_0;20"] == c(2, 3)))
 
   expect_true(result %>% dplyr::filter(covariate == "cohort_start_date",estimate == "max",
                                 cohort_definition_id  == 1) %>% dplyr::pull(value) == as.Date("2010-02-01"))

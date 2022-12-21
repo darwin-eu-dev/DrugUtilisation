@@ -172,145 +172,121 @@ getTableOne <- function(cdm,
       dplyr::select("cohort_definition_id") %>%
       dplyr::distinct() %>%
       dplyr::pull()
+  } else {
+    targetCohort <- targetCohort %>%
+      dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId)
   }
 
-  targetCohort <- targetCohort %>%
+  subjects <- targetCohort %>%
+    dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
+    dplyr::distinct() %>%
     addPriorHistory(cdm = cdm) %>%
     addSex(cdm = cdm) %>%
     addAge(cdm = cdm) %>%
     dplyr::compute()
 
-  if (!is.null(windowVisitOcurrence)) {
-    targetCohort <- targetCohort %>%
-      addVisit(cdm = cdm, window = windowVisitOcurrence) %>%
-      dplyr::compute()
-    for (k in 1:length(targetCohortId)) {
-      result.k.visit_occurrence <- targetCohort %>%
-        dplyr::filter(.data$cohort_definition_id == !!targetCohortId[k]) %>%
-        dplyr::summarise(
-          visit_occurrence.mean = as.character(mean(.data$number_visits, na.rm = TRUE)),
-          visit_occurrence.std = as.character(sd(.data$number_visits, na.rm = TRUE)),
-          visit_occurrence.median = as.character(median(.data$number_visits, na.rm = TRUE)),
-          visit_occurrence.quantile25 = as.character(quantile(.data$number_visits, 0.25, na.rm = TRUE)),
-          visit_occurrence.quantile25 = as.character(quantile(.data$number_visits, 0.75, na.rm = TRUE))
-        ) %>%
-        dplyr::collect() %>%
-        tidyr::pivot_longer(
-          cols = dplyr::everything(),
-          names_to = c("covariate", "estimate"),
-          names_sep = "\\."
-        ) %>%
-        dplyr::mutate(cohort_definition_id = targetCohortId[k]) %>%
-        dplyr::select(
-          "cohort_definition_id", "covariate", "estimate", "value"
-        )
+  result <- targetCohort %>%
+    dplyr::left_join(
+      subjects,
+      by = c("subject_id", "cohort_start_date", "cohort_end_date")
+    ) %>%
+    dplyr::group_by(.data$cohort_definition_id) %>%
+    dplyr::summarise(
+      sex_female.count = as.character(count(.data$sex[.data$sex == "Female"])),
+      sex_male.count = as.character(count(.data$sex[.data$sex == "Male"])),
+      age.mean = as.character(mean(.data$age, na.rm = TRUE)),
+      age.std = as.character(sd(.data$age, na.rm = TRUE)),
+      age.median = as.character(median(.data$age, na.rm = TRUE)),
+      age.quantile25 = as.character(quantile(.data$age, 0.25, na.rm = TRUE)),
+      age.quantile75 = as.character(quantile(.data$age, 0.75, na.rm = TRUE)),
+      prior_history.mean = as.character(mean(.data$prior_history, na.rm = TRUE)),
+      prior_history.std = as.character(sd(.data$prior_history, na.rm = TRUE)),
+      prior_history.median = as.character(median(.data$prior_history, na.rm = TRUE)),
+      prior_history.quantile25 = as.character(quantile(.data$prior_history, 0.25, na.rm = TRUE)),
+      prior_history.quantile75 = as.character(quantile(.data$prior_history, 0.75, na.rm = TRUE)),
+      number_observations.count = as.character(dplyr::n()),
+      cohort_start_date.min = as.character(min(
+        .data$cohort_start_date,
+        na.rm = TRUE
+      )),
+      cohort_start_date.max = as.character(max(
+        .data$cohort_start_date,
+        na.rm = TRUE
+      )),
+      cohort_end_date.min = as.character(min(
+        .data$cohort_end_date,
+        na.rm = TRUE
+      )),
+      cohort_end_date.max = as.character(max(
+        .data$cohort_end_date,
+        na.rm = TRUE
+      ))
+    ) %>%
+    dplyr::collect()
+  result <- result %>%
+    tidyr::pivot_longer(
+      cols = colnames(result)[-1],
+      names_to = c("covariate", "estimate"),
+      names_sep = "\\."
+    )
 
-      if (k == 1) {
-        result.visit_occurrence <- result.k.visit_occurrence
-      } else {
-        result.visit_occurrence <- rbind(result.visit_occurrence, result.k.visit_occurrence)
-      }
-    }
+  if (!is.null(windowVisitOcurrence)) {
+    result.visit_occurrence <- targetCohort %>%
+      dplyr::left_join(
+        subjects %>% addVisit(cdm = cdm, window = windowVisitOcurrence),
+        by = c("subject_id", "cohort_start_date", "cohort_end_date")
+      ) %>%
+      dplyr::group_by(.data$cohort_definition_id) %>%
+      dplyr::summarise(
+        visit_occurrence.mean = as.character(mean(.data$number_visits, na.rm = TRUE)),
+        visit_occurrence.std = as.character(sd(.data$number_visits, na.rm = TRUE)),
+        visit_occurrence.median = as.character(median(.data$number_visits, na.rm = TRUE)),
+        visit_occurrence.quantile25 = as.character(quantile(.data$number_visits, 0.25, na.rm = TRUE)),
+        visit_occurrence.quantile75 = as.character(quantile(.data$number_visits, 0.75, na.rm = TRUE))
+      ) %>%
+      dplyr::collect()
+    result.visit_occurrence <- result.visit_occurrence %>%
+      tidyr::pivot_longer(
+        cols = colnames(result.visit_occurrence)[-1],
+        names_to = c("covariate", "estimate"),
+        names_sep = "\\."
+      ) %>%
+      dplyr::select(
+        "cohort_definition_id", "covariate", "estimate", "value"
+      )
   } else {
     result.visit_occurrence <- NULL
   }
 
-
-
-
-  for (k in 1:length(targetCohortId)) {
-    result.k <- targetCohort %>%
-      dplyr::filter(.data$cohort_definition_id == !!targetCohortId[k]) %>%
-      dplyr::summarise(
-        sex_female.count = as.character(count(.data$sex[.data$sex == "Female"])),
-        sex_male.count = as.character(count(.data$sex[.data$sex == "Male"])),
-        age.mean = as.character(mean(.data$age, na.rm = TRUE)),
-        age.std = as.character(sd(.data$age, na.rm = TRUE)),
-        age.median = as.character(median(.data$age, na.rm = TRUE)),
-        age.quantile25 = as.character(quantile(.data$age, 0.25, na.rm = TRUE)),
-        age.quantile25 = as.character(quantile(.data$age, 0.75, na.rm = TRUE)),
-        prior_history.mean = as.character(mean(.data$prior_history, na.rm = TRUE)),
-        prior_history.std = as.character(sd(.data$prior_history, na.rm = TRUE)),
-        prior_history.median = as.character(median(.data$prior_history, na.rm = TRUE)),
-        prior_history.quantile25 = as.character(quantile(.data$prior_history, 0.25, na.rm = TRUE)),
-        prior_history.quantile25 = as.character(quantile(.data$prior_history, 0.75, na.rm = TRUE)),
-        number_observations.count = as.character(dplyr::n()),
-        cohort_start_date.min = as.character(min(
-          .data$cohort_start_date,
-          na.rm = TRUE
-        )),
-        cohort_start_date.max = as.character(max(
-          .data$cohort_start_date,
-          na.rm = TRUE
-        )),
-        cohort_end_date.min = as.character(min(
-          .data$cohort_end_date,
-          na.rm = TRUE
-        )),
-        cohort_end_date.max = as.character(max(
-          .data$cohort_end_date,
-          na.rm = TRUE
-        ))
-      ) %>%
-      dplyr::collect() %>%
-      tidyr::pivot_longer(
-        cols = dplyr::everything(),
-        names_to = c("covariate", "estimate"),
-        names_sep = "\\."
-      ) %>%
-      dplyr::mutate(cohort_definition_id = !!targetCohortId[k]) %>%
-      dplyr::select(
-        "cohort_definition_id", "covariate", "estimate", "value"
-      )
-
-    if (k == 1) {
-      result <- result.k
-    } else {
-      result <- rbind(result, result.k)
-    }
-  }
-
-
-
-
   if (!is.null(ageGroups)) {
-    for (k in 1:length(targetCohortId)) {
-      ageGrDf <- data.frame(do.call(rbind, ageGroups)) %>%
-        dplyr::mutate(ageGroup = paste0(.data$X1, ";", .data$X2))
+    ageGrDf <- dplyr::as_tibble(data.frame(do.call(rbind, ageGroups))) %>%
+      dplyr::mutate(age_group = paste0(.data$X1, ";", .data$X2)) %>%
+      dplyr::mutate(to_join = 1) %>%
+      dplyr::inner_join(
+        dplyr::tibble(age = 0:150, to_join = 1),
+        by = "to_join"
+      ) %>%
+      dplyr::filter(.data$age >= .data$X1) %>%
+      dplyr::filter(.data$age <= .data$X2) %>%
+      dplyr::select("age", "age_group")
 
-      for (i in 1:dim(ageGrDf)[1]) {
-        max_age <- ageGrDf$X2[i]
-        min_age <- ageGrDf$X1[i]
-        targetCohort <- targetCohort %>% dplyr::mutate(
-          max_age = .env$max_age,
-          min_age = .env$min_age,
-          !!paste0("ageGroup_", ageGrDf$ageGroup[i]) :=
-            dplyr::if_else(age > min_age && age < max_age, 1, 0)
-        )
-      }
-
-
-
-      result.k.age <- targetCohort %>%
-        dplyr::summarize_at(dplyr::vars(starts_with("ageGroup")), sum, na.rm = TRUE) %>%
-        dplyr::rename_at(dplyr::vars(starts_with("ageGroup")), list(~ paste0(., ".count"))) %>%
-        dplyr::collect() %>%
-        tidyr::pivot_longer(
-          cols = dplyr::everything(),
-          names_to = c("covariate", "estimate"),
-          names_sep = "\\."
-        ) %>%
-        dplyr::mutate(cohort_definition_id = !!targetCohortId[k]) %>%
-        dplyr::select(
-          "cohort_definition_id", "covariate", "estimate", "value"
-        )
-
-      if (k == 1) {
-        result.age <- result.k.age
-      } else {
-        result.age <- rbind(result.age, result.k.age)
-      }
-    }
+    result.age <- targetCohort %>%
+      dplyr::left_join(
+        subjects %>% dplyr::inner_join(ageGrDf, by = "age", copy = TRUE),
+        by = c("subject_id", "cohort_start_date", "cohort_end_date")
+      ) %>%
+      dplyr::group_by(.data$cohort_definition_id, .data$age_group) %>%
+      dplyr::tally() %>%
+      dplyr::ungroup() %>%
+      dplyr::collect() %>%
+      dplyr::mutate(
+        estimate = "counts",
+        covariate = paste0("age_group_", .data$age_group)
+      ) %>%
+      dplyr::select(
+        "cohort_definition_id", "covariate", "estimate",
+        "value" = "n"
+      )
   } else {
     result.age <- NULL
   }
