@@ -284,7 +284,7 @@ getTableOne <- function(cdm,
       dplyr::ungroup() %>%
       dplyr::collect() %>%
       dplyr::mutate(
-        estimate = "counts",
+        estimate = "count",
         variable = paste0("age_group_", .data$age_group)
       ) %>%
       dplyr::select(
