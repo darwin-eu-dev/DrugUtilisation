@@ -71,7 +71,7 @@ result_5 <- summariseIndication(cdm = cdm, indicationList = res_0)
 expect_true(dplyr::all_equal(
   result_1,
   dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -80,8 +80,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -89,7 +88,6 @@ expect_true(dplyr::all_equal(
       "max",
       "min",
       "max",
-      "count",
       "count",
       "count",
       "count"
@@ -101,7 +99,6 @@ expect_true(dplyr::all_equal(
       "2020-02-02",
       "2020-08-01",
       "3",
-      "0",
       "0",
       "0"
     )
@@ -109,7 +106,7 @@ expect_true(dplyr::all_equal(
 expect_true(dplyr::all_equal(
   result_2,
   dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -118,8 +115,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -127,7 +123,6 @@ expect_true(dplyr::all_equal(
       "max",
       "min",
       "max",
-      "count",
       "count",
       "count",
       "count"
@@ -139,7 +134,6 @@ expect_true(dplyr::all_equal(
       "2020-02-02",
       "2020-08-01",
       "3",
-      "0",
       "0",
       "0"
     )
@@ -148,7 +142,7 @@ expect_true(dplyr::all_equal(
 expect_true(dplyr::all_equal(
   result_3,
   dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -157,8 +151,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -166,7 +159,6 @@ expect_true(dplyr::all_equal(
       "max",
       "min",
       "max",
-      "count",
       "count",
       "count",
       "count"
@@ -179,7 +171,6 @@ expect_true(dplyr::all_equal(
       "2020-08-01",
       "3",
       "0",
-      "0",
       "0"
     )
   )))
@@ -187,7 +178,7 @@ expect_true(dplyr::all_equal(
 expect_true(dplyr::all_equal(
   result_4,
   dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -196,8 +187,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -207,12 +197,10 @@ expect_true(dplyr::all_equal(
       "max",
       "count",
       "count",
-      "count",
       "count"
     ),
     value = c(
       "<4",
-      NA,
       NA,
       NA,
       NA,
@@ -227,7 +215,7 @@ expect_true(dplyr::all_equal(
 expect_true(dplyr::all_equal(
   result_5,
   dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -236,8 +224,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -247,12 +234,10 @@ expect_true(dplyr::all_equal(
       "max",
       "count",
       "count",
-      "count",
       "count"
     ),
     value = c(
       "<5",
-      NA,
       NA,
       NA,
       NA,
@@ -282,7 +267,7 @@ result_5_2 <- summariseIndication(cdm = cdm, indicationList = res_0_2, minimumCe
 expect_true(dplyr::all_equal(
   result_1_2,
   dplyr::tibble(
-    cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2, 2),
+    cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -291,8 +276,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_asthma",
       "indication_gap_0_No indication",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -300,7 +284,6 @@ expect_true(dplyr::all_equal(
       "max",
       "min",
       "max",
-      "count",
       "count",
       "count",
       "count"
@@ -312,7 +295,6 @@ expect_true(dplyr::all_equal(
       "2020-03-01",
       "2020-03-01",
       "1",
-      "0",
       "0",
       "0"
 
@@ -323,7 +305,7 @@ expect_true(dplyr::all_equal(
 expect_true(dplyr::all_equal(
   result_5_2,
   dplyr::tibble(
-    cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2, 2),
+    cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -332,8 +314,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -343,12 +324,10 @@ expect_true(dplyr::all_equal(
       "max",
       "count",
       "count",
-      "count",
       "count"
     ),
     value = c(
       "<5",
-      NA,
       NA,
       NA,
       NA,
@@ -375,7 +354,7 @@ result_m <- summariseIndication(cdm = cdm, indicationList = res_m, minimumCellCo
 expect_true(dplyr::all_equal(
   result_m %>% dplyr::filter(cohort_definition_id %in% 2),
   dplyr::tibble(
-    cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2, 2),
+    cohort_definition_id = c(2, 2, 2, 2, 2, 2, 2, 2),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -384,8 +363,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_asthma",
       "indication_gap_0_No indication",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -393,7 +371,6 @@ expect_true(dplyr::all_equal(
       "max",
       "min",
       "max",
-      "count",
       "count",
       "count",
       "count"
@@ -406,7 +383,6 @@ expect_true(dplyr::all_equal(
       "2020-03-01",
       "1",
       "0",
-      "0",
       "0"
 
     )
@@ -415,7 +391,7 @@ expect_true(dplyr::all_equal(
 expect_true(dplyr::all_equal(
   result_m %>% dplyr::filter(cohort_definition_id %in% 1),
   dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -424,8 +400,7 @@ expect_true(dplyr::all_equal(
       "cohort_end_date",
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
-      "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication"
+      "indication_gap_0_covid"
     ),
     estimate = c(
       "count",
@@ -433,7 +408,6 @@ expect_true(dplyr::all_equal(
       "max",
       "min",
       "max",
-      "count",
       "count",
       "count",
       "count"
@@ -445,7 +419,6 @@ expect_true(dplyr::all_equal(
       "2020-02-02",
       "2020-08-01",
       "3",
-      "0",
       "0",
       "0"
     )
@@ -481,7 +454,6 @@ expect_no_error(
      )))
 DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
-
 
 test_that("test case multiple indication table summary", {
 targetCohortName <- dplyr::tibble(
@@ -549,7 +521,7 @@ result_m <- summariseIndication(cdm = cdm, indicationList = res_m, minimumCellCo
 expect_true(dplyr::all_equal(
   result_m ,
   dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -559,15 +531,12 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
       "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication",
       "indication_gap_1_No indication",
       "indication_gap_1_asthma",
       "indication_gap_1_covid",
-      "indication_gap_1_Unkown indication",
       "indication_gap_2_asthma",
       "indication_gap_2_No indication",
-      "indication_gap_2_covid",
-      "indication_gap_2_Unkown indication"
+      "indication_gap_2_covid"
     ),
     estimate = c(
       "count",
@@ -575,8 +544,6 @@ expect_true(dplyr::all_equal(
       "max",
       "min",
       "max",
-      "count",
-      "count",
       "count",
       "count",
       "count",
@@ -597,14 +564,11 @@ expect_true(dplyr::all_equal(
       "3",
       "0",
       "0",
-      "0",
       "3",
-      "0",
       "0",
       "0",
       "1",
       "2",
-      "0",
       "0"
     )
   )))
@@ -614,7 +578,7 @@ result_m <- summariseIndication(cdm = cdm, indicationList = res_m)
 expect_true(dplyr::all_equal(
   result_m ,
   dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1, 1),
+    cohort_definition_id = c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
     variable = c(
       "number_observations",
       "cohort_start_date",
@@ -624,15 +588,12 @@ expect_true(dplyr::all_equal(
       "indication_gap_0_No indication",
       "indication_gap_0_asthma",
       "indication_gap_0_covid",
-      "indication_gap_0_Unkown indication",
       "indication_gap_1_No indication",
       "indication_gap_1_asthma",
       "indication_gap_1_covid",
-      "indication_gap_1_Unkown indication",
       "indication_gap_2_asthma",
       "indication_gap_2_No indication",
-      "indication_gap_2_covid",
-      "indication_gap_2_Unkown indication"
+      "indication_gap_2_covid"
     ),
     estimate = c(
       "count",
@@ -649,15 +610,10 @@ expect_true(dplyr::all_equal(
       "count",
       "count",
       "count",
-      "count",
-      "count",
       "count"
     ),
     value = c(
       "<5",
-      NA,
-      NA,
-      NA,
       NA,
       NA,
       NA,
@@ -693,5 +649,4 @@ expect_no_error(
      )))
 
 DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-}
-)
+})
