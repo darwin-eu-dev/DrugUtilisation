@@ -377,6 +377,9 @@ generateDrugUtilisationCohort <- function(cdm,
     ))) %>%
     dplyr::compute()
 
+  attrition <- attrition %>%
+    dplyr::union_all(addAttitionLine(cohort, "Eras"))
+
   if (!is.null(priorUseWashout)) {
     cohort <- cohort %>%
       dplyr::left_join(
@@ -399,14 +402,11 @@ generateDrugUtilisationCohort <- function(cdm,
     attrition <- attrition %>%
       dplyr::union_all(addAttitionLine(
         cohort,
-        paste0("Prior washout of ", priorUseWashout)
+        paste0("Prior washout of ", priorUseWashout, " days")
       ))
   } else {
     cohort <- cohort %>% dplyr::select(-"era_id")
   }
-
-  attrition <- attrition %>%
-    dplyr::union_all(addAttitionLine(cohort, "Eras"))
 
   if (!is.null(studyStartDate)) {
     cohort <- cohort %>%
