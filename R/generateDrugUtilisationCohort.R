@@ -327,6 +327,7 @@ generateDrugUtilisationCohort <- function(cdm,
   attrition <- attrition %>%
     dplyr::union_all(addAttitionLine(cohort, "Imputation"))
 
+
   cohort <- cohort %>%
     dplyr::select(
       "cohort_definition_id",
@@ -380,6 +381,7 @@ generateDrugUtilisationCohort <- function(cdm,
   attrition <- attrition %>%
     dplyr::union_all(addAttitionLine(cohort, "Eras"))
 
+
   if (!is.null(priorUseWashout)) {
     cohort <- cohort %>%
       dplyr::left_join(
@@ -404,6 +406,7 @@ generateDrugUtilisationCohort <- function(cdm,
         cohort,
         paste0("Prior washout of ", priorUseWashout, " days")
       ))
+
   } else {
     cohort <- cohort %>% dplyr::select(-"era_id")
   }
@@ -417,6 +420,7 @@ generateDrugUtilisationCohort <- function(cdm,
         cohort,
         paste0("Start after or at ", studyStartDate)
       ))
+
   }
 
   if (!is.null(studyEndDate)) {
@@ -428,6 +432,7 @@ generateDrugUtilisationCohort <- function(cdm,
         cohort,
         paste0("Start before or at ", studyEndDate)
       ))
+
   }
 
   if (!is.null(daysPriorHistory)) {
@@ -440,6 +445,7 @@ generateDrugUtilisationCohort <- function(cdm,
         cohort,
         paste0("At least ", daysPriorHistory, " days of prior history")
       ))
+
   }
 
   if (summariseMode == "FirstEra") {
@@ -451,6 +457,7 @@ generateDrugUtilisationCohort <- function(cdm,
       dplyr::ungroup()
     attrition <- attrition %>%
       dplyr::union_all(addAttitionLine(cohort, "Only first era"))
+
   } else if (summariseMode == "FixedTime") {
     cohort <- cohort %>%
       dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
@@ -479,9 +486,20 @@ generateDrugUtilisationCohort <- function(cdm,
   attr(cohort, "cohortSet") <- conceptSets
 
   attr(cohort, "attrition") <- attrition %>%
-    dplyr::inner_join(
+    dplyr::left_join(
       dplyr::tibble(
-        order_id = c(1, 2, 3), reason = c("Initial Exposures", "Imputation", "")
+        order_id = c(1:9),
+        reason = c(
+          "Initial Exposures",
+          "Imputation",
+          "Eras",
+          paste0("Prior washout of ", priorUseWashout, " days"),
+          paste0("Start after or at ", studyStartDate),
+          paste0("Start before or at ", studyEndDate),
+          paste0("At least ", daysPriorHistory, " days of prior history"),
+          "Only first era",
+          paste0("Only first era; fixedTime = ", fixedTime, " days")
+        )
       ),
       by = "reason"
     ) %>%
