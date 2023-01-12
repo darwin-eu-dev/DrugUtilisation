@@ -199,14 +199,14 @@ getIndication <- function(cdm,
       minIndicationGap <- indicationGap
     }
     if (is.na(minIndicationGap)) {
-      subjectsUnkownIndication <- targetCohort %>%
+      subjectsUnknownIndication <- targetCohort %>%
         dplyr::filter(is.na(.data$dif_time_indication)) %>%
         dplyr::select(
           "subject_id", "cohort_start_date", "cohort_end_date"
         ) %>%
         dplyr::compute()
     } else {
-      subjectsUnkownIndication <- targetCohort %>%
+      subjectsUnknownIndication <- targetCohort %>%
         dplyr::anti_join(
           targetCohort %>%
             dplyr::filter(
@@ -219,17 +219,17 @@ getIndication <- function(cdm,
         dplyr::distinct() %>%
         dplyr::compute()
     }
-    if (subjectsUnkownIndication %>% dplyr::tally() %>% dplyr::pull() > 0) {
+    if (subjectsUnknownIndication %>% dplyr::tally() %>% dplyr::pull() > 0) {
       for (k in 1:length(unknownIndicationTables)) {
         unknownIndicationTableName <- unknownIndicationTables[k]
-        unkownIndication.k <- cdm[[unknownIndicationTableName]] %>%
+        unknownIndication.k <- cdm[[unknownIndicationTableName]] %>%
           dplyr::select(
             "subject_id" = "person_id",
             "unknown_indication_start_date" =
               get_start_date[[unknownIndicationTableName]]
           ) %>%
           dplyr::inner_join(
-            subjectsUnkownIndication,
+            subjectsUnknownIndication,
             by = "subject_id"
           ) %>%
           dplyr::mutate(dif_time_unknown_indication = !!CDMConnector::datediff(
@@ -241,27 +241,41 @@ getIndication <- function(cdm,
           ) %>%
           dplyr::summarise(
             dif_time_unknown_indication = min(
-              .data$dif_time_unknown_indication, na.rm = TRUE
+              .data$dif_time_unknown_indication,
+              na.rm = TRUE
             ),
             .groups = "drop"
           ) %>%
           dplyr::compute()
         if (k == 1) {
-          unkownIndication <- unkownIndication.k
+          unknownIndication <- unknownIndication.k
         } else {
-          unkownIndication <- unkownIndication %>%
-            dplyr::union_all(unkownIndication.k)
+          unknownIndication <- unknownIndication %>%
+            dplyr::union_all(unknownIndication.k)
         }
       }
+      unknownIndication <- unknownIndication %>%
+        dplyr::group_by(
+          .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
+        ) %>%
+        dplyr::summarise(
+          dif_time_unknown_indication = min(
+            .data$dif_time_unknown_indication,
+            na.rm = TRUE
+          ),
+          .groups = "drop"
+        ) %>%
+        dplyr::compute()
     }
   }
 
   for (gap in indicationGap) {
     if (is.na(gap)) {
       indication <- targetCohort %>%
+        dplyr::filter(!is.na(dif_time_indication)) %>%
         dplyr::select(-"dif_time_indication")
       if (!is.null(unknownIndicationTables)) {
-        indication <- unkownIndication %>%
+        indication <- unknownIndication %>%
           dplyr::anti_join(
             indication,
             by = c("subject_id", "cohort_start_date")
@@ -291,7 +305,7 @@ getIndication <- function(cdm,
         dplyr::select(-"dif_time_indication") %>%
         dplyr::compute()
       if (!is.null(unknownIndicationTables)) {
-        indication <- unkownIndication %>%
+        indication <- unknownIndication %>%
           dplyr::anti_join(
             indication,
             by = c("subject_id", "cohort_start_date")
@@ -325,7 +339,7 @@ getIndication <- function(cdm,
       dplyr::select("indication_id", "indication_name") %>%
       rbind(dplyr::tibble(
         indication_id = c(0, -1),
-        indication_name = c("Unkown indication", "No indication")
+        indication_name = c("Unknown indication", "No indication")
       ))
   } else {
     indicationDefinitionSet <- indicationDefinitionSet %>%
