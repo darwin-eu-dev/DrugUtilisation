@@ -12,7 +12,7 @@ generateDrugUtilisationCohort(
   studyStartDate = NULL,
   studyEndDate = NULL,
   summariseMode = "AllEras",
-  fixedTime,
+  fixedTime = 365,
   daysPriorHistory = 0,
   gapEra = 30,
   priorUseWashout = NULL,
