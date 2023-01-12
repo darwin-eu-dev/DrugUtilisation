@@ -51,6 +51,7 @@
 #' When Null, we do not check if in observation_period table.
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era. By default: 180.
+#' @param priorUseWashout Prior days without exposure. By default: NULL.
 #' @param imputeDuration Whether/how the duration should be imputed
 #' "eliminate", "median", "mean", "quantile25", "quantile75".
 #' . By default: eliminate
@@ -73,6 +74,7 @@ generateDrugUtilisationCohort <- function(cdm,
                                           fixedTime,
                                           daysPriorHistory = 0,
                                           gapEra = 30,
+                                          priorUseWashout = NULL,
                                           imputeDuration = "eliminate",
                                           durationRange = c(1, NA)) {
   errorMessage <- checkmate::makeAssertCollection()
@@ -373,8 +375,35 @@ generateDrugUtilisationCohort <- function(cdm,
       date = "cohort_end_date",
       number = -gapEra
     ))) %>%
-    dplyr::select(-"era_id") %>%
     dplyr::compute()
+
+  if (!is.null(priorUseWashout)) {
+    cohort <- cohort %>%
+      dplyr::left_join(
+        cohort %>%
+          dplyr::select(
+            "cohort_definition_id", "subject_id", "era_id",
+            "prior_era" = "cohort_start_date"
+          ) %>%
+          dplyr::mutate(era_id = .data$era_id + 1),
+        by = c("cohort_definition_id", "subject_id", "era_id")
+      ) %>%
+      dplyr::mutate(prior_era = as.numeric(!!CDMConnector::datediff(
+        "prior_era", "cohort_start_date"
+      ))) %>%
+      dplyr::filter(
+        is.na(prior_era) | .data$prior_era < .env$priorUseWashout
+      ) %>%
+      dplyr::select(-"prior_era", -"era_id") %>%
+      dplyr::compute()
+    attrition <- attrition %>%
+      dplyr::union_all(addAttitionLine(
+        cohort,
+        paste0("Prior washout of ", priorUseWashout)
+      ))
+  } else {
+    cohort <- cohort %>% dplyr::select(-"era_id")
+  }
 
   attrition <- attrition %>%
     dplyr::union_all(addAttitionLine(cohort, "Eras"))

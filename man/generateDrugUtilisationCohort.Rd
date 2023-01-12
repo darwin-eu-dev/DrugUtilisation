@@ -15,6 +15,7 @@ generateDrugUtilisationCohort(
   fixedTime,
   daysPriorHistory = 0,
   gapEra = 30,
+  priorUseWashout = NULL,
   imputeDuration = "eliminate",
   durationRange = c(1, NA)
 )
@@ -62,6 +63,8 @@ When Null, we do not check if in observation_period table.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era. By default: 180.}
+
+\item{priorUseWashout}{Prior days without exposure. By default: NULL.}
 
 \item{imputeDuration}{Whether/how the duration should be imputed
 "eliminate", "median", "mean", "quantile25", "quantile75".
