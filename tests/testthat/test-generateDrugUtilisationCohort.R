@@ -26,7 +26,7 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohort(
     cdm = cdm, ingredientConceptId = 1, summariseMode = "2020-01-05"
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_no_error(generateDrugUtilisationCohort(
     cdm = cdm, ingredientConceptId = 1, summariseMode = "FixedTime"
   ))
   expect_error(generateDrugUtilisationCohort(
