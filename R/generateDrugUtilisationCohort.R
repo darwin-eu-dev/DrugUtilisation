@@ -388,7 +388,7 @@ generateDrugUtilisationCohort <- function(cdm,
         cohort %>%
           dplyr::select(
             "cohort_definition_id", "subject_id", "era_id",
-            "prior_era" = "cohort_start_date"
+            "prior_era" = "cohort_end_date"
           ) %>%
           dplyr::mutate(era_id = .data$era_id + 1),
         by = c("cohort_definition_id", "subject_id", "era_id")
@@ -397,7 +397,7 @@ generateDrugUtilisationCohort <- function(cdm,
         "prior_era", "cohort_start_date"
       ))) %>%
       dplyr::filter(
-        is.na(prior_era) | .data$prior_era < .env$priorUseWashout
+        is.na(prior_era) | .data$prior_era > .env$priorUseWashout
       ) %>%
       dplyr::select(-"prior_era", -"era_id") %>%
       dplyr::compute()
