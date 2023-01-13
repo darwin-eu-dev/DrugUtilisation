@@ -436,6 +436,16 @@ generateDrugUtilisationCohort <- function(cdm,
   }
 
   if (!is.null(daysPriorHistory)) {
+    cohort <- inObservation(cohort, cdm = cdm) %>%
+      dplyr::filter(.data$in_observation == TRUE) %>%
+      dplyr::compute()
+
+    attrition <- attrition %>%
+      dplyr::union_all(addAttitionLine(
+        cohort,
+        "In observation on cohort_start_date"
+      ))
+
     cohort <- addPriorHistory(cohort, cdm = cdm) %>%
       dplyr::filter(.data$prior_history >= .env$daysPriorHistory) %>%
       dplyr::select(-"prior_history")
