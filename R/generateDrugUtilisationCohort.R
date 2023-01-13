@@ -498,7 +498,7 @@ generateDrugUtilisationCohort <- function(cdm,
   attr(cohort, "attrition") <- attrition %>%
     dplyr::left_join(
       dplyr::tibble(
-        order_id = c(1:9),
+        order_id = c(1:10),
         reason = c(
           "Initial Exposures",
           "Imputation",
@@ -506,6 +506,7 @@ generateDrugUtilisationCohort <- function(cdm,
           paste0("Prior washout of ", priorUseWashout, " days"),
           paste0("Start after or at ", studyStartDate),
           paste0("Start before or at ", studyEndDate),
+          "In observation on cohort_start_date",
           paste0("At least ", daysPriorHistory, " days of prior history"),
           "Only first era",
           paste0("Only first era; fixedTime = ", fixedTime, " days")
