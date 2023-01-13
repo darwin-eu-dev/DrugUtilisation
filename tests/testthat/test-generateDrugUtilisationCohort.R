@@ -425,4 +425,3 @@ test_that("basic functionality multiple paths", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })
-
