@@ -435,23 +435,19 @@ expect_error(
     )
 )
 
-expect_no_error(
-  (result_m <-
-    summariseIndication(
+result_m <- summariseIndication(
       cdm = cdm,
       indicationList = res_m,
       minimumCellCounts = 1,
       cohortId = 2
-    )))
+    )
 
-expect_no_error(
-  (result_m <-
-     summariseIndication(
+result_m <- summariseIndication(
        cdm = cdm,
        indicationList = res_m,
        minimumCellCounts = 1,
        cohortId = 1
-     )))
+     )
 DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
@@ -637,14 +633,12 @@ expect_error(
        cohortId = 4
      )))
 
-expect_no_error(
-  (result_m <-
-     summariseIndication(
+result_m <- summariseIndication(
        cdm = cdm,
        indicationList = res_m,
        minimumCellCounts = 1,
        cohortId = 1
-     )))
+     )
 
 DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

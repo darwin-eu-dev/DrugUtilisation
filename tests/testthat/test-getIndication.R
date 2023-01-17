@@ -695,8 +695,7 @@ test_that("test input checks", {
     )
   )
 
-  expect_no_error(
-    getIndication(
+  xx <- getIndication(
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
@@ -705,8 +704,6 @@ test_that("test input checks", {
       indicationGap = c(0, 1, NA),
       unknownIndicationTables = NULL
     )
-  )
-
 
   expect_error(
     getIndication(

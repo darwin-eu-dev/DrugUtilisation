@@ -48,12 +48,12 @@ test_that("expected errors on inputs", {
     doseTableName = "person"
   ))
   # NO ERROR
-  expect_no_error(summariseDoseTable(
+  xx <- summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
     variables = c("initial_dose", "cumulative_dose")
-  ))
+  )
   # expect error if cdm is not a cdm_ref
   expect_error(summariseDoseTable(
     cdm = 1,
@@ -187,27 +187,27 @@ test_that("check all estimates", {
     )
   )
   for (k in 1:length(all_estimates)) {
-    expect_no_error(res <- summariseDoseTable(
+    res <- summariseDoseTable(
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 1,
       variables = c("initial_dose", "cumulative_dose"),
       estimates = all_estimates[k]
-    ))
+    )
     expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
     expect_true(res$estimate[res$variable == c("initial_dose")] == all_estimates[k])
     expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
     expect_true(res$estimate[res$variable == c("cumulative_dose")] == all_estimates[k])
   }
-  expect_no_error(res <- summariseDoseTable(
+  res <- summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
     cohortId = 1,
     variables = c("initial_dose", "cumulative_dose"),
     estimates = all_estimates
-  ))
+  )
 })
 
 test_that("check obscure counts", {
