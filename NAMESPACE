@@ -2,6 +2,8 @@
 
 export("%>%")
 export(addDailyDose)
+export(cdmSample)
+export(cdmSubset)
 export(computeAggregation)
 export(computeDailyDose)
 export(generateDrugUtilisationCohort)
