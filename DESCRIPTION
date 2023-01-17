@@ -29,4 +29,5 @@ Imports:
     here,
     RJSONIO,
     tibble,
-    stringr
+    stringr,
+    tidyselect
