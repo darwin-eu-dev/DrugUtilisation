@@ -371,6 +371,7 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::select(
       "cohort_definition_id", "subject_id", "era_id", "name", "date_event"
     ) %>%
+    dplyr::compute() %>%
     tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
     dplyr::mutate(cohort_end_date = as.Date(!!CDMConnector::dateadd(
       date = "cohort_end_date",
