@@ -29,5 +29,4 @@ Imports:
     here,
     RJSONIO,
     tibble,
-    odbc,
     stringr
