@@ -124,7 +124,7 @@ cdmSubsetSubjects <- function(cdm,
   if (is.null(tablesToSubset)) {
     tablesToSubset <- lapply(names(cdm), function(x) {
       x <- cdm[[x]]
-      if (class(x) %in% "tbl") {
+      if ("tbl" %in% class(x)) {
         return("person_id" %in% colnames(x))
       } else {
         return(FALSE)
