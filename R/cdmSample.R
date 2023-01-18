@@ -105,7 +105,9 @@ cdmSample <- function(cdm,
   subjects <- cdm$person %>%
     dplyr::select("person_id") %>%
     dplyr::mutate(rand = dbplyr::sql("random()")) %>%
-    dplyr::slice_min(.data$rand, numberIndividuals) %>%
+    dbplyr::window_order(.data$rank) %>%
+    dplyr::mutate(id = dplyr::row_number()) %>%
+    dplyr::filter(.data$id <= .env$numberIndividuals) %>%
     dplyr::select("person_id") %>%
     dplyr::compute()
 
