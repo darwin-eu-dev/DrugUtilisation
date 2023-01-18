@@ -18,7 +18,7 @@ Imports:
     checkmate,
     SqlRender,
     DBI,
-    dbplyr (== 2.0.0),
+    dbplyr,
     dplyr,
     duckdb,
     glue,
