@@ -472,6 +472,7 @@ splitSubexposures <- function(x) {
     dplyr::select(-"id1") %>%
     dplyr::filter(.data$date_event >= .data$cohort_start_date) %>%
     dplyr::filter(.data$date_event <= .data$cohort_end_date) %>%
+    dbplyr::window_order() %>%
     tidyr::pivot_wider(names_from = "date_type", values_from = "date_event") %>%
     dplyr::select(-"id2") %>%
     dplyr::ungroup() %>%
@@ -510,6 +511,7 @@ splitSubexposures <- function(x) {
     dbplyr::window_order(.data$subexposure_start_date) %>%
     dplyr::mutate(subexposure_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
+    dbplyr::window_order() %>%
     dplyr::mutate(subexposed_days = !!CDMConnector::datediff(
       "subexposure_start_date", "subexposure_end_date"
     ) + 1) %>%
@@ -588,7 +590,8 @@ addEraId <- function(x) {
       .data$type_subexposure == "unexposed",
       as.numeric(NA),
       .data$era_id + 1
-    ))
+    )) %>%
+    dbplyr::window_order()
   return(x)
 }
 
@@ -609,7 +612,8 @@ addContinuousExposureId <- function(x) {
       as.numeric(NA),
       .data$continuous_exposure_id + 1
     )) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dbplyr::window_order()
   return(x)
 }
 

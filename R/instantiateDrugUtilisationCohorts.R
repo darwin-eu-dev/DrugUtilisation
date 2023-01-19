@@ -880,6 +880,7 @@ getPeriods <- function(x, dialect, verbose) {
     # number the sorted subexsposures within each person
     dplyr::mutate(subexposure_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
+    dbplyr::window_order() %>%
     dplyr::compute()
 
   # compute the end of subexposures
@@ -907,6 +908,7 @@ getPeriods <- function(x, dialect, verbose) {
     # number the sorted subexsposures within each person
     dplyr::mutate(subexposure_id = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
+    dbplyr::window_order() %>%
     dplyr::compute()
 
   # compute the subexposure intervals joining start and end dates
@@ -963,6 +965,7 @@ getPeriods <- function(x, dialect, verbose) {
     # continuous exposure wull have the same continuous_exposure_id
     dplyr::mutate(continuous_exposure_id = cumsum(.data$index_continuous_exposure)) %>%
     dplyr::ungroup() %>%
+    dbplyr::window_order() %>%
     # x_intervals_id will contain the continuous_exposure_id for each person_id
     # and subexposure_id
     dplyr::select("person_id", "subexposure_id", "continuous_exposure_id") %>%
@@ -1232,6 +1235,7 @@ joinExposures <- function(x,
     # we compute the era id as the cumsum of the consecutive era_id
     dplyr::mutate(era_id = cumsum(.data$era_id)) %>%
     dplyr::ungroup() %>%
+    dbplyr::window_order() %>%
     dplyr::compute()
   # we add the era id to the current table
   x <- x %>%

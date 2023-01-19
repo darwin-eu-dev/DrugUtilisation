@@ -233,6 +233,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dbplyr::window_order(.data$interval_start_date) %>%
     dplyr::mutate(index = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
+    dbplyr::window_order() %>%
     dplyr::compute()
 
   # Obtain the end of the intervals where the person may be exposed. An interval
@@ -270,6 +271,7 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
     dbplyr::window_order(.data$interval_end_date) %>%
     dplyr::mutate(index = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
+    dbplyr::window_order() %>%
     dplyr::compute()
 
   # Start and end dates are joined with the exposures
@@ -321,7 +323,8 @@ instantiateIncidencePrevalenceCohorts <- function(cdm,
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
     dbplyr::window_order(.data$index) %>%
     dplyr::mutate(era_id = cumsum(.data$gap)) %>%
-    dplyr::filter(.data$gap == 0)
+    dplyr::filter(.data$gap == 0) %>%
+    dbplyr::window_order()
   # We summarize each era to obtain cohort_start_date and cohort_end_date
   incidencePrevalenceCohort <- incidencePrevalenceCohort %>%
     dplyr::group_by(
