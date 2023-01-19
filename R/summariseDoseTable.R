@@ -382,7 +382,8 @@ summariseDoseIndicationTable <- function(cdm,
               dplyr::select(
                 "subject_id", "cohort_start_date", "cohort_end_date",
                 "indication_id"
-              ),
+              ) %>%
+              dplyr::distinct(),
             by = c("subject_id", "cohort_start_date", "cohort_end_date")
           ) %>%
           dplyr::group_by(.data$cohort_definition_id, .data$indication_id) %>%
