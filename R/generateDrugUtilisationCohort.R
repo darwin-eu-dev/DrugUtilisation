@@ -366,7 +366,7 @@ generateDrugUtilisationCohort <- function(cdm,
         0
       )
     ) %>%
-    dplyr::mutate(era_id = cumsum(.data$era_id)) %>%
+    dplyr::mutate(era_id = cumsum(as.numeric(.data$era_id))) %>%
     dplyr::ungroup() %>%
     dbplyr::window_order() %>%
     dplyr::select(
