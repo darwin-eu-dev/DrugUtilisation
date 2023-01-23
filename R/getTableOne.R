@@ -255,7 +255,7 @@ getTableOne <- function(cdm,
 
   result <- result %>%
     tidyr::pivot_longer(
-      cols = colnames(result)[-1],
+      cols = !"cohort_definition_id",
       names_to = c("variable", "estimate"),
       names_sep = "\\."
     )
@@ -306,8 +306,7 @@ getTableOne <- function(cdm,
         by = c("subject_id", "cohort_start_date", "cohort_end_date")
       ) %>%
       dplyr::group_by(.data$cohort_definition_id, .data$age_group) %>%
-      dplyr::summarise(n = as.integer(dplyr::n())) %>%
-      dplyr::ungroup() %>%
+      dplyr::summarise(n = as.integer(dplyr::n()), .groups = "drop") %>%
       dplyr::collect() %>%
       dplyr::mutate(
         estimate = "count",

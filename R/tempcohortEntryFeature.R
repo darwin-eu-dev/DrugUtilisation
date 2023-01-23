@@ -170,16 +170,16 @@ getOverlappingCohortSubjects <- function(cdm,
   result <- result %>%
     dplyr::mutate(
       overlap_id = as.numeric(.data$overlap_id),
-      overlapCohortTableName = .env$overlapCohortName
+      overlap_cohort_name = .env$overlapCohortName
     ) %>%
     tidyr::pivot_wider(
-      names_from = c("overlapCohortTableName", "overlap_id"),
+      names_from = c("overlap_cohort_name", "overlap_id"),
       values_from = "indicator",
-      names_glue = "overlap_{overlapCohortTableName}_{overlap_id}",
+      names_glue = "overlap_{overlap_cohort_name}_{overlap_id}",
       values_fill = 0
     ) %>%
     dplyr::right_join(
-      targetCohort, by = c("subject_id", "cohort_start_date","cohort_end_date")
+      targetCohort, by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
     dplyr::mutate(dplyr::across(
       dplyr::starts_with("overlap"), ~ dplyr::if_else(is.na(.x), 0, .x)
