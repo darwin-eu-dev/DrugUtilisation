@@ -699,89 +699,92 @@ solveOverlap <- function(x, overlapMode) {
         .data$considered_subexposure == "yes"
     ) %>%
     dplyr::filter(dplyr::n() > 1)
-  if (overlapMode == "Minimum") {
+  if (
+    x_overlap %>% dplyr::ungroup() %>% dplyr::tally() %>% dplyr::pull("n") > 0
+  ){
+    if (overlapMode == "Minimum") {
+      x_overlap <- x_overlap %>%
+        dplyr::select(-"considered_subexposure")
+      x_overlap <- x_overlap %>%
+        dplyr::left_join(
+          x_overlap %>%
+            dplyr::filter(.data$daily_dose > 0) %>%
+            dplyr::filter(
+              .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
+            ) %>%
+            dplyr::filter(
+              .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
+            ) %>%
+            dplyr::mutate(considered_subexposure = "yes"),
+          by = colnames(x_overlap)
+        ) %>%
+        dplyr::mutate(considered_subexposure = dplyr::if_else(
+          is.na(.data$considered_subexposure),
+          "no",
+          "yes"
+        ))
+    } else if (overlapMode == "Maximum") {
+      x_overlap <- x_overlap %>%
+        dplyr::select(-"considered_subexposure")
+      x_overlap <- x_overlap %>%
+        dplyr::left_join(
+          x_overlap %>%
+            dplyr::filter(
+              .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
+            ) %>%
+            dplyr::filter(
+              .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
+            ) %>%
+            dplyr::mutate(considered_subexposure = "yes"),
+          by = colnames(x_overlap)
+        ) %>%
+        dplyr::mutate(considered_subexposure = dplyr::if_else(
+          is.na(.data$considered_subexposure),
+          "no",
+          "yes"
+        ))
+    } else if (overlapMode == "Sum") {
+      x_overlap <- x_overlap %>%
+        dplyr::mutate(considered_subexposure = "yes")
+    } else if (overlapMode == "Previous") {
+      x_overlap <- x_overlap %>%
+        dplyr::mutate(
+          considered_subexposure = dplyr::if_else(
+            .data$drug_exposure_start_date ==
+              min(.data$drug_exposure_start_date, na.rm = TRUE),
+            "yes",
+            "no"
+          )
+        )
+    } else if (overlapMode == "Subsequent") {
+      x_overlap <- x_overlap %>%
+        dplyr::mutate(
+          considered_subexposure = dplyr::if_else(
+            .data$drug_exposure_start_date ==
+              max(.data$drug_exposure_start_date, na.rm = TRUE),
+            "yes",
+            "no"
+          )
+        )
+    }
     x_overlap <- x_overlap %>%
-      dplyr::select(-"considered_subexposure")
-    x_overlap <- x_overlap %>%
-      dplyr::left_join(
-        x_overlap %>%
-          dplyr::filter(.data$daily_dose > 0) %>%
-          dplyr::filter(
-            .data$daily_dose == min(.data$daily_dose, na.rm = TRUE)
-          ) %>%
-          dplyr::filter(
-            .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
-          ) %>%
-          dplyr::mutate(considered_subexposure = "yes"),
-        by = colnames(x_overlap)
+      dplyr::ungroup() %>%
+      dplyr::compute()
+    x <- x %>%
+      dplyr::anti_join(
+        x_overlap,
+        by = c(
+          "subject_id", "cohort_start_date", "subexposure_id", "drug_exposure_id"
+        )
       ) %>%
       dplyr::mutate(considered_subexposure = dplyr::if_else(
-        is.na(.data$considered_subexposure),
-        "no",
-        "yes"
-      ))
-  } else if (overlapMode == "Maximum") {
-    x_overlap <- x_overlap %>%
-      dplyr::select(-"considered_subexposure")
-    x_overlap <- x_overlap %>%
-      dplyr::left_join(
-        x_overlap %>%
-          dplyr::filter(
-            .data$daily_dose == max(.data$daily_dose, na.rm = TRUE)
-          ) %>%
-          dplyr::filter(
-            .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
-          ) %>%
-          dplyr::mutate(considered_subexposure = "yes"),
-        by = colnames(x_overlap)
-      ) %>%
-      dplyr::mutate(considered_subexposure = dplyr::if_else(
-        is.na(.data$considered_subexposure),
-        "no",
-        "yes"
-      ))
-  } else if (overlapMode == "Sum") {
-    x_overlap <- x_overlap %>%
-      dplyr::mutate(considered_subexposure = "yes")
-  } else if (overlapMode == "Previous") {
-    x_overlap <- x_overlap %>%
-      dplyr::mutate(
-        considered_subexposure = dplyr::if_else(
-          .data$drug_exposure_start_date ==
-            min(.data$drug_exposure_start_date, na.rm = TRUE),
-          "yes",
-          "no"
-        )
-      )
-  } else if (overlapMode == "Subsequent") {
-    x_overlap <- x_overlap %>%
-      dplyr::mutate(
-        considered_subexposure = dplyr::if_else(
-          .data$drug_exposure_start_date ==
-            max(.data$drug_exposure_start_date, na.rm = TRUE),
-          "yes",
-          "no"
-        )
-      )
+        .data$type_subexposure == "exposed" & is.na(.data$considered_subexposure),
+        "yes",
+        .data$considered_subexposure
+      )) %>%
+      dplyr::union_all(x_overlap) %>%
+      dplyr::compute()
   }
-  x_overlap <- x_overlap %>%
-    dplyr::ungroup() %>%
-    dplyr::compute()
-  x <- x %>%
-    dplyr::anti_join(
-      x_overlap,
-      by = c(
-        "subject_id", "cohort_start_date", "subexposure_id", "drug_exposure_id"
-      )
-    ) %>%
-    dplyr::mutate(considered_subexposure = dplyr::if_else(
-      .data$type_subexposure == "exposed" & is.na(.data$considered_subexposure),
-      "yes",
-      .data$considered_subexposure
-    )) %>%
-    dplyr::union_all(x_overlap) %>%
-    dplyr::compute()
-
   return(x)
 }
 
