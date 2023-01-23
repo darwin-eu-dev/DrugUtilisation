@@ -222,7 +222,7 @@ getTableOne <- function(cdm,
       .groups = "drop"
     ) %>%
     dplyr::collect() %>%
-    dplyr::union_all(
+    dplyr::left_join(
       targetCohort %>%
         dplyr::left_join(
           subjects,
@@ -235,9 +235,10 @@ getTableOne <- function(cdm,
           age.quantile75 = as.character(quantile(.data$age, 0.75, na.rm = TRUE)),
           .groups = "drop"
         ) %>%
-        dplyr::collect()
+        dplyr::collect(),
+      by = "cohort_definition_id"
     ) %>%
-    dplyr::union_all(
+    dplyr::left_join(
       targetCohort %>%
         dplyr::left_join(
           subjects,
@@ -250,7 +251,8 @@ getTableOne <- function(cdm,
           prior_history.quantile75 = as.character(quantile(.data$prior_history, 0.75, na.rm = TRUE)),
           .groups = "drop"
         ) %>%
-        dplyr::collect()
+        dplyr::collect(),
+      by = "cohort_definition_id"
     )
 
   result <- result %>%
