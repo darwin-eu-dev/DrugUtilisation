@@ -200,14 +200,8 @@ getTableOne <- function(cdm,
       sex_male.count = as.character(count(.data$sex[.data$sex == "Male"])),
       age.mean = as.character(mean(.data$age, na.rm = TRUE)),
       age.std = as.character(sd(.data$age, na.rm = TRUE)),
-      age.median = as.character(median(.data$age, na.rm = TRUE)),
-      age.quantile25 = as.character(quantile(.data$age, 0.25, na.rm = TRUE)),
-      age.quantile75 = as.character(quantile(.data$age, 0.75, na.rm = TRUE)),
       prior_history.mean = as.character(mean(.data$prior_history, na.rm = TRUE)),
       prior_history.std = as.character(sd(.data$prior_history, na.rm = TRUE)),
-      prior_history.median = as.character(median(.data$prior_history, na.rm = TRUE)),
-      prior_history.quantile25 = as.character(quantile(.data$prior_history, 0.25, na.rm = TRUE)),
-      prior_history.quantile75 = as.character(quantile(.data$prior_history, 0.75, na.rm = TRUE)),
       number_observations.count = as.character(dplyr::n()),
       cohort_start_date.min = as.character(min(
         .data$cohort_start_date,
@@ -224,9 +218,41 @@ getTableOne <- function(cdm,
       cohort_end_date.max = as.character(max(
         .data$cohort_end_date,
         na.rm = TRUE
-      ))
+      )),
+      .groups = "drop"
     ) %>%
-    dplyr::collect()
+    dplyr::collect() %>%
+    dplyr::union_all(
+      targetCohort %>%
+        dplyr::left_join(
+          subjects,
+          by = c("subject_id", "cohort_start_date", "cohort_end_date")
+        ) %>%
+        dplyr::group_by(.data$cohort_definition_id) %>%
+        dplyr::summarise(
+          age.median = as.character(median(.data$age, na.rm = TRUE)),
+          age.quantile25 = as.character(quantile(.data$age, 0.25, na.rm = TRUE)),
+          age.quantile75 = as.character(quantile(.data$age, 0.75, na.rm = TRUE)),
+          .groups = "drop"
+        ) %>%
+        dplyr::collect()
+    ) %>%
+    dplyr::union_all(
+      targetCohort %>%
+        dplyr::left_join(
+          subjects,
+          by = c("subject_id", "cohort_start_date", "cohort_end_date")
+        ) %>%
+        dplyr::group_by(.data$cohort_definition_id) %>%
+        dplyr::summarise(
+          prior_history.median = as.character(median(.data$prior_history, na.rm = TRUE)),
+          prior_history.quantile25 = as.character(quantile(.data$prior_history, 0.25, na.rm = TRUE)),
+          prior_history.quantile75 = as.character(quantile(.data$prior_history, 0.75, na.rm = TRUE)),
+          .groups = "drop"
+        ) %>%
+        dplyr::collect()
+    )
+
   result <- result %>%
     tidyr::pivot_longer(
       cols = colnames(result)[-1],
