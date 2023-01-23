@@ -413,8 +413,6 @@ getDoseInformation <- function(cdm,
   # summarise cohort to obtain the dose table
   doseTable <- summariseCohort(cohort)
 
-  attr(doseTable, "xx") <- cohort %>% dplyr::collect()
-
   return(doseTable)
 }
 
