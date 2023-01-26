@@ -270,8 +270,8 @@ generateDrugUtilisationCohort <- function(cdm,
   dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
   # get the name of the info table
 
-  # subset drug_exposure and only get the drug concept ids that we are
-  # interested in.
+  # split conceptList in small bits smaller than 500k to avoid problems with
+  # redshift
   numberMaxCodes <- 500000
   numberCodes <- nrow(conceptList)
   if (numberCodes <= numberMaxCodes) {
@@ -279,12 +279,12 @@ generateDrugUtilisationCohort <- function(cdm,
     idEnd <- numberCodes
   } else {
     idStart <- seq(1, numberCodes, by = numberMaxCodes)
-    idEnd <- seq(numberMaxCodes, numberCodes, by = numberMaxCodes)
-    if (length(idStart) != length(idEnd)) {
-      idEnd <- c(idEnd, numberCodes)
-    }
+    idEnd <- idStart + numberMaxCodes - 1
+    idEnd[idEnd > numberCodes] <- numberCodes
   }
-  paste0(idStart,"\n", idEnd)
+
+  # subset drug_exposure and only get the drug concept ids that we are
+  # interested in.
   for (k in 1:length(idStart)) {
     cohort.k <- cdm[["drug_exposure"]] %>%
       dplyr::select(
