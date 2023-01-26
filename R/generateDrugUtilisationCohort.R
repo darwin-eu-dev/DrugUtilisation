@@ -273,11 +273,16 @@ generateDrugUtilisationCohort <- function(cdm,
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
   numberMaxCodes <- 500000
-  idStart <- seq(1, nrow(conceptList), by = numberMaxCodes)
-  idEnd <- c(
-    seq(numberMaxCodes, nrow(conceptList), by = numberMaxCodes),
-    nrow(conceptList)
-  )
+  if (nrow(conceptList) <= numberMaxCodes) {
+    idStart <- 1
+    idEnd <- nrow(conceptList)
+  } else {
+    idStart <- seq(1, nrow(conceptList), by = numberMaxCodes)
+    idEnd <- seq(numberMaxCodes, nrow(conceptList), by = numberMaxCodes)
+    if (length(idStart) != length(idEnd)) {
+      idEnd <- c(idEnd, nrow(conceptList))
+    }
+  }
   for (k in 1:length(idStart)) {
     cohort.k <- cdm[["drug_exposure"]] %>%
       dplyr::select(
