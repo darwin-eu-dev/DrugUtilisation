@@ -583,7 +583,7 @@ addEraId <- function(x) {
       0
     )) %>%
     dbplyr::window_order(.data$subexposure_start_date) %>%
-    dplyr::mutate(era_id = cumsum(.data$era_id)) %>%
+    dplyr::mutate(era_id = cumsum(as.numeric(.data$era_id))) %>%
     dplyr::mutate(era_id = dplyr::if_else(
       .data$type_subexposure == "unexposed",
       as.numeric(NA),
@@ -602,9 +602,9 @@ addContinuousExposureId <- function(x) {
       0
     )) %>%
     dbplyr::window_order(.data$subexposure_start_date) %>%
-    dplyr::mutate(continuous_exposure_id = cumsum(
+    dplyr::mutate(continuous_exposure_id = cumsum(as.numeric(
       .data$continuous_exposure_id
-    )) %>%
+    ))) %>%
     dplyr::mutate(continuous_exposure_id = dplyr::if_else(
       .data$type_subexposure != "exposed",
       as.numeric(NA),
