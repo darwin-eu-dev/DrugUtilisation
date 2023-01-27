@@ -749,23 +749,33 @@ solveOverlap <- function(x, overlapMode) {
     } else if (overlapMode == "Previous") {
       x_overlap <- x_overlap %>%
         dplyr::mutate(
-          considered_subexposure = dplyr::if_else(
-            .data$drug_exposure_start_date ==
-              min(.data$drug_exposure_start_date, na.rm = TRUE),
-            "yes",
-            "no"
-          )
-        )
-    } else if (overlapMode == "Subsequent") {
-      x_overlap <- x_overlap %>%
+          first_drug_exposure_start_date =
+            min(.data$drug_exposure_start_date, na.rm = TRUE)
+        ) %>%
         dplyr::mutate(
           considered_subexposure = dplyr::if_else(
             .data$drug_exposure_start_date ==
-              max(.data$drug_exposure_start_date, na.rm = TRUE),
+              .data$first_drug_exposure_start_date,
             "yes",
             "no"
           )
-        )
+        ) %>%
+        dplyr::select(-"first_drug_exposure_start_date")
+    } else if (overlapMode == "Subsequent") {
+      x_overlap <- x_overlap %>%
+        dplyr::mutate(
+          last_drug_exposure_start_date =
+            max(.data$drug_exposure_start_date, na.rm = TRUE)
+        ) %>%
+        dplyr::mutate(
+          considered_subexposure = dplyr::if_else(
+            .data$drug_exposure_start_date ==
+              .data$last_drug_exposure_start_date,
+            "yes",
+            "no"
+          )
+        ) %>%
+        dplyr::select(-"last_drug_exposure_start_date")
     }
     x_overlap <- x_overlap %>%
       dplyr::ungroup() %>%
