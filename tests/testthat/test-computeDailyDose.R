@@ -24,19 +24,19 @@ test_that("inputs for addDailyDose function",{
     result <- result %>% dplyr::collect()
 
     expect_true(nrow(result) == cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull("n"))
-    expect_true(all(result$drugDoseType %in% c("tablets","quantified", "quantity", "puffs","compounded","timeBased" )))
+    expect_true(all(result$drug_dose_type %in% c("tablets","quantified", "quantity", "puffs","compounded","timeBased" )))
 
 
     #test Tablets
-    resultT <- result %>% dplyr::filter(drugDoseType %in% c("tablets") & drug_concept_id ==1)
+    resultT <- result %>% dplyr::filter(drug_dose_type %in% c("tablets") & drug_concept_id ==1)
     expect_true(all.equal((resultT$daily_dose * resultT$quantity) ,100*(as.integer(difftime(resultT$drug_exposure_end_date, resultT$drug_exposure_start_date, units="days") + 1))))
 
     #test quantity
-    resultT <- result %>% dplyr::filter(drugDoseType %in% c("quantity") & drug_concept_id ==3)
+    resultT <- result %>% dplyr::filter(drug_dose_type %in% c("quantity") & drug_concept_id ==3)
     expect_true(all.equal((resultT$daily_dose * resultT$quantity) ,1*(as.integer(difftime(resultT$drug_exposure_end_date, resultT$drug_exposure_start_date, units="days") + 1))))
 
     #test quantified
-    resultT <- result %>% dplyr::filter(drugDoseType %in% c("quantified") & drug_concept_id ==5)
+    resultT <- result %>% dplyr::filter(drug_dose_type %in% c("quantified") & drug_concept_id ==5)
     expect_true(all.equal((resultT$daily_dose * resultT$quantity) ,5*(as.integer(difftime(resultT$drug_exposure_end_date, resultT$drug_exposure_start_date, units="days") + 1))))
 
     #no daily dose

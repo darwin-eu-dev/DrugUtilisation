@@ -157,7 +157,7 @@ summariseDoseIndicationTable <- function(cdm,
     if (all(unlist(lapply(
       doseTable %>%
         dplyr::select(dplyr::all_of(.env$variables)) %>%
-        head(1) %>%
+        utils::head(1) %>%
         dplyr::collect(),
       function(x) {
         is.numeric(x)
@@ -539,7 +539,7 @@ summariseDoseTable <- function(cdm,
   if (all(unlist(lapply(
     doseTable %>%
       dplyr::select(dplyr::all_of(.env$variables)) %>%
-      head(1) %>%
+      utils::head(1) %>%
       dplyr::collect(),
     function(x) {
       is.numeric(x)

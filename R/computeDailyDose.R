@@ -56,7 +56,7 @@ addDailyDose <- function(table,
           cdm$drug_strength,
           by = c("drug_concept_id")
         ) %>%
-        dplyr::mutate(drugDoseType := dplyr::case_when(
+        dplyr::mutate(drug_dose_type = dplyr::case_when(
           # 1. Tablets and other fixed amount formulations
           is.na(denominator_unit_concept_id) == TRUE ~ "tablets",
           # 2. Puffs of an inhaler
@@ -72,60 +72,30 @@ addDailyDose <- function(table,
         )) %>%
         dplyr::mutate(
           daily_dose = dplyr::case_when(
-            is.na(.data$drugDoseType) ~ as.numeric(NA),
+            is.na(.data$drug_dose_type) ~ as.numeric(NA),
             .data$days_exposed == 0 ~ as.numeric(NA),
-            .data$drugDoseType == "tablets" ~
+            .data$drug_dose_type == "tablets" ~
               .data$quantity * .data$amount_value / .data$days_exposed,
-            .data$drugDoseType == "quantified" ~
+            .data$drug_dose_type == "quantified" ~
               .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drugDoseType == "puffs" ~
+            .data$drug_dose_type == "puffs" ~
               .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drugDoseType == "compounded" ~
+            .data$drug_dose_type == "compounded" ~
               .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drugDoseType == "quantity" ~
+            .data$drug_dose_type == "quantity" ~
               .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drugDoseType == "timeBased" ~ 24 * .data$numerator_value,
+            .data$drug_dose_type == "timeBased" ~ 24 * .data$numerator_value,
             TRUE ~ as.numeric(NA)
           )
         ) %>%
         # dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
         dplyr::select(
           "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id",
-          "drugDoseType", "daily_dose"
+          "drug_dose_type", "daily_dose"
         ),
       by = c("days_exposed", "quantity", "drug_concept_id", "drug_exposure_id")
     ) %>%
     dplyr::compute()
 
   return(table)
-}
-
-#' Explain function
-#'
-#' @param cdm cdm
-#' @param tableName tableName
-#' @param ingredientConceptId ingredientConceptId
-#'
-#' @return
-#' @export
-#'
-#' @examples
-computeDailyDose <- function(cdm,
-                             tableName,
-                             ingredientConceptId) {
-  errorMessage <- checkmate::makeAssertCollection()
-  # initial checks
-  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
-  checkmate::assertCount(ingredientConceptId, add = errorMessage)
-  checkmate::assertFALSE(c("daily_dose") %in% colnames(table), add = errorMessage)
-  checkmate::assertTRUE(c("drug_strength") %in% names(cdm), add = errorMessage)
-  checkmate::reportAssertions(collection = errorMessage)
-
-  cdm[[tableName]] <- addDailyDose(
-    table = cdm[[tableName]],
-    cdm = cdm,
-    ingredientConceptId = ingredientConceptId
-  )
-
-  return(cdm)
 }
