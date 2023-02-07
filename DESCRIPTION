@@ -44,11 +44,8 @@ Imports:
     duckdb,
     glue,
     lubridate,
-    purrr,
     tidyr,
     rlang,
-    here,
     RJSONIO,
     tibble,
-    stringr,
-    tidyselect
+    stringr
