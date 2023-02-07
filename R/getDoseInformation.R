@@ -366,7 +366,7 @@ getDoseInformation <- function(cdm,
     addDailyDose(cdm = cdm, ingredientConceptId = ingredientConceptId) %>%
     dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_end_date) %>%
     dplyr::filter(.data$drug_exposure_end_date >= .data$cohort_start_date) %>%
-    dplyr::select(-"quantity", -"drugDoseType")
+    dplyr::select(-"quantity", -"drug_dose_type")
 
   # impute or eliminate the exposures that daily_dose does not fulfill the
   # conditions ( <0; <dailyDoseRange[1]; >dailyDoseRange[2])

@@ -272,7 +272,7 @@ getIndication <- function(cdm,
   for (gap in indicationGap) {
     if (is.na(gap)) {
       indication <- targetCohort %>%
-        dplyr::filter(!is.na(dif_time_indication)) %>%
+        dplyr::filter(!is.na(.data$dif_time_indication)) %>%
         dplyr::select(-"dif_time_indication")
       if (!is.null(unknownIndicationTables)) {
         indication <- unknownIndication %>%

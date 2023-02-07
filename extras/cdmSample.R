@@ -67,7 +67,7 @@ cdmSubset <- function(cdm,
       subjects %>%
       dplyr::inner_join(cdm$person, by = "person_id") %>%
       dplyr::tally() %>%
-      pull("n")) {
+      dplyr::pull("n")) {
     warning("Not all subjects are present in person table.")
   }
 
