@@ -2,8 +2,6 @@
 
 export("%>%")
 export(addDailyDose)
-export(cdmSample)
-export(cdmSubset)
 export(generateDrugUtilisationCohort)
 export(getDoseInformation)
 export(getIndication)
