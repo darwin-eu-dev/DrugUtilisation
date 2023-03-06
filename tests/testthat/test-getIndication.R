@@ -845,3 +845,146 @@ test_that("test case multiple indication with NA", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })
+
+test_that("test case multiple unknown indication table" {
+
+
+  targetCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
+    ))
+  ) # this is the targetCohort
+  indicationCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 3, 1),
+    subject_id = c(1, 3, 1, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2019-12-30",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    )
+  )
+  condition_occurrence <- dplyr::tibble(
+    person_id = 1,
+    condition_start_date = as.Date("2020-05-31")
+  )
+
+  observation <- dplyr::tibble(
+    person_id = 1,
+    observation_period_start_date = as.Date("2020-01-01")
+  )
+
+  indicationDefinitionSet <- dplyr::tibble(
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
+  )
+
+  cdm <-
+    mockDrugUtilisation(
+      cohort1 = targetCohortName,
+      cohort2 = indicationCohortName,
+      condition_occurrence = condition_occurrence,
+      observation = observation
+    )
+
+  # check for indication 0,1,6
+  res_m <- suppressWarnings(getIndication(
+    cdm = cdm,
+    targetCohortName = "cohort1",
+    indicationCohortName = "cohort2",
+    targetCohortDefinitionIds = 1,
+    indicationDefinitionSet = indicationDefinitionSet,
+    indicationGap = c(0, 1, 6),
+    unknownIndicationTables = c("observation_period","condition_occurrence")
+  ))
+
+  expect_true(all(res_m$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(1,-1,-1)))
+
+  targetCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
+    ))
+  ) # this is the targetCohort
+  indicationCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 3, 1),
+    subject_id = c(1, 3, 1, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-05-01",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2019-12-30",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    )
+  )
+  condition_occurrence <- dplyr::tibble(
+    person_id = 1,
+    condition_start_date = as.Date("2020-05-31")
+  )
+
+  observation <- dplyr::tibble(
+    person_id = 1,
+    observation_period_start_date = as.Date("2020-01-01")
+  )
+
+  indicationDefinitionSet <- dplyr::tibble(
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
+  )
+
+  cdm <-
+    mockDrugUtilisation(
+      cohort1 = targetCohortName,
+      cohort2 = indicationCohortName,
+      condition_occurrence = condition_occurrence,
+      observation = observation
+    )
+
+  # check for indication 0,1,6
+  res_m <- suppressWarnings(getIndication(
+    cdm = cdm,
+    targetCohortName = "cohort1",
+    indicationCohortName = "cohort2",
+    targetCohortDefinitionIds = 1,
+    indicationDefinitionSet = indicationDefinitionSet,
+    indicationGap = c(0, 1, 6),
+    unknownIndicationTables = c("observation_period","condition_occurrence")
+  ))
+
+  expect_true(all(res_m$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(0,-1,-1)))
+
+})
+
+
