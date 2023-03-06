@@ -291,7 +291,7 @@ getDoseInformation <- function(cdm,
   )
 
   if (nrow(conceptList) == 0) {
-    stop("No concepts were not found in the vocabulary using this settings")
+    stop("No concepts were found in the vocabulary using this settings")
   }
 
   # get sql dialect of the database
@@ -333,8 +333,14 @@ getDoseInformation <- function(cdm,
       )
     ) + 1)
 
+  ## table to return if no exposure are found in cohort
+
+  cohortEmpty <- cohort %>% dplyr::mutate(days_exposed = 0, daily_dose = 0) %>% dplyr::select(-quantity)
+
   # impute or eliminate the exposures that duration does not fulfill the
   # conditions ( <=0; <durationRange[1]; >durationRange[2])
+
+
   cohort <- imputeVariable(
     x = cohort,
     variableName = "days_exposed",
@@ -343,6 +349,7 @@ getDoseInformation <- function(cdm,
     upperBound = durationRange[2],
     imputeValueName = "imputeDuration"
   )
+
 
   attrition <- attrition %>%
     dplyr::union_all(addAttitionLine(cohort, "Impute Duration"))
@@ -384,7 +391,8 @@ getDoseInformation <- function(cdm,
     dplyr::union_all(addAttitionLine(cohort, "Impute DailyDose"))
 
   if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
-    stop("No exposure found inside the studied periods.")
+    cohort <- cohortEmpty
+    warning("No exposure were found for subject in the dusCohortName table")
   }
   # split the exposures in subexposures inside each cohort
   cohort <- splitSubexposures(cohort)
