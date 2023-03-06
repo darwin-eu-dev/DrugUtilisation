@@ -846,7 +846,7 @@ test_that("test case multiple indication with NA", {
 
 })
 
-test_that("test case multiple unknown indication table" {
+test_that("test case multiple unknown indication table behavour", {
 
 
   targetCohortName <- dplyr::tibble(
@@ -950,8 +950,8 @@ test_that("test case multiple unknown indication table" {
     )
   )
   condition_occurrence <- dplyr::tibble(
-    person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    person_id = 2,
+    condition_start_date = as.Date("2018-01-02")
   )
 
   observation <- dplyr::tibble(
@@ -979,11 +979,15 @@ test_that("test case multiple unknown indication table" {
     indicationCohortName = "cohort2",
     targetCohortDefinitionIds = 1,
     indicationDefinitionSet = indicationDefinitionSet,
-    indicationGap = c(0, 1, 6),
+    indicationGap = c(0, 1, NA),
     unknownIndicationTables = c("observation_period","condition_occurrence")
   ))
 
   expect_true(all(res_m$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(0,-1,-1)))
+
+  expect_true(all(res_m$"Any" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(0,2,0,1)))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })
 
