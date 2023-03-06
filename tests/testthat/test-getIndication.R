@@ -973,7 +973,7 @@ test_that("test case multiple unknown indication table behavour", {
     )
 
   # check for indication 0,1,6
-  res_m <- suppressWarnings(getIndication(
+  res_t <- suppressWarnings(getIndication(
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
@@ -983,9 +983,9 @@ test_that("test case multiple unknown indication table behavour", {
     unknownIndicationTables = c("observation_period","condition_occurrence")
   ))
 
-  expect_true(all(res_m$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(0,-1,-1)))
+  expect_true(all(res_t$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(0,-1,-1)))
 
-  expect_true(all(res_m$"Any" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(0,2,0,1)))
+  expect_true(all(res_t$"Any" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(0,2,0,1)))
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 

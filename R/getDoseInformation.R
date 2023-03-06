@@ -335,7 +335,7 @@ getDoseInformation <- function(cdm,
 
   ## table to return if no exposure are found in cohort
 
-  cohortEmpty <- cohort %>% dplyr::mutate(days_exposed = 0, daily_dose = 0) %>% dplyr::select(-quantity)
+  cohortEmpty <- cohort %>% dplyr::mutate(days_exposed = 0, daily_dose = 0) %>% dplyr::select(-"quantity")
 
   # impute or eliminate the exposures that duration does not fulfill the
   # conditions ( <=0; <durationRange[1]; >durationRange[2])
