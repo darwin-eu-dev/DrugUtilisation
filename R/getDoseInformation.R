@@ -321,7 +321,7 @@ getDoseInformation <- function(cdm,
     ) %>%
     dplyr::compute()
 
-  attrition <- addAttitionLine(cohort, "Initial counts getDoseInformation")
+  attrition <- addattritionLine(cohort, "Initial counts getDoseInformation")
 
   # compute the number of days exposed according to:
   # days_exposed = end - start + 1
@@ -352,7 +352,7 @@ getDoseInformation <- function(cdm,
 
 
   attrition <- attrition %>%
-    dplyr::union_all(addAttitionLine(cohort, "Impute Duration"))
+    dplyr::union_all(addattritionLine(cohort, "Impute Duration"))
 
   # correct drug exposure end date according to the new duration
   cohort <- cohort %>%
@@ -388,7 +388,7 @@ getDoseInformation <- function(cdm,
     dplyr::compute()
 
   attrition <- attrition %>%
-    dplyr::union_all(addAttitionLine(cohort, "Impute DailyDose"))
+    dplyr::union_all(addattritionLine(cohort, "Impute DailyDose"))
 
   if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
     cohort <- cohortEmpty

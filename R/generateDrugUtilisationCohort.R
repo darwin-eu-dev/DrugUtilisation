@@ -315,7 +315,7 @@ generateDrugUtilisationCohort <- function(cdm,
     )
   }
 
-  attrition <- addAttitionLine(cohort, "Initial Exposures")
+  attrition <- addattritionLine(cohort, "Initial Exposures")
 
   # compute the number of days exposed according to:
   # days_exposed = end - start + 1
@@ -348,7 +348,7 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::compute()
 
   attrition <- attrition %>%
-    dplyr::union_all(addAttitionLine(cohort, "Imputation"))
+    dplyr::union_all(addattritionLine(cohort, "Imputation"))
 
 
   cohort <- cohort %>%
@@ -403,7 +403,7 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::compute()
 
   attrition <- attrition %>%
-    dplyr::union_all(addAttitionLine(cohort, "Eras"))
+    dplyr::union_all(addattritionLine(cohort, "Eras"))
 
 
   if (!is.null(priorUseWashout)) {
@@ -426,7 +426,7 @@ generateDrugUtilisationCohort <- function(cdm,
       dplyr::select(-"prior_era", -"era_id") %>%
       dplyr::compute()
     attrition <- attrition %>%
-      dplyr::union_all(addAttitionLine(
+      dplyr::union_all(addattritionLine(
         cohort,
         paste0("Prior washout of ", priorUseWashout, " days")
       ))
@@ -440,7 +440,7 @@ generateDrugUtilisationCohort <- function(cdm,
       dplyr::filter(.data$cohort_start_date >= .env$studyStartDate)
 
     attrition <- attrition %>%
-      dplyr::union_all(addAttitionLine(
+      dplyr::union_all(addattritionLine(
         cohort,
         paste0("Start after or at ", studyStartDate)
       ))
@@ -452,7 +452,7 @@ generateDrugUtilisationCohort <- function(cdm,
       dplyr::filter(.data$cohort_start_date <= .env$studyEndDate)
 
     attrition <- attrition %>%
-      dplyr::union_all(addAttitionLine(
+      dplyr::union_all(addattritionLine(
         cohort,
         paste0("Start before or at ", studyEndDate)
       ))
@@ -465,7 +465,7 @@ generateDrugUtilisationCohort <- function(cdm,
       dplyr::compute()
 
     attrition <- attrition %>%
-      dplyr::union_all(addAttitionLine(
+      dplyr::union_all(addattritionLine(
         cohort,
         "In observation on cohort_start_date"
       ))
@@ -475,7 +475,7 @@ generateDrugUtilisationCohort <- function(cdm,
       dplyr::select(-"prior_history")
 
     attrition <- attrition %>%
-      dplyr::union_all(addAttitionLine(
+      dplyr::union_all(addattritionLine(
         cohort,
         paste0("At least ", daysPriorHistory, " days of prior history")
       ))
@@ -490,7 +490,7 @@ generateDrugUtilisationCohort <- function(cdm,
       ) %>%
       dplyr::ungroup()
     attrition <- attrition %>%
-      dplyr::union_all(addAttitionLine(cohort, "Only first era"))
+      dplyr::union_all(addattritionLine(cohort, "Only first era"))
 
   } else if (summariseMode == "FixedTime") {
     cohort <- cohort %>%
@@ -504,7 +504,7 @@ generateDrugUtilisationCohort <- function(cdm,
       )) %>%
       dplyr::ungroup()
     attrition <- attrition %>%
-      dplyr::union_all(addAttitionLine(
+      dplyr::union_all(addattritionLine(
         cohort,
         paste0("Only first era; fixedTime = ", fixedTime, " days")
       ))
@@ -680,7 +680,7 @@ imputeVariable <- function(x,
 #' Add line to the attrition tibble
 #'
 #' @noRd
-addAttitionLine <- function(cohort, reason) {
+addattritionLine <- function(cohort, reason) {
   if ("cohort_definition_id" %in% colnames(cohort)) {
     cohort <- cohort %>% dplyr::group_by(.data$cohort_definition_id)
   }
