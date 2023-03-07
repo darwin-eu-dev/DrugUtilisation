@@ -54,7 +54,7 @@ test_that("test case single indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 0,
     unknownIndicationTables = NULL
@@ -80,7 +80,7 @@ test_that("test case single indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 1,
     unknownIndicationTables = NULL
@@ -105,7 +105,7 @@ test_that("test case single indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     unknownIndicationTables = NULL,
     indicationGap = 2
@@ -130,7 +130,7 @@ test_that("test case single indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     unknownIndicationTables = NULL,
     indicationGap = NA
@@ -211,7 +211,7 @@ test_that("test case single indication with unknown indication table", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 0,
     unknownIndicationTables = "condition_occurrence"
@@ -237,7 +237,7 @@ test_that("test case single indication with unknown indication table", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 1,
     unknownIndicationTables = "condition_occurrence"
@@ -262,7 +262,7 @@ test_that("test case single indication with unknown indication table", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     unknownIndicationTables = "condition_occurrence",
     indicationGap = 6
@@ -341,7 +341,7 @@ test_that("test case multiple indication with unknown indication table", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 6),
     unknownIndicationTables = "condition_occurrence"
@@ -452,7 +452,7 @@ test_that("test case multiple indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 2),
     unknownIndicationTables = NULL
@@ -577,7 +577,7 @@ test_that("test case indicationCohortName error message", {
       cdm = cdm,
       targetCohortName = "cohort2",
       indicationCohortName = "cohort1",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = 0,
       unknownIndicationTables = NULL
@@ -596,7 +596,7 @@ test_that("test case indicationCohortName error message", {
       cdm = cdm_1,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = 0,
       unknownIndicationTables = NULL
@@ -664,7 +664,7 @@ test_that("test input checks", {
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(a, 1, 2),
       unknownIndicationTables = NULL
@@ -676,7 +676,7 @@ test_that("test input checks", {
       cdm = a,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, 2),
       unknownIndicationTables = NULL
@@ -688,7 +688,7 @@ test_that("test input checks", {
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = s,
       indicationGap = c(0, 1, 2),
       unknownIndicationTables = NULL
@@ -699,7 +699,7 @@ test_that("test input checks", {
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, NA),
       unknownIndicationTables = NULL
@@ -710,7 +710,7 @@ test_that("test input checks", {
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, A),
       unknownIndicationTables = NULL
@@ -771,7 +771,7 @@ test_that("test case multiple indication with NA", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 2, NA),
     unknownIndicationTables = NULL
@@ -909,7 +909,7 @@ test_that("test case multiple unknown indication table behavour", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 6),
     unknownIndicationTables = c("observation_period","condition_occurrence")
@@ -977,7 +977,7 @@ test_that("test case multiple unknown indication table behavour", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, NA),
     unknownIndicationTables = c("observation_period","condition_occurrence")

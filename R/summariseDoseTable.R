@@ -30,18 +30,18 @@
 #' cohorts in strataCohort will be summarised.
 #' @param doseTableName Name to point to the cdm table that contains the dose
 #' cohort information computed using getDoseInformationTable
-#' @param variables Vector with the variables that we want to summarise. The
-#' variables must be contained in doseTableName. If NULL all variables in
+#' @param variable Vector with the variable that we want to summarise. The
+#' variable must be contained in doseTableName. If NULL all variable in
 #' doseTableName are summarised. By defaukt: NULL.
 #' @param estimates Vector with the names of the functions used to summarise the
-#' variables. The possible estimates are: "min", "max", "mean", "median", "iqr",
+#' variable. The possible estimates are: "min", "max", "mean", "median", "iqr",
 #' "range", "q5", "q10", "q15", "q20", "q25", "q30", "q35", "q40", "q45", "q50",
 #' "q55", "q60", "q65", "q70", "q75", "q80", "q85", "q90", "q95" and "std". By
 #' default: c("min", "max", "mean", "std", "median", "iqr", "q25", "q75").
 #' @param indicationList is a list of tables that contains the indication
 #' information. You must use the getIndication function to obtain this list. No
 #' default value is provided.
-#' @param minimumCellCounts Minimum counts that a group can have. Cohorts with
+#' @param minimumCellCount Minimum counts that a group can have. Cohorts with
 #' less counts than this value are obscured. By default: 5.
 #'
 #' @return A Tibble with 4 columns: cohort_definition_id, variable, estimate and
@@ -55,10 +55,10 @@ summariseDoseIndicationTable <- function(cdm,
                                          strataCohortName,
                                          cohortId = NULL,
                                          doseTableName = NULL,
-                                         variables = NULL,
+                                         variable = NULL,
                                          estimates = NULL,
                                          indicationList = NULL,
-                                         minimumCellCounts = 5) {
+                                         minimumCellCount = 5) {
   # first round of assertions CLASS
   # start checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -91,9 +91,9 @@ summariseDoseIndicationTable <- function(cdm,
     any.missing = FALSE,
     add = errorMessage
   )
-  # check variables
+  # check variable
   checkmate::assertCharacter(
-    variables,
+    variable,
     min.len = 1,
     null.ok = TRUE,
     any.missing = FALSE,
@@ -114,7 +114,7 @@ summariseDoseIndicationTable <- function(cdm,
   )
   # minimum cell counts
   checkmate::assertCount(
-    minimumCellCounts,
+    minimumCellCount,
     add = errorMessage
   )
   # report collection of errors
@@ -147,23 +147,23 @@ summariseDoseIndicationTable <- function(cdm,
   # checks if dose summary
   if (!is.null(doseTableName)) {
     doseTable <- cdm[[doseTableName]]
-    if (is.null(variables)) {
-      variables <- colnames(doseTable)
-      variables <- variables[!(variables %in% c(
+    if (is.null(variable)) {
+      variable <- colnames(doseTable)
+      variable <- variable[!(variable %in% c(
         "subject_id", "cohort_start_date", "cohort_end_date"
       ))]
     }
-    checkmate::assertTRUE(all(variables %in% colnames(doseTable)))
+    checkmate::assertTRUE(all(variable %in% colnames(doseTable)))
     if (all(unlist(lapply(
       doseTable %>%
-        dplyr::select(dplyr::all_of(.env$variables)) %>%
+        dplyr::select(dplyr::all_of(.env$variable)) %>%
         utils::head(1) %>%
         dplyr::collect(),
       function(x) {
         is.numeric(x)
       }
     ))) == FALSE) {
-      errorMessage$push("-All variables should be numeric")
+      errorMessage$push("-All variable should be numeric")
     }
     if (is.null(estimates)) {
       estimates <- c("min", "max", "mean", "std", "median", "iqr", "q25", "q75")
@@ -179,8 +179,8 @@ summariseDoseIndicationTable <- function(cdm,
       add = errorMessage
     )
   } else {
-    if (!is.null(variables)) {
-      warning("'variables' is not considered if 'doseTableName' is not provided.")
+    if (!is.null(variable)) {
+      warning("'variable' is not considered if 'doseTableName' is not provided.")
     }
     if (!is.null(estimates)) {
       warning("'estimates' is not considered if 'doseTableName' is not provided.")
@@ -347,10 +347,10 @@ summariseDoseIndicationTable <- function(cdm,
             doseTable,
             by = c("subject_id", "cohort_start_date", "cohort_end_date")
           ) %>%
-          dplyr::select(dplyr::all_of(.env$variables)) %>%
+          dplyr::select(dplyr::all_of(.env$variable)) %>%
           dplyr::collect() %>%
           dplyr::summarise(dplyr::across(
-            .cols = dplyr::all_of(.env$variables),
+            .cols = dplyr::all_of(.env$variable),
             .fns = estimates_func,
             .names = "{.col}.{.fn}"
           )) %>%
@@ -396,8 +396,8 @@ summariseDoseIndicationTable <- function(cdm,
             is.na(.data$n), as.integer(0), as.integer(.data$n)
           )) %>%
           dplyr::mutate(value = dplyr::if_else(
-            .data$n > 0 & .data$n < .env$minimumCellCounts,
-            paste0("<", .env$minimumCellCounts),
+            .data$n > 0 & .data$n < .env$minimumCellCount,
+            paste0("<", .env$minimumCellCount),
             as.character(.data$n)
           )) %>%
           dplyr::mutate(variable = paste0(
@@ -410,7 +410,7 @@ summariseDoseIndicationTable <- function(cdm,
     }
   }
 
-  result <- obscureSummary(result, minimumCellCounts = minimumCellCounts)
+  result <- obscureSummary(result, minimumCellCount = minimumCellCount)
 
   return(result %>% dplyr::arrange(.data$cohort_definition_id))
 }
@@ -430,15 +430,15 @@ summariseDoseIndicationTable <- function(cdm,
 #' cohorts in strataCohort will be summarised.
 #' @param doseTableName Name to point to the cdm table that contains the dose
 #' cohort information computed using getDoseInformationTable
-#' @param variables Vector with the variables that we want to summarise. The
-#' variables must be contained in doseTableName. If NULL all variables in
+#' @param variable Vector with the variable that we want to summarise. The
+#' variable must be contained in doseTableName. If NULL all variable in
 #' doseTableName are summarised. By defaukt: NULL.
 #' @param estimates Vector with the names of the functions used to summarise the
-#' variables. The possible estimates are: "min", "max", "mean", "median", "iqr",
+#' variable. The possible estimates are: "min", "max", "mean", "median", "iqr",
 #' "range", "q5", "q10", "q15", "q20", "q25", "q30", "q35", "q40", "q45", "q50",
 #' "q55", "q60", "q65", "q70", "q75", "q80", "q85", "q90", "q95" and "std". By
 #' default: c("min", "max", "mean", "std", "median", "iqr", "q25", "q75").
-#' @param minimumCellCounts Minimum counts that a group can have. Cohorts with
+#' @param minimumCellCount Minimum counts that a group can have. Cohorts with
 #' less counts than this value are obscured. By default: 5.
 #'
 #' @return A Tibble with 4 columns: cohort_definition_id, variable, estimate and
@@ -452,12 +452,12 @@ summariseDoseTable <- function(cdm,
                                strataCohortName,
                                cohortId = NULL,
                                doseTableName,
-                               variables = NULL,
+                               variable = NULL,
                                estimates = c(
                                  "min", "max", "mean", "std", "median", "iqr",
                                  "q25", "q75"
                                ),
-                               minimumCellCounts = 5) {
+                               minimumCellCount = 5) {
   # first round of assertions CLASS
   # start checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -489,9 +489,9 @@ summariseDoseTable <- function(cdm,
     any.missing = FALSE,
     add = errorMessage
   )
-  # check variables
+  # check variable
   checkmate::assertCharacter(
-    variables,
+    variable,
     min.len = 1,
     null.ok = TRUE,
     any.missing = FALSE,
@@ -505,7 +505,7 @@ summariseDoseTable <- function(cdm,
   )
   # minimum cell counts
   checkmate::assertCount(
-    minimumCellCounts,
+    minimumCellCount,
     add = errorMessage
   )
   # report collection of errors
@@ -526,26 +526,26 @@ summariseDoseTable <- function(cdm,
 
   # checks dose summary
   doseTable <- cdm[[doseTableName]]
-  if (is.null(variables)) {
-    variables <- colnames(doseTable)
-    variables <- variables[!(variables %in% c(
+  if (is.null(variable)) {
+    variable <- colnames(doseTable)
+    variable <- variable[!(variable %in% c(
       "subject_id", "cohort_start_date", "cohort_end_date"
     ))]
   }
   checkmate::assertTRUE(
-    all(variables %in% colnames(doseTable)),
+    all(variable %in% colnames(doseTable)),
     add = errorMessage
   )
   if (all(unlist(lapply(
     doseTable %>%
-      dplyr::select(dplyr::all_of(.env$variables)) %>%
+      dplyr::select(dplyr::all_of(.env$variable)) %>%
       utils::head(1) %>%
       dplyr::collect(),
     function(x) {
       is.numeric(x)
     }
   ))) == FALSE) {
-    errorMessage$push("-All variables should be numeric")
+    errorMessage$push("-All variable should be numeric")
   }
   checkmate::assertTRUE(
     all(
@@ -700,10 +700,10 @@ summariseDoseTable <- function(cdm,
           doseTable,
           by = c("subject_id", "cohort_start_date", "cohort_end_date")
         ) %>%
-        dplyr::select(dplyr::all_of(.env$variables)) %>%
+        dplyr::select(dplyr::all_of(.env$variable)) %>%
         dplyr::collect() %>%
         dplyr::summarise(dplyr::across(
-          .cols = dplyr::all_of(.env$variables),
+          .cols = dplyr::all_of(.env$variable),
           .fns = estimates_func,
           .names = "{.col}.{.fn}"
         )) %>%
@@ -720,7 +720,7 @@ summariseDoseTable <- function(cdm,
     )
   }
 
-  result <- obscureSummary(result, minimumCellCounts = minimumCellCounts)
+  result <- obscureSummary(result, minimumCellCount = minimumCellCount)
 
   return(result %>% dplyr::arrange(.data$cohort_definition_id))
 }
@@ -738,7 +738,7 @@ summariseDoseTable <- function(cdm,
 #' @param indicationList is a list of tables that contains the indication
 #' information. You must use the getIndication function to obtain this list. No
 #' default value is provided.
-#' @param minimumCellCounts Minimum counts that a group can have. Cohorts with
+#' @param minimumCellCount Minimum counts that a group can have. Cohorts with
 #' less counts than this value are obscured. By default: 5.
 #'
 #' @return A Tibble with 4 columns: cohort_definition_id, variable, estimate and
@@ -751,7 +751,7 @@ summariseDoseTable <- function(cdm,
 summariseIndication <- function(cdm,
                                 cohortId = NULL,
                                 indicationList = NULL,
-                                minimumCellCounts = 5) {
+                                minimumCellCount = 5) {
   # first round of assertions CLASS
   # start checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -774,7 +774,7 @@ summariseIndication <- function(cdm,
     add = errorMessage
   )
   # minimum cell counts
-  checkmate::assertCount(minimumCellCounts,
+  checkmate::assertCount(minimumCellCount,
     add = errorMessage
   )
   # report collection of errors
@@ -885,8 +885,8 @@ summariseIndication <- function(cdm,
           dplyr::mutate(n = dplyr::if_else(is.na(.data$n), 0, .data$n)) %>%
           dplyr::mutate(
             value = dplyr::if_else(
-              .data$n > 0 & .data$n < .env$minimumCellCounts,
-              paste0("<", .env$minimumCellCounts),
+              .data$n > 0 & .data$n < .env$minimumCellCount,
+              paste0("<", .env$minimumCellCount),
               as.character(.data$n)
             )
           ) %>%
@@ -903,15 +903,15 @@ summariseIndication <- function(cdm,
     }
   }
 
-  result <- obscureSummary(result, minimumCellCounts = minimumCellCounts)
+  result <- obscureSummary(result, minimumCellCount = minimumCellCount)
 
   return(result %>% dplyr::arrange(.data$cohort_definition_id))
 }
 
 #' @noRd
-obscureSummary <- function(result, minimumCellCounts) {
+obscureSummary <- function(result, minimumCellCount) {
   values_to_osbcure <- suppressWarnings(as.numeric(result$value)) <
-    minimumCellCounts &
+    minimumCellCount &
     suppressWarnings(as.numeric(result$value)) > 0
   obscured_values <- result$estimate == "count" & values_to_osbcure
   obscured_cohort <- unique(result$cohort_definition_id[
@@ -919,13 +919,13 @@ obscureSummary <- function(result, minimumCellCounts) {
       result$variable == "number_observations" &
       values_to_osbcure
   ])
-  result$value[obscured_values] <- paste0("<", minimumCellCounts)
+  result$value[obscured_values] <- paste0("<", minimumCellCount)
   result$value[
     result$cohort_definition_id %in% obscured_cohort
   ] <- as.character(NA)
   result$value[
     result$cohort_definition_id %in% obscured_cohort &
       result$variable == "number_observations"
-  ] <- paste0("<", minimumCellCounts)
+  ] <- paste0("<", minimumCellCount)
   return(result)
 }

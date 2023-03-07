@@ -41,7 +41,7 @@ test_that("overlap function", {
   expect_true(all(result[result$subject_id == 3,]$overlap_cohort2_3 == 0))
 })
 
-test_that("test multipleEvents",{
+test_that("test multipleEvent",{
   cdm <- mockDrugUtilisation(
     cohort1 = tibble::tibble(
       cohort_definition_id = c(1, 1, 1, 2, 3),
@@ -74,7 +74,7 @@ test_that("test multipleEvents",{
     overlapCohortName = "cohort2",
     overlapCohortId = 1,
     lookbackWindow = c(NA, 0),
-    multipleEvents = FALSE
+    multipleEvent = FALSE
   ) %>% dplyr::collect()
   expect_true(all(result$overlap_cohort2_1 == c(1,1,0)))
 
@@ -85,7 +85,7 @@ test_that("test multipleEvents",{
     overlapCohortName = "cohort2",
     overlapCohortId = 1,
     lookbackWindow = c(NA, 0),
-    multipleEvents = TRUE
+    multipleEvent = TRUE
   ) %>% dplyr::collect()
   expect_true(all(result$overlap_cohort2_1 == c(1,2,0)))
 
@@ -96,7 +96,7 @@ test_that("test multipleEvents",{
     overlapCohortName = "cohort2",
     overlapCohortId = 1,
     lookbackWindow = NA,
-    multipleEvents = TRUE
+    multipleEvent = TRUE
   ) %>% dplyr::collect()
   expect_true(all(result$overlap_cohort2_1 == c(2,2,0)))
 

@@ -146,7 +146,7 @@ test_that("checks example, summarise = FALSE", {
     overlap = TRUE,
     summarise = FALSE
   )
-  expect_true(identical(resNULL$temporalWindows, res$temporalWindows))
+  expect_true(identical(resNULL$temporalWindow, res$temporalWindow))
   expect_true(identical(resNULL$tablesToCharacterize, res$tablesToCharacterize))
   expect_true(identical(resNULL$overlap, res$overlap))
   expect_true(identical(

@@ -25,7 +25,7 @@
 #' @param targetCohortId Cohort definition id for the analyzed target cohorts.
 #' It can be a vector or a number. If it is NULL all cohorts are analyzed. By
 #' default: NULL.
-#' @param temporalWindows Temporal windows that we want to characterize. It must
+#' @param temporalWindow Temporal windows that we want to characterize. It must
 #' be a list of numeric vectors of length two. The tables will be characterized
 #' between the first element and the second element respect to the
 #' cohort_start_date of each individual. To refer to any time prior set NA the
@@ -52,7 +52,7 @@
 #' contains the characterization of the desired cohorts of interest. The cohorts
 #' of interest are specified using 'targetCohortId' and 'targetCohortName'. The
 #' characterized tables are the ones specified in 'tablesToChacaterize'. Second
-#' ("temporalWindows") contains the windows used to do the characaterization.
+#' ("temporalWindow") contains the windows used to do the characaterization.
 #' Finally "overlap" is also included in the list.
 #'
 #' @export
@@ -61,7 +61,7 @@
 largeScaleCharacterization <- function(cdm,
                                        targetCohortName,
                                        targetCohortId = NULL,
-                                       temporalWindows = list(
+                                       temporalWindow = list(
                                          c(NA, -366), c(-365, -91),
                                          c(-365, -31), c(-90, -1), c(-30, -1),
                                          c(0, 0), c(1, 30), c(1, 90),
@@ -140,10 +140,10 @@ largeScaleCharacterization <- function(cdm,
     add = errorMessage
   )
 
-  # check temporalWindows
-  checkmate::assertList(temporalWindows, min.len = 1, add = errorMessage)
+  # check temporalWindow
+  checkmate::assertList(temporalWindow, min.len = 1, add = errorMessage)
   checkmate::assertTRUE(
-    all(unlist(lapply(temporalWindows, length)) == 2),
+    all(unlist(lapply(temporalWindow, length)) == 2),
     add = errorMessage
   )
 
@@ -187,7 +187,7 @@ largeScaleCharacterization <- function(cdm,
   }
 
   # write temporal windows tibble
-  temporalWindows <- lapply(temporalWindows, function(x) {
+  temporalWindow <- lapply(temporalWindow, function(x) {
     nam <- paste0(
       ifelse(is.na(x[1]), "Any", x[1]),
       ";",
@@ -244,7 +244,7 @@ largeScaleCharacterization <- function(cdm,
     ))) %>%
     dplyr::mutate(to_merge = 1) %>%
     dplyr::inner_join(
-      temporalWindows %>%
+      temporalWindow %>%
         dplyr::mutate(to_merge = 1),
       by = "to_merge",
       copy = TRUE
@@ -313,7 +313,7 @@ largeScaleCharacterization <- function(cdm,
       # windows
       dplyr::mutate(to_merge = 1) %>%
       dplyr::inner_join(
-        temporalWindows %>%
+        temporalWindow %>%
           dplyr::mutate(to_merge = 1),
         by = "to_merge",
         copy = TRUE
@@ -424,7 +424,7 @@ largeScaleCharacterization <- function(cdm,
   result <- list()
   result$characterization <- characterizedTables
   result$denominator <- subjects_denominator
-  result$temporalWindows <- temporalWindows
+  result$temporalWindow <- temporalWindow
   result$tablesToCharacterize <- tablesToCharacterize
   result$overlap <- overlap
 

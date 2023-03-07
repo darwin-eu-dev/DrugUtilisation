@@ -12,7 +12,7 @@ getOverlappingCohortSubjects(
   overlapCohortName,
   overlapCohortId = NULL,
   lookbackWindow = 0,
-  multipleEvents = FALSE
+  multipleEvent = FALSE
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ in}
 \item{lookbackWindow}{lookback period window in days, a list consist of two
 numbers}
 
-\item{multipleEvents}{if we want to count the number of evenets (TRUE) then
+\item{multipleEvent}{if we want to count the number of evenets (TRUE) then
 the result is an integer orjust their presence (FALSE) then the result is 1
 or 0.}
 }
