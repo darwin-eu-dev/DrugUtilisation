@@ -377,7 +377,7 @@ getTableOne <- function(cdm,
 
   output <- rbind(
     result, result.age, result.visit_occurrence, result.covariates
-  ) %>% obscureSummary(minimumCellCounts = minimumCellCount)
+  ) %>% obscureSummary(minimumCellCount = minimumCellCount)
 
   return(output)
 }

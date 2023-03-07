@@ -236,7 +236,7 @@ test_that("check obscure counts", {
       cara = c("a", "b", "b", "a")
     )
   )
-  # expect obscure for cohort_id = 1 when minimumCellCounts >= 4
+  # expect obscure for cohort_id = 1 when minimumCellCount >= 4
   expect_true(
     summariseDoseTable(
       cdm = cdm,
@@ -244,7 +244,7 @@ test_that("check obscure counts", {
       doseTableName = "person",
       cohortId = 1,
       variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 3
+      minimumCellCount = 3
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -257,13 +257,13 @@ test_that("check obscure counts", {
       doseTableName = "person",
       cohortId = 1,
       variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 4
+      minimumCellCount = 4
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
       dplyr::pull() == 20 # 20 because all variable should be obscured
   )
-  # expect obscure for cohort_id = 2 when minimumCellCounts >= 2
+  # expect obscure for cohort_id = 2 when minimumCellCount >= 2
   expect_true(
     summariseDoseTable(
       cdm = cdm,
@@ -271,7 +271,7 @@ test_that("check obscure counts", {
       doseTableName = "person",
       cohortId = 2,
       variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 1
+      minimumCellCount = 1
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -284,7 +284,7 @@ test_that("check obscure counts", {
       doseTableName = "person",
       cohortId = 2,
       variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 2
+      minimumCellCount = 2
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -298,7 +298,7 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 1
+      minimumCellCount = 1
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -310,7 +310,7 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 2
+      minimumCellCount = 2
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -322,7 +322,7 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 3
+      minimumCellCount = 3
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -334,7 +334,7 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 4
+      minimumCellCount = 4
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
