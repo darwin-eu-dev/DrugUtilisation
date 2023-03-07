@@ -985,7 +985,12 @@ test_that("test case multiple unknown indication table behavour", {
 
   expect_true(all(res_t[["0"]] %>% dplyr::pull("indication_id") == c(0,-1,-1)))
 
-  #expect_true(all(res_t[["Any"]] %>% dplyr::pull("indication_id") == c(0,2,0,1)))
+  expect_true(all(res_t[["Any"]] %>% dplyr::pull("indication_id") %in% c(0,2,1)))
+  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 1)
+  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 2)
+  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 3)
+  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 4)
+  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 5)
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
