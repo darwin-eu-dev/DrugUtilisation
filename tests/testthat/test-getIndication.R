@@ -57,7 +57,7 @@ test_that("test case single indication", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 0,
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 
 
@@ -83,7 +83,7 @@ test_that("test case single indication", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 1,
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 
   expect_true(dplyr::all_equal(
@@ -107,7 +107,7 @@ test_that("test case single indication", {
     indicationCohortName = "cohort2",
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
-    unknownIndicationTables = NULL,
+    unknownIndicationTable = NULL,
     indicationGap = 2
   ))
 
@@ -132,7 +132,7 @@ test_that("test case single indication", {
     indicationCohortName = "cohort2",
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
-    unknownIndicationTables = NULL,
+    unknownIndicationTable = NULL,
     indicationGap = NA
   ))
 
@@ -214,7 +214,7 @@ test_that("test case single indication with unknown indication table", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 0,
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   ))
 
 
@@ -240,7 +240,7 @@ test_that("test case single indication with unknown indication table", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 1,
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   ))
 
   expect_true(dplyr::all_equal(
@@ -264,7 +264,7 @@ test_that("test case single indication with unknown indication table", {
     indicationCohortName = "cohort2",
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
-    unknownIndicationTables = "condition_occurrence",
+    unknownIndicationTable = "condition_occurrence",
     indicationGap = 6
   ))
 
@@ -344,7 +344,7 @@ test_that("test case multiple indication with unknown indication table", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 6),
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   ))
 
   # check for indication 0
@@ -455,7 +455,7 @@ test_that("test case multiple indication", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 2),
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 
 
@@ -580,7 +580,7 @@ test_that("test case indicationCohortName error message", {
       targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = 0,
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -599,7 +599,7 @@ test_that("test case indicationCohortName error message", {
       targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = 0,
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   ))
 
@@ -667,7 +667,7 @@ test_that("test input checks", {
       targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(a, 1, 2),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -679,7 +679,7 @@ test_that("test input checks", {
       targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, 2),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -691,7 +691,7 @@ test_that("test input checks", {
       targetCohortDefinitionId = 1,
       indicationDefinitionSet = s,
       indicationGap = c(0, 1, 2),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -702,7 +702,7 @@ test_that("test input checks", {
       targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, NA),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
 
   expect_error(
@@ -713,7 +713,7 @@ test_that("test input checks", {
       targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, A),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -774,7 +774,7 @@ test_that("test case multiple indication with NA", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 2, NA),
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 
 
@@ -912,7 +912,7 @@ test_that("test case multiple unknown indication table behavour", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 6),
-    unknownIndicationTables = c("observation_period","condition_occurrence")
+    unknownIndicationTable = c("observation_period","condition_occurrence")
   ))
 
   expect_true(all(res_m$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(1,-1,-1)))
@@ -980,7 +980,7 @@ test_that("test case multiple unknown indication table behavour", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, NA),
-    unknownIndicationTables = c("observation_period","condition_occurrence")
+    unknownIndicationTable = c("observation_period","condition_occurrence")
   ))
 
   expect_true(all(res_t$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(0,-1,-1)))
