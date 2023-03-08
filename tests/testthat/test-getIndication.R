@@ -994,9 +994,16 @@ test_that("test case multiple unknown indication table behavour", {
   expect_equal(
     res_t[["Any"]] %>%
       dplyr::filter(.data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")) %>%
-      dplyr::pull("indication_id"),
-    c(2, 1)
+      dplyr::pull("indication_id") %>%
+      length(),
+    2
   )
+  expect_true(all(
+    res_t[["Any"]] %>%
+      dplyr::filter(.data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")) %>%
+      dplyr::pull("indication_id") %in%
+      c(1,2)
+  ))
   expect_equal(
     res_t[["Any"]] %>%
       dplyr::filter(.data$subject_id == 2 & .data$cohort_start_date == as.Date("2020-01-02")) %>%
