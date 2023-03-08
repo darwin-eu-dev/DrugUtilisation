@@ -985,12 +985,24 @@ test_that("test case multiple unknown indication table behavour", {
 
   expect_true(all(res_t[["0"]] %>% dplyr::pull("indication_id") == c(0,-1,-1)))
 
-  expect_true(all(res_t[["Any"]] %>% dplyr::pull("indication_id") %in% c(0,2,1)))
-  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 1)
-  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 2)
-  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 3)
-  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 4)
-  expect_true(length(res_t[["Any"]] %>% dplyr::pull("indication_id")) == 5)
+  expect_equal(
+    res_t[["Any"]] %>%
+      dplyr::filter(.data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")) %>%
+      dplyr::pull("indication_id") ,
+    0
+  )
+  expect_equal(
+    res_t[["Any"]] %>%
+      dplyr::filter(.data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")) %>%
+      dplyr::pull("indication_id"),
+    c(2, 1)
+  )
+  expect_equal(
+    res_t[["Any"]] %>%
+      dplyr::filter(.data$subject_id == 2 & .data$cohort_start_date == as.Date("2020-01-02")) %>%
+      dplyr::pull("indication_id"),
+    0
+  )
 
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
