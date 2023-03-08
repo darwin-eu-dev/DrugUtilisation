@@ -8,7 +8,7 @@ largeScaleCharacterization(
   cdm,
   targetCohortName,
   targetCohortId = NULL,
-  temporalWindows = list(c(NA, -366), c(-365, -91), c(-365, -31), c(-90, -1), c(-30, -1),
+  temporalWindow = list(c(NA, -366), c(-365, -91), c(-365, -31), c(-90, -1), c(-30, -1),
     c(0, 0), c(1, 30), c(1, 90), c(31, 365), c(91, 365), c(366, NA)),
   tablesToCharacterize = c("condition_occurrence", "drug_era", "procedure_occurrence",
     "measurement"),
@@ -30,7 +30,7 @@ default value is provided.}
 It can be a vector or a number. If it is NULL all cohorts are analyzed. By
 default: NULL.}
 
-\item{temporalWindows}{Temporal windows that we want to characterize. It must
+\item{temporalWindow}{Temporal windows that we want to characterize. It must
 be a list of numeric vectors of length two. The tables will be characterized
 between the first element and the second element respect to the
 cohort_start_date of each individual. To refer to any time prior set NA the
@@ -62,7 +62,7 @@ The output of this function is a 3 elements list. First
 contains the characterization of the desired cohorts of interest. The cohorts
 of interest are specified using 'targetCohortId' and 'targetCohortName'. The
 characterized tables are the ones specified in 'tablesToChacaterize'. Second
-("temporalWindows") contains the windows used to do the characaterization.
+("temporalWindow") contains the windows used to do the characaterization.
 Finally "overlap" is also included in the list.
 }
 \description{

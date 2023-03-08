@@ -10,10 +10,10 @@ summariseDoseIndicationTable(
   strataCohortName,
   cohortId = NULL,
   doseTableName = NULL,
-  variables = NULL,
+  variable = NULL,
   estimates = NULL,
   indicationList = NULL,
-  minimumCellCounts = 5
+  minimumCellCount = 5
 )
 }
 \arguments{
@@ -34,12 +34,12 @@ cohorts in strataCohort will be summarised.}
 \item{doseTableName}{Name to point to the cdm table that contains the dose
 cohort information computed using getDoseInformationTable}
 
-\item{variables}{Vector with the variables that we want to summarise. The
-variables must be contained in doseTableName. If NULL all variables in
+\item{variable}{Vector with the variable that we want to summarise. The
+variable must be contained in doseTableName. If NULL all variable in
 doseTableName are summarised. By defaukt: NULL.}
 
 \item{estimates}{Vector with the names of the functions used to summarise the
-variables. The possible estimates are: "min", "max", "mean", "median", "iqr",
+variable. The possible estimates are: "min", "max", "mean", "median", "iqr",
 "range", "q5", "q10", "q15", "q20", "q25", "q30", "q35", "q40", "q45", "q50",
 "q55", "q60", "q65", "q70", "q75", "q80", "q85", "q90", "q95" and "std". By
 default: c("min", "max", "mean", "std", "median", "iqr", "q25", "q75").}
@@ -48,7 +48,7 @@ default: c("min", "max", "mean", "std", "median", "iqr", "q25", "q75").}
 information. You must use the getIndication function to obtain this list. No
 default value is provided.}
 
-\item{minimumCellCounts}{Minimum counts that a group can have. Cohorts with
+\item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}
 }
 \value{

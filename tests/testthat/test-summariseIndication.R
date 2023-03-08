@@ -56,16 +56,16 @@ test_that("test case single indication table summary", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 0,
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 res_0
-result_1 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCounts = 1)
-result_2 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCounts = 2)
-result_3 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCounts = 3)
-result_4 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCounts = 4)
+result_1 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCount = 1)
+result_2 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCount = 2)
+result_3 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCount = 3)
+result_4 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCount = 4)
 result_5 <- summariseIndication(cdm = cdm, indicationList = res_0)
 # check summary for single cohort_ID
 expect_true(dplyr::all_equal(
@@ -255,14 +255,14 @@ res_0_2 <- suppressWarnings(getIndication(
   cdm = cdm,
   targetCohortName = "cohort1",
   indicationCohortName = "cohort2",
-  targetCohortDefinitionIds = 2,
+  targetCohortDefinitionId = 2,
   indicationDefinitionSet = indicationDefinitionSet,
   indicationGap = 0,
-  unknownIndicationTables = NULL
+  unknownIndicationTable = NULL
 ))
 
-result_1_2 <- summariseIndication(cdm = cdm, indicationList = res_0_2, minimumCellCounts = 1)
-result_5_2 <- summariseIndication(cdm = cdm, indicationList = res_0_2, minimumCellCounts = 5)
+result_1_2 <- summariseIndication(cdm = cdm, indicationList = res_0_2, minimumCellCount = 1)
+result_5_2 <- summariseIndication(cdm = cdm, indicationList = res_0_2, minimumCellCount = 5)
 
 expect_true(dplyr::all_equal(
   result_1_2,
@@ -343,13 +343,13 @@ res_m <- suppressWarnings(getIndication(
   cdm = cdm,
   targetCohortName = "cohort1",
   indicationCohortName = "cohort2",
-  targetCohortDefinitionIds = c(1,2),
+  targetCohortDefinitionId = c(1,2),
   indicationDefinitionSet = indicationDefinitionSet,
   indicationGap = 0,
-  unknownIndicationTables = NULL
+  unknownIndicationTable = NULL
 ))
 
-result_m <- summariseIndication(cdm = cdm, indicationList = res_m, minimumCellCounts = 1)
+result_m <- summariseIndication(cdm = cdm, indicationList = res_m, minimumCellCount = 1)
 
 expect_true(dplyr::all_equal(
   result_m %>% dplyr::filter(cohort_definition_id %in% 2),
@@ -430,7 +430,7 @@ expect_error(
     summariseIndication(
       cdm = cdm,
       indicationList = res_m,
-      minimumCellCounts = 1,
+      minimumCellCount = 1,
       cohortId = 3
     )
 )
@@ -438,14 +438,14 @@ expect_error(
 result_m <- summariseIndication(
       cdm = cdm,
       indicationList = res_m,
-      minimumCellCounts = 1,
+      minimumCellCount = 1,
       cohortId = 2
     )
 
 result_m <- summariseIndication(
        cdm = cdm,
        indicationList = res_m,
-       minimumCellCounts = 1,
+       minimumCellCount = 1,
        cohortId = 1
      )
 DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
@@ -506,13 +506,13 @@ res_m <- suppressWarnings(getIndication(
   cdm = cdm,
   targetCohortName = "cohort1",
   indicationCohortName = "cohort2",
-  targetCohortDefinitionIds = 1,
+  targetCohortDefinitionId = 1,
   indicationDefinitionSet = indicationDefinitionSet,
   indicationGap = c(0, 1, 2),
-  unknownIndicationTables = NULL
+  unknownIndicationTable = NULL
 ))
 
-result_m <- summariseIndication(cdm = cdm, indicationList = res_m, minimumCellCounts = 1)
+result_m <- summariseIndication(cdm = cdm, indicationList = res_m, minimumCellCount = 1)
 
 expect_true(dplyr::all_equal(
   result_m ,
@@ -629,14 +629,14 @@ expect_error(
      summariseIndication(
        cdm = cdm,
        indicationList = res_m,
-       minimumCellCounts = 1,
+       minimumCellCount = 1,
        cohortId = 4
      )))
 
 result_m <- summariseIndication(
        cdm = cdm,
        indicationList = res_m,
-       minimumCellCounts = 1,
+       minimumCellCount = 1,
        cohortId = 1
      )
 

@@ -291,7 +291,7 @@ getDoseInformation <- function(cdm,
   )
 
   if (nrow(conceptList) == 0) {
-    stop("No concepts were not found in the vocabulary using this settings")
+    stop("No concepts were found in the vocabulary using this settings")
   }
 
   # get sql dialect of the database
@@ -321,7 +321,7 @@ getDoseInformation <- function(cdm,
     ) %>%
     dplyr::compute()
 
-  attrition <- addAttitionLine(cohort, "Initial counts getDoseInformation")
+  attrition <- addattritionLine(cohort, "Initial counts getDoseInformation")
 
   # compute the number of days exposed according to:
   # days_exposed = end - start + 1
@@ -333,8 +333,14 @@ getDoseInformation <- function(cdm,
       )
     ) + 1)
 
+  ## table to return if no exposure are found in cohort
+
+  cohortEmpty <- cohort %>% dplyr::mutate(days_exposed = 0, daily_dose = 0) %>% dplyr::select(-"quantity")
+
   # impute or eliminate the exposures that duration does not fulfill the
   # conditions ( <=0; <durationRange[1]; >durationRange[2])
+
+
   cohort <- imputeVariable(
     x = cohort,
     variableName = "days_exposed",
@@ -344,8 +350,9 @@ getDoseInformation <- function(cdm,
     imputeValueName = "imputeDuration"
   )
 
+
   attrition <- attrition %>%
-    dplyr::union_all(addAttitionLine(cohort, "Impute Duration"))
+    dplyr::union_all(addattritionLine(cohort, "Impute Duration"))
 
   # correct drug exposure end date according to the new duration
   cohort <- cohort %>%
@@ -381,10 +388,11 @@ getDoseInformation <- function(cdm,
     dplyr::compute()
 
   attrition <- attrition %>%
-    dplyr::union_all(addAttitionLine(cohort, "Impute DailyDose"))
+    dplyr::union_all(addattritionLine(cohort, "Impute DailyDose"))
 
   if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
-    stop("No exposure found inside the studied periods.")
+    cohort <- cohortEmpty
+    warning("No exposure were found for subject in the dusCohortName table")
   }
   # split the exposures in subexposures inside each cohort
   cohort <- splitSubexposures(cohort)

@@ -27,7 +27,7 @@
 #' in
 #' @param lookbackWindow lookback period window in days, a list consist of two
 #' numbers
-#' @param multipleEvents if we want to count the number of evenets (TRUE) then
+#' @param multipleEvent if we want to count the number of evenets (TRUE) then
 #' the result is an integer orjust their presence (FALSE) then the result is 1
 #' or 0.
 #'
@@ -73,7 +73,7 @@ getOverlappingCohortSubjects <- function(cdm,
                                          overlapCohortName,
                                          overlapCohortId = NULL,
                                          lookbackWindow = 0,
-                                         multipleEvents = FALSE) {
+                                         multipleEvent = FALSE) {
   if (is.character(targetCohortId)) {
     targetCohortId <- as.numeric(targetCohortId)
   }
@@ -154,7 +154,7 @@ getOverlappingCohortSubjects <- function(cdm,
     dplyr::select(
       "subject_id", "cohort_start_date", "cohort_end_date", "overlap_id"
     )
-  if (multipleEvents == FALSE) {
+  if (multipleEvent == FALSE) {
     result <- result %>%
       dplyr::distinct() %>%
       dplyr::mutate(indicator = 1)

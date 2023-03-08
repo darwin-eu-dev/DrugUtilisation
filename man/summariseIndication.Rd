@@ -9,7 +9,7 @@ summariseIndication(
   cdm,
   cohortId = NULL,
   indicationList = NULL,
-  minimumCellCounts = 5
+  minimumCellCount = 5
 )
 }
 \arguments{
@@ -26,7 +26,7 @@ cohorts in strataCohort will be summarised.}
 information. You must use the getIndication function to obtain this list. No
 default value is provided.}
 
-\item{minimumCellCounts}{Minimum counts that a group can have. Cohorts with
+\item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}
 }
 \value{

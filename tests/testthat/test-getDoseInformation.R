@@ -100,7 +100,7 @@ test_that("test overlapMode", {
     imputeDuration = "eliminate",
     imputeDailyDose = "eliminate",
     durationRange = c(1, NA),
-    dailyDoseRange = c(0, NA)
+    dailyDoseRange = c(1, NA)
   )
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
@@ -820,3 +820,85 @@ test_that("test splitSubexposures", {
     }
   }
 })
+
+test_that("test no exposure found", {
+  cdm <- mockDrugUtilisation(
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:9,
+      person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
+      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
+        "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
+        "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
+      )),
+      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+    ),
+    drug_strength = dplyr::tibble(
+      drug_concept_id = c(1, 2, 3, 4),
+      ingredient_concept_id = c(1, 1, 1, 1),
+      amount_value = c(10, 20, 30, 40),
+      amount_unit_concept_id = c(8576, 8576, 8576, 8576),
+      numerator_value = as.numeric(NA),
+      numerator_unit_concept_id = as.numeric(NA),
+      denominator_value = as.numeric(NA),
+      denominator_unit_concept_id = as.numeric(NA)
+    ),
+    cohort1 = dplyr::tibble(
+      cohort_definition_id = 1,
+      subject_id = c(1, 1, 2),
+      cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
+      cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    )
+  )
+
+  variables <- c(
+    "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
+    "number_exposures", "number_subexposures", "number_continuous_exposures",
+    "number_eras", "number_gaps", "number_unexposed_periods",
+    "number_subexposures_overlap", "number_eras_overlap",
+    "number_continuous_exposure_overlap", "initial_daily_dose",
+    "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
+    "number_subexposures_no_overlap", "number_eras_no_overlap",
+    "number_continuous_exposures_no_overlap",
+    "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
+  )
+
+  # warning message
+
+  expect_warning(getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Previous",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(100, NA)
+  ))
+
+  expect_warning(getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Previous",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(100, NA),
+    dailyDoseRange = c(1, NA)
+  ))
+
+})
+
+

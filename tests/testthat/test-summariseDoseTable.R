@@ -52,56 +52,56 @@ test_that("expected errors on inputs", {
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   )
   # expect error if cdm is not a cdm_ref
   expect_error(summariseDoseTable(
     cdm = 1,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   ))
   # expect error if doseTableName is not a character
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = 1,
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   ))
   # expect error if strataCohortName is not a character
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = 1,
     doseTableName = "person",
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   ))
   # expect error if doseTableName is a vector
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = c("condition_occurrence", "drug_exposure"),
     doseTableName = "person",
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   ))
   # expect error if doseTableName is a vector
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = c("person", "drug_exposure"),
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   ))
   # expect error if doseTableName is not a contained in cdm
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "x",
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   ))
   # expect error if strataCohortName is not a contained in cdm
   expect_error(summariseDoseTable(
     cdm = cdm,
     strataCohortName = "x",
     doseTableName = "person",
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   ))
   # expect error if strataCohortName is a vector
   # expect error if strataCohortName does not contains the required fields
@@ -146,7 +146,7 @@ test_that("check output format", {
     cdm = cdm,
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
-    variables = c("initial_dose", "cumulative_dose")
+    variable = c("initial_dose", "cumulative_dose")
   )
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
   expect_true(length(result) == 4)
@@ -192,7 +192,7 @@ test_that("check all estimates", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 1,
-      variables = c("initial_dose", "cumulative_dose"),
+      variable = c("initial_dose", "cumulative_dose"),
       estimates = all_estimates[k]
     )
     expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
@@ -205,7 +205,7 @@ test_that("check all estimates", {
     strataCohortName = "condition_occurrence",
     doseTableName = "person",
     cohortId = 1,
-    variables = c("initial_dose", "cumulative_dose"),
+    variable = c("initial_dose", "cumulative_dose"),
     estimates = all_estimates
   )
 })
@@ -236,15 +236,15 @@ test_that("check obscure counts", {
       cara = c("a", "b", "b", "a")
     )
   )
-  # expect obscure for cohort_id = 1 when minimumCellCounts >= 4
+  # expect obscure for cohort_id = 1 when minimumCellCount >= 4
   expect_true(
     summariseDoseTable(
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 1,
-      variables = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 3
+      variable = c("initial_dose", "cumulative_dose"),
+      minimumCellCount = 3
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -256,22 +256,22 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 1,
-      variables = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 4
+      variable = c("initial_dose", "cumulative_dose"),
+      minimumCellCount = 4
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
-      dplyr::pull() == 20 # 20 because all variables should be obscured
+      dplyr::pull() == 20 # 20 because all variable should be obscured
   )
-  # expect obscure for cohort_id = 2 when minimumCellCounts >= 2
+  # expect obscure for cohort_id = 2 when minimumCellCount >= 2
   expect_true(
     summariseDoseTable(
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 2,
-      variables = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 1
+      variable = c("initial_dose", "cumulative_dose"),
+      minimumCellCount = 1
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -283,12 +283,12 @@ test_that("check obscure counts", {
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
       cohortId = 2,
-      variables = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 2
+      variable = c("initial_dose", "cumulative_dose"),
+      minimumCellCount = 2
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
-      dplyr::pull() == 20 # 20 because all variables should be obscured
+      dplyr::pull() == 20 # 20 because all variable should be obscured
   )
   # if minimumCellCount is 1 no obscure, if it is 2 or 3 only cohort 1 is
   # obscured. If it is 4 both cohorts are obscured
@@ -297,8 +297,8 @@ test_that("check obscure counts", {
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
-      variables = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 1
+      variable = c("initial_dose", "cumulative_dose"),
+      minimumCellCount = 1
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
@@ -309,35 +309,35 @@ test_that("check obscure counts", {
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
-      variables = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 2
+      variable = c("initial_dose", "cumulative_dose"),
+      minimumCellCount = 2
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
-      dplyr::pull() == 20 # 20 because all variables in cohort 2 are obscured
+      dplyr::pull() == 20 # 20 because all variable in cohort 2 are obscured
   )
   expect_true(
     summariseDoseTable(
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
-      variables = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 3
+      variable = c("initial_dose", "cumulative_dose"),
+      minimumCellCount = 3
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
-      dplyr::pull() == 20 # 20 because all variables in cohort 2 are obscured
+      dplyr::pull() == 20 # 20 because all variable in cohort 2 are obscured
   )
   expect_true(
     summariseDoseTable(
       cdm = cdm,
       strataCohortName = "condition_occurrence",
       doseTableName = "person",
-      variables = c("initial_dose", "cumulative_dose"),
-      minimumCellCounts = 4
+      variable = c("initial_dose", "cumulative_dose"),
+      minimumCellCount = 4
     ) %>%
       dplyr::filter(is.na(.data$value)) %>%
       dplyr::tally() %>%
-      dplyr::pull() == 40 # 40 because all variables are obscured
+      dplyr::pull() == 40 # 40 because all variable are obscured
   )
 })

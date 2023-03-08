@@ -54,10 +54,10 @@ test_that("test case single indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 0,
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 
 
@@ -80,10 +80,10 @@ test_that("test case single indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 1,
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 
   expect_true(dplyr::all_equal(
@@ -105,9 +105,9 @@ test_that("test case single indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
-    unknownIndicationTables = NULL,
+    unknownIndicationTable = NULL,
     indicationGap = 2
   ))
 
@@ -130,9 +130,9 @@ test_that("test case single indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
-    unknownIndicationTables = NULL,
+    unknownIndicationTable = NULL,
     indicationGap = NA
   ))
 
@@ -211,10 +211,10 @@ test_that("test case single indication with unknown indication table", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 0,
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   ))
 
 
@@ -237,10 +237,10 @@ test_that("test case single indication with unknown indication table", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = 1,
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   ))
 
   expect_true(dplyr::all_equal(
@@ -262,9 +262,9 @@ test_that("test case single indication with unknown indication table", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
-    unknownIndicationTables = "condition_occurrence",
+    unknownIndicationTable = "condition_occurrence",
     indicationGap = 6
   ))
 
@@ -341,10 +341,10 @@ test_that("test case multiple indication with unknown indication table", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 6),
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   ))
 
   # check for indication 0
@@ -452,10 +452,10 @@ test_that("test case multiple indication", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 2),
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 
 
@@ -577,10 +577,10 @@ test_that("test case indicationCohortName error message", {
       cdm = cdm,
       targetCohortName = "cohort2",
       indicationCohortName = "cohort1",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = 0,
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -596,10 +596,10 @@ test_that("test case indicationCohortName error message", {
       cdm = cdm_1,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = 0,
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   ))
 
@@ -664,10 +664,10 @@ test_that("test input checks", {
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(a, 1, 2),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -676,10 +676,10 @@ test_that("test input checks", {
       cdm = a,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, 2),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -688,10 +688,10 @@ test_that("test input checks", {
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = s,
       indicationGap = c(0, 1, 2),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -699,10 +699,10 @@ test_that("test input checks", {
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, NA),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
 
   expect_error(
@@ -710,10 +710,10 @@ test_that("test input checks", {
       cdm = cdm,
       targetCohortName = "cohort1",
       indicationCohortName = "cohort2",
-      targetCohortDefinitionIds = 1,
+      targetCohortDefinitionId = 1,
       indicationDefinitionSet = indicationDefinitionSet,
       indicationGap = c(0, 1, A),
-      unknownIndicationTables = NULL
+      unknownIndicationTable = NULL
     )
   )
 
@@ -771,10 +771,10 @@ test_that("test case multiple indication with NA", {
     cdm = cdm,
     targetCohortName = "cohort1",
     indicationCohortName = "cohort2",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 2, NA),
-    unknownIndicationTables = NULL
+    unknownIndicationTable = NULL
   ))
 
 
@@ -845,3 +845,174 @@ test_that("test case multiple indication with NA", {
   DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })
+
+test_that("test case multiple unknown indication table behavour", {
+
+
+  targetCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
+    ))
+  ) # this is the targetCohort
+  indicationCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 3, 1),
+    subject_id = c(1, 3, 1, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-01-01",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2019-12-30",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    )
+  )
+  condition_occurrence <- dplyr::tibble(
+    person_id = 1,
+    condition_start_date = as.Date("2020-05-31")
+  )
+
+  observation <- dplyr::tibble(
+    person_id = 1,
+    observation_period_start_date = as.Date("2020-01-01")
+  )
+
+  indicationDefinitionSet <- dplyr::tibble(
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
+  )
+
+  cdm <-
+    mockDrugUtilisation(
+      cohort1 = targetCohortName,
+      cohort2 = indicationCohortName,
+      condition_occurrence = condition_occurrence,
+      observation = observation
+    )
+
+  # check for indication 0,1,6
+  res_m <- suppressWarnings(getIndication(
+    cdm = cdm,
+    targetCohortName = "cohort1",
+    indicationCohortName = "cohort2",
+    targetCohortDefinitionId = 1,
+    indicationDefinitionSet = indicationDefinitionSet,
+    indicationGap = c(0, 1, 6),
+    unknownIndicationTable = c("observation_period","condition_occurrence")
+  ))
+
+  expect_true(all(res_m$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(1,-1,-1)))
+
+  targetCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
+    ))
+  ) # this is the targetCohort
+  indicationCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 3, 1),
+    subject_id = c(1, 3, 1, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2020-05-01",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2019-12-30",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    )
+  )
+  condition_occurrence <- dplyr::tibble(
+    person_id = 2,
+    condition_start_date = as.Date("2018-01-02")
+  )
+
+  observation <- dplyr::tibble(
+    person_id = 1,
+    observation_period_start_date = as.Date("2020-01-01")
+  )
+
+  indicationDefinitionSet <- dplyr::tibble(
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
+  )
+
+  cdm <-
+    mockDrugUtilisation(
+      cohort1 = targetCohortName,
+      cohort2 = indicationCohortName,
+      condition_occurrence = condition_occurrence,
+      observation = observation
+    )
+
+  # check for indication 0,1,6
+  res_t <- suppressWarnings(getIndication(
+    cdm = cdm,
+    targetCohortName = "cohort1",
+    indicationCohortName = "cohort2",
+    targetCohortDefinitionId = 1,
+    indicationDefinitionSet = indicationDefinitionSet,
+    indicationGap = c(0, 1, NA),
+    unknownIndicationTable = c("observation_period","condition_occurrence")
+  ))
+
+  expect_true(all(res_t[["0"]] %>% dplyr::pull("indication_id") == c(0,-1,-1)))
+
+  expect_equal(
+    res_t[["Any"]] %>%
+      dplyr::filter(.data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-01-01")) %>%
+      dplyr::pull("indication_id") ,
+    0
+  )
+  expect_equal(
+    res_t[["Any"]] %>%
+      dplyr::filter(.data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")) %>%
+      dplyr::pull("indication_id") %>%
+      length(),
+    2
+  )
+  expect_true(all(
+    res_t[["Any"]] %>%
+      dplyr::filter(.data$subject_id == 1 & .data$cohort_start_date == as.Date("2020-06-01")) %>%
+      dplyr::pull("indication_id") %in%
+      c(1,2)
+  ))
+  expect_equal(
+    res_t[["Any"]] %>%
+      dplyr::filter(.data$subject_id == 2 & .data$cohort_start_date == as.Date("2020-01-02")) %>%
+      dplyr::pull("indication_id"),
+    0
+  )
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
+
+

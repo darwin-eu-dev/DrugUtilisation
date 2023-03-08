@@ -19,12 +19,12 @@
 #' @param cdm object created with CDMConnector::cdm_from_con.
 #' It must contain the targetCohortName and indicationCohortName table in it.
 #' @param targetCohortName cohort table in the cdm contain list of target cohort for patients
-#' @param targetCohortDefinitionIds cohort definition ids to include to generate indication
+#' @param targetCohortDefinitionId cohort definition ids to include to generate indication
 #' @param indicationCohortName indication table that contain list of indication
 #' @param indicationDefinitionSet definition of indication of interest,
 #' this function will only get indication for indication contain in this set
 #' @param indicationGap the maximum gap between the cohort start date and indication start date
-#' @param unknownIndicationTables tables to get extra indication from the default is to include
+#' @param unknownIndicationTable tables to get extra indication from the default is to include
 #' condition_occurence and obersvation table in the cdm
 #' @param verbose Whether the code should print the process.
 #'
@@ -35,11 +35,11 @@
 #' @examples
 getIndication <- function(cdm,
                           targetCohortName,
-                          targetCohortDefinitionIds,
+                          targetCohortDefinitionId,
                           indicationCohortName,
                           indicationDefinitionSet,
                           indicationGap,
-                          unknownIndicationTables = c("condition_occurrence", "observation"),
+                          unknownIndicationTable = c("condition_occurrence", "observation"),
                           verbose = FALSE) {
   get_start_date <- list(
     "observation_period" = "observation_period_start_date",
@@ -75,8 +75,8 @@ getIndication <- function(cdm,
     messageStore$push("- table `targetCohortName` is not found")
   }
 
-  # check targetCohortDefinitionIds is a vector of integers
-  checkmate::assertIntegerish(targetCohortDefinitionIds,
+  # check targetCohortDefinitionId is a vector of integers
+  checkmate::assertIntegerish(targetCohortDefinitionId,
     null.ok = TRUE,
     add = messageStore
   )
@@ -114,14 +114,14 @@ getIndication <- function(cdm,
     )
   }
 
-  # unknownIndicationTables is vector of characters
-  checkmate::assertCharacter(unknownIndicationTables,
+  # unknownIndicationTable is vector of characters
+  checkmate::assertCharacter(unknownIndicationTable,
     null.ok = TRUE, add = messageStore
   )
 
-  # unknownIndicationTables is only contain elements in get_start_date
-  if (is.null(unknownIndicationTables) != TRUE) {
-    checkmate::assertSubset(unknownIndicationTables, names(get_start_date), add = messageStore)
+  # unknownIndicationTable is only contain elements in get_start_date
+  if (is.null(unknownIndicationTable) != TRUE) {
+    checkmate::assertSubset(unknownIndicationTable, names(get_start_date), add = messageStore)
   }
 
   checkmate::reportAssertions(collection = messageStore)
@@ -148,13 +148,13 @@ getIndication <- function(cdm,
       .data$cohort_definition_id %in% !!indicationDefinitionSet$indication_id
     )
 
-  if (!is.null(targetCohortDefinitionIds)) {
+  if (!is.null(targetCohortDefinitionId)) {
     targetCohort <- targetCohort %>%
       dplyr::filter(
-        .data$cohort_definition_id %in% .env$targetCohortDefinitionIds
+        .data$cohort_definition_id %in% .env$targetCohortDefinitionId
       )
   } else {
-    targetCohortDefinitionIds <- targetCohort %>%
+    targetCohortDefinitionId <- targetCohort %>%
       dplyr::select("cohort_definition_id") %>%
       dplyr::distinct() %>%
       dplyr::pull()
@@ -192,7 +192,7 @@ getIndication <- function(cdm,
     dplyr::compute()
 
   # unknown indication
-  if (!is.null(unknownIndicationTables)) {
+  if (!is.null(unknownIndicationTable)) {
     if (length(indicationGap) > 1) {
       minIndicationGap <- min(indicationGap, na.rm = TRUE)
     } else {
@@ -220,8 +220,8 @@ getIndication <- function(cdm,
         dplyr::compute()
     }
     if (subjectsUnknownIndication %>% dplyr::tally() %>% dplyr::pull() > 0) {
-      for (k in 1:length(unknownIndicationTables)) {
-        unknownIndicationTableName <- unknownIndicationTables[k]
+      for (k in 1:length(unknownIndicationTable)) {
+        unknownIndicationTableName <- unknownIndicationTable[k]
         unknownIndication.k <- cdm[[unknownIndicationTableName]] %>%
           dplyr::select(
             "subject_id" = "person_id",
@@ -274,7 +274,7 @@ getIndication <- function(cdm,
       indication <- targetCohort %>%
         dplyr::filter(!is.na(.data$dif_time_indication)) %>%
         dplyr::select(-"dif_time_indication")
-      if (!is.null(unknownIndicationTables)) {
+      if (!is.null(unknownIndicationTable)) {
         indication <- unknownIndication %>%
           dplyr::anti_join(
             indication,
@@ -287,7 +287,7 @@ getIndication <- function(cdm,
       }
       result[["Any"]] <- cdm[[targetCohortName]] %>%
         dplyr::filter(
-          .data$cohort_definition_id %in% .env$targetCohortDefinitionIds
+          .data$cohort_definition_id %in% .env$targetCohortDefinitionId
         ) %>%
         dplyr::left_join(
           indication,
@@ -304,7 +304,7 @@ getIndication <- function(cdm,
         dplyr::filter(.data$dif_time_indication <= .env$gap) %>%
         dplyr::select(-"dif_time_indication") %>%
         dplyr::compute()
-      if (!is.null(unknownIndicationTables)) {
+      if (!is.null(unknownIndicationTable)) {
         indication <- unknownIndication %>%
           dplyr::anti_join(
             indication,
@@ -318,7 +318,7 @@ getIndication <- function(cdm,
       }
       result[[as.character(gap)]] <- cdm[[targetCohortName]] %>%
         dplyr::filter(
-          .data$cohort_definition_id %in% .env$targetCohortDefinitionIds
+          .data$cohort_definition_id %in% .env$targetCohortDefinitionId
         ) %>%
         dplyr::left_join(
           indication,
@@ -334,7 +334,7 @@ getIndication <- function(cdm,
   }
 
   # define indication definition set
-  if (!is.null(unknownIndicationTables)) {
+  if (!is.null(unknownIndicationTable)) {
     indicationDefinitionSet <- indicationDefinitionSet %>%
       dplyr::select("indication_id", "indication_name") %>%
       rbind(dplyr::tibble(
