@@ -143,6 +143,14 @@ summariseDoseIndicationTable <- function(cdm,
     ) %in% colnames(strataCohort)),
     add = errorMessage
   )
+  #check strataCohortName is not empty
+
+  cdm_strataCohortName_empty <- cdm[[strataCohortName]] %>% dplyr::tally()%>%
+    dplyr::pull()
+
+  if (cdm_strataCohortName_empty == 0) {
+    errorMessage$push("- table `strataCohortName` contains 0 row")
+  }
 
   # checks if dose summary
   if (!is.null(doseTableName)) {

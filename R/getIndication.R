@@ -70,9 +70,18 @@ getIndication <- function(cdm,
   cdm_targetCohortName_exists <-
     inherits(cdm[[targetCohortName]], "tbl_dbi")
 
+
   checkmate::assertTRUE(cdm_targetCohortName_exists, add = messageStore)
   if (!isTRUE(cdm_targetCohortName_exists)) {
     messageStore$push("- table `targetCohortName` is not found")
+  }
+
+  #check targetCohortName is not empty
+
+  cdm_targetCohortName_empty <- cdm[[targetCohortName]] %>% dplyr::tally()%>%dplyr::pull()
+
+  if (cdm_targetCohortName_empty == 0) {
+    messageStore$push("- table `targetCohortName` contains 0 row")
   }
 
   # check targetCohortDefinitionId is a vector of integers

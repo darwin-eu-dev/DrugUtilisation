@@ -222,6 +222,13 @@ getDoseInformation <- function(cdm,
     )),
     add = errorMessage
   )
+  #check targetCohortName is not empty
+
+  cdm_dusCohortName_empty <- cdm[[dusCohortName]] %>% dplyr::tally()%>%dplyr::pull()
+
+  if (cdm_dusCohortName_empty == 0) {
+    errorMessage$push("- table `targetCohortName` contains 0 row")
+  }
   if (!is.null(conceptSetPath)) {
     if (!file.exists(conceptSetPath)) {
       stop(glue::glue("Invalid concept set path {conceptSetPath}"))

@@ -87,6 +87,16 @@ getStratification <- function(cdm,
     add = errorMessage
   )
   checkmate::assertTRUE(targetCohortName %in% names(cdm), add = errorMessage)
+
+  #check targetCohortName is not empty
+
+  cdm_targetCohortName_empty <- cdm[[targetCohortName]] %>% dplyr::tally()%>%
+    dplyr::pull()
+
+  if (cdm_targetCohortName_empty == 0) {
+    errorMessage$push("- table `targetCohortName` contains 0 row")
+  }
+
   if (!is.null(sex)) {
     checkmate::assertTRUE(
       all(sex %in% c("Both", "Male", "Female")),

@@ -680,3 +680,28 @@ test_that("test oneStrata option", {
     )
   }
 })
+
+
+test_that("test case empty targetCohortName", {
+
+
+  cdm <- mockDrugUtilisation(
+    person = dplyr::tibble(
+      person_id = c(1, 2),
+      year_of_birth = as.integer(c(1995, 1993)),
+      month_of_birth = as.integer(c(10, 11)),
+      day_of_birth = as.integer(c(1, 12)),
+      gender_concept_id = c(8532, 8507)
+    ),
+    cohort1 =  dplyr::tibble(subject_id = numeric(),
+                                cohort_start_date = date(),
+                                cohort_end_date =date(),
+                                chort_definition_id = numeric())
+  )
+  expect_error(getStratification(
+    cdm = cdm, targetCohortName = "cohort1", sex = "Both", targetCohortId = 1
+  ))
+
+  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})

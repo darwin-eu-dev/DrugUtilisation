@@ -901,4 +901,52 @@ test_that("test no exposure found", {
 
 })
 
+test_that("test empty dusCohortName", {
+cdm <- mockDrugUtilisation(
+  drug_exposure = dplyr::tibble(
+    drug_exposure_id = 1:9,
+    person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
+    drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
+    drug_exposure_start_date = as.Date(c(
+      "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
+      "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
+    )),
+    drug_exposure_end_date = as.Date(c(
+      "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
+      "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
+    )),
+    quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+  ),
+  drug_strength = dplyr::tibble(
+    drug_concept_id = c(1, 2, 3, 4),
+    ingredient_concept_id = c(1, 1, 1, 1),
+    amount_value = c(10, 20, 30, 40),
+    amount_unit_concept_id = c(8576, 8576, 8576, 8576),
+    numerator_value = as.numeric(NA),
+    numerator_unit_concept_id = as.numeric(NA),
+    denominator_value = as.numeric(NA),
+    denominator_unit_concept_id = as.numeric(NA)
+  ),
+  cohort1 = dplyr::tibble(subject_id = numeric(),
+                          cohort_start_date = date(),
+                          cohort_end_date =date(),
+                          cohort_definition_id = numeric())
+)
 
+
+expect_error(getDoseInformation(
+  cdm = cdm,
+  dusCohortName = "cohort1",
+  conceptSetPath = NULL,
+  ingredientConceptId = 1,
+  gapEra = 30,
+  eraJoinMode = "Previous",
+  overlapMode = "Previous",
+  sameIndexMode = "Sum",
+  imputeDuration = "eliminate",
+  imputeDailyDose = "eliminate",
+  durationRange = c(1, NA),
+  dailyDoseRange = c(100, NA)
+))
+
+})
