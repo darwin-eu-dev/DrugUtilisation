@@ -480,14 +480,14 @@ test_that("test indication strata", {
   indicationTable <- getIndication(
     cdm = cdm,
     targetCohortName = "cohort1",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
       cohortId = c(1, 2),
       cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = c(7, 30, 10000),
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   )
 
   x <- getStratification(
@@ -556,14 +556,14 @@ test_that("test multiple conditions", {
   indicationTable <- getIndication(
     cdm = cdm,
     targetCohortName = "cohort1",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
       cohortId = c(1, 2),
       cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = 7,
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   )
 
   x <- getStratification(
@@ -648,14 +648,14 @@ test_that("test oneStrata option", {
   indicationTable <- getIndication(
     cdm = cdm,
     targetCohortName = "cohort1",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
       cohortId = c(1, 2),
       cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = 7,
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   )
 
   x <- getStratification(
