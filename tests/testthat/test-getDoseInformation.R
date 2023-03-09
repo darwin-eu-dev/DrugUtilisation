@@ -621,7 +621,16 @@ test_that("test splitSubexposures", {
       "2000-02-10"
     ))
   )
-  cdm <- mockDrugUtilisation(cohort1 = x)
+  cdm <- mockDrugUtilisation()
+ ## cdm[["cohort1"]] <- insertMockTable(cdm, "cohort1", x)
+  db <- attr(cdm, "dbcon")
+  DBI::dbWithTransaction(db, {
+    DBI::dbWriteTable(db, "cohort1",
+                      x,
+                      overwrite = TRUE
+    )
+  })
+  cdm[["cohort1"]] <- dplyr::tbl(db, "cohort1")
   y <- splitSubexposures(cdm[["cohort1"]]) %>% dplyr::collect()
 
   # get first cohort entry

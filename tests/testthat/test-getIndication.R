@@ -1019,7 +1019,8 @@ test_that("test case empty targetCohortName", {
 targetCohortName <-
   dplyr::tibble(subject_id = numeric(),
                 cohort_start_date = date(),
-                cohort_end_date =date())
+                cohort_end_date =date(),
+                cohort_definition_id = numeric())
 
 cdm <-
   mockDrugUtilisation(

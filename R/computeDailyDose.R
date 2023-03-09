@@ -20,20 +20,31 @@
 #' @param cdm cdm
 #' @param ingredientConceptId ingredientConceptId
 #'
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
+#'
 #' @return
 #' @export
 #'
 #' @examples
 addDailyDose <- function(table,
                          cdm,
-                         ingredientConceptId) {
+                         ingredientConceptId,
+                         tablePrefix = NULL) {
   errorMessage <- checkmate::makeAssertCollection()
   # initial checks
   checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
   checkmate::assertCount(ingredientConceptId, add = errorMessage)
   checkmate::assertFALSE(c("daily_dose") %in% colnames(table), add = errorMessage)
   checkmate::assertTRUE(c("drug_strength") %in% names(cdm), add = errorMessage)
+  # checks for tableprefix
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
   checkmate::reportAssertions(collection = errorMessage)
+
+
 
   if ("days_exposed" %in% colnames(table)) {
     warning("'days_exposed' will be overwritten.")
@@ -94,8 +105,19 @@ addDailyDose <- function(table,
           "drug_dose_type", "daily_dose"
         ),
       by = c("days_exposed", "quantity", "drug_concept_id", "drug_exposure_id")
-    ) %>%
-    dplyr::compute()
+    )
+
+  if(is.null(tablePrefix)){
+    table <- table %>%
+      CDMConnector::computeQuery()
+  } else {
+    table <- table %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
 
   return(table)
 }

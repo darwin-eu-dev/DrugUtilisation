@@ -43,6 +43,8 @@
 #' default value is provided.
 #' @param minimumCellCount Minimum counts that a group can have. Cohorts with
 #' less counts than this value are obscured. By default: 5.
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return A Tibble with 4 columns: cohort_definition_id, variable, estimate and
 #' value. There will be one row for each cohort, variable and cohort
@@ -58,7 +60,8 @@ summariseDoseIndicationTable <- function(cdm,
                                          variable = NULL,
                                          estimates = NULL,
                                          indicationList = NULL,
-                                         minimumCellCount = 5) {
+                                         minimumCellCount = 5,
+                                         tablePrefix = NULL) {
   # first round of assertions CLASS
   # start checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -145,10 +148,10 @@ summariseDoseIndicationTable <- function(cdm,
   )
   #check strataCohortName is not empty
 
-  cdm_strataCohortName_empty <- cdm[[strataCohortName]] %>% dplyr::tally()%>%
+  strataCohortNameEmpty <- cdm[[strataCohortName]] %>% dplyr::tally()%>%
     dplyr::pull()
 
-  if (cdm_strataCohortName_empty == 0) {
+  if (strataCohortNameEmpty == 0) {
     errorMessage$push("- table `strataCohortName` contains 0 row")
   }
 
@@ -211,6 +214,11 @@ summariseDoseIndicationTable <- function(cdm,
       )
     }
   }
+
+  # checks for tableprefix
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -387,6 +395,8 @@ summariseDoseIndicationTable <- function(cdm,
           dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) %>%
           dplyr::inner_join(
             indicationList[[i]] %>%
+            .data$n > 0 & .data$n < .env$minimumCellCount,
+            paste0("<", .env$minimumCellCount),
               dplyr::select(
                 "subject_id", "cohort_start_date", "cohort_end_date",
                 "indication_id"
@@ -404,8 +414,6 @@ summariseDoseIndicationTable <- function(cdm,
             is.na(.data$n), as.integer(0), as.integer(.data$n)
           )) %>%
           dplyr::mutate(value = dplyr::if_else(
-            .data$n > 0 & .data$n < .env$minimumCellCount,
-            paste0("<", .env$minimumCellCount),
             as.character(.data$n)
           )) %>%
           dplyr::mutate(variable = paste0(
@@ -420,7 +428,22 @@ summariseDoseIndicationTable <- function(cdm,
 
   result <- obscureSummary(result, minimumCellCount = minimumCellCount)
 
-  return(result %>% dplyr::arrange(.data$cohort_definition_id))
+  result <- result %>% dplyr::arrange(.data$cohort_definition_id)
+
+  if(is.null(tablePrefix)){
+    result <- result %>%
+      CDMConnector::computeQuery()
+  } else {
+    result <- result %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
+
+
+  return(result)
 }
 
 #' This function is used to summarise the dose table over multiple cohorts.
@@ -448,6 +471,8 @@ summariseDoseIndicationTable <- function(cdm,
 #' default: c("min", "max", "mean", "std", "median", "iqr", "q25", "q75").
 #' @param minimumCellCount Minimum counts that a group can have. Cohorts with
 #' less counts than this value are obscured. By default: 5.
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return A Tibble with 4 columns: cohort_definition_id, variable, estimate and
 #' value. There will be one row for each cohort, variable and cohort
@@ -465,7 +490,8 @@ summariseDoseTable <- function(cdm,
                                  "min", "max", "mean", "std", "median", "iqr",
                                  "q25", "q75"
                                ),
-                               minimumCellCount = 5) {
+                               minimumCellCount = 5,
+                               tablePrefix = NULL) {
   # first round of assertions CLASS
   # start checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -531,6 +557,13 @@ summariseDoseTable <- function(cdm,
     ) %in% colnames(strataCohort)),
     add = errorMessage
   )
+  #
+  strataCohortNameEmpty <- cdm[[strataCohortName]] %>% dplyr::tally()%>%
+    dplyr::pull()
+
+  if (strataCohortNameEmpty == 0) {
+    errorMessage$push("- table `strataCohortName` contains 0 row")
+  }
 
   # checks dose summary
   doseTable <- cdm[[doseTableName]]
@@ -564,6 +597,11 @@ summariseDoseTable <- function(cdm,
       )
     ),
     add = errorMessage
+  )
+
+  # checks for tableprefix
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
   )
 
   checkmate::reportAssertions(collection = errorMessage)
@@ -730,7 +768,22 @@ summariseDoseTable <- function(cdm,
 
   result <- obscureSummary(result, minimumCellCount = minimumCellCount)
 
-  return(result %>% dplyr::arrange(.data$cohort_definition_id))
+  result <- result %>% dplyr::arrange(.data$cohort_definition_id)
+
+
+  if(is.null(tablePrefix)){
+    result <- result %>%
+      CDMConnector::computeQuery()
+  } else {
+    result <- result %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
+
+  return(result)
 }
 
 #' This function is used to summarise the indication table over multiple
@@ -753,13 +806,17 @@ summariseDoseTable <- function(cdm,
 #' value. There will be one row for each cohort, variable and cohort
 #' combination.
 #'
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
 #' @export
 #'
 #' @examples
 summariseIndication <- function(cdm,
                                 cohortId = NULL,
                                 indicationList = NULL,
-                                minimumCellCount = 5) {
+                                minimumCellCount = 5,
+                                tablePrefix = NULL) {
   # first round of assertions CLASS
   # start checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -803,6 +860,11 @@ summariseIndication <- function(cdm,
       )
     ))
   }
+
+  # checks for tableprefix
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
 
   checkmate::reportAssertions(collection = errorMessage)
 
@@ -913,7 +975,21 @@ summariseIndication <- function(cdm,
 
   result <- obscureSummary(result, minimumCellCount = minimumCellCount)
 
-  return(result %>% dplyr::arrange(.data$cohort_definition_id))
+  result <- result %>% dplyr::arrange(.data$cohort_definition_id)
+
+  if(is.null(tablePrefix)){
+    result <- result %>%
+      CDMConnector::computeQuery()
+  } else {
+    result <- result %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
+
+  return(result)
 }
 
 #' @noRd

@@ -60,6 +60,9 @@
 #' equal or smaller than the second one. It is only required if imputeDuration
 #' = TRUE. If NULL no restrictions are applied. By default: NULL.
 #'
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
 #' @export
@@ -76,7 +79,8 @@ generateDrugUtilisationCohort <- function(cdm,
                                           gapEra = 30,
                                           priorUseWashout = NULL,
                                           imputeDuration = "eliminate",
-                                          durationRange = c(1, NA)) {
+                                          durationRange = c(1, NA),
+                                          tablePrefix = NULL) {
   errorMessage <- checkmate::makeAssertCollection()
   # first round of initial checks, assert Type
   checkmate::assertClass(
@@ -197,6 +201,12 @@ generateDrugUtilisationCohort <- function(cdm,
       add = errorMessage
     )
   }
+
+  # checks for tableprefix
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
+
   checkmate::reportAssertions(collection = errorMessage)
 
   if (!is.null(conceptSetPath)) {
@@ -540,6 +550,18 @@ generateDrugUtilisationCohort <- function(cdm,
     ) %>%
     dplyr::arrange(.data$cohort_definition_id, .data$order_id) %>%
     dplyr::select(-"order_id")
+
+  if(is.null(tablePrefix)){
+    cohort <- cohort %>%
+      CDMConnector::computeQuery()
+  } else {
+    cohort <- cohort %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
 
   return(cohort)
 }

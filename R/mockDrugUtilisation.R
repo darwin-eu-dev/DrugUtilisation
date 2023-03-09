@@ -587,3 +587,8 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
 
   return(cdm)
 }
+
+
+
+
+

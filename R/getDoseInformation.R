@@ -82,6 +82,9 @@
 #' should be equal or smaller than the second one. It is only required if
 #' imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
 #' NULL.
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
 #'
 #' TERMINOLOGY
 #' - exposure: we refer to exposure to a row in the drug_exposure table of the
@@ -116,7 +119,8 @@ getDoseInformation <- function(cdm,
                                imputeDuration = "eliminate",
                                imputeDailyDose = "eliminate",
                                durationRange = c(1, NA),
-                               dailyDoseRange = c(0, NA)) {
+                               dailyDoseRange = c(0, NA),
+                               tablePrefix = NULL) {
   # first round of initial checks, assert Type
   errorMessage <- checkmate::makeAssertCollection()
   checkmate::assertClass(
@@ -224,9 +228,9 @@ getDoseInformation <- function(cdm,
   )
   #check targetCohortName is not empty
 
-  cdm_dusCohortName_empty <- cdm[[dusCohortName]] %>% dplyr::tally()%>%dplyr::pull()
+  DusCohortNameEmpty <- cdm[[dusCohortName]] %>% dplyr::tally()%>%dplyr::pull()
 
-  if (cdm_dusCohortName_empty == 0) {
+  if (DusCohortNameEmpty == 0) {
     errorMessage$push("- table `targetCohortName` contains 0 row")
   }
   if (!is.null(conceptSetPath)) {
@@ -288,6 +292,12 @@ getDoseInformation <- function(cdm,
   if (!isTRUE(cdm_drug_str_exists)) {
     errorMessage$push("- table `drug strength` is not found")
   }
+
+  # checks for tableprefix
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
+
   checkmate::reportAssertions(collection = errorMessage)
 
   # Get the list of drug concept id to us
@@ -326,7 +336,7 @@ getDoseInformation <- function(cdm,
       by = "drug_concept_id",
       copy = TRUE
     ) %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
 
   attrition <- addattritionLine(cohort, "Initial counts getDoseInformation")
 
@@ -364,7 +374,7 @@ getDoseInformation <- function(cdm,
   # correct drug exposure end date according to the new duration
   cohort <- cohort %>%
     dplyr::mutate(days_to_add = as.integer(.data$days_exposed - 1)) %>%
-    dplyr::compute() %>%
+    CDMConnector::computeQuery() %>%
     dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(
       dateadd(
         date = "drug_exposure_start_date",
@@ -392,7 +402,7 @@ getDoseInformation <- function(cdm,
     upperBound = dailyDoseRange[2],
     imputeValueName = "imputeDailyDose"
   ) %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
 
   attrition <- attrition %>%
     dplyr::union_all(addattritionLine(cohort, "Impute DailyDose"))
@@ -427,6 +437,18 @@ getDoseInformation <- function(cdm,
 
   # summarise cohort to obtain the dose table
   doseTable <- summariseCohort(cohort)
+
+  if(is.null(tablePrefix)){
+    doseTable <- doseTable %>%
+      CDMConnector::computeQuery()
+  } else {
+    doseTable <- doseTable %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
 
   return(doseTable)
 }
@@ -489,7 +511,7 @@ splitSubexposures <- function(x) {
     tidyr::pivot_wider(names_from = "date_type", values_from = "date_event") %>%
     dplyr::select(-"id2") %>%
     dplyr::ungroup() %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
 
   x_intervals <- x_intervals %>%
     dplyr::filter(is.na(.data$subexposure_start_date)) %>%
@@ -528,7 +550,7 @@ splitSubexposures <- function(x) {
     dplyr::mutate(subexposed_days = !!CDMConnector::datediff(
       "subexposure_start_date", "subexposure_end_date"
     ) + 1) %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
 
   # we join the exposures with the overlapping periods and we only consider the
   # exposures that contribute to each overlapping period
@@ -551,7 +573,7 @@ splitSubexposures <- function(x) {
         "subexposed_days"
       )
     ) %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
 
 
   return(x_intervals)
@@ -698,7 +720,7 @@ solveSameIndexOverlap <- function(x, sameIndexMode) {
       )
     ) %>%
     dplyr::union_all(x_same_index %>% dplyr::ungroup()) %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
 
   return(x)
 }
@@ -794,7 +816,7 @@ solveOverlap <- function(x, overlapMode) {
     }
     x_overlap <- x_overlap %>%
       dplyr::ungroup() %>%
-      dplyr::compute()
+      CDMConnector::computeQuery()
     x <- x %>%
       dplyr::anti_join(
         x_overlap,
@@ -808,7 +830,7 @@ solveOverlap <- function(x, overlapMode) {
         .data$considered_subexposure
       )) %>%
       dplyr::union_all(x_overlap) %>%
-      dplyr::compute()
+      CDMConnector::computeQuery()
   }
   return(x)
 }
@@ -876,7 +898,7 @@ addGapDailyDose <- function(x, eraJoinMode) {
     dplyr::union_all(
       x_gaps_dose %>% dplyr::mutate(considered_subexposure = "yes")
     ) %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
   return(x)
 }
 
@@ -946,7 +968,7 @@ getConceptList <- function(conceptSetPath, ingredientConceptId, cdm) {
 summariseCohort <- function(x) {
   x <- x %>%
     dplyr::mutate(exposed_dose = .data$daily_dose * .data$subexposed_days) %>%
-    dplyr::compute() %>%
+    CDMConnector::computeQuery() %>%
     dplyr::group_by(
       .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
     ) %>%
@@ -1025,7 +1047,7 @@ summariseCohort <- function(x) {
       ),
       .groups = "drop"
     ) %>%
-    dplyr::compute() %>%
+    CDMConnector::computeQuery() %>%
     # replace NA
     dplyr::mutate(
       gap_days = dplyr::if_else(
@@ -1148,7 +1170,7 @@ summariseCohort <- function(x) {
       ) + 1
     )) %>%
     dplyr::select(-"start_first_era", -"end_first_era") %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
 
   return(x)
 }

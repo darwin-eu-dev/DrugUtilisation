@@ -4,7 +4,7 @@
 \alias{addDailyDose}
 \title{Explain function}
 \usage{
-addDailyDose(table, cdm, ingredientConceptId)
+addDailyDose(table, cdm, ingredientConceptId, tablePrefix = NULL)
 }
 \arguments{
 \item{table}{table}
@@ -12,6 +12,9 @@ addDailyDose(table, cdm, ingredientConceptId)
 \item{cdm}{cdm}
 
 \item{ingredientConceptId}{ingredientConceptId}
+
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \description{
 Explain function
