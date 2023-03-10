@@ -357,7 +357,7 @@ getStratification <- function(cdm,
           dplyr::mutate(indication_group = "Any") %>%
           dplyr::distinct()
       ) %>%
-      CDMConnector::computeQuery()
+      dplyr::compute()
   }
 
   targetCohort <- targetCohort %>%
@@ -381,7 +381,7 @@ getStratification <- function(cdm,
   }
 
   targetCohort <- targetCohort %>%
-    CDMConnector::computeQuery() %>%
+    dplyr::compute() %>%
     dplyr::inner_join(sexGroup, by = "sex", copy = TRUE) %>%
     dplyr::inner_join(ageGroup, by = "age", copy = TRUE) %>%
     dplyr::inner_join(indexYearGroup, by = "index_year", copy = TRUE) %>%
@@ -393,8 +393,7 @@ getStratification <- function(cdm,
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
-    ) %>%
-    CDMConnector::computeQuery()
+    )
 
   attr(targetCohort, "cohortSet") <- settings
 
