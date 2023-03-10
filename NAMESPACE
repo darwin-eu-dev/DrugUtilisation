@@ -2,6 +2,8 @@
 
 export("%>%")
 export(addDailyDose)
+export(comparePatternsTable)
+export(createPatternsTable)
 export(generateDrugUtilisationCohort)
 export(getDoseInformation)
 export(getIndication)

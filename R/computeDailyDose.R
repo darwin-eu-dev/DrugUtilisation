@@ -75,7 +75,7 @@ addDailyDose <- function(table,
             .data$pattern_id %in% c(14,16) && .data$quantity < 1 &&
               (.data$numerator_value * .data$quantity) <= .data$denominator_value
             ~ .data$numerator_value * .data$quantity / .data$days_exposed,
-            .data$pattern_id %in% c(7,8,10:13,15,17:20,22:32) ~
+            .data$pattern_id %in% c(7,8,10:13,15,17:20,22:33) ~
               .data$numerator_value * .data$quantity / .data$days_exposed,
             .data$pattern_id == 21 ~
               .data$numerator_value * 24
@@ -120,7 +120,7 @@ addPattern <- function(table) {
       denominator_unit_concept_id == 8519,
       denominator_value * 1000, denominator_value)) %>%
     dplyr::mutate(numerator_value = ifelse(
-      numerator_unit_concept_id == 9349,
+      numerator_unit_concept_id == 9439,
       numerator_value / 1000000, numerator_value)) %>%
     dplyr::compute()
 
