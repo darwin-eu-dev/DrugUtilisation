@@ -55,46 +55,73 @@ addDailyDose <- function(table,
         dplyr::inner_join(
           cdm$drug_strength,
           by = c("drug_concept_id")
-        ) %>%
-        dplyr::mutate(drug_dose_type = dplyr::case_when(
-          # 1. Tablets and other fixed amount formulations
-          is.na(denominator_unit_concept_id) == TRUE ~ "tablets",
-          # 2. Puffs of an inhaler
-          denominator_unit_concept_id == 45744809 ~ "puffs",
-          # 3. Quantified Drugs which are formulated as a concentration
-          denominator_unit_concept_id %in% c(8576, 8587) && denominator_value != 1 && is.na(denominator_value) == FALSE ~ "quantified",
-          # 4. Drugs with the total amount provided in quantity, e.g. chemotherapeutics
-          denominator_unit_concept_id %in% c(8576, 8587) && (denominator_value == 1 | is.na(denominator_value) == TRUE) ~ "quantity",
-          # 5. Compounded drugs
-          denominator_unit_concept_id == 8576 & amount_value == 1 ~ "compounded",
-          # 6. Drugs with the active ingredient released over time, e.g. patches
-          denominator_unit_concept_id == 8505 ~ "timeBased"
-        )) %>%
+        ) %>% addPattern() %>%
         dplyr::mutate(
+          # Change this with all different formula values
           daily_dose = dplyr::case_when(
-            is.na(.data$drug_dose_type) ~ as.numeric(NA),
-            .data$days_exposed == 0 ~ as.numeric(NA),
-            .data$drug_dose_type == "tablets" ~
-              .data$quantity * .data$amount_value / .data$days_exposed,
-            .data$drug_dose_type == "quantified" ~
-              .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drug_dose_type == "puffs" ~
-              .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drug_dose_type == "compounded" ~
-              .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drug_dose_type == "quantity" ~
-              .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drug_dose_type == "timeBased" ~ 24 * .data$numerator_value,
-            TRUE ~ as.numeric(NA)
+            is.na(.data$quantity) ~ as.numeric(NA),
+            .data$quantity < 0 ~ as.numeric(NA),
+            .data$pattern_id %in% c(1:6) ~
+              .data$amount_value * .data$quantity / .data$days_exposed,
+            .data$pattern_id == 9  &&
+              (.data$denominator_value * .data$quantity / 24) > .data$days_exposed
+            ~ .data$numerator_value * 24 / (.data$quantity * .data$denominator_value / 24),
+            .data$pattern_id == 9  &&
+              (.data$denominator_value * .data$quantity / 24) <= .data$days_exposed
+            ~ .data$numerator_value * 24 ,
+            .data$pattern_id %in% c(14,16) && .data$quantity < 1 &&
+              (.data$numerator_value * .data$quantity) > .data$denominator_value
+            ~ .data$denominator_value / .data$days_exposed,
+            .data$pattern_id %in% c(14,16) && .data$quantity < 1 &&
+              (.data$numerator_value * .data$quantity) <= .data$denominator_value
+            ~ .data$numerator_value * .data$quantity / .data$days_exposed,
+            .data$pattern_id %in% c(7,8,10:13,15,17:20,22:32) ~
+              .data$numerator_value * .data$quantity / .data$days_exposed,
+            .data$pattern_id == 21 ~
+              .data$numerator_value * 24
           )
         ) %>%
+        dplyr::mutate(daily_dose = dplyr::if_else(daily_dose <= 0, NA, daily_dose)) %>%
         # dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
         dplyr::select(
           "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id",
-          "drug_dose_type", "daily_dose"
+          "daily_dose", "unit"
         ),
       by = c("days_exposed", "quantity", "drug_concept_id", "drug_exposure_id")
     ) %>%
+    dplyr::compute()
+
+  return(table)
+}
+
+#' @noRd
+addPattern <- function(table) {
+  pattern_table <- tibble::tibble(read.csv(here::here("inst", "pattern_drug_strength.csv")))
+
+  # Join table with pattern table in DUS, add "pattern_id" and "unit" columns
+  table <- table %>%
+    dplyr::mutate(amount = if_else(is.na(amount_value), NA, "numeric")) %>%
+    dplyr::mutate(numerator = if_else(is.na(numerator_value), NA, "numeric")) %>%
+    dplyr::mutate(denominator = if_else(is.na(denominator_value), NA, "numeric")) %>%
+    dplyr::left_join(pattern_table, by = c(
+    "amount", "amount_unit_concept_id",
+    "numerator", "numerator_unit_concept_id",
+    "denominator","denominator_unit_concept_id"), copy = TRUE, na_matches = c("na"))
+
+  # Make standardised values
+  table <- table %>%
+    dplyr::mutate(amount_value = ifelse(
+      amount_unit_concept_id == 9655,
+      amount_value / 1000, amount_value)) %>%
+    dplyr::mutate(numerator_value = ifelse(
+      numerator_unit_concept_id == 9655,
+      numerator_value / 1000, numerator_value)) %>%
+    dplyr::mutate(denominator_value = ifelse(
+      denominator_unit_concept_id == 8519,
+      denominator_value * 1000, denominator_value)) %>%
+    dplyr::mutate(numerator_value = ifelse(
+      numerator_unit_concept_id == 9349,
+      numerator_value / 1000000, numerator_value)) %>%
     dplyr::compute()
 
   return(table)
