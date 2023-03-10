@@ -12,7 +12,8 @@ getStratification(
   ageGroup = NULL,
   indexYearGroup = NULL,
   indicationTable = NULL,
-  oneStrata = FALSE
+  oneStrata = FALSE,
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -34,6 +35,9 @@ indications.}
 
 \item{oneStrata}{Weather we want to stratify one strata (TRUE) each or
 combine in multiple stratas using expand_grid (FALSE). By deafault = FALSE.}
+
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 Multiple cohorts as a temporal table in the database. The
