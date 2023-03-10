@@ -696,7 +696,7 @@ test_that("test case empty targetCohortName", {
     cohort1 =  dplyr::tibble(subject_id = numeric(),
                                 cohort_start_date = date(),
                                 cohort_end_date =date(),
-                                chort_definition_id = numeric())
+                                cohort_definition_id = numeric())
   )
   expect_error(getStratification(
     cdm = cdm, targetCohortName = "cohort1", sex = "Both", targetCohortId = 1
