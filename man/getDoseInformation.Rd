@@ -16,7 +16,8 @@ getDoseInformation(
   imputeDuration = "eliminate",
   imputeDailyDose = "eliminate",
   durationRange = c(1, NA),
-  dailyDoseRange = c(0, NA)
+  dailyDoseRange = c(0, NA),
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -96,7 +97,10 @@ equal or smaller than the second one. It is only required if imputeDuration
 should be a numeric vector of length two, with no NAs and the first value
 should be equal or smaller than the second one. It is only required if
 imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
-NULL.
+NULL.}
+
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.
 
 TERMINOLOGY
 \itemize{

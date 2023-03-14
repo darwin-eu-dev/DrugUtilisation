@@ -70,9 +70,19 @@ getIndication <- function(cdm,
   cdm_targetCohortName_exists <-
     inherits(cdm[[targetCohortName]], "tbl_dbi")
 
+
   checkmate::assertTRUE(cdm_targetCohortName_exists, add = messageStore)
   if (!isTRUE(cdm_targetCohortName_exists)) {
     messageStore$push("- table `targetCohortName` is not found")
+  }
+
+  #check targetCohortName is not empty
+
+  targetCohortNameEmpty <- cdm[[targetCohortName]] %>% dplyr::tally() %>%
+    dplyr::pull()
+
+  if (targetCohortNameEmpty == 0) {
+    messageStore$push("- table `targetCohortName` contains 0 row")
   }
 
   # check targetCohortDefinitionId is a vector of integers
@@ -189,7 +199,7 @@ getIndication <- function(cdm,
         ),
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
-    dplyr::compute()
+    CDMConnector::computeQuery()
 
   # unknown indication
   if (!is.null(unknownIndicationTable)) {
@@ -204,7 +214,7 @@ getIndication <- function(cdm,
         dplyr::select(
           "subject_id", "cohort_start_date", "cohort_end_date"
         ) %>%
-        dplyr::compute()
+        CDMConnector::computeQuery()
     } else {
       subjectsUnknownIndication <- targetCohort %>%
         dplyr::anti_join(
@@ -217,7 +227,7 @@ getIndication <- function(cdm,
         ) %>%
         dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
         dplyr::distinct() %>%
-        dplyr::compute()
+        CDMConnector::computeQuery()
     }
     if (subjectsUnknownIndication %>% dplyr::tally() %>% dplyr::pull() > 0) {
       for (k in 1:length(unknownIndicationTable)) {
@@ -246,7 +256,7 @@ getIndication <- function(cdm,
             ),
             .groups = "drop"
           ) %>%
-          dplyr::compute()
+          CDMConnector::computeQuery()
         if (k == 1) {
           unknownIndication <- unknownIndication.k
         } else {
@@ -265,7 +275,7 @@ getIndication <- function(cdm,
           ),
           .groups = "drop"
         ) %>%
-        dplyr::compute()
+        CDMConnector::computeQuery()
     }
   }
 
@@ -283,7 +293,7 @@ getIndication <- function(cdm,
           dplyr::select(-"dif_time_unknown_indication") %>%
           dplyr::mutate(indication_id = 0) %>%
           dplyr::union_all(indication) %>%
-          dplyr::compute()
+          CDMConnector::computeQuery()
       }
       result[["Any"]] <- cdm[[targetCohortName]] %>%
         dplyr::filter(
@@ -298,12 +308,12 @@ getIndication <- function(cdm,
             is.na(.data$indication_id), -1, .data$indication_id
           )
         ) %>%
-        dplyr::compute()
+        CDMConnector::computeQuery()
     } else {
       indication <- targetCohort %>%
         dplyr::filter(.data$dif_time_indication <= .env$gap) %>%
         dplyr::select(-"dif_time_indication") %>%
-        dplyr::compute()
+        CDMConnector::computeQuery()
       if (!is.null(unknownIndicationTable)) {
         indication <- unknownIndication %>%
           dplyr::anti_join(
@@ -314,7 +324,7 @@ getIndication <- function(cdm,
           dplyr::select(-"dif_time_unknown_indication") %>%
           dplyr::mutate(indication_id = 0) %>%
           dplyr::union_all(indication) %>%
-          dplyr::compute()
+          CDMConnector::computeQuery()
       }
       result[[as.character(gap)]] <- cdm[[targetCohortName]] %>%
         dplyr::filter(
@@ -329,7 +339,7 @@ getIndication <- function(cdm,
             is.na(.data$indication_id), -1, .data$indication_id
           )
         ) %>%
-        dplyr::compute()
+        CDMConnector::computeQuery()
     }
   }
 

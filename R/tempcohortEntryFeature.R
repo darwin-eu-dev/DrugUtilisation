@@ -31,6 +31,9 @@
 #' the result is an integer orjust their presence (FALSE) then the result is 1
 #' or 0.
 #'
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
 #' @return it add a new column to target cohort for each id in overlap cohort.
 #' The column is numeric and can be 0 if no overlap is observed and 1 if overlap
 #' is observed.
@@ -73,7 +76,8 @@ getOverlappingCohortSubjects <- function(cdm,
                                          overlapCohortName,
                                          overlapCohortId = NULL,
                                          lookbackWindow = 0,
-                                         multipleEvent = FALSE) {
+                                         multipleEvent = FALSE,
+                                         tablePrefix =NULL) {
   if (is.character(targetCohortId)) {
     targetCohortId <- as.numeric(targetCohortId)
   }
@@ -96,6 +100,12 @@ getOverlappingCohortSubjects <- function(cdm,
     lookbackWindow,
     min.len = 1, max.len = 2, add = errorMessage
   )
+
+  # checks for tableprefix
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
+
   checkmate::reportAssertions(collection = errorMessage)
 
   if (length(lookbackWindow) == 1) {
@@ -185,6 +195,18 @@ getOverlappingCohortSubjects <- function(cdm,
       dplyr::starts_with("overlap"), ~ dplyr::if_else(is.na(.x), 0, .x)
     )) %>%
     dplyr::compute()
+
+  if(is.null(tablePrefix)){
+    result <- result %>%
+      CDMConnector::computeQuery()
+  } else {
+    result <- result %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
 
   return(result)
 }

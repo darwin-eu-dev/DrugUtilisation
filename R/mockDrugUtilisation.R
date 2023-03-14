@@ -581,8 +581,14 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
       "condition_occurrence",
       "visit_occurrence"
     ),
+    write_schema = "main",
     cohort_tables = c("cohort1", "cohort2")
   )
 
   return(cdm)
 }
+
+
+
+
+

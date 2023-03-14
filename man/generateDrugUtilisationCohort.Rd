@@ -17,7 +17,8 @@ generateDrugUtilisationCohort(
   gapEra = 30,
   priorUseWashout = NULL,
   imputeDuration = "eliminate",
-  durationRange = c(1, NA)
+  durationRange = c(1, NA),
+  tablePrefix = NULL
 )
 }
 \arguments{
@@ -74,6 +75,9 @@ considered in the same era. By default: 180.}
 be a numeric vector of length two, with no NAs and the first value should be
 equal or smaller than the second one. It is only required if imputeDuration
 = TRUE. If NULL no restrictions are applied. By default: NULL.}
+
+\item{tablePrefix}{The stem for the permanent tables that will
+be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 The function returns the 'cdm' object with the created tables as

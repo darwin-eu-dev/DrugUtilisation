@@ -27,9 +27,11 @@
 #' indications.
 #' @param oneStrata Weather we want to stratify one strata (TRUE) each or
 #' combine in multiple stratas using expand_grid (FALSE). By deafault = FALSE.
-#'
 #' @return Multiple cohorts as a temporal table in the database. The
 #' stratification for each cohort can be see as attribute ("strata").
+#' @param tablePrefix The stem for the permanent tables that will
+#' be created. If NULL, temporary tables will be used throughout.
+#'
 #' @export
 #'
 #' @examples
@@ -40,7 +42,8 @@ getStratification <- function(cdm,
                               ageGroup = NULL,
                               indexYearGroup = NULL,
                               indicationTable = NULL,
-                              oneStrata = FALSE) {
+                              oneStrata = FALSE,
+                              tablePrefix = NULL) {
   # initial checks
   errorMessage <- checkmate::makeAssertCollection()
   checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
@@ -87,6 +90,16 @@ getStratification <- function(cdm,
     add = errorMessage
   )
   checkmate::assertTRUE(targetCohortName %in% names(cdm), add = errorMessage)
+
+  #check targetCohortName is not empty
+
+  targetCohortNameEmpty <- cdm[[targetCohortName]] %>% dplyr::tally()%>%
+    dplyr::pull()
+
+  if (targetCohortNameEmpty == 0) {
+    errorMessage$push("- table `targetCohortName` contains 0 row")
+  }
+
   if (!is.null(sex)) {
     checkmate::assertTRUE(
       all(sex %in% c("Both", "Male", "Female")),
@@ -143,6 +156,7 @@ getStratification <- function(cdm,
       errorMessage$push("Use getIndication function to obtain indicationTable.")
     }
   }
+
   checkmate::reportAssertions(collection = errorMessage)
 
   targetCohort <- cdm[[targetCohortName]]
@@ -171,6 +185,11 @@ getStratification <- function(cdm,
     dplyr::pull("n") == 0) {
     errorMessage$push("No counts in the targetCohortId")
   }
+
+  # checks for tableprefix
+  checkmate::assertCharacter(
+    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  )
   checkmate::reportAssertions(collection = errorMessage)
 
   # set default options
@@ -338,7 +357,7 @@ getStratification <- function(cdm,
           dplyr::mutate(indication_group = "Any") %>%
           dplyr::distinct()
       ) %>%
-      dplyr::compute()
+      CDMConnector::computeQuery()
   }
 
   targetCohort <- targetCohort %>%
@@ -362,9 +381,10 @@ getStratification <- function(cdm,
   }
 
   targetCohort <- targetCohort %>%
-    dplyr::compute() %>%
+    CDMConnector::computeQuery() %>%
     dplyr::inner_join(sexGroup, by = "sex", copy = TRUE) %>%
     dplyr::inner_join(ageGroup, by = "age", copy = TRUE) %>%
+    CDMConnector::computeQuery() %>%
     dplyr::inner_join(indexYearGroup, by = "index_year", copy = TRUE) %>%
     dplyr::inner_join(
       settings,
@@ -374,9 +394,21 @@ getStratification <- function(cdm,
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
-    ) %>%
-    dplyr::compute()
+    )  %>%
+    CDMConnector::computeQuery()
 
+
+  if(is.null(tablePrefix)){
+    targetCohort <- targetCohort %>%
+      CDMConnector::computeQuery()
+  } else {
+    targetCohort <- targetCohort %>%
+      CDMConnector::computeQuery(name = paste0(tablePrefix,
+                                               "_person_sample"),
+                                 temporary = FALSE,
+                                 schema = attr(cdm, "write_schema"),
+                                 overwrite = TRUE)
+  }
   attr(targetCohort, "cohortSet") <- settings
 
   return(targetCohort)

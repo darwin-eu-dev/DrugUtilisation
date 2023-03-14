@@ -1015,4 +1015,29 @@ test_that("test case multiple unknown indication table behavour", {
 
 })
 
+test_that("test case empty targetCohortName", {
+targetCohortName <-
+  dplyr::tibble(subject_id = numeric(),
+                cohort_start_date = date(),
+                cohort_end_date =date(),
+                cohort_definition_id = numeric())
 
+cdm <-
+  mockDrugUtilisation(
+    cohort1 = targetCohortName
+  )
+
+# check for empty targetCohortName
+expect_error(getIndication(
+  cdm = cdm,
+  targetCohortName = "cohort1",
+  indicationCohortName = "cohort2",
+  targetCohortDefinitionId = 1,
+  indicationDefinitionSet = indicationDefinitionSet,
+  indicationGap = 0,
+  unknownIndicationTable = NULL
+))
+
+DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
+})
