@@ -7,14 +7,17 @@
 addDailyDose(table, cdm, ingredientConceptId, tablePrefix = NULL)
 }
 \arguments{
-\item{table}{table}
+\item{table}{the drug exposure table}
 
-\item{cdm}{cdm}
+\item{cdm}{cdm reference}
 
 \item{ingredientConceptId}{ingredientConceptId}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
+}
+\value{
+the drug exposure table with the daily dose as additional column
 }
 \description{
 Explain function

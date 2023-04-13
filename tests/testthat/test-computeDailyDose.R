@@ -5,9 +5,9 @@ test_that("inputs for addDailyDose function",{
       amount_value = c(100, NA, NA, NA, NA),
       amount_unit_concept_id = c(8576, 8576, NA, NA, NA),
       numerator_value = c(NA, NA,1,300,5),
-      numerator_unit_concept_id = c(NA, NA,8576,8576,8576),
+      numerator_unit_concept_id = c(NA, NA, 8576, 8576, 8576),
       denominator_value = c(NA, NA, NA, 1, 5),
-      denominator_unit_concept_id = c(NA, NA,8587,8587,8576)
+      denominator_unit_concept_id = c(NA, NA, 8587, 8587, 8576)
     )
 
     cdm <- mockDrugUtilisation(drug_strength = drug_strength,
@@ -24,7 +24,7 @@ test_that("inputs for addDailyDose function",{
     result <- result %>% dplyr::collect()
 
     expect_true(nrow(result) == cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull("n"))
-    expect_true(all(result$drug_dose_type %in% c("tablets","quantified", "quantity", "puffs","compounded","timeBased" )))
+    expect_true(all(result$drug_dose_type %in% c("tablets", "quantified", "quantity", "puffs", "compounded", "timeBased")))
 
 
     #test Tablets

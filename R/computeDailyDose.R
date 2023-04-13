@@ -16,15 +16,15 @@
 
 #' Explain function
 #'
-#' @param table table
-#' @param cdm cdm
+#' @param table the drug exposure table
+#' @param cdm cdm reference
 #' @param ingredientConceptId ingredientConceptId
 #'
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #'
-#' @return
+#' @return the drug exposure table with the daily dose as additional column
 #' @export
 #'
 #' @examples
@@ -43,8 +43,6 @@ addDailyDose <- function(table,
     tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
   )
   checkmate::reportAssertions(collection = errorMessage)
-
-
 
   if ("days_exposed" %in% colnames(table)) {
     warning("'days_exposed' will be overwritten.")
@@ -67,22 +65,22 @@ addDailyDose <- function(table,
           cdm$drug_strength,
           by = c("drug_concept_id")
         ) %>%
-        dplyr::mutate(drug_dose_type = dplyr::case_when(
+        dplyr::mutate(drug_dose_type := dplyr::case_when(
           # 1. Tablets and other fixed amount formulations
-          is.na(denominator_unit_concept_id) == TRUE ~ "tablets",
+          is.na(denominator_unit_concept_id) ~ "tablets",
           # 2. Puffs of an inhaler
           denominator_unit_concept_id == 45744809 ~ "puffs",
           # 3. Quantified Drugs which are formulated as a concentration
-          denominator_unit_concept_id %in% c(8576, 8587) && denominator_value != 1 && is.na(denominator_value) == FALSE ~ "quantified",
+          denominator_unit_concept_id %in% c(8576, 8587) && denominator_value != 1 && !is.na(denominator_value) ~ "quantified",
           # 4. Drugs with the total amount provided in quantity, e.g. chemotherapeutics
-          denominator_unit_concept_id %in% c(8576, 8587) && (denominator_value == 1 | is.na(denominator_value) == TRUE) ~ "quantity",
+          denominator_unit_concept_id %in% c(8576, 8587) && (denominator_value == 1 | is.na(denominator_value)) ~ "quantity",
           # 5. Compounded drugs
           denominator_unit_concept_id == 8576 & amount_value == 1 ~ "compounded",
           # 6. Drugs with the active ingredient released over time, e.g. patches
           denominator_unit_concept_id == 8505 ~ "timeBased"
         )) %>%
         dplyr::mutate(
-          daily_dose = dplyr::case_when(
+          daily_dose := dplyr::case_when(
             is.na(.data$drug_dose_type) ~ as.numeric(NA),
             .data$days_exposed == 0 ~ as.numeric(NA),
             .data$drug_dose_type == "tablets" ~
@@ -99,7 +97,7 @@ addDailyDose <- function(table,
             TRUE ~ as.numeric(NA)
           )
         ) %>%
-        # dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
+        dplyr::filter(ingredient_concept_id == ingredient_concept_id) %>%
         dplyr::select(
           "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id",
           "drug_dose_type", "daily_dose"
