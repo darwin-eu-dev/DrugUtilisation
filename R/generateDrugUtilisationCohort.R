@@ -345,7 +345,7 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::mutate(days_to_add = as.integer(.data$days_exposed - 1)) %>%
     dplyr::compute() %>%
     dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(
-      dateadd(
+      CDMConnector::dateadd(
         date = "drug_exposure_start_date",
         number = "days_to_add"
       )
@@ -555,25 +555,31 @@ generateDrugUtilisationCohort <- function(cdm,
   con <- attr(cdm, "dbcon")
   if(is.null(tablePrefix)){
     cohortRef <- cohort %>% CDMConnector::computeQuery()
-    cohortSetRef <- DBI::dbWriteTable(con, uniqueTableName(), conceptSets, temporary = TRUE)
-    cohortAttritionRef <- DBI::dbWriteTable(con, uniqueTableName(), attrition, temporary = TRUE)
-    cohortCountRef <- cohortCount
+    cohortSetTableName <- uniqueTableName()
+    DBI::dbWriteTable(con, cohortSetTableName, conceptSets, temporary = TRUE)
+    cohortSetRef <- dplyr::tbl(con, cohortSetTableName)
+    cohortAttritionTableName <- uniqueTableName()
+    DBI::dbWriteTable(con, cohortAttritionTableName, attrition, temporary = TRUE)
+    cohortAttritionRef <- dplyr::tbl(con, cohortAttritionTableName)
+    cohortCountRef <- cohortCountRef
   } else {
     writeSchema <- attr(cdm, "write_schema")
     cohortRef <- CDMConnector::computeQuery(
       x = cohort, name = tablePrefix, temporary = FALSE,
       schema = writeSchema, overwrite = TRUE
     )
-    cohortSetRef <- DBI::dbWriteTable(
-      conn = con, name = inSchema(writeSchema, paste0(tablePrefix, "_set")),
+    DBI::dbWriteTable(
+      conn = con, name = dbplyr::in_schema(writeSchema, paste0(tablePrefix, "_set")),
       value = as.data.frame(conceptSets),
       overwrite = TRUE
     )
-    cohortAttritionRef <- DBI::dbWriteTable(
-      conn = con, name = inSchema(writeSchema, paste0(tablePrefix, "_attrition")),
+    cohortSetRef <- dplyr::tbl(con, dbplyr::in_schema(writeSchema, paste0(tablePrefix, "_set"), CDMConnector::dbms(con)))
+    DBI::dbWriteTable(
+      conn = con, name = dbplyr::in_schema(writeSchema, paste0(tablePrefix, "_attrition")),
       value = as.data.frame(attrition),
       overwrite = TRUE
     )
+    cohortAttritionRef <- dplyr::tbl(con, dbplyr::in_schema(writeSchema, paste0(tablePrefix, "_attrition"), CDMConnector::dbms(con)))
     cohortCountRef <- CDMConnector::computeQuery(
       x = cohortCount, name = paste0(tablePrefix, "_count"), temporary = FALSE,
       schema = writeSchema, overwrite = TRUE
