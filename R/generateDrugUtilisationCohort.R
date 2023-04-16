@@ -254,16 +254,11 @@ generateDrugUtilisationCohort <- function(cdm,
         dplyr::inner_join(conceptList, by = "drug_concept_id")
     }
     conceptSets <- conceptSets %>%
-      dplyr::select(
-        "cohortId" = "cohort_definition_id",
-        "cohortName" = "concept_set_name",
-        "concepSetPath" = "concept_set_path"
-      )
+      dplyr::select( "cohort_definition_id", "cohort_name" = "concept_set_name")
   } else {
     conceptSets <- dplyr::tibble(
-      cohortId = 1,
-      cohortName = paste0("ingredient: ", ingredientConceptId),
-      conceptSetPath = as.character(NA)
+      cohort_definition_id = 1,
+      cohort_name = paste0("ingredient_concept_id_", ingredientConceptId)
     )
     conceptList <- cdm[["drug_strength"]] %>%
       dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
@@ -524,12 +519,9 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
-    ) %>%
-    dplyr::compute()
+    )
 
-  attr(cohort, "cohortSet") <- conceptSets
-
-  attr(cohort, "attrition") <- attrition %>%
+  attrition <- attrition %>%
     dplyr::left_join(
       dplyr::tibble(
         order_id = c(1:10),
@@ -551,17 +543,49 @@ generateDrugUtilisationCohort <- function(cdm,
     dplyr::arrange(.data$cohort_definition_id, .data$order_id) %>%
     dplyr::select(-"order_id")
 
+  cohortCount <- cohort %>%
+    dplyr::group_by(.data$cohort_definition_id) %>%
+    dplyr::summarise(
+      number_records = dplyr::n(),
+      number_subjects = dplyr::n_distinct(.data$subject_id),
+      .groups = "drop"
+    ) %>%
+    dplyr::compute()
+
+  con <- attr(cdm, "dbcon")
   if(is.null(tablePrefix)){
-    cohort <- cohort %>%
-      CDMConnector::computeQuery()
+    cohortRef <- cohort %>% CDMConnector::computeQuery()
+    cohortSetRef <- DBI::dbWriteTable(con, uniqueTableName(), conceptSets, temporary = TRUE)
+    cohortAttritionRef <- DBI::dbWriteTable(con, uniqueTableName(), attrition, temporary = TRUE)
+    cohortCountRef <- cohortCount
   } else {
-    cohort <- cohort %>%
-      CDMConnector::computeQuery(name = paste0(tablePrefix,
-                                               "_person_sample"),
-                                 temporary = FALSE,
-                                 schema = attr(cdm, "write_schema"),
-                                 overwrite = TRUE)
+    writeSchema <- attr(cdm, "write_schema")
+    cohortRef <- CDMConnector::computeQuery(
+      x = cohort, name = tablePrefix, temporary = FALSE,
+      schema = writeSchema, overwrite = TRUE
+    )
+    cohortSetRef <- DBI::dbWriteTable(
+      conn = con, name = inSchema(writeSchema, paste0(tablePrefix, "_set")),
+      value = as.data.frame(conceptSets),
+      overwrite = TRUE
+    )
+    cohortAttritionRef <- DBI::dbWriteTable(
+      conn = con, name = inSchema(writeSchema, paste0(tablePrefix, "_attrition")),
+      value = as.data.frame(attrition),
+      overwrite = TRUE
+    )
+    cohortCountRef <- CDMConnector::computeQuery(
+      x = cohortCount, name = paste0(tablePrefix, "_count"), temporary = FALSE,
+      schema = writeSchema, overwrite = TRUE
+    )
   }
+
+  cohort <- CDMConnector::newGeneratedCohortSet(
+    cohortRef = cohortRef,
+    cohortSetRef = cohortSetRef,
+    cohortAttritionRef = cohortAttritionRef,
+    cohortCountRef = cohortCountRef
+  )
 
   return(cohort)
 }
@@ -748,4 +772,11 @@ readConceptSets <- function(conceptSets) {
       "include_descendants" = "includeDescendants"
     )
   return(conceptList)
+}
+
+#' @noRd
+uniqueTableName <- function() {
+  i <- getOption("dbplyr_table_name", 0) + 1
+  options(dbplyr_table_name = i)
+  sprintf("dbplyr_%03i", i)
 }
