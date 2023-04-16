@@ -240,6 +240,7 @@ getStratification <- function(cdm,
     dplyr::mutate(to_join = 1) %>%
     dplyr::inner_join(
       dplyr::tibble(to_join = 1, age = 0:150),
+      multiple = "all",
       by = "to_join"
     ) %>%
     dplyr::filter(.data$age >= .data$age_min) %>%
