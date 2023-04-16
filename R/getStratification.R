@@ -220,7 +220,8 @@ getStratification <- function(cdm,
         sex_group = c("Both", "Both", "Male", "Female"),
         sex = c("Male", "Female", "Male", "Female")
       ),
-      by = "sex_group"
+      by = "sex_group",
+      multiple = "all"
     )
   # age group
   ageGroup <- lapply(ageGroup, function(x) {
