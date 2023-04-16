@@ -561,7 +561,7 @@ generateDrugUtilisationCohort <- function(cdm,
     cohortAttritionTableName <- uniqueTableName()
     DBI::dbWriteTable(con, cohortAttritionTableName, attrition, temporary = TRUE)
     cohortAttritionRef <- dplyr::tbl(con, cohortAttritionTableName)
-    cohortCountRef <- cohortCountRef
+    cohortCountRef <- cohortCount
   } else {
     writeSchema <- attr(cdm, "write_schema")
     cohortRef <- CDMConnector::computeQuery(
