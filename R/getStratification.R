@@ -220,7 +220,8 @@ getStratification <- function(cdm,
         sex_group = c("Both", "Both", "Male", "Female"),
         sex = c("Male", "Female", "Male", "Female")
       ),
-      by = "sex_group"
+      by = "sex_group",
+      multiple = "all"
     )
   # age group
   ageGroup <- lapply(ageGroup, function(x) {
@@ -240,6 +241,7 @@ getStratification <- function(cdm,
     dplyr::mutate(to_join = 1) %>%
     dplyr::inner_join(
       dplyr::tibble(to_join = 1, age = 0:150),
+      multiple = "all",
       by = "to_join"
     ) %>%
     dplyr::filter(.data$age >= .data$age_min) %>%

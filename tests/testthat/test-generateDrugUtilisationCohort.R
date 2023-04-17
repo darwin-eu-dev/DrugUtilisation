@@ -50,6 +50,12 @@ test_that("test inputs", {
   ))
 })
 
+test_that("class", {
+  cdm <- mockDrugUtilisation()
+  cohort <- generateDrugUtilisationCohort(cdm = cdm, ingredientConceptId = 1)
+  expect_true("GeneratedCohortSet" %in% class(cohort))
+})
+
 test_that("basic functionality drug_conceptId", {
   concept1 <- system.file(package = "DrugUtilisation", "concept1.json")
   cdm <- mockDrugUtilisation(seed = 1)

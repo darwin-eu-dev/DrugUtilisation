@@ -9,8 +9,7 @@ summariseIndication(
   cdm,
   cohortId = NULL,
   indicationList = NULL,
-  minimumCellCount = 5,
-  tablePrefix = NULL
+  minimumCellCount = 5
 )
 }
 \arguments{
@@ -29,9 +28,6 @@ default value is provided.}
 
 \item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 A Tibble with 4 columns: cohort_definition_id, variable, estimate and

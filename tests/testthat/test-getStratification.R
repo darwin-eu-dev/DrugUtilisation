@@ -684,7 +684,6 @@ test_that("test oneStrata option", {
 
 test_that("test case empty targetCohortName", {
 
-
   cdm <- mockDrugUtilisation(
     person = dplyr::tibble(
       person_id = c(1, 2),

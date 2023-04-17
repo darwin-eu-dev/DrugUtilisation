@@ -111,20 +111,6 @@ sqlGetAge <- function(dialect,
 }
 
 #' @noRd
-dateadd <- function(date, number, interval = "day") {
-  rlang::check_installed("SqlRender")
-  checkmate::assertCharacter(interval, len = 1)
-  checkmate::assertSubset(interval, choices = c("day", "year"))
-  checkmate::assertCharacter(date, len = 1)
-  # checkmate::assertIntegerish(number)
-  dot <- get(".", envir = parent.frame())
-  targetDialect <- CDMConnector::dbms(dot$src$con)
-  sql <- glue::glue("DATEADD({interval}, {number}, {date})")
-  sql <- SqlRender::translate(sql = as.character(sql), targetDialect = targetDialect)
-  dbplyr::sql(sql)
-}
-
-#' @noRd
 addSex <- function(cohortDb, cdm) {
   cdm[["person"]] %>%
     dplyr::rename("subject_id" = "person_id") %>%
