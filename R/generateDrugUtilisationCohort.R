@@ -729,53 +729,83 @@ imputeVariable <- function(x,
   return(x)
 }
 
-#' Add line to the attrition tibble
+#' Add a line in the attrition table. If the table does not exist it is created
 #'
-#' @noRd
-addattritionLine <- function(cohort, reason) {
-  if ("cohort_definition_id" %in% colnames(cohort)) {
-    cohort <- cohort %>% dplyr::group_by(.data$cohort_definition_id)
+#' @param attrition An attrition table. If NULL a new attrition table is created.
+#' @param x A table in the cdm. It must contain 'cohort_definition_id'
+#' @param reason A character with the name of the reason.
+#'
+#' @return The function returns the 'cdm' object with the created tables as
+#' references of the object.
+#' @export
+#'
+#' @examples
+addAttritionLine <- function(attrition = NULL, x, reason) {
+  if (!is.null(attrition)) {
+    checkmate::assertTibble(attrition)
+    checkmate::assertTRUE(all(
+      c(
+        "cohort_definition_id", "number_records", "number_subjects", "reason_id",
+        "reason", "excluded_records", "excluded_subjects"
+      ) %in% colnames(attrition)
+    ))
   }
-  return(
-    cohort %>%
-      dplyr::summarise(
-        number_subjects = dplyr::n_distinct(.data$subject_id),
-        number_records = dplyr::n()
-      ) %>%
-      dplyr::collect() %>%
-      dplyr::mutate(reason = .env$reason)
-  )
+  checkmate::assertClass(x, "tbl")
+  checkmate::assertTRUE(all(c("cohort_definition_id", "subject_id") %in% colnames(x)))
+  checkmate::assertCharacter(reason, len = 1)
+  attrition <- attritionLine(atrition, x, reason)
+  return(attrition)
 }
 
-#' Function to read the concept sets and export a tibble with
-#' cohort_definition_id and drug_concept_id with the list of drug_concept_id
-#' included in each concept set
 #' @noRd
-readConceptSets <- function(conceptSets) {
-  for (k in 1:nrow(conceptSets)) {
-    conceptSetName <- conceptSets$concept_set_name[k]
-    conceptSet <- RJSONIO::fromJSON(conceptSets$concept_set_path[k])
-    conceptSet <- lapply(conceptSet$items, function(x) {
-      x <- append(x, x[["concept"]])
-      x[["concept"]] <- NULL
-      return(x)
-    }) %>%
-      dplyr::bind_rows() %>%
-      dplyr::mutate(
-        cohort_definition_id = .env$conceptSets$cohort_definition_id[k]
-      )
-    if (k == 1) {
-      conceptList <- conceptSet
-    } else {
-      conceptList <- rbind(conceptList, conceptSet)
-    }
+attritionLine <- function(atrition, x, reason) {
+  if (is.null(attrition)) {
+    attrition <- countAttrition(x, reason, 1)
+  } else {
+    id <- max(attrition$reason_id)
+    attrition <- attrition %>%
+      dplyr::bind_rows(countAttrition(x, reason, id)) %>%
+      addExcludedCounts(id)
   }
-  conceptList <- conceptList %>%
-    dplyr::select(
-      "cohort_definition_id",
-      "concept_id" = "CONCEPT_ID",
-      "is_excluded" = "isExcluded",
-      "include_descendants" = "includeDescendants"
-    )
-  return(conceptList)
+  return(attrition)
 }
+
+#' @noRd
+countAttrition <- function(x, reason, id) {
+  if (id == 1) {
+    num <- 0
+  } else {
+    num <- as.numeric(NA)
+  }
+  attrition <- x %>%
+    dplyr::group_by(.data$cohort_definition_id) %>%
+    dplyr::summarise(
+      number_records = dplyr::n(),
+      number_subjects = dplyr::n_distinct(.data$subject_id),
+      .groups = "drop"
+    ) %>%
+    dplyr::collect() %>%
+    dplyr::mutate(
+      reason_id = id, reason = .env$reason, excluded_records = num, excluded_subjects = num
+    )
+  return(attrition)
+}
+
+#' @noRd
+addExcludedCounts <- function(x, id) {
+  attrition %>%
+    dplyr::group_by(.data$cohort_definition_id) %>%
+    dplyr::mutate(
+      excluded_records = dplyr::if_else(
+        is.na(.data$excluded_records),
+        .data$number_records[.env$id] - .data$number_records[.env$id - 1],
+        .data$excluded_records
+      ),
+      excluded_subjects = dplyr::if_else(
+        is.na(.data$excluded_subjects),
+        .data$number_subjects[.env$id] - .data$number_subjects[.env$id - 1],
+        .data$excluded_subjects
+      )
+    )
+}
+
