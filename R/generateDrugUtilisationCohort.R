@@ -555,10 +555,10 @@ generateDrugUtilisationCohort <- function(cdm,
   con <- attr(cdm, "dbcon")
   if(is.null(tablePrefix)){
     cohortRef <- cohort %>% CDMConnector::computeQuery()
-    cohortSetTableName <- uniqueTableName()
+    cohortSetTableName <- CDMConnector::uniqueTableName()
     DBI::dbWriteTable(con, cohortSetTableName, conceptSets, temporary = TRUE)
     cohortSetRef <- dplyr::tbl(con, cohortSetTableName)
-    cohortAttritionTableName <- uniqueTableName()
+    cohortAttritionTableName <- CDMConnector::uniqueTableName()
     DBI::dbWriteTable(con, cohortAttritionTableName, attrition, temporary = TRUE)
     cohortAttritionRef <- dplyr::tbl(con, cohortAttritionTableName)
     cohortCountRef <- cohortCount
@@ -569,17 +569,17 @@ generateDrugUtilisationCohort <- function(cdm,
       schema = writeSchema, overwrite = TRUE
     )
     DBI::dbWriteTable(
-      conn = con, name = inSchema(writeSchema, paste0(tablePrefix, "_set"), CDMConnector::dbms(con)),
+      conn = con, name = CDMConnector::inSchema(writeSchema, paste0(tablePrefix, "_set"), CDMConnector::dbms(con)),
       value = as.data.frame(conceptSets),
       overwrite = TRUE
     )
-    cohortSetRef <- dplyr::tbl(con, inSchema(writeSchema, paste0(tablePrefix, "_set"), CDMConnector::dbms(con)))
+    cohortSetRef <- dplyr::tbl(con, CDMConnector::inSchema(writeSchema, paste0(tablePrefix, "_set"), CDMConnector::dbms(con)))
     DBI::dbWriteTable(
-      conn = con, name = inSchema(writeSchema, paste0(tablePrefix, "_attrition"), CDMConnector::dbms(con)),
+      conn = con, name = CDMConnector::inSchema(writeSchema, paste0(tablePrefix, "_attrition"), CDMConnector::dbms(con)),
       value = as.data.frame(attrition),
       overwrite = TRUE
     )
-    cohortAttritionRef <- dplyr::tbl(con, inSchema(writeSchema, paste0(tablePrefix, "_attrition"), CDMConnector::dbms(con)))
+    cohortAttritionRef <- dplyr::tbl(con, CDMConnector::inSchema(writeSchema, paste0(tablePrefix, "_attrition"), CDMConnector::dbms(con)))
     cohortCountRef <- CDMConnector::computeQuery(
       x = cohortCount, name = paste0(tablePrefix, "_count"), temporary = FALSE,
       schema = writeSchema, overwrite = TRUE
@@ -778,29 +778,4 @@ readConceptSets <- function(conceptSets) {
       "include_descendants" = "includeDescendants"
     )
   return(conceptList)
-}
-
-#' @noRd
-uniqueTableName <- function() {
-  i <- getOption("dbplyr_table_name", 0) + 1
-  options(dbplyr_table_name = i)
-  sprintf("dbplyr_%03i", i)
-}
-
-#' @noRd
-inSchema <- function(schema, table, dbms = NULL) {
-  checkmate::assertCharacter(schema, min.len = 1, max.len = 2)
-  checkmate::assertCharacter(table, len = 1)
-  checkmate::assertCharacter(dbms, len = 1, null.ok = TRUE)
-
-  if (!is.null(dbms) && (dbms %in% c("oracle"))) {
-    # some dbms need in_schema, others DBI::Id
-    switch(length(schema),
-           dbplyr::in_schema(schema = schema, table = table),
-           dbplyr::in_catalog(catalog = schema[1], schema = schema[2], table = table))
-  } else {
-    switch(length(schema),
-           DBI::Id(schema = schema, table = table),
-           DBI::Id(catalog = schema[1], schema = schema[2], table = table))
-  }
 }
