@@ -1,0 +1,127 @@
+pattern_id,amount,amount_unit,amount_unit_concept_id,numerator,numerator_unit,denominator,denominator_unit,numerator_unit_concept_id,denominator_unit_concept_id,number_concepts,number_ingredients,valid,pattern_name,unit
+1,numeric,international unit,8718,NA,NA,NA,NA,NA,NA,1027,51,TRUE,international_unit,international unit
+2,numeric,microgram,9655,NA,NA,NA,NA,NA,NA,6,2,TRUE,microgram,milligram
+2,numeric,milligram,8576,NA,NA,NA,NA,NA,NA,805118,5308,TRUE,milligram,milligram
+3,numeric,millicurie,44819154,NA,NA,NA,NA,NA,NA,157,3,TRUE,millicurie,millicurie
+4,numeric,milliequivalent,9551,NA,NA,NA,NA,NA,NA,248,12,TRUE,milliequivalent,milliequivalent
+5,numeric,milliliter,8587,NA,NA,NA,NA,NA,NA,756,37,TRUE,milliliter,milliliter
+6,numeric,millimole,9573,NA,NA,NA,NA,NA,NA,124,6,TRUE,millimole,millimole
+7,NA,NA,NA,numeric,international unit,numeric,milligram,8718,8576,46,5,TRUE,international_unit_per_milligram,international unit
+8,NA,NA,NA,numeric,international unit,numeric,milliliter,8718,8587,848,63,TRUE,international_unit_per_milliliter,international unit
+9,NA,NA,NA,numeric,microgram,numeric,hour,9655,8505,6,2,TRUE,microgram_unit_per_hour,milligram
+9,NA,NA,NA,numeric,milligram,numeric,hour,8576,8505,6901,230,TRUE,milligram_per_hour,milligram
+10,NA,NA,NA,numeric,millicurie,numeric,milliliter,44819154,8587,12,5,TRUE,millicurie_per_milliliter,millicurie
+11,NA,NA,NA,numeric,milliequivalent,numeric,milliliter,9551,8587,51,8,TRUE,milliequivalent_per_milliliter,milliequivalent
+12,NA,NA,NA,numeric,milligram,numeric,Actuation,8576,45744809,7298,86,TRUE,milligram_per_actuation,milligram
+13,NA,NA,NA,numeric,milligram,numeric,liter,8576,8519,9,2,TRUE,milligram_per_liter,milligram
+13,NA,NA,NA,numeric,milligram,numeric,milliliter,8576,8587,327980,3696,TRUE,milligram_per_milliliter,milligram
+14,NA,NA,NA,numeric,milligram,numeric,milligram,8576,8576,132466,2063,TRUE,milligram_per_milligram,milligram
+15,NA,NA,NA,numeric,milliliter,numeric,milligram,8587,8576,37,9,TRUE,milliliter_per_milligram,milliliter
+16,NA,NA,NA,numeric,milliliter,numeric,milliliter,8587,8587,4576,151,TRUE,milliliter_per_milliliter,milliliter
+17,NA,NA,NA,numeric,millimole,numeric,milligram,9573,8576,95,1,TRUE,millimole_per_milligram,millimole
+18,NA,NA,NA,numeric,millimole,numeric,milliliter,9573,8587,979,34,TRUE,millimole_per_milliliter,millimole
+19,NA,NA,NA,numeric,international unit,NA,milligram,8718,8576,38,5,TRUE,international_unit_per_missing_milligram,international unit
+20,NA,NA,NA,numeric,international unit,NA,milliliter,8718,8587,844,68,TRUE,international_uni_per_missing_milliliter,international unit
+20,NA,NA,NA,numeric,mega-international unit,NA,milliliter,9439,8587,2,1,TRUE,mega_international_unit_per_missing_milliliter,international unit
+21,NA,NA,NA,numeric,microgram,NA,hour,9655,8505,5,2,TRUE,microgram_per_missing_hour,milligram
+21,NA,NA,NA,numeric,milligram,NA,hour,8576,8505,5339,29,TRUE,milligram_per_missing_hour,milligram
+22,NA,NA,NA,numeric,millicurie,NA,milliliter,44819154,8587,20,5,TRUE,millicurie_per_missing_milliliter,millicurie
+23,NA,NA,NA,numeric,milliequivalent,NA,milligram,9551,8576,16,2,TRUE,millicurie_per_missing_milligram,milliequivalent
+24,NA,NA,NA,numeric,milliequivalent,NA,milliliter,9551,8587,686,30,TRUE,milliequivalent_per_missing_milliliter,milliequivalent
+25,NA,NA,NA,numeric,milligram,NA,Actuation,8576,45744809,6409,103,TRUE,milligram_per_missing_actuation,milligram
+26,NA,NA,NA,numeric,milligram,NA,liter,8576,8519,6,2,TRUE,milligram_per_missing_liter,milligram
+27,NA,NA,NA,numeric,milligram,NA,milligram,8576,8576,82299,2219,TRUE,milligram_per_missing_milligram,milligram
+28,NA,NA,NA,numeric,milligram,NA,milliliter,8576,8587,263654,4898,TRUE,milligram_per_missing_milliliter,milligram
+29,NA,NA,NA,numeric,milliliter,NA,milligram,8587,8576,44,9,TRUE,milliliter_per_missing_milligram,milligram
+30,NA,NA,NA,numeric,milliliter,NA,milliliter,8587,8587,2627,164,TRUE,milliliter_per_missing_milliliter,milliliter
+31,NA,NA,NA,numeric,millimole,NA,milligram,9573,8576,54,1,TRUE,millimole_per_missing_milligram,milliliter
+32,NA,NA,NA,numeric,millimole,NA,milliliter,9573,8587,479,36,TRUE,millimole_per_missing_milliliter,millimole
+NA,numeric,50% cell culture infectious dose,9276,NA,NA,NA,NA,NA,NA,7,1,FALSE,NA,NA
+NA,numeric,50% tissue culture infectious dose,9414,NA,NA,NA,NA,NA,NA,16,4,FALSE,NA,NA
+NA,numeric,Actuation,45744809,NA,NA,NA,NA,NA,NA,4,1,FALSE,NA,NA
+NA,numeric,bacteria,45744815,NA,NA,NA,NA,NA,NA,34,5,FALSE,NA,NA
+NA,numeric,bioequivalent allergenic unit,45744810,NA,NA,NA,NA,NA,NA,4,1,FALSE,NA,NA
+NA,numeric,cells,45744812,NA,NA,NA,NA,NA,NA,73,11,FALSE,NA,NA
+NA,numeric,colony forming unit,9278,NA,NA,NA,NA,NA,NA,38,4,FALSE,NA,NA
+NA,numeric,homeopathic potency of centesimal series,9324,NA,NA,NA,NA,NA,NA,2841,410,FALSE,NA,NA
+NA,numeric,homeopathic potency of decimal series,9325,NA,NA,NA,milligram,NA,8576,23,3,FALSE,NA,NA
+NA,numeric,homeopathic potency of decimal series,9325,NA,NA,NA,NA,NA,NA,10661,925,FALSE,NA,NA
+NA,numeric,index of reactivity,9693,NA,NA,NA,NA,NA,NA,30,8,FALSE,NA,NA
+NA,numeric,limit of flocculation unit,45744814,NA,NA,NA,NA,NA,NA,2,1,FALSE,NA,NA
+NA,numeric,microkatal,44777647,NA,NA,NA,NA,NA,NA,10,1,FALSE,NA,NA
+NA,numeric,milligram,8576,NA,NA,NA,Actuation,NA,45744809,5,1,FALSE,NA,NA
+NA,numeric,milligram,8576,NA,NA,NA,milligram,NA,8576,10,1,FALSE,NA,NA
+NA,numeric,milliliter,8587,numeric,percent,NA,NA,8554,NA,2,1,FALSE,NA,NA
+NA,numeric,minim (US),9367,NA,NA,NA,NA,NA,NA,2,1,FALSE,NA,NA
+NA,numeric,plaque forming unit,9379,NA,NA,NA,NA,NA,NA,22,2,FALSE,NA,NA
+NA,numeric,standardized quality unit,32407,NA,NA,NA,NA,NA,NA,5,2,FALSE,NA,NA
+NA,numeric,unit,8510,NA,NA,NA,NA,NA,NA,24235,322,FALSE,NA,NA
+NA,NA,50% cell culture infectious dose,9276,NA,NA,NA,NA,NA,NA,7,1,FALSE,NA,NA
+NA,NA,allergenic unit,45744811,NA,NA,NA,NA,NA,NA,2,1,FALSE,NA,NA
+NA,NA,bacteria,45744815,NA,NA,NA,NA,NA,NA,26,3,FALSE,NA,NA
+NA,NA,bioequivalent allergenic unit,45744810,NA,NA,NA,NA,NA,NA,17,2,FALSE,NA,NA
+NA,NA,cells,45744812,NA,NA,NA,NA,NA,NA,102,21,FALSE,NA,NA
+NA,NA,colony forming unit,9278,NA,NA,NA,NA,NA,NA,2,1,FALSE,NA,NA
+NA,NA,focus forming unit,9302,NA,NA,NA,NA,NA,NA,1,1,FALSE,NA,NA
+NA,NA,homeopathic potency of centesimal series,9324,NA,NA,NA,NA,NA,NA,422,143,FALSE,NA,NA
+NA,NA,homeopathic potency of decimal series,9325,NA,NA,NA,NA,NA,NA,5706,568,FALSE,NA,NA
+NA,NA,index of reactivity,9693,NA,NA,NA,NA,NA,NA,15,3,FALSE,NA,NA
+NA,NA,international unit,8718,NA,NA,NA,NA,NA,NA,182,21,FALSE,international_unit,NA
+NA,NA,millicurie,44819154,NA,NA,NA,NA,NA,NA,15,6,FALSE,millicurie,NA
+NA,NA,milligram,8576,NA,NA,NA,NA,NA,NA,190498,17164,FALSE,milligram,NA
+NA,NA,milliliter,8587,NA,NA,NA,NA,NA,NA,166,23,FALSE,milliliter,NA
+NA,NA,millimole,9573,NA,NA,NA,NA,NA,NA,67,4,FALSE,millimole,NA
+NA,NA,percent,8554,NA,NA,NA,NA,NA,NA,141,11,FALSE,NA,NA
+NA,NA,plaque forming unit,9379,NA,NA,NA,NA,NA,NA,49,5,FALSE,NA,NA
+NA,NA,unit,8510,NA,NA,NA,NA,NA,NA,9919,446,FALSE,NA,NA
+NA,NA,Vector-genome,32018,NA,NA,NA,NA,NA,NA,10,2,FALSE,NA,NA
+NA,NA,NA,NA,numeric,50% cell culture infectious dose,numeric,milliliter,9276,8587,18,5,FALSE,NA,NA
+NA,NA,NA,NA,numeric,50% cell culture infectious dose,NA,milliliter,9276,8587,23,5,FALSE,NA,NA
+NA,NA,NA,NA,numeric,50% tissue culture infectious dose,numeric,milliliter,9414,8587,30,3,FALSE,NA,NA
+NA,NA,NA,NA,numeric,50% tissue culture infectious dose,NA,milliliter,9414,8587,27,3,FALSE,NA,NA
+NA,NA,NA,NA,numeric,allergenic unit,NA,milliliter,45744811,8587,40,4,FALSE,NA,NA
+NA,NA,NA,NA,numeric,bacteria,numeric,milliliter,45744815,8587,13,3,FALSE,NA,NA
+NA,NA,NA,NA,numeric,bacteria,NA,milliliter,45744815,8587,15,3,FALSE,NA,NA
+NA,NA,NA,NA,numeric,bioequivalent allergenic unit,numeric,milliliter,45744810,8587,33,4,FALSE,NA,NA
+NA,NA,NA,NA,numeric,bioequivalent allergenic unit,NA,milliliter,45744810,8587,120,14,FALSE,NA,NA
+NA,NA,NA,NA,numeric,cells,numeric,milliliter,45744812,8587,345,30,FALSE,NA,NA
+NA,NA,NA,NA,numeric,cells,numeric,square centimeter,45744812,9483,17,1,FALSE,NA,NA
+NA,NA,NA,NA,numeric,cells,NA,milliliter,45744812,8587,333,31,FALSE,NA,NA
+NA,NA,NA,NA,numeric,cells,NA,square centimeter,45744812,9483,14,1,FALSE,NA,NA
+NA,NA,NA,NA,numeric,clinical unit,NA,milliliter,45744813,8587,2,1,FALSE,NA,NA
+NA,NA,NA,NA,numeric,colony forming unit,numeric,milliliter,9278,8587,3,1,FALSE,NA,NA
+NA,NA,NA,NA,numeric,colony forming unit,NA,milliliter,9278,8587,5,2,FALSE,NA,NA
+NA,NA,NA,NA,numeric,focus forming unit,numeric,milliliter,9302,8587,12,5,FALSE,NA,NA
+NA,NA,NA,NA,numeric,focus forming unit,NA,milliliter,9302,8587,20,5,FALSE,NA,NA
+NA,NA,NA,NA,numeric,homeopathic potency of centesimal series,numeric,NA,9324,NA,107,50,FALSE,NA,NA
+NA,NA,NA,NA,numeric,homeopathic potency of centesimal series,NA,NA,9324,NA,2616,584,FALSE,NA,NA
+NA,NA,NA,NA,numeric,homeopathic potency of decimal series,numeric,NA,9325,NA,8907,760,FALSE,NA,NA
+NA,NA,NA,NA,numeric,homeopathic potency of decimal series,NA,NA,9325,NA,15662,1107,FALSE,NA,NA
+NA,NA,NA,NA,numeric,index of reactivity,numeric,milliliter,9693,8587,6,1,FALSE,NA,NA
+NA,NA,NA,NA,numeric,index of reactivity,NA,milliliter,9693,8587,12,1,FALSE,NA,NA
+NA,NA,NA,NA,numeric,limit of flocculation unit,numeric,milliliter,45744814,8587,101,3,FALSE,NA,NA
+NA,NA,NA,NA,numeric,limit of flocculation unit,NA,milliliter,45744814,8587,114,3,FALSE,NA,NA
+NA,NA,NA,NA,numeric,milligram,numeric,square centimeter,8576,9483,229,12,FALSE,NA,NA
+NA,NA,NA,NA,numeric,milligram,numeric,unit,8576,8510,23,2,FALSE,NA,NA
+NA,NA,NA,NA,numeric,milligram,NA,square centimeter,8576,9483,176,18,FALSE,NA,NA
+NA,NA,NA,NA,numeric,milligram,NA,unit,8576,8510,37,5,FALSE,NA,NA
+NA,NA,NA,NA,numeric,percent,numeric,NA,8554,NA,626,5,FALSE,NA,NA
+NA,NA,NA,NA,numeric,percent,NA,NA,8554,NA,883,14,FALSE,NA,NA
+NA,NA,NA,NA,numeric,plaque forming unit,numeric,milliliter,9379,8587,167,16,FALSE,NA,NA
+NA,NA,NA,NA,numeric,plaque forming unit,NA,milliliter,9379,8587,179,17,FALSE,NA,NA
+NA,NA,NA,NA,numeric,protein nitrogen unit,NA,milliliter,45744816,8587,4,2,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,numeric,Actuation,8510,45744809,86,7,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,numeric,hour,8510,8505,3,2,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,numeric,milligram,8510,8576,7041,56,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,numeric,milliliter,8510,8587,27026,297,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,numeric,square centimeter,8510,9483,79,3,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,numeric,unit,8510,8510,23,4,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,NA,Actuation,8510,45744809,87,7,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,NA,milligram,8510,8576,4502,67,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,NA,milliliter,8510,8587,20908,617,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,NA,square centimeter,8510,9483,63,3,FALSE,NA,NA
+NA,NA,NA,NA,numeric,unit,NA,unit,8510,8510,17,4,FALSE,NA,NA
+NA,NA,NA,NA,numeric,Vector-genome,numeric,milliliter,32018,8587,474,2,FALSE,NA,NA
+NA,NA,NA,NA,numeric,Vector-genome,NA,milliliter,32018,8587,32,2,FALSE,NA,NA
+NA,NA,NA,NA,numeric,NA,NA,NA,NA,NA,76,5,FALSE,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,3,FALSE,NA,NA

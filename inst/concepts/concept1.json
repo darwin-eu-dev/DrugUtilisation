@@ -4,8 +4,24 @@
       "concept": {
         "CONCEPT_ID": 1
       },
-      "isExcluded": false,
       "includeDescendants": false,
+      "includeMapped": false
+    },
+        {
+      "concept": {
+        "CONCEPT_ID": 2
+      },
+      "isExcluded": true,
+      "includeDescendants": false,
+      "includeMapped": false
+    },
+        {
+      "concept": {
+        "CONCEPT_ID": 3,
+        "CONCEPT_NAME" : "try"
+      },
+      "isExcluded": false,
+      "includeDescendants": true,
       "includeMapped": false
     }
   ]

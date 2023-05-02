@@ -2,9 +2,15 @@
   "items": [
     {
       "concept": {
+        "CONCEPT_ID": 1
+      },
+      "includeDescendants": false,
+      "includeMapped": false
+    },
+        {
+      "concept": {
         "CONCEPT_ID": 2
       },
-      "isExcluded": false,
       "includeDescendants": true,
       "includeMapped": false
     }

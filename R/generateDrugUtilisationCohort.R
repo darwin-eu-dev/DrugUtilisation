@@ -211,7 +211,7 @@ generateDrugUtilisationCohort <- function(cdm,
 
   if (!is.null(conceptSetPath)) {
     tryCatch(
-      expr = conceptList <- readConceptSets(conceptSets),
+      expr = conceptList <- readConceptSetshere(conceptSets),
       error = function(e) {
         stop("The json file is not a properly formated OMOP concept set.")
       }
@@ -751,7 +751,21 @@ addattritionLine <- function(cohort, reason) {
 #' cohort_definition_id and drug_concept_id with the list of drug_concept_id
 #' included in each concept set
 #' @noRd
-readConceptSets <- function(conceptSets) {
+readConceptSetshere <- function(conceptSets) {
+  names <- c("CONCEPT_CLASS_ID",
+             "CONCEPT_CODE",
+             "CONCEPT_ID",
+             "CONCEPT_NAME",
+             "DOMAIN_ID",
+             "INVALID_REASON",
+             "INVALID_REASON_CAPTION",
+             "STANDARD_CONCEPT",
+             "STANDARD_CONCEPT_CAPTION",
+             "VOCABULARY_ID",
+             "isExcluded",
+             "includeMapped",
+             "includeDescendants")
+
   for (k in 1:nrow(conceptSets)) {
     conceptSetName <- conceptSets$concept_set_name[k]
     conceptSet <- RJSONIO::fromJSON(conceptSets$concept_set_path[k])
@@ -764,6 +778,13 @@ readConceptSets <- function(conceptSets) {
       dplyr::mutate(
         cohort_definition_id = .env$conceptSets$cohort_definition_id[k]
       )
+    # Add columns missing from the read file with default values
+    conceptSet[setdiff(names, names(conceptSet))] <- as.character(NA)
+    conceptSet <- conceptSet %>%
+      dplyr::mutate(isExcluded = ifelse(is.na(isExcluded), FALSE, isExcluded),
+                    includeMapped = ifelse(is.na(includeMapped), FALSE, includeMapped),
+                    includeDescendants = ifelse(is.na(includeDescendants), FALSE, includeDescendants),)
+
     if (k == 1) {
       conceptList <- conceptSet
     } else {
