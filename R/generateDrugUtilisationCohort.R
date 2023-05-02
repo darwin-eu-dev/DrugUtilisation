@@ -14,19 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It instantiates the cohorts and their supplementary information
-#' (cohorts_info) for the DUS study
+#' Generates a cohort of the drug use of a certain list of concepts.
 #'
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
 #' must contain at least 'drug_exposure', 'drug_strength' and
 #' observation_period' tables. The 'cdm' object must contain the
 #' 'write_schema' as attribute and  the user should have permission to write on
 #' it. It is a compulsory input, no default value is provided.
-#' @param ingredientConceptId Ingredient OMOP concept that we are interested for
-#' the study. It is a compulsory input, no default value is provided.
-#' @param conceptSetPath Path to a folder with the concept sets of interest.
-#' Concept sets must be stored in OMOP .json files. If NULL all the descendants
-#' of ingredient concept id will be used. By default: NULL.
+#' @param conceptSetList Names list of concept sets.
 #' @param studyStartDate Minimum date where the incident exposed eras should
 #' start to be considered. Only incident exposed eras larger than StudyStartDate
 #' are allowed. If it is NULL no restriction is applied. By default: NULL.
@@ -69,100 +64,45 @@
 #'
 #' @examples
 generateDrugUtilisationCohort <- function(cdm,
-                                          ingredientConceptId = NULL,
-                                          conceptSetPath = NULL,
+                                          conceptSetList,
+                                          name,
+                                          temporary = TRUE,
                                           studyStartDate = NULL,
                                           studyEndDate = NULL,
                                           summariseMode = "AllEras",
                                           fixedTime = 365,
                                           daysPriorHistory = 0,
                                           gapEra = 30,
-                                          priorUseWashout = NULL,
+                                          priorUseWashout = 0,
                                           imputeDuration = "eliminate",
-                                          durationRange = c(1, NA),
-                                          tablePrefix = NULL) {
-  errorMessage <- checkmate::makeAssertCollection()
-  # first round of initial checks, assert Type
-  checkmate::assertClass(
-    cdm,
-    classes = "cdm_reference",
-    add = errorMessage
-  )
-  checkmate::assertCharacter(
-    conceptSetPath,
-    len = 1,
-    null.ok = TRUE,
-    add = errorMessage
-  )
-  checkmate::assertCount(
-    ingredientConceptId,
-    null.ok = TRUE,
-    add = errorMessage
-  )
-  if (is.null(conceptSetPath) && is.null(ingredientConceptId)) {
-    errorMessage$push(
-      "'conceptSetPath' or 'ingredientConceptId' should be provided"
-    )
-  }
+                                          durationRange = c(1, Inf)) {
+  checkCdm(cdm, c("drug_exposure", "observation_period", "person"))
+  checkConceptSetList(conceptSetList)
+  checkCohortName(name, names(cdm))
+  checkmate::assertLogical(temporary, any.missing = FALSE, len = 1)
   checkmate::assertDate(
-    studyStartDate,
-    any.missing = FALSE,
-    len = 1,
-    null.ok = TRUE,
-    add = errorMessage
+    studyStartDate, any.missing = FALSE, len = 1, null.ok = TRUE
   )
   checkmate::assertDate(
-    studyEndDate,
-    any.missing = FALSE,
-    len = 1,
-    null.ok = TRUE,
-    add = errorMessage
+    studyEndDate, any.missing = FALSE, len = 1, null.ok = TRUE
   )
-  checkmate::assertChoice(
-    summariseMode,
-    choices = c("AllEras", "FirstEra", "FixedTime"),
-    add = errorMessage
-  )
+  checkmate::assertChoice(summariseMode, c("AllEras", "FirstEra", "FixedTime"))
   if (summariseMode == "FixedTime") {
-    checkmate::assertCount(
-      fixedTime,
-      positive = TRUE,
-      add = errorMessage
-    )
+    checkmate::assertIntegerish(fixedTime, lower = 0, len = 1)
   }
-  checkmate::assertCount(
-    daysPriorHistory,
-    null.ok = TRUE,
-    add = errorMessage
-  )
-  checkmate::assertCount(
-    gapEra,
-    add = errorMessage
-  )
+  checkmate::assertIntegerish(daysPriorHistory, lower = 0, len = 1)
+  checkmate::assertIntegerish(gapEra, lower = 0, len = 1)
+  checkmate::assertIntegerish(priorUseWashout, lower = 0, len = 1)
   if (is.character(imputeDuration)) {
     checkmate::assertChoice(
-      imputeDuration,
-      choices = c("eliminate", "median", "mean", "quantile25", "quantile75"),
-      add = errorMessage
+      imputeDuration, c("eliminate", "median", "mean", "quantile25", "quantile75")
     )
   } else {
     checkmate::assertCount(
-      imputeDuration,
-      positive = TRUE,
-      add = errorMessage
+      imputeDuration, positive = TRUE
     )
   }
-  checkmate::assertNumeric(
-    durationRange,
-    len = 2,
-    null.ok = TRUE,
-    add = errorMessage
-  )
-  checkmate::reportAssertions(collection = errorMessage)
-
-  if (is.null(durationRange)) {
-    durationRange <- c(NA, NA)
-  }
+  checkmate::assertNumeric(durationRange, len = 2)
 
   # second round of initial checks
   checkmate::assertTRUE(
