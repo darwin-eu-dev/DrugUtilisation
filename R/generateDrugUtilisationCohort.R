@@ -67,8 +67,7 @@ generateDrugUtilisationCohort <- function(cdm,
                                           conceptSetList,
                                           name,
                                           temporary = TRUE,
-                                          studyStartDate = NULL,
-                                          studyEndDate = NULL,
+                                          studyPeriod = c(NA, NA),
                                           summariseMode = "AllEras",
                                           fixedTime = 365,
                                           daysPriorHistory = 0,
@@ -76,144 +75,23 @@ generateDrugUtilisationCohort <- function(cdm,
                                           priorUseWashout = 0,
                                           imputeDuration = "eliminate",
                                           durationRange = c(1, Inf)) {
-  checkCdm(cdm, c("drug_exposure", "observation_period", "person"))
+  checkCdm(
+    cdm, c("drug_exposure", "observation_period", "person", "drug_strength")
+  )
   checkConceptSetList(conceptSetList)
   checkCohortName(name, names(cdm))
   checkmate::assertLogical(temporary, any.missing = FALSE, len = 1)
-  checkmate::assertDate(
-    studyStartDate, any.missing = FALSE, len = 1, null.ok = TRUE
-  )
-  checkmate::assertDate(
-    studyEndDate, any.missing = FALSE, len = 1, null.ok = TRUE
-  )
-  checkmate::assertChoice(summariseMode, c("AllEras", "FirstEra", "FixedTime"))
-  if (summariseMode == "FixedTime") {
-    checkmate::assertIntegerish(fixedTime, lower = 0, len = 1)
-  }
+  checkStudyPeriod(studyPeriod)
+  checkSummariseMode(summariseMode, fixedTime)
   checkmate::assertIntegerish(daysPriorHistory, lower = 0, len = 1)
   checkmate::assertIntegerish(gapEra, lower = 0, len = 1)
   checkmate::assertIntegerish(priorUseWashout, lower = 0, len = 1)
-  if (is.character(imputeDuration)) {
-    checkmate::assertChoice(
-      imputeDuration, c("eliminate", "median", "mean", "quantile25", "quantile75")
-    )
-  } else {
-    checkmate::assertCount(
-      imputeDuration, positive = TRUE
-    )
-  }
-  checkmate::assertNumeric(durationRange, len = 2)
+  checkImputeDuration(imputeDuration)
+  checkRange(durationRange)
 
-  # second round of initial checks
-  checkmate::assertTRUE(
-    all(
-      c("drug_strength", "drug_exposure", "observation_period") %in% names(cdm)
-    ),
-    add = errorMessage
-  )
-  if (!is.null(conceptSetPath)) {
-    if (!file.exists(conceptSetPath)) {
-      stop(glue::glue("Invalid concept set path {conceptSetPath}"))
-    } else {
-      if (dir.exists(conceptSetPath)) {
-        conceptSets <- dplyr::tibble(concept_set_path = list.files(
-          path = conceptSetPath,
-          full.names = TRUE
-        ))
-      } else {
-        conceptSets <- dplyr::tibble(concept_set_path = .env$conceptSetPath)
-      }
-      conceptSets <- conceptSets %>%
-        dplyr::filter(tools::file_ext(.data$concept_set_path) == "json") %>%
-        dplyr::mutate(
-          concept_set_name =
-            tools::file_path_sans_ext(basename(.data$concept_set_path))
-        ) %>%
-        dplyr::mutate(cohort_definition_id = dplyr::row_number())
-      if (conceptSets %>% nrow() == 0) {
-        stop(glue::glue("No 'json' file found in {conceptSetPath}"))
-      }
-    }
-  }
-  if (sum(is.na(durationRange)) == 0) {
-    checkmate::assertTRUE(
-      durationRange[1] <= durationRange[2],
-      add = errorMessage
-    )
-  }
-
-  # checks for tableprefix
-  checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
-  )
-
-  checkmate::reportAssertions(collection = errorMessage)
-
-  if (!is.null(conceptSetPath)) {
-    tryCatch(
-      expr = conceptList <- readConceptSets(conceptSets),
-      error = function(e) {
-        stop("The json file is not a properly formated OMOP concept set.")
-      }
-    )
-
-    conceptList <- conceptList %>%
-      dplyr::filter(.data$include_descendants == FALSE) %>%
-      dplyr::union(
-        cdm[["concept_ancestor"]] %>%
-          dplyr::select(
-            "concept_id" = "ancestor_concept_id",
-            "descendant_concept_id"
-          ) %>%
-          dplyr::inner_join(
-            conceptList %>%
-              dplyr::filter(.data$include_descendants == TRUE),
-            copy = TRUE,
-            by = "concept_id"
-          ) %>%
-          dplyr::select(-"concept_id") %>%
-          dplyr::rename("concept_id" = "descendant_concept_id") %>%
-          dplyr::collect()
-      ) %>%
-      dplyr::select(-"include_descendants") %>%
-      dplyr::rename("drug_concept_id" = "concept_id")
-    # eliminate the ones that is_excluded = TRUE
-    conceptList <- conceptList %>%
-      dplyr::filter(.data$is_excluded == FALSE) %>%
-      dplyr::select("cohort_definition_id", "drug_concept_id") %>%
-      dplyr::anti_join(
-        conceptList %>%
-          dplyr::filter(.data$is_excluded == TRUE),
-        by = "drug_concept_id"
-      )
-    if (!is.null(ingredientConceptId)) {
-      conceptList <- cdm[["drug_strength"]] %>%
-        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-        dplyr::select("drug_concept_id") %>%
-        dplyr::collect() %>%
-        dplyr::inner_join(conceptList, by = "drug_concept_id")
-    }
-    conceptSets <- conceptSets %>%
-      dplyr::select( "cohort_definition_id", "cohort_name" = "concept_set_name")
-  } else {
-    conceptSets <- dplyr::tibble(
-      cohort_definition_id = 1,
-      cohort_name = paste0("ingredient_concept_id_", ingredientConceptId)
-    )
-    conceptList <- cdm[["drug_strength"]] %>%
-      dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-      dplyr::select("drug_concept_id") %>%
-      dplyr::collect() %>%
-      dplyr::mutate(cohort_definition_id = 1)
-  }
-
-  if (nrow(conceptList) == 0) {
-    stop("No concepts were not found in the vocabulary using this settings")
-  }
-
-  # get sql dialect of the database
-  dialect <- CDMConnector::dbms(attr(cdm, "dbcon"))
-  # get the name of the info table
+  conceptList <- purrr::map(conceptSetList, dplyr::as_tibble) %>%
+    purrr::map(dplyr::mutate(cohort_name = names(.)))
+  cohortSet <-
 
   # split conceptList in small bits smaller than 500k to avoid problems with
   # redshift
