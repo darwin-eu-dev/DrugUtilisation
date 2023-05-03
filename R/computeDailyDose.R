@@ -92,7 +92,7 @@ addDailyDose <- function(table,
               .data$numerator_value * 24
           )
         ) %>%
-        dplyr::mutate(daily_dose = dplyr::if_else(daily_dose <= 0, NA, daily_dose)) %>%
+        dplyr::mutate(daily_dose = dplyr::if_else(.data$daily_dose <= 0, NA, .data$daily_dose)) %>%
         # dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
         dplyr::select(
           "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id",
@@ -120,9 +120,9 @@ addDailyDose <- function(table,
 addPattern <- function(table) {
   # Join table with pattern table in DUS, add "pattern_id" and "unit" columns
   table <- table %>%
-    dplyr::mutate(amount = if_else(is.na(amount_value), NA, "numeric")) %>%
-    dplyr::mutate(numerator = if_else(is.na(numerator_value), NA, "numeric")) %>%
-    dplyr::mutate(denominator = if_else(is.na(denominator_value), NA, "numeric")) %>%
+    dplyr::mutate(amount = ifelse(is.na(.data$amount_value), NA, "numeric")) %>%
+    dplyr::mutate(numerator = ifelse(is.na(.data$numerator_value), NA, "numeric")) %>%
+    dplyr::mutate(denominator = ifelse(is.na(.data$denominator_value), NA, "numeric")) %>%
     dplyr::left_join(patternfile, by = c(
     "amount", "amount_unit_concept_id",
     "numerator", "numerator_unit_concept_id",
@@ -131,17 +131,17 @@ addPattern <- function(table) {
   # Make standardised values
   table <- table %>%
     dplyr::mutate(amount_value = ifelse(
-      amount_unit_concept_id == 9655,
-      amount_value / 1000, amount_value)) %>%
+      .data$amount_unit_concept_id == 9655,
+      .data$amount_value / 1000, .data$amount_value)) %>%
     dplyr::mutate(numerator_value = ifelse(
-      numerator_unit_concept_id == 9655,
-      numerator_value / 1000, numerator_value)) %>%
+      .data$numerator_unit_concept_id == 9655,
+      .data$numerator_value / 1000, .data$numerator_value)) %>%
     dplyr::mutate(denominator_value = ifelse(
-      denominator_unit_concept_id == 8519,
-      denominator_value * 1000, denominator_value)) %>%
+      .data$denominator_unit_concept_id == 8519,
+      .data$denominator_value * 1000, .data$denominator_value)) %>%
     dplyr::mutate(numerator_value = ifelse(
-      numerator_unit_concept_id == 9439,
-      numerator_value / 1000000, numerator_value)) %>%
+      .data$numerator_unit_concept_id == 9439,
+      .data$numerator_value / 1000000, .data$numerator_value)) %>%
     dplyr::compute()
 
   return(table)

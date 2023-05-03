@@ -5,7 +5,7 @@ test_that("test inputs", {
   expect_error(readConceptList(cdm = cdm, path = 1))
   expect_error(readConceptList(cdm = cdm, path = "not/a/path"))
   x <- readConceptList(
-    cdm = cdm, path =  system.file(package = "DrugUtilisation", "concepts")
+    cdm = cdm, path =  system.file(package = "DrugUtilisation", "concepts2")
   )
   expect_true(typeof(x) == "list")
   expect_true(all(names(x) %in% c("concept1", "concept2", "concept3")))
@@ -19,7 +19,7 @@ test_that("functionality with mock concepts", {
   )
   cdm <-   cdm <- mockDrugUtilisation(seed = 1, concept_ancestor = conceptancestor)
   x <- readConceptList(
-    cdm = cdm, path =  system.file(package = "DrugUtilisation", "concepts")
+    cdm = cdm, path =  system.file(package = "DrugUtilisation", "concepts2")
   )
   expect_true(all(names(x) %in% c("concept1", "concept2", "concept3")))
   expect_true(all(x[["concept1"]] == c(1,3)))

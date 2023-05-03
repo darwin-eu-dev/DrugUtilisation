@@ -74,7 +74,7 @@ comparePatternsTable <- function(pattern_tibble, addId = TRUE) {
 
   if(addId) {
     # Add pattern ids
-    pattern_tibble <- pattern_tibble %>% left_join(
+    pattern_tibble <- pattern_tibble %>% dplyr::left_join(
       patternfile %>%
         dplyr::select("amount", "amount_unit", "numerator", "numerator_unit", "denominator", "denominator_unit", "pattern_id"),
       by = c("amount", "amount_unit", "numerator", "numerator_unit", "denominator", "denominator_unit")

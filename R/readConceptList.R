@@ -33,7 +33,7 @@ readConceptList <- function(path, cdm) {
   # first part: read jsons
   if (!is.null(path)) {
     tryCatch(
-      expr = conceptList <- readConceptSets(conceptSets),
+      expr = conceptList <- readConceptSet(conceptSets),
       error = function(e) {
         stop("The json file is not a properly formated OMOP concept set.")
       }

@@ -5,7 +5,7 @@
         "CONCEPT_ID": 2
       },
       "isExcluded": false,
-      "includeDescendants": false,
+      "includeDescendants": true,
       "includeMapped": false
     }
   ]

@@ -53,7 +53,7 @@ formatConceptList <- function(cdm, conceptList) {
     )
   conceptFinalList <- list()
   for(n in conceptList$cohort_name %>% unique()) {
-    conceptFinalList[[n]] <- conceptList %>% dplyr::filter(cohort_name == n) %>% dplyr::select(drug_concept_id) %>% dplyr::pull()
+    conceptFinalList[[n]] <- conceptList %>% dplyr::filter(.data$cohort_name == n) %>% dplyr::select("drug_concept_id") %>% dplyr::pull()
   }
   return(conceptFinalList)
   }

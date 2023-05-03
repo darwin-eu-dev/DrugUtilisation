@@ -20,7 +20,7 @@
 #'
 #' @return raw table with all the concept_ids read, and their information
 #' @noRd
-readConceptSets <- function(conceptSets) {
+readConceptSet <- function(conceptSets) {
   names <- c("CONCEPT_CLASS_ID",
              "CONCEPT_CODE",
              "CONCEPT_ID",
@@ -50,9 +50,9 @@ readConceptSets <- function(conceptSets) {
     # Add columns missing from the read file with default values
     conceptSet[setdiff(names, names(conceptSet))] <- as.character(NA)
     conceptSet <- conceptSet %>%
-      dplyr::mutate(isExcluded = ifelse(is.na(isExcluded), FALSE, isExcluded),
-                    includeMapped = ifelse(is.na(includeMapped), FALSE, includeMapped),
-                    includeDescendants = ifelse(is.na(includeDescendants), FALSE, includeDescendants),)
+      dplyr::mutate(isExcluded = ifelse(is.na(.data$isExcluded), FALSE, .data$isExcluded),
+                    includeMapped = ifelse(is.na(.data$includeMapped), FALSE, .data$includeMapped),
+                    includeDescendants = ifelse(is.na(.data$includeDescendants), FALSE, .data$includeDescendants),)
 
     if (k == 1) {
       conceptList <- conceptSet

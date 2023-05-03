@@ -1,73 +1,3 @@
-# Copyright 2022 DARWIN EU (C)
-#
-# This file is part of DrugUtilisation
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-#' It instantiates the cohorts and their supplementary information
-#' (cohorts_info) for the DUS study
-#'
-#' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
-#' must contain at least 'drug_exposure', 'drug_strength' and
-#' observation_period' tables. The 'cdm' object must contain the
-#' 'write_schema' as attribute and  the user should have permission to write on
-#' it. It is a compulsory input, no default value is provided.
-#' @param ingredientConceptId Ingredient OMOP concept that we are interested for
-#' the study. It is a compulsory input, no default value is provided.
-#' @param conceptSetPath Path to a folder with the concept sets of interest.
-#' Concept sets must be stored in OMOP .json files. If NULL all the descendants
-#' of ingredient concept id will be used. By default: NULL.
-#' @param studyStartDate Minimum date where the incident exposed eras should
-#' start to be considered. Only incident exposed eras larger than StudyStartDate
-#' are allowed. If it is NULL no restriction is applied. By default: NULL.
-#' @param studyEndDate Maximum date where the incident exposed eras should
-#' start to be considered. Only incident exposed eras before StudyEndDate
-#' are allowed. If it is NULL no restriction is applied. By default: NULL.
-#' @param summariseMode Choice on how to summarize the exposures. There are
-#' three options:
-#' "FixedTime" each individual is followed the exact same number of days
-#' specified in 'fixedTime' argument.
-#' "AllEras" we summarize the output will be a summary of the exposed eras of
-#' each individual. Each individual can contribute multiple times.
-#' "FirstEra" we only consider the first observable era of each individual. In
-#' this case each individual can not contribute with multiple rows.
-#' By default: "AllEras".
-#' @param fixedTime Time period after first exposure where we summarize the
-#' ingredient of interest. Argument only considered if 'summariseMode' =
-#' "FixedTime". No default value is provided.
-#' @param daysPriorHistory Minimum number of days of prior history
-#' (observation time) required for the incident eras to be considered. By
-#' default: 0, meaning it has to be in observation_period table.
-#' When Null, we do not check if in observation_period table.
-#' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era. By default: 180.
-#' @param priorUseWashout Prior days without exposure. By default: NULL.
-#' @param imputeDuration Whether/how the duration should be imputed
-#' "eliminate", "median", "mean", "quantile25", "quantile75".
-#' . By default: eliminate
-#' @param durationRange Range between the duration must be comprised. It should
-#' be a numeric vector of length two, with no NAs and the first value should be
-#' equal or smaller than the second one. It is only required if imputeDuration
-#' = TRUE. If NULL no restrictions are applied. By default: NULL.
-#'
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
-#'
-#' @return The function returns the 'cdm' object with the created tables as
-#' references of the object.
-#' @export
-#'
-#' @examples
 generateDrugUtilisationCohort <- function(cdm,
                                           ingredientConceptId = NULL,
                                           conceptSetPath = NULL,
@@ -211,7 +141,7 @@ generateDrugUtilisationCohort <- function(cdm,
 
   if (!is.null(conceptSetPath)) {
     tryCatch(
-      expr = conceptList <- readConceptSetshere(conceptSets),
+      expr = conceptList <- readConceptSets(conceptSets),
       error = function(e) {
         stop("The json file is not a properly formated OMOP concept set.")
       }
@@ -618,8 +548,8 @@ imputeVariable <- function(x,
   # identify (as impute = 1)
   x <- x %>%
     dplyr::mutate(impute = dplyr::if_else(is.na(.data$variable),
-      1,
-      0
+                                          1,
+                                          0
     ))
 
   # identify (as impute = 1) the values smaller than lower bound
@@ -629,8 +559,8 @@ imputeVariable <- function(x,
         is.na(.data$variable),
         1,
         dplyr::if_else(.data$variable < .env$lowerBound,
-          1,
-          .data$impute
+                       1,
+                       .data$impute
         )
       ))
   }
@@ -641,8 +571,8 @@ imputeVariable <- function(x,
         is.na(.data$variable),
         1,
         dplyr::if_else(.data$variable > .env$upperBound,
-          1,
-          .data$impute
+                       1,
+                       .data$impute
         )
       ))
   }
@@ -713,8 +643,8 @@ imputeVariable <- function(x,
     x <- x %>%
       dplyr::rename("imputeValue" = .env$imputeValueName) %>%
       dplyr::mutate(variable = dplyr::if_else(.data$impute == 1,
-        .data$imputeValue,
-        .data$variable
+                                              .data$imputeValue,
+                                              .data$variable
       ))
   }
 
@@ -751,21 +681,7 @@ addattritionLine <- function(cohort, reason) {
 #' cohort_definition_id and drug_concept_id with the list of drug_concept_id
 #' included in each concept set
 #' @noRd
-readConceptSetshere <- function(conceptSets) {
-  names <- c("CONCEPT_CLASS_ID",
-             "CONCEPT_CODE",
-             "CONCEPT_ID",
-             "CONCEPT_NAME",
-             "DOMAIN_ID",
-             "INVALID_REASON",
-             "INVALID_REASON_CAPTION",
-             "STANDARD_CONCEPT",
-             "STANDARD_CONCEPT_CAPTION",
-             "VOCABULARY_ID",
-             "isExcluded",
-             "includeMapped",
-             "includeDescendants")
-
+readConceptSets <- function(conceptSets) {
   for (k in 1:nrow(conceptSets)) {
     conceptSetName <- conceptSets$concept_set_name[k]
     conceptSet <- RJSONIO::fromJSON(conceptSets$concept_set_path[k])
@@ -778,13 +694,6 @@ readConceptSetshere <- function(conceptSets) {
       dplyr::mutate(
         cohort_definition_id = .env$conceptSets$cohort_definition_id[k]
       )
-    # Add columns missing from the read file with default values
-    conceptSet[setdiff(names, names(conceptSet))] <- as.character(NA)
-    conceptSet <- conceptSet %>%
-      dplyr::mutate(isExcluded = ifelse(is.na(isExcluded), FALSE, isExcluded),
-                    includeMapped = ifelse(is.na(includeMapped), FALSE, includeMapped),
-                    includeDescendants = ifelse(is.na(includeDescendants), FALSE, includeDescendants),)
-
     if (k == 1) {
       conceptList <- conceptSet
     } else {

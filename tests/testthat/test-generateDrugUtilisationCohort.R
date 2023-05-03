@@ -66,14 +66,14 @@ test_that("basic functionality drug_conceptId", {
     daysPriorHistory = NULL
   )
   expect_true(
-      out_put_1 %>%
-        dplyr::summarise(max(cohort_start_date, na.rm = TRUE)) %>%
-        dplyr::pull() ==
-        cdm$drug_exposure %>%
-        dplyr::filter(drug_concept_id == 1) %>%
-        dplyr::summarise(max(drug_exposure_start_date, na.rm = TRUE)) %>%
-        dplyr::pull()
-    )
+    out_put_1 %>%
+      dplyr::summarise(max(cohort_start_date, na.rm = TRUE)) %>%
+      dplyr::pull() ==
+      cdm$drug_exposure %>%
+      dplyr::filter(drug_concept_id == 1) %>%
+      dplyr::summarise(max(drug_exposure_start_date, na.rm = TRUE)) %>%
+      dplyr::pull()
+  )
   expect_true(
     out_put_1 %>%
       dplyr::summarise(min(cohort_start_date, na.rm = TRUE)) %>%
