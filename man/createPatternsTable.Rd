@@ -12,7 +12,7 @@ must contain 'drug_strength' and 'concept' tables.}
 }
 \value{
 The function creates a tibble with the different patterns found in
-the table, plus a column of potentialy valid and unvalid combinations.
+the table, plus a column of potentially valid and invalid combinations.
 }
 \description{
 Function to create a tibble with the patterns from current drug strength table
