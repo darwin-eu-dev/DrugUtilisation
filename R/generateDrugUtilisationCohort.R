@@ -89,6 +89,8 @@ generateDrugUtilisationCohort <- function(cdm,
   checkImputeDuration(imputeDuration)
   checkRange(daysExposedRange)
 
+  if (is.null(priorUseWashout)) {priorUseWashout <- NA}
+
   # attr(cdm, "temporary") <- temporary
   # compute <- function(x, cdm) {
   #   CDMConnector::computeQuery(
@@ -103,12 +105,11 @@ generateDrugUtilisationCohort <- function(cdm,
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
   cohort <- subsetTable(cdm, conceptList, "drug_exposure")
-
   if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
-    cli::cli_abort(
-      "No record found with the current specifications in drug_exposure table"
-    )
+    cli::cli_abort("No record found with the current specifications in
+    drug_exposure table")
   }
+  attrition <- attritionLine(NULL, cohort, "Initial Exposures")
 
   # get cohort set
   cohortSet <- attr(cohort, "cohortSet") %>%
@@ -125,67 +126,30 @@ generateDrugUtilisationCohort <- function(cdm,
       days_exposed_range_max = .env$daysExposedRange[2]
     )
 
-  attrition <- attritionLine(NULL, cohort, "Initial Exposures")
-
   # correct days exposed
   cohort <- correctDaysExposed(cohort, cdm)
-  attrition <- attritionLine(attrition, cohort, "Days exposed imputation")
+  reason <- paste(
+    "Days exposed imputation; affected rows:", attr(cohort, "numberImputations")
+  )
+  attrition <- attritionLine(attrition, cohort, reason)
 
+  cohort <- unionCohort(cohort, gapEra)
+  attrition <- attritionLine(attrition, cohort, "Join eras")
 
-  cohort <- cohort %>%
-    dplyr::select(
-      "cohort_definition_id",
-      "subject_id",
-      "date_event" = "drug_exposure_start_date"
-    ) %>%
-    dplyr::mutate(date_id = -1) %>%
-    dplyr::union_all(
-      cohort %>%
-        dplyr::mutate(
-          date_event = as.Date(!!CDMConnector::dateadd(
-            date = "drug_exposure_end_date",
-            number = gapEra
-          )),
-          date_id = 1
-        ) %>%
-        dplyr::select(
-          "cohort_definition_id", "subject_id", "date_event", "date_id"
-        )
-    ) %>%
-    dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
-    dbplyr::window_order(.data$date_event, .data$date_id) %>%
-    dplyr::mutate(cum_id = cumsum(.data$date_id)) %>%
-    dplyr::filter(
-      .data$cum_id == 0 || (.data$cum_id == -1 && .data$date_id == -1)
-    ) %>%
-    dplyr::mutate(
-      name = dplyr::if_else(
-        .data$date_id == -1,
-        "cohort_start_date",
-        "cohort_end_date"
-      ),
-      era_id = dplyr::if_else(
-        .data$date_id == -1,
-        1,
-        0
-      )
-    ) %>%
-    dplyr::mutate(era_id = cumsum(as.numeric(.data$era_id))) %>%
-    dplyr::ungroup() %>%
-    dbplyr::window_order() %>%
-    dplyr::select(
-      "cohort_definition_id", "subject_id", "era_id", "name", "date_event"
-    ) %>%
-    tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
-    dplyr::mutate(cohort_end_date = as.Date(!!CDMConnector::dateadd(
-      date = "cohort_end_date",
-      number = -gapEra
-    ))) %>%
-    dplyr::compute()
+  if (!is.na(priorUseWashout)) {
+    cohort <- cohort %>%
+      PatientProfiles::addInObservation(cdm) %>%
+      dplyr::filter(.data$in_observation == 1) %>%
+      dplyr::select(-"in_observation") %>%
+      compute()
+    attrition <- attritionLine(attrition, cohort, paste("In observation"))
 
-  attrition <- attrition %>%
-    dplyr::union_all(addattritionLine(cohort, "Eras"))
+    cohort <- applyPriorUseWashout(cohort, priorUseWashout)
+    attrition <- attritionLine(attrition, cohort, paste("priorUseWashout applied"))
+  }
 
+  cohort <- applyPriorUseWashout(cohort, priorUseWashout)
+  attrition <- attritionLine(attrition, cohort, paste("priorUseWashout applied"))
 
   if (!is.null(priorUseWashout)) {
     cohort <- cohort %>%
@@ -374,114 +338,59 @@ generateDrugUtilisationCohort <- function(cdm,
 
 #' Impute or eliminate values under a certain conditions
 #' @noRd
-imputeVariable <- function(x,
-                           column,
-                           impute,
-                           range,
-                           imputeRound = FALSE) {
-  # identify (as impute = 1)
+imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
+  # identify NA
   x <- x %>%
     dplyr::mutate(impute = dplyr::if_else(is.na(.data[[column]]), 1, 0))
 
-  # identify (as impute = 1) the values smaller than lower bound
+  # identify < range[1]
   if (!is.na(range[1])) {
     x <- x %>%
       dplyr::mutate(impute = dplyr::if_else(
-        .data$impute == 0,
-        dplyr::if_else(.data[column] < !!range[1], 1, 0),
-        1
+        .data$impute == 0, dplyr::if_else(.data[column] < !!range[1], 1, 0), 1
       ))
   }
-  # identify (as impute = 1) the values greater than upper bound
+  # identify > range[2]
   if (!is.na(range[2])) {
     x <- x %>%
       dplyr::mutate(impute = dplyr::if_else(
-        .data$impute == 0,
-        dplyr::if_else(.data[column] > !!range[2], 1, 0),
-        1
+        .data$impute == 0, dplyr::if_else(.data[column] > !!range[2], 1, 0), 1
       ))
   }
-  # if impute is false then all values with impute = 1 are not considered
-  if (impute == "eliminate") {
-    x <- x %>%
-      dplyr::filter(.data$impute == 0)
-  }
-
-  if (impute == "median") {
-    x <- x %>% dplyr::mutate(
-      !!column := dplyr::if_else(
-        .data$impute == 1,
-        stats::median(
-        x %>% dplyr::filter(.data$impute == 0) %>%
-          dplyr::pull("variable")
-      ),
-      .data$variable
-    ))
-  }
-
-
-  if (impute == "mean") {
-    x <- x %>% dplyr::mutate(variable = dplyr::if_else(
-      .data$impute == 1,
-      base::mean(
-        x %>% dplyr::filter(.data$impute == 0) %>%
-          dplyr::pull("variable")
-      ),
-      .data$variable
-    ))
-  }
-  # %>%
-  # dplyr::rename(!!imputeValueName := "imputeValue")
-
-  if (impute == "quantile25") {
-    x <- x %>% dplyr::mutate(variable = dplyr::if_else(
-      .data$impute == 1,
-      as.numeric(
-        stats::quantile(
-          x %>% dplyr::filter(.data$impute == 0) %>%
-            dplyr::pull("variable"),
-          0.25,
-          na.rm = TRUE
+  numberImputations <- x %>%
+    dplyr::filter(.data$impute == 1) %>%
+    dplyr::summarise(n = as.numeric(dplyr::n())) %>%
+    dplyr::pull()
+  if (numberImputations > 0) {
+    # if impute is false then all values with impute = 1 are not considered
+    if (impute == "eliminate") {
+      x <- x %>%
+        dplyr::filter(.data$impute == 0)
+    } else {
+      if (is.character(impute)) {
+        values <- x %>%
+          dplyr::filter(.data$impute == 0) %>%
+          dplyr::pull(dplyr::all_of(column))
+        impute <- switch(
+          impute,
+          "median" = stats::median(values),
+          "mean" = mean(values),
+          "quantile25" = stats::quantile(values, 0.25),
+          "quantile75" = stats::quantile(values, 0.75),
         )
-      ),
-      .data$variable
-    ))
+        if (imputeRound) {
+          impute <- round(impute)
+        }
+      }
+      x <- x %>%
+        dplyr::mutate(!!column := dplyr::if_else(
+          .data$impute == 1, .env$impute, .data[[column]]
+        ))
+    }
   }
-
-
-  if (impute == "quantile75") {
-    x <- x %>% dplyr::mutate(variable = dplyr::if_else(
-      .data$impute == 1,
-      as.numeric(
-        stats::quantile(
-          x %>% dplyr::filter(.data$impute == 0) %>%
-            dplyr::pull("variable"),
-          0.75,
-          na.rm = TRUE
-        )
-      ),
-      .data$variable
-    ))
-  }
-
-
-  if (is.numeric(impute)) {
-    x <- x %>%
-      dplyr::rename("imputeValue" = .env$imputeValueName) %>%
-      dplyr::mutate(variable = dplyr::if_else(.data$impute == 1,
-        .data$imputeValue,
-        .data$variable
-      ))
-  }
-
-  if (imputeValueName == "imputeDuration") {
-    x <- x %>% dplyr::mutate(variable = floor(.data$variable))
-  }
-
   x <- x %>%
-    dplyr::select(-"impute") %>%
-    dplyr::rename(!!variableName := "variable")
-
+    dplyr::select(-"impute")
+  attr(x, "numberImputations") <- numberImputations
   return(x)
 }
 
@@ -655,5 +564,53 @@ correctDaysExposed <- function(x, daysExposedRange, cdm) {
   return(x)
 }
 
-
+#' @noRd
+unionCohort <- function(x, gapEra) {
+  x %>%
+    dplyr::select(
+      "cohort_definition_id",
+      "subject_id",
+      "date_event" = "cohort_start_date"
+    ) %>%
+    dplyr::mutate(date_id = -1) %>%
+    dplyr::union_all(
+      cohort %>%
+        dplyr::mutate(
+          date_event = as.Date(!!CDMConnector::dateadd(
+            date = "cohort_end_date",
+            number = gapEra
+          )),
+          date_id = 1
+        ) %>%
+        dplyr::select(
+          "cohort_definition_id", "subject_id", "date_event", "date_id"
+        )
+    ) %>%
+    dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
+    dbplyr::window_order(.data$date_event, .data$date_id) %>%
+    dplyr::mutate(cum_id = cumsum(.data$date_id)) %>%
+    dplyr::filter(
+      .data$cum_id == 0 || (.data$cum_id == -1 && .data$date_id == -1)
+    ) %>%
+    dplyr::mutate(
+      name = dplyr::if_else(
+        .data$date_id == -1, "cohort_start_date", "cohort_end_date"
+      ),
+      era_id = dplyr::if_else(
+        .data$date_id == -1, 1, 0
+      )
+    ) %>%
+    dplyr::mutate(era_id = cumsum(as.numeric(.data$era_id))) %>%
+    dplyr::ungroup() %>%
+    dbplyr::window_order() %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "era_id", "name", "date_event"
+    ) %>%
+    tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
+    dplyr::mutate(cohort_end_date = as.Date(!!CDMConnector::dateadd(
+      date = "cohort_end_date",
+      number = -gapEra
+    ))) %>%
+    dplyr::computeQuery()
+}
 
