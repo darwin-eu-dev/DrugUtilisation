@@ -25,9 +25,8 @@
 #' @examples
 #'
 readConceptList <- function(path, cdm) {
-  # check path
+  # initial checks
   conceptSets <- checkPath(path)
-  # check cdm
   checkCdm(cdm)
 
   # first part: read jsons

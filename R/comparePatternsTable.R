@@ -34,31 +34,18 @@
 
 comparePatternsTable <- function(pattern_tibble, addId = TRUE) {
   # Check errors in input
-  errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assert_tibble(
-    pattern_tibble,
-    add = errorMessage
-  )
-
-  checkmate::assert_logical(addId, len = 1)
-
-  checkmate::reportAssertions(collection = errorMessage)
-
-  # Should add pattern_validity throughout
-  checkColnames <- all(c("amount", "amount_unit", "numerator", "numerator_unit", "denominator", "denominator_unit") %in% colnames(pattern_tibble))
-  if(!checkColnames) {
-    message(" 'amount', 'amount_unit', 'numerator', 'numerator_unit', 'denominator' and 'denominator_unit' are not all columns of pattern_tibble" )
-  }
+  checkPattern(pattern_tibble)
+  if(!(addId %in% c(TRUE, FALSE)) || length(addId) != 1) {cli::cli_abort("{addId} is not a boolean variable of length 1")}
 
   # Start code
-
   # First check patterns
   different_patterns <- patternfile %>%
     dplyr::mutate(tibble = "DU") %>%
     dplyr::select("amount", "amount_unit", "numerator", "numerator_unit", "denominator", "denominator_unit") %>%
     dplyr::anti_join(pattern_tibble %>%
                        dplyr::mutate(tibble = "new") %>%
-                       dplyr::select("amount", "amount_unit", "numerator", "numerator_unit", "denominator", "denominator_unit"))
+                       dplyr::select("amount", "amount_unit", "numerator", "numerator_unit", "denominator", "denominator_unit"),
+                     by = c("amount", "amount_unit", "numerator", "numerator_unit", "denominator", "denominator_unit"))
 
   # Then check number concepts and number ingredients
   different_numbers <- patternfile %>%
@@ -66,7 +53,8 @@ comparePatternsTable <- function(pattern_tibble, addId = TRUE) {
     dplyr::select("number_concepts", "number_ingredients") %>%
     dplyr::anti_join(pattern_tibble %>%
                        dplyr::mutate(tibble = "new") %>%
-                       dplyr::select("number_concepts", "number_ingredients"))
+                       dplyr::select("number_concepts", "number_ingredients"),
+                     by = c("number_concepts", "number_ingredients"))
 
   list_output <- list()
   list_output[["diff_patterns"]] <- different_patterns

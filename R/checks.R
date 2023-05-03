@@ -49,3 +49,15 @@ checkCdm <- function(cdm, tables = NULL) {
   }
   invisible(NULL)
 }
+
+#' @noRd
+checkPatternTibble <- function(x) {
+  if (!isTRUE(inherits(x, "tbl_dbi"))) {
+    cli::cli_abort("x is not a valid table")
+  }
+  checkColnames <- all(c("amount", "amount_unit", "numerator", "numerator_unit", "denominator", "denominator_unit") %in% colnames(pattern_tibble))
+  if(!checkColnames) {
+    cli::cli_abort(" 'amount', 'amount_unit', 'numerator', 'numerator_unit', 'denominator' and 'denominator_unit' are not all columns of {x}")
+  }
+  invisible(NULL)
+}

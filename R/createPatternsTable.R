@@ -20,20 +20,13 @@
 #' must contain 'drug_strength' and 'concept' tables.
 #'
 #' @return The function creates a tibble with the different patterns found in
-#' the table, plus a column of potentialy valid and unvalid combinations.
+#' the table, plus a column of potentially valid and invalid combinations.
 #' @export
 #'
 #' @examples
 createPatternsTable <- function(cdm) {
   # Check errors in input
-
-  checkCdm(cdm)
-
-  if(!(all(c("drug_strength", "concept") %in% names(cdm)))) {
-    cli::cli_abort(paste0(
-      "cdm does not have 'drug_strength' and 'concept' tables"
-    ))
-  }
+  checkCdm(cdm, tables = c("drug_strength", "concept"))
 
   # Start code
   amount_unit_db <- cdm$concept %>%
