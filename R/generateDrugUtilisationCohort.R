@@ -67,14 +67,14 @@ generateDrugUtilisationCohort <- function(cdm,
                                           conceptSetList,
                                           name,
                                           temporary = TRUE,
-                                          studyPeriod = c(NA, NA),
+                                          studyPeriod = NULL,
                                           summariseMode = "AllEras",
                                           fixedTime = 365,
                                           daysPriorHistory = 0,
                                           gapEra = 30,
                                           priorUseWashout = 0,
                                           imputeDuration = "eliminate",
-                                          durationRange = c(1, Inf)) {
+                                          daysExposedRange = c(1, Inf)) {
   checkCdm(
     cdm, c("drug_exposure", "observation_period", "person", "drug_strength")
   )
@@ -87,91 +87,49 @@ generateDrugUtilisationCohort <- function(cdm,
   checkmate::assertIntegerish(gapEra, lower = 0, len = 1)
   checkmate::assertIntegerish(priorUseWashout, lower = 0, len = 1)
   checkImputeDuration(imputeDuration)
-  checkRange(durationRange)
+  checkRange(daysExposedRange)
 
-  conceptList <- purrr::map(conceptSetList, dplyr::as_tibble) %>%
-    purrr::map(dplyr::mutate(cohort_name = names(.)))
-  cohortSet <-
-
-  # split conceptList in small bits smaller than 500k to avoid problems with
-  # redshift
-  numberMaxCodes <- 500000
-  numberCodes <- nrow(conceptList)
-  if (numberCodes <= numberMaxCodes) {
-    idStart <- 1
-    idEnd <- numberCodes
-  } else {
-    idStart <- seq(1, numberCodes, by = numberMaxCodes)
-    idEnd <- idStart + numberMaxCodes - 1
-    idEnd[idEnd > numberCodes] <- numberCodes
-  }
+  # attr(cdm, "temporary") <- temporary
+  # compute <- function(x, cdm) {
+  #   CDMConnector::computeQuery(
+  #     x,
+  #     name = paste0(attr(cdm, "write_prefix"), CDMConnector:::uniqueTableName()),
+  #     temporary = attr(cdm, "temporary"),
+  #     schema = attr(cdm, "write_schema"),
+  #     overwrite = TRUE
+  #   )
+  # }
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
-  for (k in 1:length(idStart)) {
-    cohort.k <- cdm[["drug_exposure"]] %>%
-      dplyr::select(
-        "subject_id" = "person_id",
-        "drug_concept_id",
-        "drug_exposure_start_date",
-        "drug_exposure_end_date"
-      ) %>%
-      dplyr::inner_join(
-        conceptList[idStart[k]:idEnd[k],],
-        by = "drug_concept_id",
-        copy = TRUE
-      ) %>%
-      dplyr::compute()
-    if (k == 1) {
-      cohort <- cohort.k
-    } else {
-      cohort <- cohort %>%
-        dplyr::union_all(cohort.k) %>%
-        dplyr::compute()
-    }
-  }
-
+  cohort <- subsetTable(cdm, conceptList, "drug_exposure")
 
   if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
-    stop(
+    cli::cli_abort(
       "No record found with the current specifications in drug_exposure table"
     )
   }
 
-  attrition <- addattritionLine(cohort, "Initial Exposures")
+  # get cohort set
+  cohortSet <- attr(cohort, "cohortSet") %>%
+    dplyr::mutate(
+      study_period_start = .env$studyPeriod[1],
+      study_period_end = .env$studyPeriod[2],
+      summarise_mode = .env$summariseMode,
+      fixed_time = .env$fixedTime,
+      days_prior_history = .env$daysPriorHistory,
+      gap_era = .env$gapEra,
+      prior_use_washout = .env$priorUseWashout,
+      impute_duration = .env$imputeDuration,
+      days_exposed_range_min = .env$daysExposedRange[1],
+      days_exposed_range_max = .env$daysExposedRange[2]
+    )
 
-  # compute the number of days exposed according to:
-  # days_exposed = end - start + 1
-  cohort <- cohort %>%
-    dplyr::mutate(days_exposed = dbplyr::sql(
-      CDMConnector::datediff(
-        start = "drug_exposure_start_date",
-        end = "drug_exposure_end_date"
-      )
-    ) + 1)
+  attrition <- attritionLine(NULL, cohort, "Initial Exposures")
 
-  # impute or eliminate the exposures that duration does not fulfill the
-  # conditions ( <=0; <durationRange[1]; >durationRange[2])
-  cohort <- imputeVariable(
-    x = cohort,
-    variableName = "days_exposed",
-    impute = imputeDuration,
-    lowerBound = durationRange[1],
-    upperBound = durationRange[2],
-    imputeValueName = "imputeDuration"
-  ) %>%
-    dplyr::mutate(days_to_add = as.integer(.data$days_exposed - 1)) %>%
-    dplyr::compute() %>%
-    dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(
-      CDMConnector::dateadd(
-        date = "drug_exposure_start_date",
-        number = "days_to_add"
-      )
-    ))) %>%
-    dplyr::compute()
-
-  attrition <- attrition %>%
-    dplyr::union_all(addattritionLine(cohort, "Imputation"))
+  # correct days exposed
+  cohort <- correctDaysExposed(cohort, cdm)
+  attrition <- attritionLine(attrition, cohort, "Days exposed imputation")
 
 
   cohort <- cohort %>%
@@ -415,53 +373,32 @@ generateDrugUtilisationCohort <- function(cdm,
 }
 
 #' Impute or eliminate values under a certain conditions
-#'
-#' @param x x
-#' @param variableName variableName
-#' @param impute impute
-#' @param lowerBound lowerBound
-#' @param upperBound upperBound
-#' @param imputeValueName imputeValueName
-#'
 #' @noRd
 imputeVariable <- function(x,
-                           variableName,
+                           column,
                            impute,
-                           lowerBound,
-                           upperBound,
-                           imputeValueName) {
-  # rename the variable of interest to variable
-  x <- x %>%
-    dplyr::rename("variable" = .env$variableName)
+                           range,
+                           imputeRound = FALSE) {
   # identify (as impute = 1)
   x <- x %>%
-    dplyr::mutate(impute = dplyr::if_else(is.na(.data$variable),
-      1,
-      0
-    ))
+    dplyr::mutate(impute = dplyr::if_else(is.na(.data[[column]]), 1, 0))
 
   # identify (as impute = 1) the values smaller than lower bound
-  if (!is.na(lowerBound)) {
+  if (!is.na(range[1])) {
     x <- x %>%
       dplyr::mutate(impute = dplyr::if_else(
-        is.na(.data$variable),
-        1,
-        dplyr::if_else(.data$variable < .env$lowerBound,
-          1,
-          .data$impute
-        )
+        .data$impute == 0,
+        dplyr::if_else(.data[column] < !!range[1], 1, 0),
+        1
       ))
   }
   # identify (as impute = 1) the values greater than upper bound
-  if (!is.na(upperBound)) {
+  if (!is.na(range[2])) {
     x <- x %>%
       dplyr::mutate(impute = dplyr::if_else(
-        is.na(.data$variable),
-        1,
-        dplyr::if_else(.data$variable > .env$upperBound,
-          1,
-          .data$impute
-        )
+        .data$impute == 0,
+        dplyr::if_else(.data[column] > !!range[2], 1, 0),
+        1
       ))
   }
   # if impute is false then all values with impute = 1 are not considered
@@ -471,9 +408,10 @@ imputeVariable <- function(x,
   }
 
   if (impute == "median") {
-    x <- x %>% dplyr::mutate(variable = dplyr::if_else(
-      .data$impute == 1,
-      stats::median(
+    x <- x %>% dplyr::mutate(
+      !!column := dplyr::if_else(
+        .data$impute == 1,
+        stats::median(
         x %>% dplyr::filter(.data$impute == 0) %>%
           dplyr::pull("variable")
       ),
@@ -626,4 +564,96 @@ addExcludedCounts <- function(x, id) {
       )
     )
 }
+
+#' @noRd
+subsetTable <- function(cdm, conceptSetList, table) {
+  # create cohortSet
+  cohortSet <- dplyr::tibble(cohort_name = names(conceptSetList)) %>%
+    dplyr::mutate(cohort_definition_id = dplyr::row_number())
+  # get names
+  conceptId <- "drug_concept_id"
+  startDate <- "drug_exposure_start_date"
+  endDate <- "drug_exposure_end_date"
+  # create concept list
+  conceptList <- purrr::map(conceptSetList, dplyr::as_tibble) %>%
+    dplyr::bind_rows(.id = "cohort_name") %>%
+    dplyr::rename("concept_id" =  "value") %>%
+    dplyr::inner_join(
+      cohortSet %>%
+        dplyr::select("cohort_name", "cohort_definition_id"),
+      by = "cohort_name"
+    ) %>%
+    dplyr::select(-"cohort_name")
+  # split conceptList in small bits smaller than 500k to avoid problems with
+  # redshift
+  numberMaxCodes <- 500000
+  numberCodes <- nrow(conceptList)
+  if (numberCodes <= numberMaxCodes) {
+    idStart <- 1
+    idEnd <- numberCodes
+  } else {
+    idStart <- seq(1, numberCodes, by = numberMaxCodes)
+    idEnd <- idStart + numberMaxCodes - 1
+    idEnd[idEnd > numberCodes] <- numberCodes
+  }
+  # subset the table
+  for (k in 1:length(idStart)) {
+    cohort.k <- cdm[[table]] %>%
+      dplyr::select(
+        "subject_id" = "person_id",
+        "concept_id" = !!conceptId,
+        "cohort_start_date" = !!startDate,
+        "cohort_end_date" = !!endDate
+      ) %>%
+      dplyr::inner_join(
+        conceptList[idStart[k]:idEnd[k],],
+        by = "concept_id",
+        copy = TRUE
+      ) %>%
+      compute(cdm)
+    if (k == 1) {
+      cohort <- cohort.k
+    } else {
+      cohort <- cohort %>%
+        dplyr::union_all(cohort.k)
+    }
+  }
+  cohort <- compute(cohort, cdm)
+  attr(cohort, "cohortSet") <- cohortSet
+  return(cohort)
+}
+
+#' @noRd
+correctDaysExposed <- function(x, daysExposedRange, cdm) {
+  # compute the number of days exposed according to:
+  # days_exposed = end - start + 1
+  x <- x %>%
+    dplyr::mutate(days_exposed = !!CDMConnector::datediff(
+      start = "cohort_start_date",
+      end = "cohort_end_date"
+    ) + 1)
+
+  # impute or eliminate the exposures that duration does not fulfill the
+  # conditions (<daysExposedRange[1]; >daysExposedRange[2])
+  x <- imputeVariable(
+    x = x,
+    variableName = "days_exposed",
+    impute = imputeDuration,
+    lowerBound = daysExposedRange[1],
+    upperBound = daysExposedRange[2],
+    imputeValueName = "imputeDuration"
+  ) %>%
+    dplyr::mutate(days_to_add = as.integer(.data$days_exposed - 1)) %>%
+    dplyr::compute() %>%
+    dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(
+      CDMConnector::dateadd(
+        date = "drug_exposure_start_date",
+        number = "days_to_add"
+      )
+    ))) %>%
+    compute(cdm)
+  return(x)
+}
+
+
 
