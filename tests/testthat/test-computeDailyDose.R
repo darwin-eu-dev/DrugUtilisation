@@ -42,4 +42,5 @@ test_that("inputs for addDailyDose function",{
                             42, 42, 100, 100, 105, 105, 105, 105, 600, 44,
                             7, 7, 3, 8, 1))))
 
+    DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

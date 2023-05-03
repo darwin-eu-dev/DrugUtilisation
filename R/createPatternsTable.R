@@ -65,6 +65,7 @@ createPatternsTable <- function(cdm) {
     CDMConnector::computeQuery()
 
   x <- cdm$drug_strength %>%
+    dplyr::collect() %>%
     dplyr::left_join(drug_db, by = "drug_concept_id") %>%
     dplyr::left_join(ingredient_db, by = "ingredient_concept_id") %>%
     dplyr::mutate(amount = ifelse(is.na(.data$amount_value), NA, "numeric")) %>%
