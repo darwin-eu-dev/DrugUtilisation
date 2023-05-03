@@ -618,8 +618,8 @@ imputeVariable <- function(x,
   # identify (as impute = 1)
   x <- x %>%
     dplyr::mutate(impute = dplyr::if_else(is.na(.data$variable),
-    1,
-    0
+     1,
+     0
     ))
 
   # identify (as impute = 1) the values smaller than lower bound
@@ -629,8 +629,8 @@ imputeVariable <- function(x,
         is.na(.data$variable),
         1,
         dplyr::if_else(.data$variable < .env$lowerBound,
-        1,
-        .data$impute
+         1,
+         .data$impute
         )
       ))
   }
@@ -641,8 +641,8 @@ imputeVariable <- function(x,
         is.na(.data$variable),
         1,
         dplyr::if_else(.data$variable > .env$upperBound,
-        1,
-        .data$impute
+         1,
+         .data$impute
         )
       ))
   }
@@ -713,8 +713,8 @@ imputeVariable <- function(x,
     x <- x %>%
       dplyr::rename("imputeValue" = .env$imputeValueName) %>%
       dplyr::mutate(variable = dplyr::if_else(.data$impute == 1,
-                                              .data$imputeValue,
-                                              .data$variable
+       .data$imputeValue,
+       .data$variable
       ))
   }
 
