@@ -80,10 +80,10 @@ generateDrugUtilisationCohort <- function(cdm,
   )
   checkConceptSetList(conceptSetList)
   checkCohortName(name, names(cdm))
-  checkmate::assertLogical(temporary, any.missing = FALSE, len = 1)
+  checkmate::assertLogical(temporary, any.missing = F, len = 1)
   checkStudyPeriod(studyPeriod)
   checkSummariseMode(summariseMode, fixedTime)
-  checkmate::assertIntegerish(daysPriorHistory, lower = 0, len = 1)
+  checkmate::assertIntegerish(daysPriorHistory, lower = 0, len = 1, null.ok = T)
   checkmate::assertIntegerish(gapEra, lower = 0, len = 1)
   checkmate::assertIntegerish(priorUseWashout, lower = 0, len = 1)
   checkImputeDuration(imputeDuration)
@@ -109,7 +109,7 @@ generateDrugUtilisationCohort <- function(cdm,
     cli::cli_abort("No record found with the current specifications in
     drug_exposure table")
   }
-  attrition <- attritionLine(NULL, cohort, "Initial Exposures")
+  attrition <- addAttritionLine(NULL, cohort, "Initial Exposures")
 
   # get cohort set
   cohortSet <- attr(cohort, "cohortSet") %>%
@@ -131,101 +131,35 @@ generateDrugUtilisationCohort <- function(cdm,
   reason <- paste(
     "Days exposed imputation; affected rows:", attr(cohort, "numberImputations")
   )
-  attrition <- attritionLine(attrition, cohort, reason)
+  attrition <- addAttritionLine(attrition, cohort, reason)
 
   cohort <- unionCohort(cohort, gapEra)
-  attrition <- attritionLine(attrition, cohort, "Join eras")
+  attrition <- addAttritionLine(attrition, cohort, "Join eras")
 
-  if (!is.na(priorUseWashout)) {
-    cohort <- cohort %>%
-      PatientProfiles::addInObservation(cdm) %>%
-      dplyr::filter(.data$in_observation == 1) %>%
-      dplyr::select(-"in_observation") %>%
-      compute()
-    attrition <- attritionLine(attrition, cohort, paste("In observation"))
-
-    cohort <- applyPriorUseWashout(cohort, priorUseWashout)
-    attrition <- attritionLine(attrition, cohort, paste("priorUseWashout applied"))
-  }
+  cohort <- applyDaysPriorHistory(cohort, daysPriorHistory)
+  attrition <- addAttritionLine(attrition, cohort, "daysPriorHistory applied")
 
   cohort <- applyPriorUseWashout(cohort, priorUseWashout)
-  attrition <- attritionLine(attrition, cohort, paste("priorUseWashout applied"))
+  attrition <- addAttritionLine(attrition, cohort, "priorUseWashout applied")
 
-  if (!is.null(priorUseWashout)) {
+  if (!is.na(studyPeriod[1])) {
     cohort <- cohort %>%
-      dplyr::left_join(
-        cohort %>%
-          dplyr::select(
-            "cohort_definition_id", "subject_id", "era_id",
-            "prior_era" = "cohort_end_date"
-          ) %>%
-          dplyr::mutate(era_id = .data$era_id + 1),
-        by = c("cohort_definition_id", "subject_id", "era_id")
-      ) %>%
-      dplyr::mutate(prior_era = as.numeric(!!CDMConnector::datediff(
-        "prior_era", "cohort_start_date"
-      ))) %>%
-      dplyr::filter(
-        is.na(.data$prior_era) | .data$prior_era > .env$priorUseWashout
-      ) %>%
-      dplyr::select(-"prior_era", -"era_id") %>%
-      dplyr::compute()
-    attrition <- attrition %>%
-      dplyr::union_all(addattritionLine(
-        cohort,
-        paste0("Prior washout of ", priorUseWashout, " days")
-      ))
-
-  } else {
-    cohort <- cohort %>% dplyr::select(-"era_id")
+      dplyr::filter(.data$cohort_start_date >= !!studyPeriod[1]) %>%
+      CDMConnector::computeQuery()
+    attrition <- addAttritionLine(
+      attrition, cohort, paste0("priorUseWashout applied")
+    )
   }
 
-  if (!is.null(studyStartDate)) {
+  if (!is.na(studyPeriod[2])) {
     cohort <- cohort %>%
-      dplyr::filter(.data$cohort_start_date >= .env$studyStartDate)
-
-    attrition <- attrition %>%
-      dplyr::union_all(addattritionLine(
-        cohort,
-        paste0("Start after or at ", studyStartDate)
-      ))
-
+      dplyr::filter(.data$cohort_start_date <= !!studyPeriod[2]) %>%
+      CDMConnector::computeQuery()
+    attrition <- addAttritionLine(
+      attrition, cohort, paste0("priorUseWashout applied")
+    )
   }
 
-  if (!is.null(studyEndDate)) {
-    cohort <- cohort %>%
-      dplyr::filter(.data$cohort_start_date <= .env$studyEndDate)
-
-    attrition <- attrition %>%
-      dplyr::union_all(addattritionLine(
-        cohort,
-        paste0("Start before or at ", studyEndDate)
-      ))
-
-  }
-
-  if (!is.null(daysPriorHistory)) {
-    cohort <- inObservation(cohort, cdm = cdm) %>%
-      dplyr::filter(.data$in_observation == TRUE) %>%
-      dplyr::compute()
-
-    attrition <- attrition %>%
-      dplyr::union_all(addattritionLine(
-        cohort,
-        "In observation on cohort_start_date"
-      ))
-
-    cohort <- addPriorHistory(cohort, cdm = cdm) %>%
-      dplyr::filter(.data$prior_history >= .env$daysPriorHistory) %>%
-      dplyr::select(-"prior_history")
-
-    attrition <- attrition %>%
-      dplyr::union_all(addattritionLine(
-        cohort,
-        paste0("At least ", daysPriorHistory, " days of prior history")
-      ))
-
-  }
 
   if (summariseMode == "FirstEra") {
     cohort <- cohort %>%
@@ -614,3 +548,38 @@ unionCohort <- function(x, gapEra) {
     dplyr::computeQuery()
 }
 
+#' @noRd
+applyDaysPriorHistory <- function(x, daysPriorHistory) {
+  if (!is.null(daysPriorHistory)) {
+    x <- x %>%
+      PatientProfiles::addPriorHistory(cdm) %>%
+      dplyr::filter(.data$prior_history >= .env$daysPriorHistory) %>%
+      CDMConnector::computeQuery()
+  }
+  return(x)
+}
+
+#' @noRd
+applyPriorUseWashout <- function(x, priorUseWashout) {
+  if (!is.null(daysPriorHistory)) {
+    x <- x %>%
+      dplyr::inner_join(
+        x %>%
+          dplyr::mutate(era_id = .data$era_id + 1) %>%
+          dplyr::select(
+            "cohort_definition_id", "subject_id", "era_id",
+            "prior_use" = "cohort_end_date"
+          ),
+        by = c("cohort_definition_id", "subject_id", "era_id")
+      ) %>%
+      dplyr::mutate(
+        prior_use = !!CDMConnector::datediff("cohort_start_date", "prior_use")
+      ) %>%
+      dplyr::filter(
+        is.na(.data$prior_use) | .data$prior_use >= .env$priorUseWashout
+      ) %>%
+      dplyr::select(-"prior_use", -"era_id") %>%
+      CDMConnector::computeQuery()
+  }
+  return(x)
+}
