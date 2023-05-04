@@ -67,14 +67,19 @@ generateDrugUtilisationCohort <- function(cdm,
                                           conceptSetList,
                                           name,
                                           temporary = TRUE,
-                                          studyPeriod = NULL,
                                           summariseMode = "AllEras",
                                           fixedTime = 365,
                                           daysPriorHistory = 0,
                                           gapEra = 30,
                                           priorUseWashout = 0,
+                                          cohortDatesRange = NULL,
                                           imputeDuration = "eliminate",
-                                          daysExposedRange = c(1, Inf)) {
+                                          durationRange = c(1, Inf)) {
+  checkInputs(
+    cdm, conceptSetList, name, temporary, summariseMode, fixedTime,
+    daysPriorHistory, gapEra, priorUseWashout, cohortDatesRange, imputeDuration,
+    durationRange
+  )
   checkCdm(
     cdm, c("drug_exposure", "observation_period", "person", "drug_strength")
   )
