@@ -1,6 +1,6 @@
-domain_id, table_name, concept_id_name, start_name, end_name
-Drug, drug_exposure, drug_concept_id, drug_exposure_start_date, drug_exposure_end_date
-Condition, condition_occurrence, condition_concept_id, condition_start_date, condition_end_date
-Procedure, procedure_occurrence, procedure_concept_id, procedure_date, procedure_date
-Measurement, measurement, measurement_concept_id, measurement_date, measurement_date
-Observation, observation, observation_concept_id, observation_date, observation_date
+domain_id,table_name,concept_id_name,start_name,end_name
+Drug,drug_exposure,drug_concept_id,drug_exposure_start_date,drug_exposure_end_date
+Condition,condition_occurrence,condition_concept_id,condition_start_date,condition_end_date
+Procedure,procedure_occurrence,procedure_concept_id,procedure_date,procedure_date
+Measurement,measurement,measurement_concept_id,measurement_date,measurement_date
+Observation,observation,observation_concept_id,observation_date,observation_date

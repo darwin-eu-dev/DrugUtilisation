@@ -38,7 +38,6 @@ Config/testthat/edition: 3
 Imports: 
     CDMConnector,
     checkmate,
-    SqlRender,
     DBI,
     dbplyr,
     dplyr,

@@ -1,31 +1,34 @@
 checkInputs <- function(...) {
   inputs <- list(...)
-  outputs <- lapply(inputs, checInput) %>%
-    unlist() %>%
-    invisible()
+  outputs <- lapply(names(inputs), function(x) {checkInput(inputs[[x]], x)})
+  names(outputs) <- names(inputs)
   checkDependantVariables(inputs)
   return(outputs)
 }
 
-checkInput <- function(x) {
-  nam <- deparse(substitute(x))
-  output <- NULL
-  if (nam == "cdm") {
-    checkCdm(x)
-  } else if (nam == "conceptSetList") {
-    checkConceptSetList(x)
-  } else if (nam == "name"){
-    checkName(x)
-  } else if (nam == "temporary") {
-    checkTemporary(x)
-  } else {
-    cli::cli_abort("input could not be check in checkInputs")
+checkInput <- function(x, nam) {
+  listChecks <- c(
+    "cdm", "conceptSetList", "name", "temporary", "summariseMode", "fixedTime",
+    "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDatesRange",
+    "imputeDuration", "durationRange"
+  )
+  if (!(nam %in% listChecks)) {
+    cli::cli_abort(paste("Input parameter could not be checked:", nam))
   }
+  eval(parse(text = paste0(
+    "output <- check", toupper(substr(nam, 1, 1)), substr(nam, 2, nchar(nam)),
+    "(x)"
+  )))
   return(output)
 }
 
 checkDependantVariables <- function(inputs) {
-
+  nam <- names(inputs)
+  if (all(c("name", "cdm") %in% nam)) {
+    if (inputs$name %in% names(inputs$cdm)) {
+      cli::cli_abort("A cohort with this name already exist in the cdm object.")
+    }
+  }
 }
 
 checkCdm <- function(cdm) {
@@ -37,16 +40,105 @@ checkCdm <- function(cdm) {
   }
 }
 
-checkConceptSetList <- function(checkConceptSetList) {
-  checkmate::assertList(
-    conceptSetList, types = "integerish", any.missing = FALSE, min.len = 1
-  )
-  checkmate::assertTRUE(length(conceptSetList) == length(names(conceptSetList)))
-  checkmate::assertTRUE(
-    length(unique(names(conceptSetList))) == length(names(conceptSetList))
-  )
+checkConceptSetList <- function(x) {
+  errorMessage <- "conceptSetList must be a uniquely named list of integerish,
+  no NA are allowed"
+  if (!is.list(x)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(sapply(x, is.numeric))) {
+    cli::cli_abort(errorMessage)
+  }
+  x <- unlist(x)
+  if (any(is.na(x))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (any(abs(x - round(x)) > sqrt(.Machine$double.eps))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(x)) != length(x)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(names(x)) != length(unique(names(x)))) {
+    cli::cli_abort(errorMessage)
+  }
 }
 
 checkName <- function(name) {
   checkmate::assertCharacter(name, len = 1, any.missing = FALSE)
+  if (name %in% CDMConnector::tbl_group("all")) {
+    cli::cli_abort(
+      'name can not one of the stadard tables of the cdm. To see standard
+      tables: CDMConnector::tbl_group("all")'
+    )
+  }
+}
+
+checkTemporary <- function(temporary) {
+  checkmate::assertLogical(temporary, any.missing = FALSE, len = 1)
+}
+
+checkSummariseMode <- function(summariseMode) {
+  if (!(summariseMode %in% c("AllEras", "FirstEra", "FixedTime"))) {
+    cli::cli_abort(
+      "`summariseMode` should be one of: AllEras, FirstEra, FixedTime"
+    )
+  }
+}
+
+checkFixedTime <- function(fixedTime) {
+  checkmate::assertIntegerish(fixedTime, lower = 1, any.missing = F, len = 1)
+}
+
+checkDaysPriorHistory <- function(daysPriorHistory) {
+  checkmate::assertIntegerish(
+    daysPriorHistory, lower = 0, any.missing = F, len = 1
+  )
+}
+
+checkGapEra <- function(gapEra) {
+  checkmate::assertIntegerish(gapEra, lower = 0, any.missing = F, len = 1)
+}
+
+checkPriorUseWashout <- function(priorUseWashout) {
+  checkmate::assertIntegerish(
+    priorUseWashout, lower = 0, any.missing = F, len = 1
+  )
+}
+
+checkCohortDatesRange <- function(cohortDatesRange) {
+  checkmate::assertDate(cohortDatesRange, null.ok = T, len = 2)
+  if (!is.na(cohortDatesRange[1]) &
+      !is.na(cohortDatesRange[1]) &
+      cohortDatesRange[1] > cohortDatesRange[2]) {
+    cli::cli_abort(
+      "cohortDatesRange[1] should be equal or smaller than cohortDatesRange[2]"
+    )
+  }
+}
+
+checkImputeDuration <- function(imputeDuration) {
+  if (is.character(imputeDuration)) {
+    checkmate::assertChoice(
+      imputeDuration,
+      c("eliminate", "median", "mean", "quantile25", "quantile75")
+    )
+  } else {
+    checkmate::assertCount(
+      imputeDuration, positive = TRUE
+    )
+  }
+}
+
+checkDurationRange <- function(durationRange) {
+  errorMessage <- "durationRange has to be numeric of length 2 with no NA and
+      durationRange[1] <= durationRange[2]"
+  if (!is.numeric(durationRange) |
+      length(durationRange) != 2 |
+      any(is.na(durationRange))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (durationRange[1] > durationRange[2]) {
+    cli::cli_abort(errorMessage)
+  }
 }

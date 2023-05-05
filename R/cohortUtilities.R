@@ -118,7 +118,7 @@ conceptSetFromConceptSetList <- function(conceptSetList) {
 }
 
 #' @noRd
-subsetTables <- function(cdm, conceptSet) {
+subsetTables <- function(cdm, conceptSet, domains = NULL) {
   conceptSet <- cdm$concept %>%
     dplyr::select("concept_id", "domain_id") %>%
     dplyr::right_join(
@@ -128,10 +128,12 @@ subsetTables <- function(cdm, conceptSet) {
       copy = TRUE
     ) %>%
     CDMConnector::computeQuery()
-  domains <- conceptSet %>%
-    dplyr::select("domain_id") %>%
-    dplyr::distinct() %>%
-    dplyr::pull()
+  if (is.null(domains)) {
+    domains <- conceptSet %>%
+      dplyr::select("domain_id") %>%
+      dplyr::distinct() %>%
+      dplyr::pull()
+  }
   cohort <- emptyCohort()
   if (!any(domains %in% domainInformation$domain_id)) {
     cli::cli_alert_warning(paste0(
@@ -157,7 +159,7 @@ subsetTables <- function(cdm, conceptSet) {
   for (domain in domains) {
     concepts <- conceptSet %>%
       dplyr::filter(.data$domain_id == .env$domain) %>%
-      dplyr::select(-"domain")
+      dplyr::select(-"domain_id")
     cohort <- cohort %>%
       dplyr::union_all(
         concepts %>%
@@ -182,27 +184,6 @@ subsetTables <- function(cdm, conceptSet) {
 }
 
 #' @noRd
-subsetTable <- function(cdm, conceptSet, table) {
-  # create cohortSet
-  cohortSet <- dplyr::tibble(cohort_name = names(conceptSetList)) %>%
-    dplyr::mutate(cohort_definition_id = dplyr::row_number())
-  # get names
-  conceptId <- "drug_concept_id"
-  startDate <- "drug_exposure_start_date"
-  endDate <- "drug_exposure_end_date"
-  # create concept list
-  cdm$concept %>%
-    dplyr::select("concept_id", "domain_id") %>%
-    right_join(
-      purrr::map(conceptSetList, dplyr::as_tibble) %>%
-        dplyr::bind_rows(.id = "cohort_name") %>%
-        dplyr::rename("concept_id" =  "value"),
-      copy = TRUE,
-      by = "concept_id"
-    )
-}
-
-#' @noRd
 getConceptName <- function(domain) {
   domainInformation$concept_id_name[domainInformation$domain_id == domain]
 }
@@ -223,12 +204,16 @@ getEndName <- function(domain) {
 }
 
 #' @noRd
-emptyCohort <- function() {
-  dplyr::tibble(
-    cohort_definition_id = NULL, subject_id = NULL, cohort_start_date = NULL,
-    cohort_end_date = NULL
-  ) %>%
-    insertDatabase()
+emptyCohort <- function(cdm) {
+  DBI::dbCreateTable(
+    ,
+    name = inSchema(writeSchema, name),
+                     fields = c(
+                       cohort_definition_id = "INT",
+                       subject_id = "BIGINT",
+                       cohort_start_date = "DATE",
+                       cohort_end_date = "DATE"
+                     ))
 }
 
 #' @noRd
@@ -286,8 +271,34 @@ applyMaximumEndDate <- function(cohort, maximumEndDate) {
 }
 
 #' @noRd
-insertDatabase <- function(x, cdm) {
+insertTable <- function(x, cdm, name = CDMConnector:::uniqueTableName()) {
+  writePrefix <- attr(cdm, "write_prefix")
+  writeSchema <- attr(cdm, "write_schema")
+  con <- attr(cdm, "dbcon")
+  if (!is.null(writePrefix)) {
+    name <- CDMConnector:::inSchema(
+      writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
+    )
+    temporary <- FALSE
+  } else {
+    temporary <- TRUE
+  }
+  DBI::dbWriteTable(con, name, x, temporary = temporary)
+  dplyr::tbl(con, name)
+}
 
+#' @noRd
+computeTable <- function(x, cdm, name = CDMConnector:::uniqueTableName()) {
+  writePrefix <- attr(cdm, "write_prefix")
+  writeSchema <- attr(cdm, "write_schema")
+  con <- attr(cdm, "dbcon")
+  if (!is.null(writePrefix)) {
+    name <- paste0(writePrefix, name)
+    temporary <- FALSE
+  } else {
+    temporary <- TRUE
+  }
+  CDMConnector::computeQuery(x, name, temporary, writeSchema, TRUE)
 }
 
 #' @noRd
@@ -351,3 +362,74 @@ unionCohort <- function(x, gap) {
     ))) %>%
     dplyr::computeQuery()
 }
+
+#' Add a column with the individual birth date
+#'
+#' @param x Table in the cdm that contains 'person_id' or 'subject_id'
+#' @param cdm 'cdm' object created with CDMConnector::cdm_from_con().
+#' @param name Name of the column to be added with the date of birth
+#' @param missingDay Day of the individuals with no or imposed day of birth
+#' @param missingMonth Month of the individuals with no or imposed month of
+#' birth
+#' @param imposeDay Wether to impose day of birth
+#' @param imposeMonth Wether to impose month of birth
+#'
+#' @return The function returns the table x with an extra column that contains
+#' the date of birth
+#'
+#' @noRd
+#'
+#' @examples
+#' \donttest{
+#'   library(xxx)
+#'   db <- DBI::dbConnect()
+#'   cdm <- mockCdm(db, ...)
+#'   cdm$person %>%
+#'     addDateOfBirth(cdm)
+#'   DBI::dbDisconnect(db)
+#' }
+addDateOfBirth <- function(x,
+                           cdm,
+                           name = "birth_date",
+                           missingDay = 1,
+                           misisngMonth = 1,
+                           imposeDay = FALSE,
+                           imposeMonth = FALSE) {
+  # initial checks
+  parameters <- checkInputs(
+    x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth
+  )
+  # get parameters
+  personIdentifier <- parameters$person_identifier
+  # impose day
+  if (imposeDay) {
+    person <- cdm$person %>%
+      dplyr::mutate(day_of_birth = missingDay)
+  } else {
+    person <- cdm$person %>%
+      dplyr::mutate(day_of_birth = dplyr::if_else(
+        is.na(.data$day_of_birth), .env$misisngDay, .data$day_of_birth)
+      )
+  }
+  # impose month
+  if (imposeMonth) {
+    person <- person %>%
+      dplyr::mutate(month_of_birth = missingMonth)
+  } else {
+    person <- person %>%
+      dplyr::mutate(month_of_birth = dplyr::if_else(
+        is.na(.data$month_of_birth), .env$missingMonth, .data$month_of_birth)
+      )
+  }
+  x %>%
+    dplyr::left_join(
+      person %>%
+        dplyr::mutate(!!name := as.Date(paste0(
+          .data$year_of_birth, "-", .data$month_of_birth, "-",
+          .data$day_of_birth
+        ))) %>%
+        dplyr::select(personIdentifier = "person_id", dplyr::all_of(name)),
+      by = personIdentifier
+    )
+}
+

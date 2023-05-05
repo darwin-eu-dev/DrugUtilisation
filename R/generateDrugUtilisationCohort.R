@@ -72,64 +72,44 @@ generateDrugUtilisationCohort <- function(cdm,
                                           daysPriorHistory = 0,
                                           gapEra = 30,
                                           priorUseWashout = 0,
-                                          cohortDatesRange = NULL,
+                                          cohortDatesRange = as.Date(c(NA, NA)),
                                           imputeDuration = "eliminate",
                                           durationRange = c(1, Inf)) {
   checkInputs(
-    cdm, conceptSetList, name, temporary, summariseMode, fixedTime,
-    daysPriorHistory, gapEra, priorUseWashout, cohortDatesRange, imputeDuration,
-    durationRange
+    cdm = cdm, conceptSetList = conceptSetList, name = name,
+    temporary = temporary, summariseMode = summariseMode, fixedTime = fixedTime,
+    daysPriorHistory = daysPriorHistory, gapEra = gapEra,
+    priorUseWashout = priorUseWashout, cohortDatesRange = cohortDatesRange,
+    imputeDuration = imputeDuration, durationRange = durationRange
   )
-  checkCdm(
-    cdm, c("drug_exposure", "observation_period", "person", "drug_strength")
-  )
-  checkConceptSetList(conceptSetList)
-  checkCohortName(name, names(cdm))
-  checkmate::assertLogical(temporary, any.missing = F, len = 1)
-  checkStudyPeriod(studyPeriod)
-  checkSummariseMode(summariseMode, fixedTime)
-  checkmate::assertIntegerish(daysPriorHistory, lower = 0, len = 1, null.ok = T)
-  checkmate::assertIntegerish(gapEra, lower = 0, len = 1)
-  checkmate::assertIntegerish(priorUseWashout, lower = 0, len = 1)
-  checkImputeDuration(imputeDuration)
-  checkRange(daysExposedRange)
 
-  if (is.null(priorUseWashout)) {priorUseWashout <- NA}
-
-  # attr(cdm, "temporary") <- temporary
-  # compute <- function(x, cdm) {
-  #   CDMConnector::computeQuery(
-  #     x,
-  #     name = paste0(attr(cdm, "write_prefix"), CDMConnector:::uniqueTableName()),
-  #     temporary = attr(cdm, "temporary"),
-  #     schema = attr(cdm, "write_schema"),
-  #     overwrite = TRUE
-  #   )
-  # }
+  # get conceptSet
+  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
+  # get cohort set
+  cohortSet <- attr(conceptSet, "cohortSet") %>%
+    dplyr::mutate(
+      summarise_mode = .env$summariseMode,
+      fixed_time = .env$fixedTime,
+      days_prior_history = .env$daysPriorHistory,
+      gap_era = .env$gapEra,
+      prior_use_washout = .env$priorUseWashout,
+      cohort_dates_range_start = .env$cohortDatesRange[1],
+      cohort_dates_range_end = .env$cohortDatesRange[2],
+      impute_duration = .env$imputeDuration,
+      duration_range_min = .env$durationRange[1],
+      duration_range_max = .env$durationRange[2]
+    )
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
-  cohort <- subsetTable(cdm, conceptList, "drug_exposure")
+  cohort <- subsetTables(cdm, conceptSet, "Drug")
   if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
     cli::cli_abort("No record found with the current specifications in
     drug_exposure table")
   }
   attrition <- addAttritionLine(NULL, cohort, "Initial Exposures")
 
-  # get cohort set
-  cohortSet <- attr(cohort, "cohortSet") %>%
-    dplyr::mutate(
-      study_period_start = .env$studyPeriod[1],
-      study_period_end = .env$studyPeriod[2],
-      summarise_mode = .env$summariseMode,
-      fixed_time = .env$fixedTime,
-      days_prior_history = .env$daysPriorHistory,
-      gap_era = .env$gapEra,
-      prior_use_washout = .env$priorUseWashout,
-      impute_duration = .env$imputeDuration,
-      days_exposed_range_min = .env$daysExposedRange[1],
-      days_exposed_range_max = .env$daysExposedRange[2]
-    )
+
 
   # correct days exposed
   cohort <- correctDaysExposed(cohort, cdm)

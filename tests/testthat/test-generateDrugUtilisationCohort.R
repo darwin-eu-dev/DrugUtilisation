@@ -2,9 +2,9 @@ test_that("test inputs", {
   cdm <- mockDrugUtilisation()
   expect_error(generateDrugUtilisationCohort())
   expect_error(generateDrugUtilisationCohort(cdm = cdm))
-  x <- generateDrugUtilisationCohort(
-    cdm = cdm, ingredientConceptId = 1
-  )
+  expect_error(generateDrugUtilisationCohort(cdm, 1, "dus"))
+  expect_error(generateDrugUtilisationCohort(cdm, list(1), "dus"))
+  x <- generateDrugUtilisationCohort(cdm, list(albuterol = 1), "dus")
   expect_true(all(colnames(x) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"
   )))

@@ -29,8 +29,7 @@ generateAgeCohortSet <- function(cdm,
                                  name,
                                  teporary = FALSE,
                                  daysPriorHistory = 0,
-                                 minimumCohortStartDate = NULL,
-                                 maximumCohortEndDate = NULL) {
+                                 cohortDatesRange = as.Date(c(NA, NA))) {
   # check inputs
   inputCheck(
     cdm, ageGroup, name, temporary, daysPriorHistory, minimumCohortStartDate,

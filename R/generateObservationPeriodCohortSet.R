@@ -19,7 +19,8 @@
 #'
 generateObservationPeriodCohortSet <- function(cdm,
                                                name,
-                                               temporary = TRUE) {
+                                               temporary = TRUE,
+                                               daysPriorHistory = 0) {
   cohortRef <- cdm$observation_period %>%
     dplyr::rename(
       "subject_id" = "person_id",
