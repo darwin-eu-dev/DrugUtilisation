@@ -107,16 +107,14 @@ generateDrugUtilisationCohort <- function(cdm,
     cli::cli_abort("No record found with the current specifications in
     drug_exposure table")
   }
-  attrition <- addAttrition(NULL, cohort)
+  attrition <- computeCohortAttrition(cohort)
 
-
-
-  # correct days exposed
-  cohort <- correctDaysExposed(cohort, cdm)
+  # correct duration
+  cohort <- correctDuration(cohort, durationRange, cdm)
   reason <- paste(
-    "Days exposed imputation; affected rows:", attr(cohort, "numberImputations")
+    "Duration imputation; affected rows:", attr(cohort, "numberImputations")
   )
-  attrition <- addAttritionLine(attrition, cohort, reason)
+  attrition <- computeCohortAttrition(cohort, attrition, reason)
 
   cohort <- unionCohort(cohort, gapEra)
   attrition <- addAttritionLine(attrition, cohort, "Join eras")
@@ -263,17 +261,17 @@ imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
     dplyr::mutate(impute = dplyr::if_else(is.na(.data[[column]]), 1, 0))
 
   # identify < range[1]
-  if (!is.na(range[1])) {
+  if (!is.infinite(range[1])) {
     x <- x %>%
       dplyr::mutate(impute = dplyr::if_else(
-        .data$impute == 0, dplyr::if_else(.data[column] < !!range[1], 1, 0), 1
+        .data$impute == 0, dplyr::if_else(.data[[column]] < !!range[1], 1, 0), 1
       ))
   }
   # identify > range[2]
-  if (!is.na(range[2])) {
+  if (!is.infinite(range[2])) {
     x <- x %>%
       dplyr::mutate(impute = dplyr::if_else(
-        .data$impute == 0, dplyr::if_else(.data[column] > !!range[2], 1, 0), 1
+        .data$impute == 0, dplyr::if_else(.data[[column]] > !!range[2], 1, 0), 1
       ))
   }
   numberImputations <- x %>%
@@ -314,11 +312,11 @@ imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
 }
 
 #' @noRd
-correctDaysExposed <- function(x, daysExposedRange, cdm) {
+correctDuration <- function(x, durationRange, cdm) {
   # compute the number of days exposed according to:
-  # days_exposed = end - start + 1
+  # duration = end - start + 1
   x <- x %>%
-    dplyr::mutate(days_exposed = !!CDMConnector::datediff(
+    dplyr::mutate(duration = !!CDMConnector::datediff(
       start = "cohort_start_date",
       end = "cohort_end_date"
     ) + 1)
@@ -327,20 +325,22 @@ correctDaysExposed <- function(x, daysExposedRange, cdm) {
   # conditions (<daysExposedRange[1]; >daysExposedRange[2])
   x <- imputeVariable(
     x = x,
-    variableName = "days_exposed",
+    column = "duration",
     impute = imputeDuration,
-    lowerBound = daysExposedRange[1],
-    upperBound = daysExposedRange[2],
-    imputeValueName = "imputeDuration"
-  ) %>%
-    dplyr::mutate(days_to_add = as.integer(.data$days_exposed - 1)) %>%
-    dplyr::compute() %>%
-    dplyr::mutate(drug_exposure_end_date = as.Date(dbplyr::sql(
+    range = durationRange,
+    imputeRound = TRUE
+  )
+  numberImputations <- attr(x, "numberImputations")
+  x <- x %>%
+    dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
+    dplyr::mutate(cohort_end_date = as.Date(dbplyr::sql(
       CDMConnector::dateadd(
-        date = "drug_exposure_start_date",
+        date = "cohort_start_date",
         number = "days_to_add"
       )
     ))) %>%
-    compute(cdm)
+    dplyr::select(-c("duration", "days_to_add")) %>%
+    computeTable(cdm)
+  attr(x, "numberImputations") <- numberImputations
   return(x)
 }

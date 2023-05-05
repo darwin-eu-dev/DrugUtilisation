@@ -14,72 +14,59 @@ computeCohortAttrition <- function(x,
                                    attrition = NULL,
                                    reason = "Qualifying initial events") {
   checkInputs(x, attrition, reason)
-  if (!is.null(attrition)) {
-
-    checkmate::assertTibble(attrition)
-    checkmate::assertTRUE(all(
-      c(
-        "cohort_definition_id", "number_records", "number_subjects", "reason_id",
-        "reason", "excluded_records", "excluded_subjects"
-      ) %in% colnames(attrition)
-    ))
-  }
-  checkmate::assertClass(x, "tbl")
-  checkmate::assertTRUE(
-    all(c("cohort_definition_id", "subject_id") %in% colnames(x))
-  )
-  checkmate::assertCharacter(reason, len = 1)
-  attrition <- attritionLine(x, attrition, reason)
+  attrition <- addAttritionLine(x, attrition, reason)
   return(attrition)
 }
 
 #' @noRd
-attritionLine <- function(x, atrition, reason) {
+addAttritionLine <- function(cohort, attrition, reason) {
   if (is.null(attrition)) {
-    attrition <- countAttrition(x, reason, 1)
+    attrition <- countAttrition(cohort, reason, 1)
   } else {
-    id <- max(attrition$reason_id)
+    id <- attrition %>% dplyr::select("reason_id") %>% dplyr::pull() %>% max()
     attrition <- attrition %>%
-      dplyr::bind_rows(countAttrition(x, reason, id)) %>%
-      addExcludedCounts(id)
+      dplyr::union_all(countAttrition(cohort, reason, id + 1)) %>%
+      addExcludedCounts()
   }
+  attrition <- computeTable(attrition, cdm)
   return(attrition)
 }
 
 #' @noRd
-countAttrition <- function(x, reason, id) {
+countAttrition <- function(cohort, reason, id) {
   if (id == 1) {
     num <- 0
   } else {
     num <- as.numeric(NA)
   }
-  attrition <- x %>%
+  attrition <- cohort %>%
     dplyr::group_by(.data$cohort_definition_id) %>%
     dplyr::summarise(
       number_records = dplyr::n(),
       number_subjects = dplyr::n_distinct(.data$subject_id),
       .groups = "drop"
     ) %>%
-    dplyr::collect() %>%
     dplyr::mutate(
-      reason_id = id, reason = .env$reason, excluded_records = num, excluded_subjects = num
+      reason_id = .env$id, reason = .env$reason, excluded_records = .env$num,
+      excluded_subjects = .env$num
     )
   return(attrition)
 }
 
 #' @noRd
-addExcludedCounts <- function(x, id) {
+addExcludedCounts <- function(attrition) {
   attrition %>%
     dplyr::group_by(.data$cohort_definition_id) %>%
+    dbplyr::window_order(.data$reason_id) %>%
     dplyr::mutate(
       excluded_records = dplyr::if_else(
         is.na(.data$excluded_records),
-        .data$number_records[.env$id] - .data$number_records[.env$id - 1],
+        .data$number_records - dplyr::lag(.data$number_records),
         .data$excluded_records
       ),
       excluded_subjects = dplyr::if_else(
         is.na(.data$excluded_subjects),
-        .data$number_subjects[.env$id] - .data$number_subjects[.env$id - 1],
+        .data$number_subjects - dplyr::lag(.data$number_subjects),
         .data$excluded_subjects
       )
     )
@@ -376,7 +363,8 @@ unionCohort <- function(x, gap) {
       date = "cohort_end_date",
       number = -gap
     ))) %>%
-    dplyr::computeQuery()
+    dplyr::select(-"era") %>%
+    computeTable(cdm)
 }
 
 #' Add a column with the individual birth date
