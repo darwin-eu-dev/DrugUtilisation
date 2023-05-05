@@ -72,14 +72,14 @@ generateDrugUtilisationCohort <- function(cdm,
                                           daysPriorHistory = 0,
                                           gapEra = 30,
                                           priorUseWashout = 0,
-                                          cohortDatesRange = as.Date(c(NA, NA)),
+                                          cohortDateRange = as.Date(c(NA, NA)),
                                           imputeDuration = "eliminate",
                                           durationRange = c(1, Inf)) {
   checkInputs(
     cdm = cdm, conceptSetList = conceptSetList, name = name,
     temporary = temporary, summariseMode = summariseMode, fixedTime = fixedTime,
     daysPriorHistory = daysPriorHistory, gapEra = gapEra,
-    priorUseWashout = priorUseWashout, cohortDatesRange = cohortDatesRange,
+    priorUseWashout = priorUseWashout, cohortDateRange = cohortDateRange,
     imputeDuration = imputeDuration, durationRange = durationRange
   )
 
@@ -93,8 +93,8 @@ generateDrugUtilisationCohort <- function(cdm,
       days_prior_history = .env$daysPriorHistory,
       gap_era = .env$gapEra,
       prior_use_washout = .env$priorUseWashout,
-      cohort_dates_range_start = .env$cohortDatesRange[1],
-      cohort_dates_range_end = .env$cohortDatesRange[2],
+      cohort_dates_range_start = .env$cohortDateRange[1],
+      cohort_dates_range_end = .env$cohortDateRange[2],
       impute_duration = .env$imputeDuration,
       duration_range_min = .env$durationRange[1],
       duration_range_max = .env$durationRange[2]
@@ -117,7 +117,7 @@ generateDrugUtilisationCohort <- function(cdm,
   attrition <- computeCohortAttrition(cohort, attrition, reason)
 
   cohort <- unionCohort(cohort, gapEra)
-  attrition <- addAttritionLine(attrition, cohort, "Join eras")
+  attrition <- addAttritionLine(cohort, attrition, "Join eras")
 
   cohort <- applyDaysPriorHistory(cohort, daysPriorHistory)
   attrition <- addAttritionLine(attrition, cohort, "daysPriorHistory applied")

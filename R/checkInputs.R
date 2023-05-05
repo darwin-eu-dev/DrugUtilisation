@@ -8,7 +8,7 @@ checkInputs <- function(...) {
 checkInput <- function(x, nam) {
   listChecks <- c(
     "cdm", "conceptSetList", "name", "temporary", "summariseMode", "fixedTime",
-    "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDatesRange",
+    "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDateRange",
     "imputeDuration", "durationRange", "attrition", "x", "reason"
   )
   if (!(nam %in% listChecks)) {
@@ -105,13 +105,13 @@ checkPriorUseWashout <- function(priorUseWashout) {
   )
 }
 
-checkCohortDatesRange <- function(cohortDatesRange) {
-  checkmate::assertDate(cohortDatesRange, null.ok = T, len = 2)
-  if (!is.na(cohortDatesRange[1]) &
-      !is.na(cohortDatesRange[1]) &
-      cohortDatesRange[1] > cohortDatesRange[2]) {
+checkCohortDateRange <- function(cohortDateRange) {
+  checkmate::assertDate(cohortDateRange, null.ok = T, len = 2)
+  if (!is.na(cohortDateRange[1]) &
+      !is.na(cohortDateRange[1]) &
+      cohortDateRange[1] > cohortDateRange[2]) {
     cli::cli_abort(
-      "cohortDatesRange[1] should be equal or smaller than cohortDatesRange[2]"
+      "cohortDateRange[1] should be equal or smaller than cohortDateRange[2]"
     )
   }
 }
