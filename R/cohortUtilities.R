@@ -10,10 +10,12 @@
 #' @export
 #'
 #' @examples
-addAttritionLine <- function(x,
-                             attrition = NULL,
-                             reason = "Qualifying initial events") {
+computeCohortAttrition <- function(x,
+                                   attrition = NULL,
+                                   reason = "Qualifying initial events") {
+  checkInputs(x, attrition, reason)
   if (!is.null(attrition)) {
+
     checkmate::assertTibble(attrition)
     checkmate::assertTRUE(all(
       c(
@@ -134,7 +136,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
       dplyr::distinct() %>%
       dplyr::pull()
   }
-  cohort <- emptyCohort()
+  cohort <- emptyCohort(cdm)
   if (!any(domains %in% domainInformation$domain_id)) {
     cli::cli_alert_warning(paste0(
       "All concepts domain_id (",
@@ -204,16 +206,30 @@ getEndName <- function(domain) {
 }
 
 #' @noRd
-emptyCohort <- function(cdm) {
+emptyCohort <- function(cdm, name = CDMConnector:::uniqueTableName()) {
+  writePrefix <- attr(cdm, "write_prefix")
+  writeSchema <- attr(cdm, "write_schema")
+  con <- attr(cdm, "dbcon")
+  if (!is.null(writePrefix)) {
+    name <- CDMConnector:::inSchema(
+      writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
+    )
+    temporary <- FALSE
+  } else {
+    temporary <- TRUE
+  }
   DBI::dbCreateTable(
-    ,
-    name = inSchema(writeSchema, name),
-                     fields = c(
-                       cohort_definition_id = "INT",
-                       subject_id = "BIGINT",
-                       cohort_start_date = "DATE",
-                       cohort_end_date = "DATE"
-                     ))
+    con,
+    name,
+    fields = c(
+      cohort_definition_id = "INT",
+      subject_id = "BIGINT",
+      cohort_start_date = "DATE",
+      cohort_end_date = "DATE"
+    ),
+    temporary = temporary
+  )
+  dplyr::tbl(con, name)
 }
 
 #' @noRd

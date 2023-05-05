@@ -1,16 +1,15 @@
 checkInputs <- function(...) {
   inputs <- list(...)
-  outputs <- lapply(names(inputs), function(x) {checkInput(inputs[[x]], x)})
-  names(outputs) <- names(inputs)
+  lapply(names(inputs), function(x) {checkInput(inputs[[x]], x)})
   checkDependantVariables(inputs)
-  return(outputs)
+  invisible(NULL)
 }
 
 checkInput <- function(x, nam) {
   listChecks <- c(
     "cdm", "conceptSetList", "name", "temporary", "summariseMode", "fixedTime",
     "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDatesRange",
-    "imputeDuration", "durationRange"
+    "imputeDuration", "durationRange", "attrition", "x", "reason"
   )
   if (!(nam %in% listChecks)) {
     cli::cli_abort(paste("Input parameter could not be checked:", nam))
@@ -141,4 +140,34 @@ checkDurationRange <- function(durationRange) {
   if (durationRange[1] > durationRange[2]) {
     cli::cli_abort(errorMessage)
   }
+}
+
+checkX <- function(x) {
+  errorMessage <- "x should be a table with at least 'cohort_definition_id' and
+  'subject_id' as columns."
+  if (!("tbl" %in% class(x))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(c("cohort_definition_id", "subject_id") %in% colnames(x))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+checkAttrition <- function(attrition) {
+  errorMessage <- "attrition should be a table with at least:
+  'cohort_definition_id', 'number_records', 'number_subjects', 'reason_id',
+  'reason', 'excluded_records', 'excluded_subjects' as columns."
+  if (!("tbl" %in% class(attrition))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(c(
+    'cohort_definition_id', 'number_records', 'number_subjects', 'reason_id',
+    'reason', 'excluded_records', 'excluded_subjects'
+  ) %in% colnames(attrition))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+checkReason <- function(reason) {
+  checkmate::assertCharacter(reason, len = 1, min.chars = 1)
 }

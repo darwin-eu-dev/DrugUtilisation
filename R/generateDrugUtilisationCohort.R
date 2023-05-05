@@ -107,7 +107,7 @@ generateDrugUtilisationCohort <- function(cdm,
     cli::cli_abort("No record found with the current specifications in
     drug_exposure table")
   }
-  attrition <- addAttritionLine(NULL, cohort, "Initial Exposures")
+  attrition <- addAttrition(NULL, cohort)
 
 
 
