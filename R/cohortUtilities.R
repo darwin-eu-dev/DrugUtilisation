@@ -274,34 +274,29 @@ applyMaximumEndDate <- function(cohort, maximumEndDate) {
 }
 
 #' @noRd
-insertTable <- function(x, cdm, name = CDMConnector:::uniqueTableName()) {
-  writePrefix <- attr(cdm, "write_prefix")
-  writeSchema <- attr(cdm, "write_schema")
+insertTable <- function(x, cdm, name = CDMConnector::uniqueTableName()) {
   con <- attr(cdm, "dbcon")
-  if (!is.null(writePrefix)) {
-    name <- CDMConnector:::inSchema(
-      writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
-    )
-    temporary <- FALSE
-  } else {
-    temporary <- TRUE
-  }
-  DBI::dbWriteTable(con, name, x, temporary = temporary)
+  name <- CDMConnector::inSchema(
+    attr(cdm, "write_schema"),
+    paste0(attr(cdm, "write_prefix"), name),
+    CDMConnector::dbms(con)
+  )
+  DBI::dbWriteTable(
+    con, name, x, temporary = !is.null(attr(cdm, "write_prefix")),
+    overwrite = TRUE
+  )
   dplyr::tbl(con, name)
 }
 
 #' @noRd
-computeTable <- function(x, cdm, name = CDMConnector:::uniqueTableName()) {
-  writePrefix <- attr(cdm, "write_prefix")
-  writeSchema <- attr(cdm, "write_schema")
-  con <- attr(cdm, "dbcon")
-  if (!is.null(writePrefix)) {
-    name <- paste0(writePrefix, name)
-    temporary <- FALSE
-  } else {
-    temporary <- TRUE
-  }
-  CDMConnector::computeQuery(x, name, temporary, writeSchema, TRUE)
+computeTable <- function(x, cdm, name = CDMConnector::uniqueTableName()) {
+  x %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), CDMConnector::uniqueTableName()),
+      temporary = !is.null(attr(cdm, "write_prefix")),
+      schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
 }
 
 #' @noRd
