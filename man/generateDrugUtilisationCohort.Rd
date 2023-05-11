@@ -2,46 +2,28 @@
 % Please edit documentation in R/generateDrugUtilisationCohort.R
 \name{generateDrugUtilisationCohort}
 \alias{generateDrugUtilisationCohort}
-\title{It instantiates the cohorts and their supplementary information
-(cohorts_info) for the DUS study}
+\title{Generates a cohort of the drug use of a certain list of concepts.}
 \usage{
 generateDrugUtilisationCohort(
   cdm,
-  ingredientConceptId = NULL,
-  conceptSetPath = NULL,
-  studyStartDate = NULL,
-  studyEndDate = NULL,
+  name,
+  conceptSetList,
   summariseMode = "AllEras",
   fixedTime = 365,
   daysPriorHistory = 0,
   gapEra = 30,
-  priorUseWashout = NULL,
+  priorUseWashout = 0,
+  cohortDateRange = as.Date(c(NA, NA)),
   imputeDuration = "eliminate",
-  durationRange = c(1, NA),
-  tablePrefix = NULL
+  durationRange = c(1, Inf)
 )
 }
 \arguments{
-\item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
-must contain at least 'drug_exposure', 'drug_strength' and
-observation_period' tables. The 'cdm' object must contain the
-'write_schema' as attribute and  the user should have permission to write on
-it. It is a compulsory input, no default value is provided.}
+\item{cdm}{A cdm_reference object.}
 
-\item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
-the study. It is a compulsory input, no default value is provided.}
+\item{name}{Name of the GeneratedCohortSet}
 
-\item{conceptSetPath}{Path to a folder with the concept sets of interest.
-Concept sets must be stored in OMOP .json files. If NULL all the descendants
-of ingredient concept id will be used. By default: NULL.}
-
-\item{studyStartDate}{Minimum date where the incident exposed eras should
-start to be considered. Only incident exposed eras larger than StudyStartDate
-are allowed. If it is NULL no restriction is applied. By default: NULL.}
-
-\item{studyEndDate}{Maximum date where the incident exposed eras should
-start to be considered. Only incident exposed eras before StudyEndDate
-are allowed. If it is NULL no restriction is applied. By default: NULL.}
+\item{conceptSetList}{Named list of concept sets.}
 
 \item{summariseMode}{Choice on how to summarize the exposures. There are
 three options:
@@ -67,23 +49,20 @@ considered in the same era. By default: 180.}
 
 \item{priorUseWashout}{Prior days without exposure. By default: NULL.}
 
+\item{cohortDateRange}{Range for cohort_start_date and cohort_end_date}
+
 \item{imputeDuration}{Whether/how the duration should be imputed
-"eliminate", "median", "mean", "quantile25", "quantile75".
-. By default: eliminate}
+"eliminate", "median", "mean", "quantile25", "quantile75".}
 
 \item{durationRange}{Range between the duration must be comprised. It should
 be a numeric vector of length two, with no NAs and the first value should be
 equal or smaller than the second one. It is only required if imputeDuration
 = TRUE. If NULL no restrictions are applied. By default: NULL.}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
 The function returns the 'cdm' object with the created tables as
 references of the object.
 }
 \description{
-It instantiates the cohorts and their supplementary information
-(cohorts_info) for the DUS study
+Generates a cohort of the drug use of a certain list of concepts.
 }

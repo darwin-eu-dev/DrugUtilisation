@@ -7,7 +7,7 @@ checkInputs <- function(...) {
 
 checkInput <- function(x, nam) {
   listChecks <- c(
-    "cdm", "conceptSetList", "name", "temporary", "summariseMode", "fixedTime",
+    "cdm", "conceptSetList", "name", "summariseMode", "fixedTime",
     "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDateRange",
     "imputeDuration", "durationRange", "attrition", "x", "reason"
   )
@@ -71,10 +71,6 @@ checkName <- function(name) {
       tables: CDMConnector::tbl_group("all")'
     )
   }
-}
-
-checkTemporary <- function(temporary) {
-  checkmate::assertLogical(temporary, any.missing = FALSE, len = 1)
 }
 
 checkSummariseMode <- function(summariseMode) {

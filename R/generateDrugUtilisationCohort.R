@@ -16,18 +16,9 @@
 
 #' Generates a cohort of the drug use of a certain list of concepts.
 #'
-#' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
-#' must contain at least 'drug_exposure', 'drug_strength' and
-#' observation_period' tables. The 'cdm' object must contain the
-#' 'write_schema' as attribute and  the user should have permission to write on
-#' it. It is a compulsory input, no default value is provided.
-#' @param conceptSetList Names list of concept sets.
-#' @param studyStartDate Minimum date where the incident exposed eras should
-#' start to be considered. Only incident exposed eras larger than StudyStartDate
-#' are allowed. If it is NULL no restriction is applied. By default: NULL.
-#' @param studyEndDate Maximum date where the incident exposed eras should
-#' start to be considered. Only incident exposed eras before StudyEndDate
-#' are allowed. If it is NULL no restriction is applied. By default: NULL.
+#' @param cdm A cdm_reference object.
+#' @param name Name of the GeneratedCohortSet
+#' @param conceptSetList Named list of concept sets.
 #' @param summariseMode Choice on how to summarize the exposures. There are
 #' three options:
 #' "FixedTime" each individual is followed the exact same number of days
@@ -47,16 +38,13 @@
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era. By default: 180.
 #' @param priorUseWashout Prior days without exposure. By default: NULL.
+#' @param cohortDateRange Range for cohort_start_date and cohort_end_date
 #' @param imputeDuration Whether/how the duration should be imputed
 #' "eliminate", "median", "mean", "quantile25", "quantile75".
-#' . By default: eliminate
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
 #' equal or smaller than the second one. It is only required if imputeDuration
 #' = TRUE. If NULL no restrictions are applied. By default: NULL.
-#'
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
@@ -64,9 +52,8 @@
 #'
 #' @examples
 generateDrugUtilisationCohort <- function(cdm,
-                                          conceptSetList,
                                           name,
-                                          temporary = TRUE,
+                                          conceptSetList,
                                           summariseMode = "AllEras",
                                           fixedTime = 365,
                                           daysPriorHistory = 0,
@@ -76,17 +63,21 @@ generateDrugUtilisationCohort <- function(cdm,
                                           imputeDuration = "eliminate",
                                           durationRange = c(1, Inf)) {
   checkInputs(
-    cdm = cdm, conceptSetList = conceptSetList, name = name,
-    temporary = temporary, summariseMode = summariseMode, fixedTime = fixedTime,
+    cdm = cdm,  name = name, conceptSetList = conceptSetList,
+    summariseMode = summariseMode, fixedTime = fixedTime,
     daysPriorHistory = daysPriorHistory, gapEra = gapEra,
     priorUseWashout = priorUseWashout, cohortDateRange = cohortDateRange,
     imputeDuration = imputeDuration, durationRange = durationRange
   )
 
+  # tables to be deleted
+  firstTempTable <- getOption("dbplyr_table_name", 0) + 1
+
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
-  # get cohort set
-  cohortSet <- attr(conceptSet, "cohortSet") %>%
+
+  # generate cohort set
+  cohortSet <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
       summarise_mode = .env$summariseMode,
       fixed_time = .env$fixedTime,
@@ -107,240 +98,59 @@ generateDrugUtilisationCohort <- function(cdm,
     cli::cli_abort("No record found with the current specifications in
     drug_exposure table")
   }
-  attrition <- computeCohortAttrition(cohort)
+  attrition <- computeCohortAttrition(cohort, cdm)
 
   # correct duration
   cohort <- correctDuration(cohort, durationRange, cdm)
   reason <- paste(
     "Duration imputation; affected rows:", attr(cohort, "numberImputations")
   )
-  attrition <- computeCohortAttrition(cohort, attrition, reason)
+  attrition <- computeCohortAttrition(cohort, cdm, attrition, reason)
 
+  # eliminate overlap
   cohort <- unionCohort(cohort, gapEra)
-  attrition <- addAttritionLine(cohort, attrition, "Join eras")
+  attrition <- computeCohortAttrition(cohort, cdm, attrition, "Join eras")
 
-  cohort <- applyDaysPriorHistory(cohort, daysPriorHistory)
-  attrition <- addAttritionLine(attrition, cohort, "daysPriorHistory applied")
+  # require daysPriorHistory
+  cohort <- requireDaysPriorHistory(cohort, cdm, daysPriorHistory)
+  attrition <- computeCohortAttrition(cohort, cdm, attrition, "daysPriorHistory applied")
 
-  cohort <- applyPriorUseWashout(cohort, priorUseWashout)
-  attrition <- addAttritionLine(attrition, cohort, "priorUseWashout applied")
+  # require priorUseWashout
+  cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
+  attrition <- computeCohortAttrition(cohort, cdm, attrition, "priorUseWashout applied")
 
-  if (!is.na(studyPeriod[1])) {
-    cohort <- cohort %>%
-      dplyr::filter(.data$cohort_start_date >= !!studyPeriod[1]) %>%
-      CDMConnector::computeQuery()
-    attrition <- addAttritionLine(
-      attrition, cohort, paste0("priorUseWashout applied")
-    )
-  }
+  # require cohortDateRange
+  cohort <- trimCohortDateRange(cohort, cdm, cohortDateRange)
+  attrition <- computeCohortAttrition(cohort, cdm, attrition, "cohortDateRange applied")
 
-  if (!is.na(studyPeriod[2])) {
-    cohort <- cohort %>%
-      dplyr::filter(.data$cohort_start_date <= !!studyPeriod[2]) %>%
-      CDMConnector::computeQuery()
-    attrition <- addAttritionLine(
-      attrition, cohort, paste0("priorUseWashout applied")
-    )
-  }
+  # apply summariseMode
+  cohort <- applySummariseMode(cohort, cdm, summariseMode)
+  cohortAttritionRef <- computeCohortAttrition(
+    cohort, cdm, attrition,
+    paste("summariseMode:", summariseMode, "applied"),
+    paste0(name, "_attrition")
+  )
 
+  # create the cohort references
+  cohortRef <- computeTable(cohort, cdm, name)
+  cohortSetRef <- insertTable(cohortSet, cdm, paste0(name, "_set"))
+  cohortCountRef <- computeCohortCount(cohortRef, cdm, paste0(name, "_count"))
 
-  if (summariseMode == "FirstEra") {
-    cohort <- cohort %>%
-      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
-      dplyr::filter(
-        .data$cohort_start_date == min(.data$cohort_start_date, na.rm = TRUE)
-      ) %>%
-      dplyr::ungroup()
-    attrition <- attrition %>%
-      dplyr::union_all(addattritionLine(cohort, "Only first era"))
-
-  } else if (summariseMode == "FixedTime") {
-    cohort <- cohort %>%
-      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
-      dplyr::summarise(
-        cohort_start_date = min(.data$cohort_start_date, na.rm = TRUE)
-      ) %>%
-      dplyr::mutate(cohort_end_date = !!CDMConnector::dateadd(
-        "cohort_start_date",
-        fixedTime - 1
-      )) %>%
-      dplyr::ungroup()
-    attrition <- attrition %>%
-      dplyr::union_all(addattritionLine(
-        cohort,
-        paste0("Only first era; fixedTime = ", fixedTime, " days")
-      ))
-  }
-
-  cohort <- cohort %>%
-    dplyr::select(
-      "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date"
-    )
-
-  attrition <- attrition %>%
-    dplyr::left_join(
-      dplyr::tibble(
-        order_id = c(1:10),
-        reason = c(
-          "Initial Exposures",
-          "Imputation",
-          "Eras",
-          paste0("Prior washout of ", priorUseWashout, " days"),
-          paste0("Start after or at ", studyStartDate),
-          paste0("Start before or at ", studyEndDate),
-          "In observation on cohort_start_date",
-          paste0("At least ", daysPriorHistory, " days of prior history"),
-          "Only first era",
-          paste0("Only first era; fixedTime = ", fixedTime, " days")
-        )
-      ),
-      by = "reason"
-    ) %>%
-    dplyr::arrange(.data$cohort_definition_id, .data$order_id) %>%
-    dplyr::select(-"order_id")
-
-  cohortCount <- cohort %>%
-    dplyr::group_by(.data$cohort_definition_id) %>%
-    dplyr::summarise(
-      number_records = dplyr::n(),
-      number_subjects = dplyr::n_distinct(.data$subject_id),
-      .groups = "drop"
-    ) %>%
-    dplyr::compute()
-
-  con <- attr(cdm, "dbcon")
-  if(is.null(tablePrefix)){
-    cohortRef <- cohort %>% CDMConnector::computeQuery()
-    cohortSetTableName <- CDMConnector::uniqueTableName()
-    DBI::dbWriteTable(con, cohortSetTableName, conceptSets, temporary = TRUE)
-    cohortSetRef <- dplyr::tbl(con, cohortSetTableName)
-    cohortAttritionTableName <- CDMConnector::uniqueTableName()
-    DBI::dbWriteTable(con, cohortAttritionTableName, attrition, temporary = TRUE)
-    cohortAttritionRef <- dplyr::tbl(con, cohortAttritionTableName)
-    cohortCountRef <- cohortCount
-  } else {
-    writeSchema <- attr(cdm, "write_schema")
-    cohortRef <- CDMConnector::computeQuery(
-      x = cohort, name = tablePrefix, temporary = FALSE,
-      schema = writeSchema, overwrite = TRUE
-    )
-    DBI::dbWriteTable(
-      conn = con, name = CDMConnector::inSchema(writeSchema, paste0(tablePrefix, "_set"), CDMConnector::dbms(con)),
-      value = as.data.frame(conceptSets),
-      overwrite = TRUE
-    )
-    cohortSetRef <- dplyr::tbl(con, CDMConnector::inSchema(writeSchema, paste0(tablePrefix, "_set"), CDMConnector::dbms(con)))
-    DBI::dbWriteTable(
-      conn = con, name = CDMConnector::inSchema(writeSchema, paste0(tablePrefix, "_attrition"), CDMConnector::dbms(con)),
-      value = as.data.frame(attrition),
-      overwrite = TRUE
-    )
-    cohortAttritionRef <- dplyr::tbl(con, CDMConnector::inSchema(writeSchema, paste0(tablePrefix, "_attrition"), CDMConnector::dbms(con)))
-    cohortCountRef <- CDMConnector::computeQuery(
-      x = cohortCount, name = paste0(tablePrefix, "_count"), temporary = FALSE,
-      schema = writeSchema, overwrite = TRUE
-    )
-  }
-
-  cohort <- CDMConnector::newGeneratedCohortSet(
+  # create the resultant GeneratedCohortSet
+  cdm[[name]] <- CDMConnector::newGeneratedCohortSet(
     cohortRef = cohortRef,
     cohortSetRef = cohortSetRef,
     cohortAttritionRef = cohortAttritionRef,
     cohortCountRef = cohortCountRef
   )
 
-  return(cohort)
-}
-
-#' Impute or eliminate values under a certain conditions
-#' @noRd
-imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
-  # identify NA
-  x <- x %>%
-    dplyr::mutate(impute = dplyr::if_else(is.na(.data[[column]]), 1, 0))
-
-  # identify < range[1]
-  if (!is.infinite(range[1])) {
-    x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        .data$impute == 0, dplyr::if_else(.data[[column]] < !!range[1], 1, 0), 1
-      ))
+  # drop intermediary tables that were created in the process
+  lastTempTable <- getOption("dbplyr_table_name", 0)
+  if (!is.null(attr(cdm, "write_prefix")) & firstTempTable <= lastTempTable) {
+    CDMConnector::dropTable(
+      cdm, sprintf("dbplyr_%03i", firstTempTable:lastTempTable)
+    )
   }
-  # identify > range[2]
-  if (!is.infinite(range[2])) {
-    x <- x %>%
-      dplyr::mutate(impute = dplyr::if_else(
-        .data$impute == 0, dplyr::if_else(.data[[column]] > !!range[2], 1, 0), 1
-      ))
-  }
-  numberImputations <- x %>%
-    dplyr::filter(.data$impute == 1) %>%
-    dplyr::summarise(n = as.numeric(dplyr::n())) %>%
-    dplyr::pull()
-  if (numberImputations > 0) {
-    # if impute is false then all values with impute = 1 are not considered
-    if (impute == "eliminate") {
-      x <- x %>%
-        dplyr::filter(.data$impute == 0)
-    } else {
-      if (is.character(impute)) {
-        values <- x %>%
-          dplyr::filter(.data$impute == 0) %>%
-          dplyr::pull(dplyr::all_of(column))
-        impute <- switch(
-          impute,
-          "median" = stats::median(values),
-          "mean" = mean(values),
-          "quantile25" = stats::quantile(values, 0.25),
-          "quantile75" = stats::quantile(values, 0.75),
-        )
-        if (imputeRound) {
-          impute <- round(impute)
-        }
-      }
-      x <- x %>%
-        dplyr::mutate(!!column := dplyr::if_else(
-          .data$impute == 1, .env$impute, .data[[column]]
-        ))
-    }
-  }
-  x <- x %>%
-    dplyr::select(-"impute")
-  attr(x, "numberImputations") <- numberImputations
-  return(x)
-}
 
-#' @noRd
-correctDuration <- function(x, durationRange, cdm) {
-  # compute the number of days exposed according to:
-  # duration = end - start + 1
-  x <- x %>%
-    dplyr::mutate(duration = !!CDMConnector::datediff(
-      start = "cohort_start_date",
-      end = "cohort_end_date"
-    ) + 1)
-
-  # impute or eliminate the exposures that duration does not fulfill the
-  # conditions (<daysExposedRange[1]; >daysExposedRange[2])
-  x <- imputeVariable(
-    x = x,
-    column = "duration",
-    impute = imputeDuration,
-    range = durationRange,
-    imputeRound = TRUE
-  )
-  numberImputations <- attr(x, "numberImputations")
-  x <- x %>%
-    dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
-    dplyr::mutate(cohort_end_date = as.Date(dbplyr::sql(
-      CDMConnector::dateadd(
-        date = "cohort_start_date",
-        number = "days_to_add"
-      )
-    ))) %>%
-    dplyr::select(-c("duration", "days_to_add")) %>%
-    computeTable(cdm)
-  attr(x, "numberImputations") <- numberImputations
-  return(x)
+  return(cdm)
 }
