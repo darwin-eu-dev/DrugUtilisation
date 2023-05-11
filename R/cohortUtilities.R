@@ -13,15 +13,17 @@
 computeCohortAttrition <- function(x,
                                    cdm,
                                    attrition = NULL,
-                                   reason = "Qualifying initial events",
-                                   name = CDMConnector::uniqueTableName()) {
-  checkInputs(x, cdm, attrition, reason, name)
-  attrition <- addAttritionLine(x, cdm, attrition, reason, name)
+                                   reason = "Qualifying initial events") {
+  checkInputs(
+    x = x, cdm = cdm, attrition = attrition, reason = reason
+  )
+  attrition <- addAttritionLine(x, cdm, attrition, reason) %>%
+    computeTable(cdm)
   return(attrition)
 }
 
 #' @noRd
-addAttritionLine <- function(cohort, cdm, attrition, reason, name) {
+addAttritionLine <- function(cohort, cdm, attrition, reason) {
   if (is.null(attrition)) {
     attrition <- countAttrition(cohort, reason, 1)
   } else {
@@ -30,7 +32,6 @@ addAttritionLine <- function(cohort, cdm, attrition, reason, name) {
       dplyr::union_all(countAttrition(cohort, reason, id + 1)) %>%
       addExcludedCounts()
   }
-  attrition <- computeTable(attrition, cdm, name)
   return(attrition)
 }
 
@@ -89,8 +90,7 @@ addExcludedCounts <- function(attrition) {
 #'
 #' @examples
 computeCohortCount <- function(x,
-                               cdm,
-                               name = CDMConnector::uniqueTableName()) {
+                               cdm) {
   x %>%
     dplyr::group_by(.data$cohort_definition_id) %>%
     dplyr::summarise(
@@ -98,7 +98,7 @@ computeCohortCount <- function(x,
       number_subjects = dplyr::n_distinct(.data$subject_id),
       .groups = "drop"
     ) %>%
-    computeTable(cdm, name, temporary)
+    computeTable(cdm)
 }
 
 #' @noRd
@@ -300,13 +300,11 @@ insertTable <- function(x,
 
 #' @noRd
 computeTable <- function(x,
-                         cdm,
-                         name = CDMConnector::uniqueTableName(),
-                         temporary = is.null(attr(cdm, "write_prefix"))) {
+                         cdm) {
   x %>%
     CDMConnector::computeQuery(
-      name = paste0(attr(cdm, "write_prefix"), name),
-      temporary = temporary,
+      name = paste0(attr(cdm, "write_prefix"), CDMConnector::uniqueTableName()),
+      temporary = is.null(attr(cdm, "write_prefix")),
       schema = attr(cdm, "write_schema"),
       overwrite = TRUE
     )
@@ -334,7 +332,7 @@ unionCohort <- function(x, gap) {
     ) %>%
     dplyr::mutate(date_id = -1) %>%
     dplyr::union_all(
-      cohort %>%
+      x %>%
         dplyr::mutate(
           date_event = as.Date(!!CDMConnector::dateadd(
             date = "cohort_end_date",
@@ -561,4 +559,14 @@ correctDuration <- function(x, durationRange, cdm) {
     computeTable(cdm)
   attr(x, "numberImputations") <- numberImputations
   return(x)
+}
+
+#' @noRd
+getReferenceName <- function(tableRef) {
+  checkInputs(tableRef = tableRef)
+  x <- capture.output(dplyr::show_query(tableRef))
+  x <- x[length(x)]
+  x <- strsplit(x, "\\.")[[1]]
+  name <- x[length(x)]
+  return(name)
 }

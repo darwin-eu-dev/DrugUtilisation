@@ -52,16 +52,16 @@
 #'
 #' @examples
 generateDrugUtilisationCohortSet <- function(cdm,
-                                          name,
-                                          conceptSetList,
-                                          summariseMode = "AllEras",
-                                          fixedTime = 365,
-                                          daysPriorHistory = 0,
-                                          gapEra = 30,
-                                          priorUseWashout = 0,
-                                          cohortDateRange = as.Date(c(NA, NA)),
-                                          imputeDuration = "eliminate",
-                                          durationRange = c(1, Inf)) {
+                                             name,
+                                             conceptSetList,
+                                             summariseMode = "AllEras",
+                                             fixedTime = 365,
+                                             daysPriorHistory = 0,
+                                             gapEra = 30,
+                                             priorUseWashout = 0,
+                                             cohortDateRange = as.Date(c(NA, NA)),
+                                             imputeDuration = "eliminate",
+                                             durationRange = c(1, Inf)) {
   checkInputs(
     cdm = cdm,  name = name, conceptSetList = conceptSetList,
     summariseMode = summariseMode, fixedTime = fixedTime,
@@ -125,16 +125,29 @@ generateDrugUtilisationCohortSet <- function(cdm,
 
   # apply summariseMode
   cohort <- applySummariseMode(cohort, cdm, summariseMode)
-  cohortAttritionRef <- computeCohortAttrition(
+  attrition <- computeCohortAttrition(
     cohort, cdm, attrition,
-    paste("summariseMode:", summariseMode, "applied"),
-    paste0(name, "_attrition")
+    paste("summariseMode:", summariseMode, "applied")
   )
 
   # create the cohort references
-  cohortRef <- computeTable(cohort, cdm, name)
-  cohortSetRef <- insertTable(cohortSet, cdm, paste0(name, "_set"))
-  cohortCountRef <- computeCohortCount(cohortRef, cdm, paste0(name, "_count"))
+  cohortRef <- cohort %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
+  cohortSetRef <- cohortSet %>%
+    insertTable(cdm, paste0(name, "_set"), FALSE)
+  cohortAttritionRef <- attrition %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
+  cohortCountRef <- computeCohortCount(cohort, cdm) %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name, "_count"),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
 
   # create the resultant GeneratedCohortSet
   cdm[[name]] <- CDMConnector::newGeneratedCohortSet(
