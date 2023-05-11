@@ -51,7 +51,7 @@
 #' @export
 #'
 #' @examples
-generateDrugUtilisationCohort <- function(cdm,
+generateDrugUtilisationCohortSet <- function(cdm,
                                           name,
                                           conceptSetList,
                                           summariseMode = "AllEras",
