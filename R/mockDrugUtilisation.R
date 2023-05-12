@@ -498,7 +498,11 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
     )
   }
 
-
+  concept <- dplyr::tibble(
+    concept_id = 1:5,
+    concept_name = paste0("drug", 1:5),
+    domain_id = "Drug"
+  )
 
 
   # into in-memory database
@@ -529,6 +533,13 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "observation_period",
                       observation_period,
+                      overwrite = TRUE
+    )
+  })
+
+  DBI::dbWithTransaction(db, {
+    DBI::dbWriteTable(db, "concept",
+                      concept,
                       overwrite = TRUE
     )
   })
@@ -576,6 +587,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
       "drug_strength",
       "drug_exposure",
       "person",
+      "concept",
       "concept_ancestor",
       "observation_period",
       "condition_occurrence",
