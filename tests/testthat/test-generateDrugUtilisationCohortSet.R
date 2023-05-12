@@ -1,65 +1,65 @@
 test_that("test inputs", {
   cdm <- mockDrugUtilisation()
-  expect_error(generateDrugUtilisationCohort())
-  expect_error(generateDrugUtilisationCohort(cdm = cdm))
-  expect_error(generateDrugUtilisationCohort(cdm, 1, "dus"))
-  expect_error(generateDrugUtilisationCohort(cdm, list(1), "dus"))
-  x <- generateDrugUtilisationCohort(cdm, list(albuterol = 1), "dus")
+  expect_error(generateDrugUtilisationCohortSet())
+  expect_error(generateDrugUtilisationCohortSet(cdm = cdm))
+  expect_error(generateDrugUtilisationCohortSet(cdm, "dus", 1))
+  expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(1)))
+  x <- generateDrugUtilisationCohortSet(cdm, "dus", list(albuterol = 1))
   expect_true(all(colnames(x) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"
   )))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = "1"
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, conceptSetPath = here::here()
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, conceptSetPath = here::here("inst")
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, studyStartDate = 1
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, studyEndDate = "2020-01-05"
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, summariseMode = "2020-01-05"
   ))
-  xx <- generateDrugUtilisationCohort(
+  xx <- generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, summariseMode = "FixedTime"
   )
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, summariseMode = "FixedTime",
     fixedTime = "1"
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, daysPriorHistory = "7"
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, gapEra = "7"
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, imputeDuration = "7"
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, imputeDuration = -7
   ))
-  expect_error(generateDrugUtilisationCohort(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm = cdm, ingredientConceptId = 1, durationRange = -7
   ))
 })
 
 test_that("class", {
   cdm <- mockDrugUtilisation()
-  cohort <- generateDrugUtilisationCohort(cdm = cdm, ingredientConceptId = 1)
+  cohort <- generateDrugUtilisationCohortSet(cdm = cdm, ingredientConceptId = 1)
   expect_true("GeneratedCohortSet" %in% class(cohort))
 })
 
 test_that("basic functionality drug_conceptId", {
   concept1 <- system.file(package = "DrugUtilisation", "concept1.json")
   cdm <- mockDrugUtilisation(seed = 1)
-  out_put_1 <- generateDrugUtilisationCohort(
+  out_put_1 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 834,
@@ -114,7 +114,7 @@ test_that("basic functionality drug_conceptId", {
       dplyr::pull() != 0
   )
 
-  out_put_2 <- generateDrugUtilisationCohort(
+  out_put_2 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 835,
@@ -122,7 +122,7 @@ test_that("basic functionality drug_conceptId", {
   )
   expect_true(out_put_2 %>% dplyr::tally() %>% dplyr::pull("n") == 3)
 
-  out_put_3 <- generateDrugUtilisationCohort(
+  out_put_3 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 836,
@@ -131,7 +131,7 @@ test_that("basic functionality drug_conceptId", {
   expect_true(out_put_3 %>% dplyr::tally() %>% dplyr::pull("n") == 2)
 
 
-  out_put_11 <- generateDrugUtilisationCohort(
+  out_put_11 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
@@ -140,21 +140,21 @@ test_that("basic functionality drug_conceptId", {
   )
   expect_equal(out_put_1 %>% dplyr::collect(), out_put_11 %>% dplyr::collect())
 
-  out_put_4 <- generateDrugUtilisationCohort(
+  out_put_4 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 2972
   )
   expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
 
-  out_put_4 <- generateDrugUtilisationCohort(
+  out_put_4 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 2973
   )
   expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 0)
 
-  out_put_5 <- generateDrugUtilisationCohort(
+  out_put_5 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
@@ -164,7 +164,7 @@ test_that("basic functionality drug_conceptId", {
   )
   expect_true(out_put_5 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
 
-  out_put_6 <- generateDrugUtilisationCohort(
+  out_put_6 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
@@ -182,7 +182,7 @@ test_that("basic functionality drug_conceptId", {
 test_that("basic functionality unique path", {
   concept1 <- system.file(package = "DrugUtilisation", "concept1")
   cdm <- mockDrugUtilisation(seed = 1)
-  out_put_1 <- generateDrugUtilisationCohort(
+  out_put_1 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 834,
@@ -237,7 +237,7 @@ test_that("basic functionality unique path", {
       dplyr::pull() != 0
   )
 
-  out_put_2 <- generateDrugUtilisationCohort(
+  out_put_2 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 835,
@@ -245,7 +245,7 @@ test_that("basic functionality unique path", {
   )
   expect_true(out_put_2 %>% dplyr::tally() %>% dplyr::pull("n") == 3)
 
-  out_put_3 <- generateDrugUtilisationCohort(
+  out_put_3 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 836,
@@ -254,7 +254,7 @@ test_that("basic functionality unique path", {
   expect_true(out_put_3 %>% dplyr::tally() %>% dplyr::pull("n") == 2)
 
 
-  out_put_11 <- generateDrugUtilisationCohort(
+  out_put_11 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
@@ -263,21 +263,21 @@ test_that("basic functionality unique path", {
   )
   expect_equal(out_put_1 %>% dplyr::collect(), out_put_11 %>% dplyr::collect())
 
-  out_put_4 <- generateDrugUtilisationCohort(
+  out_put_4 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 2972
   )
   expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
 
-  out_put_4 <- generateDrugUtilisationCohort(
+  out_put_4 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 2973
   )
   expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 0)
 
-  out_put_5 <- generateDrugUtilisationCohort(
+  out_put_5 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
@@ -287,7 +287,7 @@ test_that("basic functionality unique path", {
   )
   expect_true(out_put_5 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
 
-  out_put_6 <- generateDrugUtilisationCohort(
+  out_put_6 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
@@ -305,7 +305,7 @@ test_that("basic functionality unique path", {
 test_that("basic functionality multiple paths", {
   concept1 <- system.file(package = "DrugUtilisation", "concepts")
   cdm <- mockDrugUtilisation(seed = 1)
-  out_put_1 <- generateDrugUtilisationCohort(
+  out_put_1 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 834,
@@ -361,7 +361,7 @@ test_that("basic functionality multiple paths", {
       dplyr::pull() != 0
   )
 
-  out_put_2 <- generateDrugUtilisationCohort(
+  out_put_2 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 835,
@@ -370,7 +370,7 @@ test_that("basic functionality multiple paths", {
     dplyr::filter(cohort_definition_id == 1)
   expect_true(out_put_2 %>% dplyr::tally() %>% dplyr::pull("n") == 3)
 
-  out_put_3 <- generateDrugUtilisationCohort(
+  out_put_3 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 836,
@@ -380,7 +380,7 @@ test_that("basic functionality multiple paths", {
   expect_true(out_put_3 %>% dplyr::tally() %>% dplyr::pull("n") == 2)
 
 
-  out_put_11 <- generateDrugUtilisationCohort(
+  out_put_11 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
@@ -390,14 +390,14 @@ test_that("basic functionality multiple paths", {
     dplyr::filter(cohort_definition_id == 1)
   expect_equal(out_put_1 %>% dplyr::collect(), out_put_11 %>% dplyr::collect())
 
-  out_put_4 <- generateDrugUtilisationCohort(
+  out_put_4 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 2972
   )
   expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
 
-  out_put_4 <- generateDrugUtilisationCohort(
+  out_put_4 <- generateDrugUtilisationCohortSet(
     cdm,
     conceptSetPath = concept1,
     gapEra = 2973
@@ -405,7 +405,7 @@ test_that("basic functionality multiple paths", {
     dplyr::filter(cohort_definition_id == 1)
   expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 0)
 
-  out_put_5 <- generateDrugUtilisationCohort(
+  out_put_5 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
@@ -416,7 +416,7 @@ test_that("basic functionality multiple paths", {
     dplyr::filter(cohort_definition_id == 1)
   expect_true(out_put_5 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
 
-  out_put_6 <- generateDrugUtilisationCohort(
+  out_put_6 <- generateDrugUtilisationCohortSet(
     cdm,
     ingredientConceptId = 1,
     conceptSetPath = concept1,
