@@ -171,3 +171,66 @@ checkAttrition <- function(attrition) {
 checkReason <- function(reason) {
   checkmate::assertCharacter(reason, len = 1, min.chars = 1)
 }
+
+checkDrugUtilisationCohortSet <- function(cs) {
+  expectedColnames <- c(
+    "cohort_definition_id", "cohort_name", "summarise_mode", "fixed_time",
+    "days_prior_history", "gap_era", "prior_use_washout",
+    "cohort_dates_range_start", "cohort_dates_range_end", "impute_duration",
+    "duration_range_min", "duration_range_max"
+  )
+  return(
+    length(colnames(cs)) == length(expectedColnames) &
+      all(expectedColnames %in% colnames(cs))
+  )
+}
+
+checkConsistentCohortSet<- function(cs,
+                                    conceptSetList,
+                                    gapEra,
+                                    imputeDuration,
+                                    durationRange,
+                                    missingGapEra,
+                                    missingImputeDuration,
+                                    missingDurationRange) {
+  notPresent <- names(conceptSetList)[!(conceptSetList %in% cs$cohort_name)]
+  if (length(notPresent) > 0) {
+    cli::cli_alert_warning(paste0(
+      "Different names in conceptSetList (",
+      paste0(notPresent, collapse = ", "), ") than in the created cohortSet."
+    ))
+  }
+  if (missingGapEra == TRUE) {
+    gapEra <- cs$gap_era
+  } else {
+    if (gapEra != cs$gapEra) {
+      cli::cli_alert_warning(glue::glue(
+        "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
+      ))
+    }
+  }
+  if (missingImputeDuration == TRUE) {
+    imputeDuration <- cs$impute_duration
+  } else {
+    if (imputeDuration != cs$impute_duration) {
+      cli::cli_alert_warning(glue::glue(
+        "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
+      ))
+    }
+  }
+  if (missingDurationRange == TRUE) {
+    durationRange <- c(cs$duration_range_min, cs$duration_range_max)
+  } else {
+    if (!identical(durationRange, c(cs$duration_range_min, cs$duration_range_max))) {
+      cli::cli_alert_warning(glue::glue_collapse(
+        "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
+      ))
+    }
+  }
+  parameters <- list(
+    gapEra = gapEra, imputeDuration = imputeDuration,
+    durationRange = durationRange
+  )
+  return(parameters)
+}
+
