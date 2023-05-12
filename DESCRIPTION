@@ -38,7 +38,6 @@ Config/testthat/edition: 3
 Imports: 
     CDMConnector,
     checkmate,
-    SqlRender,
     DBI,
     dbplyr,
     dplyr,
@@ -52,3 +51,5 @@ Imports:
     stringr,
     cli,
     PatientProfiles
+Depends: 
+    R (>= 2.10)
