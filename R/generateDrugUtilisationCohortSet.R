@@ -124,7 +124,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   attrition <- computeCohortAttrition(cohort, cdm, attrition, "cohortDateRange applied")
 
   # apply summariseMode
-  cohort <- applySummariseMode(cohort, cdm, summariseMode)
+  cohort <- applySummariseMode(cohort, cdm, summariseMode, fixedTime)
   attrition <- computeCohortAttrition(
     cohort, cdm, attrition,
     paste("summariseMode:", summariseMode, "applied")

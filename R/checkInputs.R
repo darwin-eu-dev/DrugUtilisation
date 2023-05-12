@@ -25,7 +25,9 @@ checkDependantVariables <- function(inputs) {
   nam <- names(inputs)
   if (all(c("name", "cdm") %in% nam)) {
     if (inputs$name %in% names(inputs$cdm)) {
-      cli::cli_abort("A cohort with this name already exist in the cdm object.")
+      cli::cli_alert_warning(
+        "A cohort with this name already exist in the cdm object. It will be overwritten."
+      )
     }
   }
 }
@@ -87,7 +89,7 @@ checkFixedTime <- function(fixedTime) {
 
 checkDaysPriorHistory <- function(daysPriorHistory) {
   checkmate::assertIntegerish(
-    daysPriorHistory, lower = 0, any.missing = F, len = 1
+    daysPriorHistory, lower = 0, any.missing = F, len = 1, null.ok = T
   )
 }
 
