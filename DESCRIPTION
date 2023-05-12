@@ -48,6 +48,8 @@ Imports:
     rlang,
     RJSONIO,
     tibble,
-    stringr
+    stringr,
+    cli,
+    PatientProfiles
 Depends: 
     R (>= 2.10)

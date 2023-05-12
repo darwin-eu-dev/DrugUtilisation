@@ -49,7 +49,12 @@ getTableOne <- function(cdm,
                         covariatesWindow = NULL,
                         ...,
                         minimumCellCount = 5) {
+
+
   listTables <- list(...)
+  #check listTables
+  checkListTable(listTables)
+
   if (!is.null(covariatesTableName) &
     !is.null(covariatesWindow) &
     !is.null(covariatesSet)) {
@@ -59,16 +64,14 @@ getTableOne <- function(cdm,
       "covariatesWindow" = covariatesWindow
     ))
   }
-  # first round of assertions CLASS
-  # start checks
+
+  # Checks
   errorMessage <- checkmate::makeAssertCollection()
   # check cdm
-  checkmate::assertClass(
-    cdm,
-    "cdm_reference",
-    add = errorMessage
-  )
-  # check targetCohortName
+  checkCdm(cdm)
+  # person table in cdm
+  checkmate::assertTRUE("person" %in% names(cdm))
+  # check targetCohortName and targetCohortId
   checkmate::assertCharacter(
     targetCohortName,
     len = 1,
@@ -77,97 +80,21 @@ getTableOne <- function(cdm,
     add = errorMessage
   )
 
-  # check strataCohort
   checkmate::assertTRUE(targetCohortName %in% names(cdm))
-  checkmate::assertTRUE("person" %in% names(cdm))
 
-  targetCohort <- cdm[[targetCohortName]]
-  # check targetCohortId
   checkmate::assertInteger(
     targetCohortId,
     null.ok = TRUE,
     add = errorMessage
   )
   # check ageGroups
-  checkmate::assert_list(ageGroups,
-    add = errorMessage
-  )
-  if (!is.null(ageGroups)) {
-    for (i in seq_along(ageGroups)) {
-      checkmate::assertTRUE(length(ageGroups[[i]]) == 2)
-      checkmate::assert_numeric(ageGroups[[i]][1],
-        add = errorMessage
-      )
-      checkmate::assert_numeric(ageGroups[[i]][2],
-        add = errorMessage
-      )
-      ageCheck <- ageGroups[[i]][1] <=
-        ageGroups[[i]][2]
-      checkmate::assertTRUE(ageCheck,
-        add = errorMessage
-      )
-      if (!isTRUE(ageCheck)) {
-        errorMessage$push(
-          "- upper age value must be equal or higher than lower age value"
-        )
-      }
-      checkmate::assertTRUE(ageGroups[[i]][1] >= 0,
-        add = errorMessage
-      )
-      checkmate::assertTRUE(ageGroups[[i]][2] >= 0,
-        add = errorMessage
-      )
-    }
-  }
+  checkAgeGroup(ageGroups)
 
-  checkmate::assertTRUE(length(listTables) == length(unique(names(listTables))))
-  namesTables <- names(listTables)
-  namesTables <- lapply(
-    stringr::str_split(namesTables, "[[:upper:]]"),
-    function(x) {
-      x[1]
-    }
-  ) %>%
-    unlist() %>%
-    unique()
-  if (length(namesTables) > 0) {
-    for (k in 1:length(namesTables)) {
-      errorMessage <- checkmate::makeAssertCollection()
-      name <- namesTables[k]
-      tableName <- listTables[[paste0(name, "TableName")]]
-      set <- listTables[[paste0(name, "Set")]]
-      lookbackWindow <- listTables[[paste0(name, "Window")]]
-      checkmate::assertTibble(set, add = errorMessage)
-      checkmate::assertTRUE(
-        all(c("cohortId", "cohortName") %in% colnames(set)),
-        add = errorMessage
-      )
-      checkmate::assertIntegerish(set$cohortId, add = errorMessage)
-      checkmate::assertCharacter(
-        set$cohortName,
-        any.missing = FALSE, add = errorMessage
-      )
-      checkmate::assertIntegerish(
-        lookbackWindow,
-        min.len = 1,
-        max.len = 2,
-        null.ok = FALSE,
-        add = errorMessage
-      )
-      checkmate::assertTRUE(tableName %in% names(cdm), add = errorMessage)
-      checkmate::assertTRUE(
-        all(colnames(cdm[[tableName]]) %in% c(
-          "cohort_definition_id", "subject_id", "cohort_start_date",
-          "cohort_end_date"
-        )),
-        add = errorMessage
-      )
-      if (!errorMessage$isEmpty()) {
-        errorMessage$push(paste0("- In ", name))
-      }
-      checkmate::reportAssertions(collection = errorMessage)
-    }
-  }
+
+
+
+  #define targetCohort
+  targetCohort <- cdm[[targetCohortName]]
 
   if (is.null(targetCohortId)) {
     targetCohortId <- targetCohort %>%
@@ -179,12 +106,14 @@ getTableOne <- function(cdm,
       dplyr::filter(.data$cohort_definition_id %in% .env$targetCohortId)
   }
 
+
+  #add age, sex, priorHistory
   subjects <- targetCohort %>%
     dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
     dplyr::distinct() %>%
-    addPriorHistory(cdm = cdm) %>%
-    addSex(cdm = cdm) %>%
-    addAge(cdm = cdm) %>%
+    PatientProfiles::addDemographics(cdm,
+                    ageGroup = ageGroups,
+                    futureObservation = FALSE) %>%
     dplyr::compute()
 
   result <- targetCohort %>%
@@ -291,20 +220,12 @@ getTableOne <- function(cdm,
   }
 
   if (!is.null(ageGroups)) {
-    ageGrDf <- dplyr::as_tibble(data.frame(do.call(rbind, ageGroups))) %>%
-      dplyr::mutate(age_group = paste0(.data$X1, ";", .data$X2)) %>%
-      dplyr::mutate(to_join = 1) %>%
-      dplyr::inner_join(
-        dplyr::tibble(age = 0:150, to_join = 1),
-        by = "to_join"
-      ) %>%
-      dplyr::filter(.data$age >= .data$X1) %>%
-      dplyr::filter(.data$age <= .data$X2) %>%
-      dplyr::select("age", "age_group")
+
+
 
     result.age <- targetCohort %>%
       dplyr::left_join(
-        subjects %>% dplyr::inner_join(ageGrDf, by = "age", copy = TRUE),
+        subjects,
         by = c("subject_id", "cohort_start_date", "cohort_end_date")
       ) %>%
       dplyr::group_by(.data$cohort_definition_id, .data$age_group) %>%
@@ -321,6 +242,11 @@ getTableOne <- function(cdm,
   } else {
     result.age <- NULL
   }
+
+
+
+  #adding listTables
+  namesTables <- names(listTables)
 
   if (length(namesTables) > 0) {
     for (k in 1:length(namesTables)) {
