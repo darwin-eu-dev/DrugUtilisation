@@ -14,17 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Explain function
+#' add daily dose information to a drug_exposure table
 #'
-#' @param table table
+#' @param table table to which add daily_dose
 #' @param cdm cdm
-#' @param ingredientConceptId ingredientConceptId
-#'
+#' @param ingredientConceptId ingredientConceptId for which to filter the
+#' drugs of interest
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #'
-#' @return
+#' @return table with added columns: days_exposed, daily_dose, unit
 #' @export
 #'
 #' @examples
@@ -44,8 +44,6 @@ addDailyDose <- function(table,
   )
   checkmate::reportAssertions(collection = errorMessage)
 
-
-
   if ("days_exposed" %in% colnames(table)) {
     warning("'days_exposed' will be overwritten.")
   }
@@ -64,7 +62,8 @@ addDailyDose <- function(table,
         ) %>%
         dplyr::distinct() %>%
         dplyr::inner_join(
-          cdm$drug_strength,
+          cdm$drug_strength %>%
+            dplyr::filter(.data$ingredient_concept_id %in% .env$ingredientConceptId),
           by = c("drug_concept_id")
         ) %>% addPattern() %>%
         dplyr::mutate(
@@ -72,28 +71,20 @@ addDailyDose <- function(table,
           daily_dose = dplyr::case_when(
             is.na(.data$quantity) ~ as.numeric(NA),
             .data$quantity < 0 ~ as.numeric(NA),
-            .data$pattern_id %in% c(1:6) ~
+            .data$pattern_id %in% c(1:5) ~
               .data$amount_value * .data$quantity / .data$days_exposed,
-            .data$pattern_id == 9  &&
-              (.data$denominator_value * .data$quantity / 24) > .data$days_exposed
-            ~ .data$numerator_value * 24 / (.data$quantity * .data$denominator_value / 24),
-            .data$pattern_id == 9  &&
-              (.data$denominator_value * .data$quantity / 24) <= .data$days_exposed
-            ~ .data$numerator_value * 24 ,
-            .data$pattern_id %in% c(14,16) && .data$quantity < 1 &&
-              (.data$numerator_value * .data$quantity) > .data$denominator_value
-            ~ .data$denominator_value / .data$days_exposed,
-            .data$pattern_id %in% c(14,16) && .data$quantity < 1 &&
-              (.data$numerator_value * .data$quantity) <= .data$denominator_value
-            ~ .data$numerator_value * .data$quantity / .data$days_exposed,
-            .data$pattern_id %in% c(7,8,10:13,15,17:20,22:33) ~
-              .data$numerator_value * .data$quantity / .data$days_exposed,
-            .data$pattern_id == 21 ~
-              .data$numerator_value * 24
+            .data$pattern_id %in% c(6,7)  &&
+              .data$denominator_value > 24
+            ~ .data$numerator_value * 24 / .data$denominator_value,
+            .data$pattern_id %in% c(6,7)  &&
+              .data$denominator_value <= 24
+            ~ .data$numerator_value,
+            .data$pattern_id %in% c(8,9)
+            ~ .data$numerator_value * 24,
+            .default = as.numeric(NA)
           )
         ) %>%
         dplyr::mutate(daily_dose = dplyr::if_else(.data$daily_dose <= 0, NA, .data$daily_dose)) %>%
-        # dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
         dplyr::select(
           "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id",
           "daily_dose", "unit"
@@ -112,37 +103,6 @@ addDailyDose <- function(table,
                                  schema = attr(cdm, "write_schema"),
                                  overwrite = TRUE)
   }
-
-  return(table)
-}
-
-#' @noRd
-addPattern <- function(table) {
-  # Join table with pattern table in DUS, add "pattern_id" and "unit" columns
-  table <- table %>%
-    dplyr::mutate(amount = ifelse(is.na(.data$amount_value), NA, "numeric")) %>%
-    dplyr::mutate(numerator = ifelse(is.na(.data$numerator_value), NA, "numeric")) %>%
-    dplyr::mutate(denominator = ifelse(is.na(.data$denominator_value), NA, "numeric")) %>%
-    dplyr::left_join(patternfile, by = c(
-    "amount", "amount_unit_concept_id",
-    "numerator", "numerator_unit_concept_id",
-    "denominator","denominator_unit_concept_id"), copy = TRUE, na_matches = c("na"))
-
-  # Make standardised values
-  table <- table %>%
-    dplyr::mutate(amount_value = ifelse(
-      .data$amount_unit_concept_id == 9655,
-      .data$amount_value / 1000, .data$amount_value)) %>%
-    dplyr::mutate(numerator_value = ifelse(
-      .data$numerator_unit_concept_id == 9655,
-      .data$numerator_value / 1000, .data$numerator_value)) %>%
-    dplyr::mutate(denominator_value = ifelse(
-      .data$denominator_unit_concept_id == 8519,
-      .data$denominator_value * 1000, .data$denominator_value)) %>%
-    dplyr::mutate(numerator_value = ifelse(
-      .data$numerator_unit_concept_id == 9439,
-      .data$numerator_value / 1000000, .data$numerator_value)) %>%
-    dplyr::compute()
 
   return(table)
 }

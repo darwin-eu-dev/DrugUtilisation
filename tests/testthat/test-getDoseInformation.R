@@ -61,10 +61,13 @@ test_that("test overlapMode", {
       drug_concept_id = c(1, 2, 3, 4),
       ingredient_concept_id = c(1, 1, 1, 1),
       amount_value = c(10, 20, 30, 40),
+      amount = c("numeric", "numeric", "numeric", "numeric"),
       amount_unit_concept_id = c(8576, 8576, 8576, 8576),
       numerator_value = as.numeric(NA),
+      numerator = as.character(NA),
       numerator_unit_concept_id = as.numeric(NA),
       denominator_value = as.numeric(NA),
+      denominator = as.character(NA),
       denominator_unit_concept_id = as.numeric(NA)
     ),
     cohort1 = dplyr::tibble(
@@ -253,10 +256,13 @@ test_that("test gapEra and eraJoinMode", {
       drug_concept_id = c(1, 2, 3, 4),
       ingredient_concept_id = c(1, 1, 1, 1),
       amount_value = c(10, 20, 30, 40),
+      amount = c("numeric", "numeric", "numeric", "numeric"),
       amount_unit_concept_id = c(8576, 8576, 8576, 8576),
       numerator_value = as.numeric(NA),
+      numerator = as.character(NA),
       numerator_unit_concept_id = as.numeric(NA),
       denominator_value = as.numeric(NA),
+      denominator = as.character(NA),
       denominator_unit_concept_id = as.numeric(NA)
     ),
     cohort1 = dplyr::tibble(
@@ -455,10 +461,13 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       drug_concept_id = c(1, 2, 3, 4),
       ingredient_concept_id = c(1, 1, 1, 1),
       amount_value = c(10, 20, 30, 40),
+      amount = c("numeric", "numeric", "numeric", "numeric"),
       amount_unit_concept_id = c(8576, 8576, 8576, 8576),
       numerator_value = as.numeric(NA),
+      numerator = as.character(NA),
       numerator_unit_concept_id = as.numeric(NA),
       denominator_value = as.numeric(NA),
+      denominator = as.character(NA),
       denominator_unit_concept_id = as.numeric(NA)
     ),
     cohort1 = dplyr::tibble(
@@ -850,10 +859,13 @@ test_that("test no exposure found", {
       drug_concept_id = c(1, 2, 3, 4),
       ingredient_concept_id = c(1, 1, 1, 1),
       amount_value = c(10, 20, 30, 40),
+      amount = c("numeric", "numeric", "numeric", "numeric"),
       amount_unit_concept_id = c(8576, 8576, 8576, 8576),
       numerator_value = as.numeric(NA),
+      numerator = as.character(NA),
       numerator_unit_concept_id = as.numeric(NA),
       denominator_value = as.numeric(NA),
+      denominator = as.character(NA),
       denominator_unit_concept_id = as.numeric(NA)
     ),
     cohort1 = dplyr::tibble(

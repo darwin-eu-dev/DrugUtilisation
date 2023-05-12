@@ -24,8 +24,8 @@ test_that("create patterns, correct output", {
                    "denominator", "denominator_unit", "numerator_unit_concept_id", "denominator_unit_concept_id",
                    "number_concepts", "number_ingredients", "valid") %in% colnames(newpattern)))
  expect_true(nrow(newpattern) == 3)
- expect_true(all(newpattern %>% dplyr::select(valid) %>% dplyr::pull() == c(TRUE, FALSE, TRUE)))
- expect_true(all(newpattern %>% dplyr::select(number_conceptss %>% dplyr::pull() == c(1,1,1))))
+ expect_true(all(newpattern %>% dplyr::select(valid) %>% dplyr::pull() == c(FALSE, FALSE, TRUE)))
+ expect_true(all(newpattern %>% dplyr::select(number_concepts) %>% dplyr::pull() == c(1,1,1)))
  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 
 })

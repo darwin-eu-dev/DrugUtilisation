@@ -2,20 +2,24 @@
 % Please edit documentation in R/computeDailyDose.R
 \name{addDailyDose}
 \alias{addDailyDose}
-\title{Explain function}
+\title{add daily dose information to a drug_exposure table}
 \usage{
 addDailyDose(table, cdm, ingredientConceptId, tablePrefix = NULL)
 }
 \arguments{
-\item{table}{table}
+\item{table}{table to which add daily_dose}
 
 \item{cdm}{cdm}
 
-\item{ingredientConceptId}{ingredientConceptId}
+\item{ingredientConceptId}{ingredientConceptId for which to filter the
+drugs of interest}
 
 \item{tablePrefix}{The stem for the permanent tables that will
 be created. If NULL, temporary tables will be used throughout.}
 }
+\value{
+table with added columns: days_exposed, daily_dose, unit
+}
 \description{
-Explain function
+add daily dose information to a drug_exposure table
 }

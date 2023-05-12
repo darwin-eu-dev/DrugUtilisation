@@ -34,7 +34,7 @@
 
 comparePatternsTable <- function(pattern_tibble, addId = TRUE) {
   # Check errors in input
-  checkPattern(pattern_tibble)
+  checkPatternTibble(pattern_tibble)
   if(!(addId %in% c(TRUE, FALSE)) || length(addId) != 1) {cli::cli_abort("{addId} is not a boolean variable of length 1")}
 
   # Start code
