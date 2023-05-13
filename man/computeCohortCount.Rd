@@ -4,7 +4,7 @@
 \alias{computeCohortCount}
 \title{Computes the cohortCount attribute for a certain table}
 \usage{
-computeCohortCount(x, cdm, name = CDMConnector::uniqueTableName())
+computeCohortCount(x, cdm)
 }
 \arguments{
 \item{x}{A table in the cdm with at lest: 'cohort_definition_id' and

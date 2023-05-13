@@ -270,6 +270,3 @@ checkTargetCohortName <- function(targetCohortName) {
   }
 }
 
-checkTargetCohortId <- function(targetCohortId) {
-  checkmate::assertIntegerish(targetCohortId, any.missing = F, null.ok = T)
-}

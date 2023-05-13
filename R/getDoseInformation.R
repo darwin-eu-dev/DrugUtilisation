@@ -106,26 +106,25 @@
 #' @export
 #'
 #' @examples
-appendDoseInformation <- function(cdm,
-                                  targetCohortName,
-                                  targetCohortId = NULL,
-                                  conceptSetList = NULL,
-                                  ingredientConceptId,
-                                  gapEra = 30,
-                                  eraJoinMode = "Previous", # proposal "Zero"
-                                  overlapMode = "Previous", # proposal "Sum"
-                                  sameIndexMode = "Sum",
-                                  imputeDuration = "eliminate",
-                                  imputeDailyDose = "eliminate",
-                                  durationRange = c(1, NA),
-                                  dailyDoseRange = c(0, NA)) {
+getDoseInformation <- function(cdm,
+                               targetCohortName,
+                               conceptSetList = NULL,
+                               ingredientConceptId,
+                               gapEra = 30,
+                               eraJoinMode = "Previous", # proposal "Zero"
+                               overlapMode = "Previous", # proposal "Sum"
+                               sameIndexMode = "Sum",
+                               imputeDuration = "eliminate",
+                               imputeDailyDose = "eliminate",
+                               durationRange = c(1, NA),
+                               dailyDoseRange = c(0, NA)) {
   # tables to be deleted
   firstTempTable <- getOption("dbplyr_table_name", 0) + 1
 
   # initial checks
   checkInputs(
     cdm = cdm, targetCohortName = targetCohortName,
-    targetCohortId = targetCohortId, conceptSetList = conceptSetList,
+    conceptSetList = conceptSetList,
     ingredientConceptId = ingredientConceptId, gapEra = gapEra,
     eraJoinMode = eraJoinMode, overlapMode = overlapMode,
     sameIndexMode = sameIndexMode, imputeDuration = imputeDuration,
@@ -135,11 +134,6 @@ appendDoseInformation <- function(cdm,
 
   # consistency with cohortSet
   cs <- CDMConnector::cohortSet(cdm[[targetCohortName]])
-  if (!is.null(targetCohortId)) {
-    cs <- dplyr::filter(cs, .data$cohort_definition_id == .env$targetCohortId)
-  } else {
-    targetCohortId <- cs$cohort_definition_id
-  }
   if (checkDrugUtilisationCohortSet(cs)) {
     parameters <- checkConsistentCohortSet(
       cs, conceptSetList, gapEra, imputeDuration, durationRange,
@@ -162,7 +156,7 @@ appendDoseInformation <- function(cdm,
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
-  cohort <- initialSubset(cdm, targetCohortName, targetCohortId, conceptSet)
+  cohort <- initialSubset(cdm, targetCohortName, conceptSet)
 
   # correct duration
   cohort <- correctDuration(
@@ -227,7 +221,7 @@ appendDoseInformation <- function(cdm,
 }
 
 #' @noRd
-initialSubset <- function(cdm, targetCohortName, targetCohortId, conceptSet) {
+initialSubset <- function(cdm, targetCohortName, conceptSet) {
   cdm[["drug_exposure"]] %>%
     dplyr::select(
       "subject_id" = "person_id",
@@ -239,7 +233,6 @@ initialSubset <- function(cdm, targetCohortName, targetCohortId, conceptSet) {
     ) %>%
     dplyr::inner_join(
       cdm[[targetCohortName]] %>%
-        dplyr::filter(.data$cohort_definition_id == .env$targetCohortId) %>%
         dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
         dplyr::distinct(),
       by = "subject_id"

@@ -21,12 +21,12 @@ test_that("test input parameters errors", {
 
   expect_error(getDoseInformation())
   expect_error(getDoseInformation(cdm = cdm))
-  expect_error(getDoseInformation(cdm = cdm, dusCohortName = "cohort1"))
+  expect_error(getDoseInformation(cdm = cdm, targetCohortName = "cohort1"))
   expect_error(getDoseInformation(
     cdm = cdm,
-    dusCohortName = "cohort1",
+    targetCohortName = "cohort1",
+    concep
     ingredientConceptId = 1,
-    conceptSetPath = "hint"
   ))
   expect_error(getDoseInformation(
     cdm = cdm,
