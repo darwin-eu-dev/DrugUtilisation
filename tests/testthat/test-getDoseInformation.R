@@ -23,21 +23,13 @@ test_that("test input parameters errors", {
   expect_error(getDoseInformation(cdm = cdm))
   expect_error(getDoseInformation(cdm = cdm, targetCohortName = "cohort1"))
   expect_error(getDoseInformation(
+    cdm = cdm, targetCohortName = "cohort1", conceptSetList = "hus",
+    ingredientConceptId = 1,
+  ))
+  expect_error(getDoseInformation(
     cdm = cdm,
     targetCohortName = "cohort1",
-    concep
-    ingredientConceptId = 1,
-  ))
-  expect_error(getDoseInformation(
-    cdm = cdm,
-    dusCohortName = "cohort1",
     ingredientConceptId = "1"
-  ))
-  expect_error(getDoseInformation(
-    cdm = cdm,
-    dusCohortName = "cohort1",
-    ingredientConceptId = 1,
-    eraJoinMode = "dummy"
   ))
 })
 
@@ -90,8 +82,8 @@ test_that("test overlapMode", {
   # prev
   x <- getDoseInformation(
     cdm = cdm,
-    dusCohortName = "cohort1",
-    conceptSetPath = NULL,
+    targetCohortName = "cohort1",
+    conceptSetList = NULL,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",

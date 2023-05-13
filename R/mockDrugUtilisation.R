@@ -474,7 +474,7 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
     descendant_concept_id <-
       seq((ancestor_concept_id_size + 1):(ancestor_concept_id_size + ancestor_concept_id_size))
     concept_ancestor <- data.frame(
-      ancestor_concept_id = as.numeric(ancestor_concept_id),
+      ancestor_concept_id = 1,
       descendant_concept_id = as.numeric(descendant_concept_id)
     )
   }
@@ -501,9 +501,10 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   concept <- dplyr::tibble(
     concept_id = 1:5,
     concept_name = paste0("drug", 1:5),
-    domain_id = "Drug"
+    domain_id = "Drug",
+    concept_class_id = c("Ingredient", rep("Clinical Drug", 4)),
+    standard_concept = 'S'
   )
-
 
   # into in-memory database
   db <- DBI::dbConnect(duckdb::duckdb(), ":memory:")

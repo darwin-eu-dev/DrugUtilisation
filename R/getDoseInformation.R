@@ -108,8 +108,8 @@
 #' @examples
 getDoseInformation <- function(cdm,
                                targetCohortName,
-                               conceptSetList = NULL,
                                ingredientConceptId,
+                               conceptSetList = NULL,
                                gapEra = 30,
                                eraJoinMode = "Previous", # proposal "Zero"
                                overlapMode = "Previous", # proposal "Sum"
@@ -124,13 +124,23 @@ getDoseInformation <- function(cdm,
   # initial checks
   checkInputs(
     cdm = cdm, targetCohortName = targetCohortName,
-    conceptSetList = conceptSetList,
     ingredientConceptId = ingredientConceptId, gapEra = gapEra,
     eraJoinMode = eraJoinMode, overlapMode = overlapMode,
     sameIndexMode = sameIndexMode, imputeDuration = imputeDuration,
     imputeDailyDose = imputeDailyDose, durationRange = durationRange,
     dailyDoseRange = dailyDoseRange
   )
+
+  if (is.null(conceptSetList)) {
+    conceptSetList <- CodelistGenerator::getDrugIngredientCodes(
+      cdm,
+      cdm[["concept"]] %>%
+        dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+        dplyr::pull("concept_name")
+    )
+  }
+
+  checkInputs(conceptSetList = conceptSetList)
 
   # consistency with cohortSet
   cs <- CDMConnector::cohortSet(cdm[[targetCohortName]])
@@ -149,6 +159,10 @@ getDoseInformation <- function(cdm,
   }
   if (length(conceptSetList) > 1) {
     cli::cli_abort("conceptSetList must have length 1")
+  }
+
+  if (is.null(conceptSetList)) {
+
   }
 
   # get conceptSet
