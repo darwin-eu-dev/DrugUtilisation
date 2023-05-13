@@ -125,7 +125,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
       by = "concept_id",
       copy = TRUE
     ) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
   if (is.null(domains)) {
     domains <- conceptSet %>%
       dplyr::select("domain_id") %>%
@@ -176,7 +176,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
             "cohort_end_date"
           )
       ) %>%
-      CDMConnector::computeQuery()
+      computeTable(cdm)
   }
   return(cohort)
 }
@@ -234,7 +234,7 @@ requirePriorUseWashout <- function(cohort, cdm, washout) {
     dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
     dbplyr::window_order(.data$cohort_start_date) %>%
     dplyr::mutate(id = dplyr::row_number()) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
   cohort <- cohort %>%
     dplyr::left_join(
       cohort %>%
@@ -458,14 +458,17 @@ imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
 }
 
 #' @noRd
-correctDuration <- function(x, durationRange, cdm) {
+correctDuration <- function(x,
+                            durationRange,
+                            cdm,
+                            start = "cohort_start_date",
+                            end = "cohort_end_date") {
   # compute the number of days exposed according to:
   # duration = end - start + 1
   x <- x %>%
-    dplyr::mutate(duration = !!CDMConnector::datediff(
-      start = "cohort_start_date",
-      end = "cohort_end_date"
-    ) + 1)
+    dplyr::mutate(
+      duration = !!CDMConnector::datediff(start = start, end = end) + 1
+    )
 
   # impute or eliminate the exposures that duration does not fulfill the
   # conditions (<daysExposedRange[1]; >daysExposedRange[2])
@@ -479,12 +482,9 @@ correctDuration <- function(x, durationRange, cdm) {
   numberImputations <- attr(x, "numberImputations")
   x <- x %>%
     dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
-    dplyr::mutate(cohort_end_date = as.Date(dbplyr::sql(
-      CDMConnector::dateadd(
-        date = "cohort_start_date",
-        number = "days_to_add"
-      )
-    ))) %>%
+    dplyr::mutate(!!end := as.Date(
+      !!CDMConnector::dateadd(date = start, number = "days_to_add")
+    )) %>%
     dplyr::select(-c("duration", "days_to_add")) %>%
     computeTable(cdm)
   attr(x, "numberImputations") <- numberImputations

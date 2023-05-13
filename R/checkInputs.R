@@ -9,7 +9,8 @@ checkInput <- function(x, nam) {
   listChecks <- c(
     "cdm", "conceptSetList", "name", "summariseMode", "fixedTime",
     "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDateRange",
-    "imputeDuration", "durationRange", "attrition", "x", "reason", "tableRef"
+    "imputeDuration", "durationRange", "attrition", "x", "reason", "tableRef",
+    "targetCohortName"
   )
   if (!(nam %in% listChecks)) {
     cli::cli_abort(paste("Input parameter could not be checked:", nam))
@@ -28,6 +29,15 @@ checkDependantVariables <- function(inputs) {
       cli::cli_alert_warning(
         "A cohort with this name already exist in the cdm object. It will be overwritten."
       )
+    }
+  }
+  if (all(c("targetCohortName", "cdm") %in% nam)) {
+    if (!(inputs$targetCohortName %in% names(inputs$cdm))) {
+      cli::cli_abort("targetCohortName is not in the cdm reference")
+    }
+    numberRows <- cdm[[targetCohortName]] %>% dplyr::tally() %>% dplyr::pull()
+    if (numberRows == 0) {
+      cli::cli_abort("targetCohort is empty")
     }
   }
 }
@@ -201,16 +211,26 @@ checkConsistentCohortSet<- function(cs,
     ))
   }
   if (missingGapEra == TRUE) {
-    gapEra <- cs$gap_era
+    if (length(unique(cs$gap_era)) > 1) {
+      cli::cli_abort(
+        "More than one gapEra found in cohortSet, please specify gapEra"
+      )
+    }
+    gapEra <- unique(cs$gap_era)
   } else {
-    if (gapEra != cs$gapEra) {
-      cli::cli_alert_warning(glue::glue(
+    if (!all(cs$gap_era == gapEra)) {
+      cli::cli_alert_warning(glue::glue_collapse(
         "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
       ))
     }
   }
   if (missingImputeDuration == TRUE) {
-    imputeDuration <- cs$impute_duration
+    if (length(unique(cs$impute_duration)) > 1) {
+      cli::cli_abort(
+        "More than one imputeDuration found in cohortSet, please specify imputeDuration"
+      )
+    }
+    imputeDuration <- unique(cs$impute_duration)
   } else {
     if (imputeDuration != cs$impute_duration) {
       cli::cli_alert_warning(glue::glue(
@@ -219,7 +239,14 @@ checkConsistentCohortSet<- function(cs,
     }
   }
   if (missingDurationRange == TRUE) {
-    durationRange <- c(cs$duration_range_min, cs$duration_range_max)
+    if (length(unique(cs$duration_range_min)) > 1 | length(unique(cs$duration_range_max)) > 1) {
+      cli::cli_abort(
+        "More than one durationRange found in cohortSet, please specify durationRange"
+      )
+    }
+    durationRange <- c(
+      unique(cs$duration_range_min), unique(cs$duration_range_max)
+    )
   } else {
     if (!identical(durationRange, c(cs$duration_range_min, cs$duration_range_max))) {
       cli::cli_alert_warning(glue::glue_collapse(
@@ -234,3 +261,15 @@ checkConsistentCohortSet<- function(cs,
   return(parameters)
 }
 
+checkTargetCohortName <- function(targetCohortName) {
+  errorMessage <- "targetCohortName must be a character string of length 1"
+  check <- !is.character(targetCohortName) | length(targetCohortName) > 1 |
+    any(is.na(targetCohortName)) | any(nchar(targetCohortName) == 0)
+  if (check) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+checkTargetCohortId <- function(targetCohortId) {
+  checkmate::assertIntegerish(targetCohortId, any.missing = F, null.ok = T)
+}
