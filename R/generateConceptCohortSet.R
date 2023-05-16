@@ -51,8 +51,7 @@ generateConceptCohortSet <- function(cdm,
       offset = .env$offset,
       cohort_start_date_range = .env$cohortStartDateRange,
       cohort_end_date_range = .env$cohortEndDateRange
-    ) %>%
-    CDMConnector::computeQuery()
+    )
   # subset tables
   cohortRef <- subsetTables(cdm, cohortSetRef)
   cohortAttritionRef <- addAttritionLine(cohortRef)

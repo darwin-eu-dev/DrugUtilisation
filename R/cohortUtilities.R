@@ -125,7 +125,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
       by = "concept_id",
       copy = TRUE
     ) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
   if (is.null(domains)) {
     domains <- conceptSet %>%
       dplyr::select("domain_id") %>%
@@ -176,7 +176,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
             "cohort_end_date"
           )
       ) %>%
-      CDMConnector::computeQuery()
+      computeTable(cdm)
   }
   return(cohort)
 }
@@ -234,7 +234,7 @@ requirePriorUseWashout <- function(cohort, cdm, washout) {
     dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
     dbplyr::window_order(.data$cohort_start_date) %>%
     dplyr::mutate(id = dplyr::row_number()) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
   cohort <- cohort %>%
     dplyr::left_join(
       cohort %>%
@@ -399,76 +399,6 @@ applySummariseMode <- function(cohort, cdm, summariseMode, fixedTime) {
   return(cohort)
 }
 
-#' Add a column with the individual birth date
-#'
-#' @param x Table in the cdm that contains 'person_id' or 'subject_id'
-#' @param cdm 'cdm' object created with CDMConnector::cdm_from_con().
-#' @param name Name of the column to be added with the date of birth
-#' @param missingDay Day of the individuals with no or imposed day of birth
-#' @param missingMonth Month of the individuals with no or imposed month of
-#' birth
-#' @param imposeDay Wether to impose day of birth
-#' @param imposeMonth Wether to impose month of birth
-#'
-#' @return The function returns the table x with an extra column that contains
-#' the date of birth
-#'
-#' @noRd
-#'
-#' @examples
-#' \donttest{
-#'   library(xxx)
-#'   db <- DBI::dbConnect()
-#'   cdm <- mockCdm(db, ...)
-#'   cdm$person %>%
-#'     addDateOfBirth(cdm)
-#'   DBI::dbDisconnect(db)
-#' }
-addDateOfBirth <- function(x,
-                           cdm,
-                           name = "birth_date",
-                           missingDay = 1,
-                           misisngMonth = 1,
-                           imposeDay = FALSE,
-                           imposeMonth = FALSE) {
-  # initial checks
-  parameters <- checkInputs(
-    x, cdm, name, misisngDay, missingMonth, imposeDay, imposeMonth
-  )
-  # get parameters
-  personIdentifier <- parameters$person_identifier
-  # impose day
-  if (imposeDay) {
-    person <- cdm$person %>%
-      dplyr::mutate(day_of_birth = missingDay)
-  } else {
-    person <- cdm$person %>%
-      dplyr::mutate(day_of_birth = dplyr::if_else(
-        is.na(.data$day_of_birth), .env$misisngDay, .data$day_of_birth)
-      )
-  }
-  # impose month
-  if (imposeMonth) {
-    person <- person %>%
-      dplyr::mutate(month_of_birth = missingMonth)
-  } else {
-    person <- person %>%
-      dplyr::mutate(month_of_birth = dplyr::if_else(
-        is.na(.data$month_of_birth), .env$missingMonth, .data$month_of_birth)
-      )
-  }
-  x %>%
-    dplyr::left_join(
-      person %>%
-        dplyr::mutate(!!name := as.Date(paste0(
-          .data$year_of_birth, "-", .data$month_of_birth, "-",
-          .data$day_of_birth
-        ))) %>%
-        dplyr::select(personIdentifier = "person_id", dplyr::all_of(name)),
-      by = personIdentifier
-    )
-}
-
 #' Impute or eliminate values under a certain conditions
 #' @noRd
 imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
@@ -528,14 +458,17 @@ imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
 }
 
 #' @noRd
-correctDuration <- function(x, durationRange, cdm) {
+correctDuration <- function(x,
+                            durationRange,
+                            cdm,
+                            start = "cohort_start_date",
+                            end = "cohort_end_date") {
   # compute the number of days exposed according to:
   # duration = end - start + 1
   x <- x %>%
-    dplyr::mutate(duration = !!CDMConnector::datediff(
-      start = "cohort_start_date",
-      end = "cohort_end_date"
-    ) + 1)
+    dplyr::mutate(
+      duration = !!CDMConnector::datediff(start = start, end = end) + 1
+    )
 
   # impute or eliminate the exposures that duration does not fulfill the
   # conditions (<daysExposedRange[1]; >daysExposedRange[2])
@@ -549,12 +482,9 @@ correctDuration <- function(x, durationRange, cdm) {
   numberImputations <- attr(x, "numberImputations")
   x <- x %>%
     dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
-    dplyr::mutate(cohort_end_date = as.Date(dbplyr::sql(
-      CDMConnector::dateadd(
-        date = "cohort_start_date",
-        number = "days_to_add"
-      )
-    ))) %>%
+    dplyr::mutate(!!end := as.Date(
+      !!CDMConnector::dateadd(date = start, number = "days_to_add")
+    )) %>%
     dplyr::select(-c("duration", "days_to_add")) %>%
     computeTable(cdm)
   attr(x, "numberImputations") <- numberImputations
