@@ -16,7 +16,7 @@
 
 #' It creates a mock database for testing drugutilisation package
 #'
-#'
+#' @param connectionDetails Details of the connection
 #' @param drug_exposure default null user can define its own table
 #' @param drug_strength default null user can define its own table
 #' @param observation_period default null user can define its own table
@@ -57,7 +57,13 @@
 #' @export
 #'
 #' @examples
-mockDrugUtilisation <- function(drug_exposure = NULL,
+mockDrugUtilisation <- function(connectionDetails =  list(
+                                  db = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+                                  cdmSchema = "main",
+                                  writeSchema = "main",
+                                  writePrefix = NULL
+                                ),
+                                drug_exposure = NULL,
                                 drug_strength = NULL,
                                 observation_period = NULL,
                                 condition_occurrence = NULL,
@@ -151,8 +157,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
   }
   checkmate::reportAssertions(collection = errorMessage)
 
-
-
   set.seed(seed) # set seeds
 
   # create drug strength table
@@ -195,10 +199,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
         # invalid_reason = character()
       )
   }
-
-
-
-
 
   # drug_exposure
   if (is.null(drug_exposure)) {
@@ -252,7 +252,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
         ##  days_supply = as.numeric(days_supply)
       )
   }
-
 
   if (is.null(person) | is.null(observation_period)) {
     # person table
@@ -325,8 +324,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
       )
   }
 
-
-
   if (is.null(person) | is.null(condition_occurrence)) {
     # define earliest and latest condition start date for obs table
     # if not specified by user
@@ -371,7 +368,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                                    replace = TRUE
     )
   }
-
 
   if (is.null(person) | is.null(visit_occurrence)) {
     # define earliest and latest visit start date for obs table
@@ -443,8 +439,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
     )
   }
 
-
-
   if (is.null(condition_occurrence)) {
     condition_occurrence <- tibble::tibble(
       condition_occurrence_id = id,
@@ -454,7 +448,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
       condition_end_date = condition_end_date
     )
   }
-
 
   if (is.null(visit_occurrence)) {
     id <- sample(seq(1:patient_size))
@@ -508,7 +501,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
 
   # into in-memory database
   db <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-
 
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "drug_strength",
@@ -566,7 +558,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
     )
   })
 
-
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "cohort1",
                       cohort1,
@@ -580,7 +571,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
                       overwrite = TRUE
     )
   })
-
 
   cdm <- CDMConnector::cdm_from_con(
     db,
@@ -600,7 +590,6 @@ mockDrugUtilisation <- function(drug_exposure = NULL,
 
   cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)
   cdm$cohort2 <- addCohortCountAttr(cdm$cohort2)
-
 
   return(cdm)
 }
