@@ -57,12 +57,7 @@
 #' @export
 #'
 #' @examples
-mockDrugUtilisation <- function(connectionDetails =  list(
-                                  db = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-                                  cdmSchema = "main",
-                                  writeSchema = "main",
-                                  writePrefix = NULL
-                                ),
+mockDrugUtilisation <- function(connectionDetails,
                                 drug_exposure = NULL,
                                 drug_strength = NULL,
                                 observation_period = NULL,
@@ -499,93 +494,29 @@ mockDrugUtilisation <- function(connectionDetails =  list(
     standard_concept = 'S'
   )
 
-  # into in-memory database
-  db <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
+  db <- connectionDetails$db
+  writeSchema <- connectionDetails$writeSchema
 
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "drug_strength",
-                      drug_strength,
-                      overwrite = TRUE
-    )
-  })
+  listTables <- c(
+    "drug_strength", "drug_exposure", "person", "observation_period", "concept",
+    "condition_occurrence", "visit_occurrence", "concept_ancestor", "cohort1",
+    "cohort2"
+  )
 
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "drug_exposure",
-                      drug_exposure,
-                      overwrite = TRUE
+  for (newTable in listTables) {
+    DBI::dbWriteTable(
+      db, CDMConnector::inSchema(writeSchema, newTable, CDMConnector::dbms(db)),
+      eval(parse(text = newTable)), overwrite = TRUE
     )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "person",
-                      person,
-                      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "observation_period",
-                      observation_period,
-                      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "concept",
-                      concept,
-                      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "condition_occurrence",
-                      condition_occurrence,
-                      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "visit_occurrence",
-                      visit_occurrence,
-                      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "concept_ancestor",
-                      concept_ancestor,
-                      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "cohort1",
-                      cohort1,
-                      overwrite = TRUE
-    )
-  })
-
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "cohort2",
-                      cohort2,
-                      overwrite = TRUE
-    )
-  })
+  }
 
   cdm <- CDMConnector::cdm_from_con(
     db,
-    cdm_tables = c(
-      "drug_strength",
-      "drug_exposure",
-      "person",
-      "concept",
-      "concept_ancestor",
-      "observation_period",
-      "condition_occurrence",
-      "visit_occurrence"
-    ),
-    write_schema = "main",
-    cohort_tables = c("cohort1", "cohort2")
+    cdm_schema = writeSchema,
+    cdm_tables = listTables[!(listTables %in% c("cohort1", "cohort2"))],
+    write_schema = writeSchema,
+    cohort_tables = c("cohort1", "cohort2"),
+    write_prefix = connectionDetails$writePrefix
   )
 
   cdm$cohort1 <- addCohortCountAttr(cdm$cohort1)

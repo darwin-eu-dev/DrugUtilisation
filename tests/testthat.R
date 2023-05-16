@@ -34,4 +34,62 @@ equalTibble <- function(x, y) {
   return(TRUE)
 }
 
-test_check("DrugUtilisation")
+availableConnections <- list()
+
+availableConnections$duckdb <- list(
+  db = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+  writeSchema = "main",
+  writePrefix = NULL
+)
+
+if (Sys.getenv("DB_USER") != "") {
+  availableConnections$postgres <- list(
+    db = DBI::dbConnect(
+      RPostgres::Postgres(),
+      dbname = "cdm_gold_202201",
+      port = Sys.getenv("DB_PORT"),
+      host = Sys.getenv("DB_HOST"),
+      user = Sys.getenv("DB_USER"),
+      password = Sys.getenv("DB_PASSWORD")
+    ),
+    writeSchema = "results",
+    writePrefix = NULL
+  )
+}
+
+if (Sys.getenv("CDM5_REDSHIFT_DBNAME") != "") {
+  availableConnections$redshift <- list(
+    db = DBI::dbConnect(
+      RPostgres::Redshift(),
+      dbname = Sys.getenv("CDM5_REDSHIFT_DBNAME"),
+      port = Sys.getenv("CDM5_REDSHIFT_PORT"),
+      host = Sys.getenv("CDM5_REDSHIFT_HOST"),
+      user = Sys.getenv("CDM5_REDSHIFT_USER"),
+      password = Sys.getenv("CDM5_REDSHIFT_PASSWORD")
+    ),
+    writeSchema = Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA"),
+    writePrefix = NULL
+  )
+}
+
+for (connectionDetails in availableConnections) {
+  # list initial tables
+  initialTables <- CDMConnector::listTables(
+    connectionDetails$db, connectionDetails$writeSchema
+  )
+  # test code in that dbms
+  test_check("DrugUtilisation")
+  # get final tables
+  finalTables <- CDMConnector::listTables(
+    connectionDetails$db, connectionDetails$writeSchema
+  )
+  # to eliminate
+  tablesToEliminate <- finalTables[!(finalTables %in% initialTables)]
+  # eliminate new created tables
+  for (tableToEliminate in tablesToEliminate) {
+    DBI::dbRemoveTable(
+      connectionDetails$db,
+      CDMConnector::inSchema(connectionDetails$writeSchema, tableToEliminate)
+    )
+  }
+}

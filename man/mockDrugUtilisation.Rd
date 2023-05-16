@@ -5,8 +5,7 @@
 \title{It creates a mock database for testing drugutilisation package}
 \usage{
 mockDrugUtilisation(
-  connectionDetails = list(db = DBI::dbConnect(duckdb::duckdb(), ":memory:"), cdmSchema =
-    "main", writeSchema = "main", writePrefix = NULL),
+  connectionDetails,
   drug_exposure = NULL,
   drug_strength = NULL,
   observation_period = NULL,

@@ -33,7 +33,9 @@ Suggests:
     covr,
     testthat (>= 3.1.5),
     odbc,
-    here
+    here,
+    RPostgres,
+    duckdb
 Config/testthat/edition: 3
 Imports: 
     CDMConnector,
@@ -41,7 +43,6 @@ Imports:
     DBI,
     dbplyr,
     dplyr,
-    duckdb,
     glue,
     lubridate,
     tidyr,
