@@ -490,13 +490,3 @@ correctDuration <- function(x,
   attr(x, "numberImputations") <- numberImputations
   return(x)
 }
-
-#' @noRd
-getReferenceName <- function(tableRef) {
-  checkInputs(tableRef = tableRef)
-  x <- capture.output(dplyr::show_query(tableRef))
-  x <- x[length(x)]
-  x <- strsplit(x, "\\.")[[1]]
-  name <- x[length(x)]
-  return(name)
-}

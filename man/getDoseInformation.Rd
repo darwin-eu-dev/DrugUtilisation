@@ -7,8 +7,8 @@
 getDoseInformation(
   cdm,
   targetCohortName,
-  conceptSetList = NULL,
   ingredientConceptId,
+  conceptSetList = NULL,
   gapEra = 30,
   eraJoinMode = "Previous",
   overlapMode = "Previous",
