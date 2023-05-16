@@ -14,17 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Explain function
+#' add daily dose information to a drug_exposure table
 #'
-#' @param table table
+#' @param table table to which add daily_dose
 #' @param cdm cdm
-#' @param ingredientConceptId ingredientConceptId
-#'
+#' @param ingredientConceptId ingredientConceptId for which to filter the
+#' drugs of interest
 #' @param tablePrefix The stem for the permanent tables that will
 #' be created. If NULL, temporary tables will be used throughout.
 #'
 #'
-#' @return
+#' @return table with added columns: days_exposed, daily_dose, unit
 #' @export
 #'
 #' @examples
@@ -44,8 +44,6 @@ addDailyDose <- function(table,
   )
   checkmate::reportAssertions(collection = errorMessage)
 
-
-
   if ("days_exposed" %in% colnames(table)) {
     warning("'days_exposed' will be overwritten.")
   }
@@ -64,45 +62,32 @@ addDailyDose <- function(table,
         ) %>%
         dplyr::distinct() %>%
         dplyr::inner_join(
-          cdm$drug_strength,
+          cdm$drug_strength %>%
+            dplyr::filter(.data$ingredient_concept_id %in% .env$ingredientConceptId),
           by = c("drug_concept_id")
-        ) %>%
-        dplyr::mutate(drug_dose_type = dplyr::case_when(
-          # 1. Tablets and other fixed amount formulations
-          is.na(denominator_unit_concept_id) == TRUE ~ "tablets",
-          # 2. Puffs of an inhaler
-          denominator_unit_concept_id == 45744809 ~ "puffs",
-          # 3. Quantified Drugs which are formulated as a concentration
-          denominator_unit_concept_id %in% c(8576, 8587) && denominator_value != 1 && is.na(denominator_value) == FALSE ~ "quantified",
-          # 4. Drugs with the total amount provided in quantity, e.g. chemotherapeutics
-          denominator_unit_concept_id %in% c(8576, 8587) && (denominator_value == 1 | is.na(denominator_value) == TRUE) ~ "quantity",
-          # 5. Compounded drugs
-          denominator_unit_concept_id == 8576 & amount_value == 1 ~ "compounded",
-          # 6. Drugs with the active ingredient released over time, e.g. patches
-          denominator_unit_concept_id == 8505 ~ "timeBased"
-        )) %>%
+        ) %>% addPattern() %>%
         dplyr::mutate(
+          # Change this with all different formula values
           daily_dose = dplyr::case_when(
-            is.na(.data$drug_dose_type) ~ as.numeric(NA),
-            .data$days_exposed == 0 ~ as.numeric(NA),
-            .data$drug_dose_type == "tablets" ~
-              .data$quantity * .data$amount_value / .data$days_exposed,
-            .data$drug_dose_type == "quantified" ~
-              .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drug_dose_type == "puffs" ~
-              .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drug_dose_type == "compounded" ~
-              .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drug_dose_type == "quantity" ~
-              .data$quantity * .data$numerator_value / .data$days_exposed,
-            .data$drug_dose_type == "timeBased" ~ 24 * .data$numerator_value,
-            TRUE ~ as.numeric(NA)
+            is.na(.data$quantity) ~ as.numeric(NA),
+            .data$quantity < 0 ~ as.numeric(NA),
+            .data$pattern_id %in% c(1:5) ~
+              .data$amount_value * .data$quantity / .data$days_exposed,
+            .data$pattern_id %in% c(6,7)  &&
+              .data$denominator_value > 24
+            ~ .data$numerator_value * 24 / .data$denominator_value,
+            .data$pattern_id %in% c(6,7)  &&
+              .data$denominator_value <= 24
+            ~ .data$numerator_value,
+            .data$pattern_id %in% c(8,9)
+            ~ .data$numerator_value * 24,
+            .default = as.numeric(NA)
           )
         ) %>%
-        # dplyr::mutate(ingredient_concept_id = ingredient_concept_id) %>%
+        dplyr::mutate(daily_dose = dplyr::if_else(.data$daily_dose <= 0, NA, .data$daily_dose)) %>%
         dplyr::select(
           "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id",
-          "drug_dose_type", "daily_dose"
+          "daily_dose", "unit"
         ),
       by = c("days_exposed", "quantity", "drug_concept_id", "drug_exposure_id")
     )

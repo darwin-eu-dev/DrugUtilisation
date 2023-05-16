@@ -1,0 +1,18 @@
+{
+  "items": [
+    {
+      "concept": {
+        "CONCEPT_ID": 1
+      },
+      "includeDescendants": false,
+      "includeMapped": false
+    },
+        {
+      "concept": {
+        "CONCEPT_ID": 2
+      },
+      "includeDescendants": true,
+      "includeMapped": false
+    }
+  ]
+}

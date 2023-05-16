@@ -1,3 +1,37 @@
+
+#' @noRd
+checkPath <- function(path) {
+  if(typeof(path) != "character" || length(path) != 1) {
+    cli::cli_abort(paste0(
+      "{path} is not a character of length 1"
+    ))
+  }
+
+  if (!file.exists(path)) {
+    stop(glue::glue("Invalid path {path}"))
+  } else {
+    if (dir.exists(path)) {
+      conceptSets <- dplyr::tibble(concept_set_path = list.files(
+        path = path,
+        full.names = TRUE
+      ))
+    } else {
+      conceptSets <- dplyr::tibble(concept_set_path = .env$path)
+    }
+    conceptSets <- conceptSets %>%
+      dplyr::filter(tools::file_ext(.data$concept_set_path) == "json") %>%
+      dplyr::mutate(
+        concept_set_name =
+          tools::file_path_sans_ext(basename(.data$concept_set_path))
+      ) %>%
+      dplyr::mutate(cohort_definition_id = dplyr::row_number())
+    if (conceptSets %>% nrow() == 0) {
+      stop(glue::glue("No 'json' file found in {path}"))
+    }
+  }
+  return(conceptSets)
+}
+
 #' @noRd
 checkAgeGroup <- function(ageGroup) {
   checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
@@ -90,7 +124,7 @@ checkCdm <- function(cdm, tables = NULL) {
       cli::cli_abort(paste0(
         "tables: ",
         paste0(tables, collapse = ", "),
-        "are nor present in the cdm object"
+        " are not present in the cdm object"
       ))
     }
   }
@@ -98,6 +132,16 @@ checkCdm <- function(cdm, tables = NULL) {
 }
 
 #' @noRd
+checkPatternTibble <- function(x) {
+  if (!isTRUE(inherits(x, "tbl_dbi"))) {
+    cli::cli_abort("x is not a valid table")
+  }
+  checkColnames <- all(c("amount", "amount_unit_concept_id", "numerator", "numerator_unit_concept_id", "denominator", "denominator_unit_concept_id") %in% colnames(x))
+  if(!checkColnames) {
+    cli::cli_abort(" 'amount', 'amount_unit_concept_id', 'numerator', 'numerator_unit_concept_id', 'denominator' and 'denominator_unit_concept_id' are not all columns of {x}")
+  }
+  invisible(NULL)
+}
 
 checkListTable <- function(listTables) {
 
@@ -149,5 +193,4 @@ checkListTable <- function(listTables) {
       checkmate::reportAssertions(collection = errorMessage)
     }
   }
-
 }
