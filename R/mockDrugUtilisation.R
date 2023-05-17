@@ -62,40 +62,18 @@ mockDrugUtilisation <- function(connectionDetails = list(
                                   writeSchema = "main",
                                   writePrefix = NULL
                                 ),
-                                drug_exposure = NULL,
+                                numberIndividuals = 10,
+                                seed = 1,
+                                concept = NULL,
+                                concept_ancestor = NULL,
                                 drug_strength = NULL,
+                                drug_exposure = NULL,
+                                person = NULL,
                                 observation_period = NULL,
                                 condition_occurrence = NULL,
-                                visit_occurrence = NULL,
-                                concept_ancestor = NULL,
-                                person = NULL,
-                                cohort1 = NULL,
-                                cohort2 = NULL,
-                                drug_concept_id_size = 5,
-                                ancestor_concept_id_size = 5,
-                                condition_concept_id_size = 5,
-                                visit_concept_id_size = 5,
-                                visit_occurrence_id_size = 5,
-                                ingredient_concept_id_size = 1,
-                                drug_exposure_size = 10,
-                                patient_size = 1,
-                                min_drug_exposure_start_date = "2000-01-01",
-                                max_drug_exposure_start_date = "2020-01-01",
-                                earliest_date_of_birth = NULL,
-                                latest_date_of_birth = NULL,
-                                earliest_observation_start_date = NULL,
-                                latest_observation_start_date = NULL,
-                                min_days_to_observation_end = NULL,
-                                max_days_to_observation_end = NULL,
-                                earliest_condition_start_date = NULL,
-                                latest_condition_start_date = NULL,
-                                min_days_to_condition_end = NULL,
-                                max_days_to_condition_end = NULL,
-                                earliest_visit_start_date = NULL,
-                                latest_visit_start_date = NULL,
-                                min_days_to_visit_end = NULL,
-                                max_days_to_visit_end = NULL,
-                                seed = 1) {
+                                drug_exposure = NULL,
+                                cohrot1 = NULL,
+                                cohort2 = NULL) {
 
   # checks
   errorMessage <- checkmate::makeAssertCollection()
@@ -490,13 +468,15 @@ mockDrugUtilisation <- function(connectionDetails = list(
     )
   }
 
-  concept <- dplyr::tibble(
-    concept_id = 1:5,
-    concept_name = paste0("drug", 1:5),
-    domain_id = "Drug",
-    concept_class_id = c("Ingredient", rep("Clinical Drug", 4)),
-    standard_concept = 'S'
-  )
+  if (is.null(concept)) {
+    concept <- dplyr::tibble(
+      concept_id = 1:5,
+      concept_name = paste0("drug", 1:5),
+      domain_id = "Drug",
+      concept_class_id = c("Ingredient", rep("Clinical Drug", 4)),
+      standard_concept = 'S'
+    )
+  }
 
   db <- connectionDetails$db
   writeSchema <- connectionDetails$writeSchema
@@ -530,6 +510,13 @@ mockDrugUtilisation <- function(connectionDetails = list(
 }
 
 
+#' To create the vocabulary tables
+#' @noRd
+vocabularyTables <- function(concept, concept_ancestor, drug_strength) {
+  if (is.null(concept)) {
+
+  }
+}
 #' @noRd
 # workaround to add cohort attributes to mock cohort table
 addCohortCountAttr <- function(cohort) {

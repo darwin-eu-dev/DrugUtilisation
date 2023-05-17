@@ -121,43 +121,43 @@ comparePatternsTable <- function(pattern_tibble, addId = TRUE) {
 #' @examples
 createPatternsTable <- function(cdm) {
   # Check errors in input
-  checkCdm(cdm, tables = c("drug_strength", "concept"))
+  checkCdm(cdm)
 
   # Start code
-  amount_unit_db <- cdm$concept %>%
+  amount_unit_db <- cdm[["concept"]] %>%
     dplyr::select(
       "amount_unit_concept_id" = "concept_id",
       "amount_unit" = "concept_name"
     ) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
 
-  numerator_unit_db <- cdm$concept %>%
+  numerator_unit_db <- cdm[["concept"]] %>%
     dplyr::select(
       "numerator_unit_concept_id" = "concept_id",
       "numerator_unit" = "concept_name"
     ) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
 
-  denominator_unit_db <- cdm$concept %>%
+  denominator_unit_db <- cdm[["concept"]] %>%
     dplyr::select(
       "denominator_unit_concept_id" = "concept_id",
       "denominator_unit" = "concept_name"
     ) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
 
-  ingredient_db <- cdm$concept %>%
+  ingredient_db <- cdm[["concept"]] %>%
     dplyr::select(
       "ingredient_concept_id" = "concept_id",
       "ingredient_name" = "concept_name"
     ) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
 
-  drug_db <- cdm$concept %>%
+  drug_db <- cdm[["concept"]] %>%
     dplyr::select(
       "drug_concept_id" = "concept_id",
       "drug_name" = "concept_name"
     ) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
 
   x <- cdm$drug_strength %>%
     dplyr::left_join(drug_db, by = "drug_concept_id", copy = TRUE) %>%
@@ -173,7 +173,7 @@ createPatternsTable <- function(cdm) {
       "numerator_unit", "numerator_unit_concept_id", "denominator", "denominator_unit", "amount_value",
       "numerator_value", "denominator_value", "denominator_unit_concept_id", "ingredient_name", "drug_name"
     ) %>%
-    CDMConnector::computeQuery()
+    computeTable(cdm)
 
   patternfile <- x %>%
     dplyr::group_by(.data$amount, .data$amount_unit, .data$amount_unit_concept_id, .data$numerator, .data$numerator_unit,
@@ -184,7 +184,8 @@ createPatternsTable <- function(cdm) {
       .groups = "drop"
     ) %>%
     dplyr::mutate(pattern_id = dplyr::row_number()) %>%
-    dplyr::relocate(.data$pattern_id) %>% dplyr::collect()
+    dplyr::relocate(.data$pattern_id) %>%
+    dplyr::collect()
 
   # Here add logic valid column of patterns
   patternfile <- patternfile %>%

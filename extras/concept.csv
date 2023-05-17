@@ -1,0 +1,44 @@
+concept_id,concept_name,domain_id,vocabulary_id,concept_class_id,standard_concept,concept_code,valid_start_date,valid_end_date,invalid_reason
+19129655,Ampicillin 100 MG/ML Injectable Solution,Drug,RxNorm,Clinical Drug,S,789980,2008-03-30,2099-12-31,NA
+3005136,Cladosporium herbarum IgE Ab [Units/volume] in Serum,Measurement,LOINC,Lab Test,S,6075-6,1970-01-01,2099-12-31,NA
+4048169,Allergy to house dust mite,Observation,SNOMED,Clinical Finding,S,232350006,1970-01-01,2099-12-31,NA
+3026361,Red blood cell (RBC) count,Measurement,LOINC,Lab Test,S,26453-1,1970-01-01,2099-12-31,NA
+42902245,{5 (Ethinyl Estradiol 0.02 MG / norethindrone acetate 1 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.03 MG / norethindrone acetate 1 MG Oral Tablet) / 9 (Ethinyl Estradiol 0.035 MG / norethindrone acetate 1 MG Oral Tablet) / 7 (Ferrous fumarate 75 MG Oral Tab,Drug,RxNorm,Branded Pack,S,1359133,2012-12-03,2099-12-31,NA
+43012433,21 DAY Ethinyl Estradiol 0.000625 MG/HR / Etonogestrel 0.005 MG/HR Vaginal Ring [NuvaRing],Drug,RxNorm,Quant Branded Drug,S,1367439,2013-02-04,2099-12-31,NA
+4117038,Bilateral tubal ligation,Procedure,SNOMED,Procedure,S,287664005,1970-01-01,2099-12-31,NA
+920293,Nitrofurantoin,Drug,RxNorm,Ingredient,S,7454,1970-01-01,2099-12-31,NA
+4149245,Rupture of patellar tendon,Condition,SNOMED,Clinical Finding,S,30832001,1970-01-01,2099-12-31,NA
+21494966,Physical findings of Abdomen by Palpation,Measurement,LOINC,Clinical Observation,S,80271-0,2016-06-24,2099-12-31,NA
+9201,Inpatient Visit,Visit,Visit,Visit,S,IP,1970-01-01,2099-12-31,NA
+920300,Nitrofurantoin 5 MG/ML Oral Suspension,Drug,RxNorm,Clinical Drug,S,311989,1970-01-01,2099-12-31,NA
+4169137,Allergy to wheat,Observation,SNOMED,Clinical Finding,S,420174000,1970-01-01,2099-12-31,NA
+9202,Outpatient Visit,Visit,Visit,Visit,S,OP,1970-01-01,2099-12-31,NA
+920334,"NITROFURANTOIN, MACROCRYSTALS 50 MG Oral Capsule",Drug,RxNorm,Clinical Drug,S,311995,1970-01-01,2099-12-31,NA
+9203,Emergency Room Visit,Visit,Visit,Visit,S,ER,1970-01-01,2099-12-31,NA
+19007333,Methotrexate 10 MG Oral Tablet,Drug,RxNorm,Clinical Drug,S,105586,1970-01-01,2099-12-31,NA
+433644,Shellfish allergy,Observation,SNOMED,Clinical Finding,S,300913006,1970-01-01,2099-12-31,NA
+4218408,Collection of blood specimen for laboratory,Procedure,SNOMED,Procedure,S,82078001,1970-01-01,2099-12-31,NA
+438614,Allergy to nut,Observation,SNOMED,Clinical Finding,S,91934008,1970-01-01,2099-12-31,NA
+1305058,Methotrexate,Drug,RxNorm,Ingredient,S,6851,1970-01-01,2099-12-31,NA
+260139,Acute bronchitis,Condition,SNOMED,Clinical Finding,S,10509002,1970-01-01,2099-12-31,NA
+44816277,168 HR Ethinyl Estradiol 0.00146 MG/HR / norelgestromin 0.00625 MG/HR Transdermal System,Drug,RxNorm,Quant Clinical Drug,S,1534809,2014-05-05,2099-12-31,NA
+46275444,Piperacillin 4000 MG / tazobactam 500 MG Injection,Drug,RxNorm,Clinical Drug,S,1659149,2015-09-08,2099-12-31,NA
+4112343,Acute viral pharyngitis,Condition,SNOMED,Clinical Finding,S,195662009,1970-01-01,2099-12-31,NA
+440086,Child attention deficit disorder,Condition,SNOMED,Clinical Finding,S,192127007,1970-01-01,2099-12-31,NA
+4202451,Percutaneous mechanical thrombectomy of portal vein using fluoroscopic guidance,Procedure,SNOMED,Procedure,S,433112001,2009-01-31,2099-12-31,NA
+1717327,Ampicillin,Drug,RxNorm,Ingredient,S,733,1970-01-01,2099-12-31,NA
+19128263,{7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.18 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.215 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.25 MG Oral Tablet) / 7 (Inert Ingredients 1 MG Oral Tablet) } Pack [Tr,Drug,RxNorm,Branded Pack,S,751905,2008-01-27,2099-12-31,NA
+4174876,Allergy to bee venom,Observation,SNOMED,Clinical Finding,S,424213003,1970-01-01,2099-12-31,NA
+19127904,{24 (drospirenone 3 MG / Ethinyl Estradiol 0.02 MG Oral Tablet) / 4 (Inert Ingredients 1 MG Oral Tablet) } Pack [Yaz 28 Day],Drug,RxNorm,Branded Pack,S,748856,2007-12-30,2099-12-31,NA
+19127918,{21 (Ethinyl Estradiol 0.03 MG / Levonorgestrel 0.15 MG Oral Tablet) / 7 (Inert Ingredients 1 MG Oral Tablet) } Pack [Levora 0.15/30 28 Day],Drug,RxNorm,Branded Pack,S,748879,2007-12-30,2099-12-31,NA
+4084167,Acute allergic reaction,Condition,SNOMED,Clinical Finding,S,241929008,1970-01-01,2099-12-31,NA
+19128009,{7 (Ethinyl Estradiol 0.01 MG Oral Tablet) / 84 (Ethinyl Estradiol 0.03 MG / Levonorgestrel 0.15 MG Oral Tablet) } Pack [Seasonique],Drug,RxNorm,Branded Pack,S,749762,2007-12-30,2099-12-31,NA
+1746114,Piperacillin,Drug,RxNorm,Ingredient,S,8339,1970-01-01,2099-12-31,NA
+3014576,Chloride serum/plasma,Measurement,LOINC,Lab Test,S,2075-0,1970-01-01,2099-12-31,NA
+4015189,Microbial culture of sputum,Measurement,SNOMED,Procedure,S,104173009,1970-01-01,2099-12-31,NA
+19128022,{7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.18 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.215 MG Oral Tablet) / 7 (Ethinyl Estradiol 0.035 MG / norgestimate 0.25 MG Oral Tablet) / 7 (Inert Ingredients 1 MG Oral Tablet) } Pack [Or,Drug,RxNorm,Branded Pack,S,749785,2007-12-30,2099-12-31,NA
+4187458,Review of systems,Procedure,SNOMED,Procedure,S,415300000,1970-01-01,2099-12-31,NA
+4330583,Vasectomy,Procedure,SNOMED,Procedure,S,22523008,1970-01-01,2099-12-31,NA
+1549786,Ethinyl Estradiol,Drug,RxNorm,Ingredient,S,4124,1970-01-01,2099-12-31,NA
+8507,MALE,Gender,Gender,Gender,S,M,1970-01-01,2099-12-31,NA
+8532,FEMALE,Gender,Gender,Gender,S,F,1970-01-01,2099-12-31,NA

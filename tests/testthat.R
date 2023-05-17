@@ -92,4 +92,11 @@ for (connectionDetails in availableConnections) {
       CDMConnector::inSchema(connectionDetails$writeSchema, tableToEliminate)
     )
   }
+  DBI::dbDisconnect(connectionDetails$db)
 }
+
+connectionDetails <- list(
+  db = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+  writeSchema = "main",
+  writePrefix = NULL
+)

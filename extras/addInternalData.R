@@ -2,7 +2,9 @@ library(here)
 library(readr)
 library(usethis)
 
-domainInformation <- read.csv(here("extras", "domain_information.csv"))
+domainInformation <- read_csv(
+  here("extras", "domain_information.csv"), show_col_types = FALSE
+)
 
 patternfile <- read_csv(
   here::here("extras", "pattern_drug_strength.csv"),
@@ -25,8 +27,17 @@ patternfile <- read_csv(
   )
 )
 
-use_data(patternfile, domainInformation, internal = TRUE, overwrite = TRUE)
+mockDrugStrength <- read_csv(
+  here("extras", "drug_strength.csv"), show_col_types = FALSE
+)
+mockConcept <- read_csv(
+  here("extras", "concept.csv"), show_col_types = FALSE
+)
+mockConceptAncestor <- read_csv(
+  here("extras", "concept_ancestor.csv"), show_col_types = FALSE
+)
 
-#x <- list(drugSummary = list(col = c("a", "gahd", "jskd"), colType = c("chr", "chr", "chr"), fun = c("CDMConnector::plotAttrition")))
-#use_data(x, overwrite = TRUE)
-
+use_data(
+  patternfile, domainInformation, mockDrugStrength, mockConcept,
+  mockConceptAncestor, internal = TRUE, overwrite = TRUE
+)
