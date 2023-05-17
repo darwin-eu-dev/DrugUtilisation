@@ -57,7 +57,11 @@
 #' @export
 #'
 #' @examples
-mockDrugUtilisation <- function(connectionDetails,
+mockDrugUtilisation <- function(connectionDetails = list(
+                                  db = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+                                  writeSchema = "main",
+                                  writePrefix = NULL
+                                ),
                                 drug_exposure = NULL,
                                 drug_strength = NULL,
                                 observation_period = NULL,
