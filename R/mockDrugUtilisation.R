@@ -58,7 +58,7 @@
 #'
 #' @examples
 mockDrugUtilisation <- function(connectionDetails = list(
-                                  db = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+                                  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
                                   writeSchema = "main",
                                   writePrefix = NULL
                                 ),
@@ -72,7 +72,6 @@ mockDrugUtilisation <- function(connectionDetails = list(
                                 drug_exposure = NULL,
                                 condition_occurrence = NULL,
                                 ...) {
-
   # get vocabulary
   vocab <- vocabularyTables(concept, concept_ancestor, drug_strength)
   concept <- vocab$concept
@@ -94,7 +93,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
 
   # create drug_exposure if NULL
   if (is.null(drug_exposure)) {
-    drug_exposure <- createDrugExposure(person, concept, drug_strength)
+    drug_exposure <- createDrugExposure(person, concept)
   }
 
   # create condition_occurrence if NULL
@@ -105,24 +104,43 @@ mockDrugUtilisation <- function(connectionDetails = list(
   visit_occurrence <- createVisitOccurrence(condition_occurrence, drug_exposure)
 
   cohorts <- list(...)
+  cohorts <- createCohorts(cohorts, observation_period)
 
-  listTables <- c(
-    "concept", "concept_ancestor", "drug_strength", "person",
-    "observation_period", "drug_exposure", "condition_occurrence",
-    "visit_occurrence", names(cohorts)
+  listTables <- list(
+    concept = concept, concept_ancestor = concept_ancestor,
+    drug_strength = drug_strength, person = person,
+    observation_period = observation_period, drug_exposure = drug_exposure,
+    condition_occurrence = condition_occurrence,
+    visit_occurrence = visit_occurrence
   )
 
-  for (newTable in listTables) {
-    DBI::dbWriteTable(
-      db, CDMConnector::inSchema(writeSchema, newTable, CDMConnector::dbms(db)),
-      eval(parse(text = newTable)), overwrite = TRUE
+  con <- connectionDetails$con
+  writeSchema <- connectionDetails$writeSchema
+  writePrefix <- connectionDetails$writePrefix
+
+  for (newTable in names(listTables)) {
+    writeTable(con, writeSchema, newTable, writePrefix, listTables[[newTable]])
+  }
+  for (nam in names(cohorts)) {
+    writeTable(con, writeSchema, cohort, writePrefix, cohorts[[nam]])
+    writeTable(
+      con, writeSchema, paste0(cohort, "_set"), writePrefix,
+      attr(cohorts[[nam]], "cohort_set")
+    )
+    writeTable(
+      con, writeSchema, paste0(cohort, "_attrition"), writePrefix,
+      attr(cohorts[[nam]], "cohort_attrition")
+    )
+    writeTable(
+      con, writeSchema, paste0(cohort, "_count"), writePrefix,
+      attr(cohorts[[nam]], "cohort_count")
     )
   }
 
   cdm <- CDMConnector::cdm_from_con(
-    db,
+    con,
     cdm_schema = writeSchema,
-    cdm_tables = listTables[!(listTables %in% names(cohorts))],
+    cdm_tables = names(listTables),
     write_schema = writeSchema,
     cohort_tables = names(cohorts),
     write_prefix = connectionDetails$writePrefix
@@ -131,6 +149,17 @@ mockDrugUtilisation <- function(connectionDetails = list(
   return(cdm)
 }
 
+#' To write a table in the mock database
+#' @noRd
+writeTable <- function(con, writeSchema, name, writePrefix, x) {
+  DBI::dbWriteTable(
+    con,
+    CDMConnector::inSchema(
+      writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
+    ),
+    x, overwrite = TRUE
+  )
+}
 
 #' To create the vocabulary tables
 #' @noRd
@@ -223,6 +252,105 @@ createPersonTable <- function(numberIndividuals) {
 
 #' To create the observation period tables
 #' @noRd
-createObservationPeriod <- function(observation_period) {
+createObservationPeriod <- function(person) {
+  person %>%
+    dplyr::select("person_id", "birth_datetime") %>%
+    dplyr::mutate(upper_limit = as.Date("2023-01-01")) %>%
+    createFutureDate(
+      "observation_period_start_date", "birth_datetime", "upper_limit"
+    ) %>%
+    createFutureDate(
+      "observation_period_end_date", "observation_period_start_date",
+      "upper_limit"
+    ) %>%
+    dplyr::mutate(
+      observation_period_id = dplyr::row_number(),
+      period_type_concept_id = 44814724
+    ) %>%
+    dplyr::select(
+      "observation_period_id", "person_id", "observation_period_start_date",
+      "observation_period_end_date", "period_type_concept_id"
+    )
+}
 
+#' To add the attributes to the cohorts
+#' @noRd
+addCohortAttributes <- function(cohort) {
+  if (is.null(attr(cohort, "cohort_set"))) {
+    cohort <- addCohortSet(cohort)
+  }
+  if (is.null(attr(cohort, "cohort_count"))) {
+    cohort <- addCohortCount(cohort)
+  }
+  if (is.null(attr(cohort, "cohort_attrition"))) {
+    cohort <- addCohortAttrition(cohort)
+  }
+  return(cohort)
+}
+
+#' To create the cohorts or add the attributes to the existing ones
+#' @noRd
+createCohorts <- function(cohorts, observation_period) {
+  if (!("cohort1" %in% names(cohorts))) {
+
+    cohorts[["cohort1"]] <- observation_period %>%
+      dplyr::mutate(
+        cohort_start_date = as.Date(.data$observation_period_start_date + round(
+          r
+        ))
+      )
+      dplyr::select(
+        "cohort_definition_id", "subject_id" = "person_id", "cohort_start_date",
+        "cohort_end_date"
+      )
+  }
+  for (name in names(cohorts)) {
+    cohorts[[name]] <- addCohortAttributes(cohorts[[name]])
+  }
+  return(cohorts)
+}
+
+#' To create a random cohort from observation period
+#' @noRd
+createCohort <- function(observation_period) {
+  observation_period %>%
+    dplyr::group_by(.data$person_id) %>%
+    dplyr::filter(dplyr::row_number() == 1) %>%
+    dplyr::ungroup() %>%
+    createFutureDate(
+      "cohort_start_date", "observation_period_start_date",
+      "observation_period_end_date"
+    ) %>%
+    createFutureDate(
+      "cohort_end_date", "cohort_start_date", "observation_period_end_date"
+    ) %>%
+    dplyr::mutate(cohort_definition_id = sample(1:3, dplyr::n())) %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id" = "person_id", "cohort_start_date",
+      "cohort_end_date"
+    )
+}
+
+#' To create a random date between two dates
+#' @noRd
+createFutureDate <- function(x, newColumn, lowerLimit, upperLimit) {
+  x %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+      !!newColumn := .data[[lowerLimit]] + sample(
+        0:difftime(.data[[upperLimit]], .data[[lowerLimit]], units = "days"), 1
+      )
+    ) %>%
+    dplyr::ungroup()
+}
+
+#' To create a mock drug_exposure table
+#' @noRd
+createDrugExposure <- function(observation_period, concept) {
+  concepts <- concept %>%
+    dplyr::filter(.data$domain_id == "Drug") %>%
+    dplyr::filter(.data$concept_class_id != "Ingredient") %>%
+    dplyr::pull("concept_id")
+  observation_period %>%
+    dplyr::mutate(number_exposure = rpois(dplyr::n(), 3)) %>%
 }
