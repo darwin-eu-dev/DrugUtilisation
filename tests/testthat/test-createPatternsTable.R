@@ -1,3 +1,5 @@
+# To ask Kim to add units and visits concepts ids in the mock concept
+
 test_that("create patterns, correct output", {
  drug_strength <- tibble::tibble(
    drug_concept_id = c(1,1,2),
