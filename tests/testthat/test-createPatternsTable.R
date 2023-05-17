@@ -12,6 +12,8 @@ test_that("create patterns, correct output", {
 
  concept <- tibble::tibble(
    concept_name = c("Drug1", "Drug2", "Ing1", "Ing2", "Ing3", "AmountUnit", "NumUnit1", "NumUnit2","DenUnit", "DenUnit2","international unit", "milligram", "Actuation"),
+   concept_class_id = c("Branded Drug", "Branded Drug", "Ingredient", "Ingredient", "Ingredient"),
+   domain_id = "Drug",
    concept_id = c(1,2,13,14,15,4,7,8,10,11,8718,8576,45744809)
  )
 
