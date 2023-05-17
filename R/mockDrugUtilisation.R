@@ -92,10 +92,24 @@ mockDrugUtilisation <- function(connectionDetails = list(
     observation_period <- createObservationPeriod(person)
   }
 
+  # create drug_exposure if NULL
+  if (is.null(drug_exposure)) {
+    drug_exposure <- createDrugExposure(person, concept, drug_strength)
+  }
+
+  # create condition_occurrence if NULL
+  if (is.null(condition_occurrence)) {
+    condition_occurrence <- createConditionOccurrence(person, concept)
+  }
+
+  visit_occurrence <- createVisitOccurrence(condition_occurrence, drug_exposure)
+
+  cohorts <- list(...)
+
   listTables <- c(
-    "drug_strength", "drug_exposure", "person", "observation_period", "concept",
-    "condition_occurrence", "visit_occurrence", "concept_ancestor", "cohort1",
-    "cohort2"
+    "concept", "concept_ancestor", "drug_strength", "person",
+    "observation_period", "drug_exposure", "condition_occurrence",
+    "visit_occurrence", names(cohorts)
   )
 
   for (newTable in listTables) {
