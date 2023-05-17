@@ -15,7 +15,8 @@ test_that("functionality of addDailyDose function",{
                                     9551,9551,8576,8576,8576,8576,8576,8587,8587,9573,9573)
     )
 
-    cdm <- mockDrugUtilisation(drug_strength = drug_strength,
+    cdm <- mockDrugUtilisation(connectionDetails,
+                               drug_strength = drug_strength,
                                drug_exposure_size = 50)
 
     # should only add patterns 1 to 9, which are drugs 1:7, 10, 11, 25, 30
@@ -70,7 +71,8 @@ test_that("test for negative quantity or daily dose",{
     quantity = c(8,21,8,8)
   )
 
-  cdm <- mockDrugUtilisation(drug_strength = drug_strength,
+  cdm <- mockDrugUtilisation(connectionDetails,
+                             drug_strength = drug_strength,
                              drug_exposure = drug_exposure)
 
   result <- addDailyDose(cdm$drug_exposure, cdm, 1) %>%
@@ -119,7 +121,8 @@ test_that("test for different ingredient concept ids",{
                                   9551,9551,8576,8576,8576,8576,8576,8587,8587,9573,9573)
   )
 
-  cdm <- mockDrugUtilisation(drug_strength = drug_strength,
+  cdm <- mockDrugUtilisation(connectionDetails,
+                             drug_strength = drug_strength,
                              drug_exposure_size = 50)
 
   result <- addDailyDose(cdm$drug_exposure, cdm, 2) %>%
@@ -159,7 +162,8 @@ test_that("inputs for addDailyDose function",{
                                   9551,9551,8576,8576,8576,8576,8576,8587,8587,9573,9573)
   )
 
-  cdm <- mockDrugUtilisation(drug_strength = drug_strength,
+  cdm <- mockDrugUtilisation(connectionDetails,
+                             drug_strength = drug_strength,
                              drug_exposure_size = 50)
 
   expect_error(result <- addDailyDose())

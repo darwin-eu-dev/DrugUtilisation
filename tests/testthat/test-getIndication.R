@@ -43,7 +43,7 @@ test_that("test case single indication", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -209,7 +209,7 @@ test_that("test case single indication with unknown indication table", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -339,7 +339,7 @@ test_that("test case multiple indication with unknown indication table", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -450,7 +450,7 @@ test_that("test case multiple indication", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -574,7 +574,7 @@ test_that("test case indicationCohortName error message", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName_1,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -594,7 +594,7 @@ test_that("test case indicationCohortName error message", {
   )
 
   cdm_1 <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName_2,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -659,7 +659,7 @@ test_that("test input checks", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -773,7 +773,7 @@ test_that("test case multiple indication with NA", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -907,7 +907,7 @@ test_that("test case multiple unknown indication table behavour", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
@@ -975,7 +975,7 @@ test_that("test case multiple unknown indication table behavour", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
@@ -1033,10 +1033,7 @@ test_that("test case empty targetCohortName", {
       cohort_definition_id = numeric()
     )
 
-  cdm <-
-    mockDrugUtilisation(
-      cohort1 = targetCohortName
-    )
+  cdm <- mockDrugUtilisation(connectionDetails, cohort1 = targetCohortName)
 
   # check for empty targetCohortName
   expect_error(getIndication(

@@ -1,5 +1,5 @@
 test_that("test initial errors", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2),
       year_of_birth = as.integer(c(1995, 1993)),
@@ -131,7 +131,7 @@ test_that("test initial errors", {
 })
 
 test_that("test output format", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2),
       year_of_birth = as.integer(c(1995, 1993)),
@@ -161,7 +161,7 @@ test_that("test output format", {
 })
 
 test_that("test sex strata", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -270,7 +270,7 @@ test_that("test sex strata", {
 })
 
 test_that("test ageGroup strata", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -355,7 +355,7 @@ test_that("test ageGroup strata", {
 })
 
 test_that("test indexYear strata", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -434,7 +434,7 @@ test_that("test indexYear strata", {
 })
 
 test_that("test indication strata", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -510,7 +510,7 @@ test_that("test indication strata", {
 })
 
 test_that("test multiple conditions", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -602,7 +602,7 @@ test_that("test multiple conditions", {
 })
 
 test_that("test oneStrata option", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -684,7 +684,7 @@ test_that("test oneStrata option", {
 
 test_that("test case empty targetCohortName", {
 
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2),
       year_of_birth = as.integer(c(1995, 1993)),

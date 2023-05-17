@@ -43,7 +43,7 @@ test_that("test case single indication table summary", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -497,7 +497,7 @@ test_that("test case multiple indication table summary", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence

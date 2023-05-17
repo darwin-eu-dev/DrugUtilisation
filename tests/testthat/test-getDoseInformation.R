@@ -1,6 +1,6 @@
 
 test_that("test input parameters errors", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     drug_strength = dplyr::tibble(
       drug_concept_id = c(1, 2, 3, 4),
       ingredient_concept_id = c(1, 1, 1, 1),
@@ -34,7 +34,7 @@ test_that("test input parameters errors", {
 })
 
 test_that("test overlapMode", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
       person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
@@ -229,7 +229,7 @@ test_that("test overlapMode", {
 })
 
 test_that("test gapEra and eraJoinMode", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
       person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
@@ -434,7 +434,7 @@ test_that("test gapEra and eraJoinMode", {
 })
 
 test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
       person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
@@ -622,7 +622,7 @@ test_that("test splitSubexposures", {
       "2000-02-10"
     ))
   )
-  cdm <- mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(connectionDetails)
  ## cdm[["cohort1"]] <- insertMockTable(cdm, "cohort1", x)
   db <- attr(cdm, "dbcon")
   DBI::dbWithTransaction(db, {
@@ -832,7 +832,7 @@ test_that("test splitSubexposures", {
 })
 
 test_that("test no exposure found", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
       person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
@@ -915,7 +915,7 @@ test_that("test no exposure found", {
 })
 
 test_that("test empty dusCohortName", {
-cdm <- mockDrugUtilisation(
+cdm <- mockDrugUtilisation(connectionDetails,
   drug_exposure = dplyr::tibble(
     drug_exposure_id = 1:9,
     person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),

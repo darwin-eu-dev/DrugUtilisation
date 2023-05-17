@@ -15,7 +15,7 @@ test_that("create patterns, correct output", {
    concept_id = c(1,2,13,14,15,4,7,8,10,11,8718,8576,45744809)
  )
 
- cdm <- mockDrugUtilisation(drug_strength = drug_strength)
+ cdm <- mockDrugUtilisation(connectionDetails, drug_strength = drug_strength)
  cdm[["concept"]] <- concept
 
  newpattern <- createPatternsTable(cdm)
@@ -43,7 +43,7 @@ test_that("create patterns, expected errors", {
     denominator_unit_concept_id = c(NA,10,45744809)
   )
 
-  cdm <- mockDrugUtilisation(drug_strength = drug_strength)
+  cdm <- mockDrugUtilisation(connectionDetails, drug_strength = drug_strength)
 
   expect_error(createPatternsTable("cdm"))
   expect_error(createPatternsTable(cdm))

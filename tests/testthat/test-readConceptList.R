@@ -1,5 +1,5 @@
 test_that("test inputs", {
-  cdm <- mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(connectionDetails)
   expect_error(readConceptList())
   expect_error(readConceptList(cdm = cdm))
   expect_error(readConceptList(cdm = cdm, path = 1))
@@ -17,7 +17,7 @@ test_that("functionality with mock concepts", {
     ancestor_concept_id = c(1,2,2,3),
     descendant_concept_id = c(1,2,3,3)
   )
-  cdm <-   cdm <- mockDrugUtilisation(seed = 1, concept_ancestor = conceptancestor)
+  cdm <-   cdm <- mockDrugUtilisation(connectionDetails, seed = 1, concept_ancestor = conceptancestor)
   x <- readConceptList(
     cdm = cdm, path =  system.file(package = "DrugUtilisation", "concepts2")
   )

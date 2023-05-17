@@ -1,5 +1,5 @@
 test_that("test inputs", {
-  cdm <- mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(connectionDetails)
   expect_error(generateDrugUtilisationCohortSet())
   expect_error(generateDrugUtilisationCohortSet(cdm = cdm))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", 1))
@@ -42,14 +42,14 @@ test_that("test inputs", {
 })
 
 test_that("class", {
-  cdm <- mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(connectionDetails)
   cdm <- generateDrugUtilisationCohortSet(cdm, "dus", list(albuterol = 1))
   expect_true("GeneratedCohortSet" %in% class(cdm$dus))
 })
 
 test_that("basic functionality drug_conceptId", {
   #concept1 <- system.file(package = "DrugUtilisation", "concept1.json")
-  cdm <- mockDrugUtilisation(seed = 1)
+  cdm <- mockDrugUtilisation(connectionDetails, seed = 1)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", list(albuterol = 1),
     gapEra = 834,

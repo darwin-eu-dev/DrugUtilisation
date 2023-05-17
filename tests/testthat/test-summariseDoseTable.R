@@ -2,7 +2,7 @@
 test_that("expected errors on inputs", {
   # condition_occurrence is going to be the strataCohortTable, person the
   # doseTable
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     condition_occurrence = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 2, 1),
@@ -117,7 +117,7 @@ test_that("expected errors on inputs", {
 })
 
 test_that("check output format", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     condition_occurrence = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 2, 1),
@@ -161,7 +161,7 @@ test_that("check all estimates", {
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "std"
   )
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     condition_occurrence = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 2, 1),
@@ -211,7 +211,7 @@ test_that("check all estimates", {
 })
 
 test_that("check obscure counts", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     condition_occurrence = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 2, 1),
