@@ -93,12 +93,14 @@ mockDrugUtilisation <- function(connectionDetails = list(
 
   # create drug_exposure if NULL
   if (is.null(drug_exposure)) {
-    drug_exposure <- createDrugExposure(person, concept)
+    drug_exposure <- createDrugExposure(observation_period, concept)
   }
 
   # create condition_occurrence if NULL
   if (is.null(condition_occurrence)) {
-    condition_occurrence <- createConditionOccurrence(person, concept)
+    condition_occurrence <- createConditionOccurrence(
+      observation_period, concept
+    )
   }
 
   visit_occurrence <- createVisitOccurrence(condition_occurrence, drug_exposure)
@@ -256,10 +258,10 @@ createObservationPeriod <- function(person) {
   person %>%
     dplyr::select("person_id", "birth_datetime") %>%
     dplyr::mutate(upper_limit = as.Date("2023-01-01")) %>%
-    createFutureDate(
+    createDate(
       "observation_period_start_date", "birth_datetime", "upper_limit"
     ) %>%
-    createFutureDate(
+    createDate(
       "observation_period_end_date", "observation_period_start_date",
       "upper_limit"
     ) %>%
@@ -292,17 +294,10 @@ addCohortAttributes <- function(cohort) {
 #' @noRd
 createCohorts <- function(cohorts, observation_period) {
   if (!("cohort1" %in% names(cohorts))) {
-
-    cohorts[["cohort1"]] <- observation_period %>%
-      dplyr::mutate(
-        cohort_start_date = as.Date(.data$observation_period_start_date + round(
-          r
-        ))
-      )
-      dplyr::select(
-        "cohort_definition_id", "subject_id" = "person_id", "cohort_start_date",
-        "cohort_end_date"
-      )
+    cohorts[["cohort1"]] <- createCohort(observation_period)
+  }
+  if (!("cohort2" %in% names(cohorts))) {
+    cohorts[["cohort2"]] <- createCohort(observation_period)
   }
   for (name in names(cohorts)) {
     cohorts[[name]] <- addCohortAttributes(cohorts[[name]])
@@ -313,18 +308,21 @@ createCohorts <- function(cohorts, observation_period) {
 #' To create a random cohort from observation period
 #' @noRd
 createCohort <- function(observation_period) {
-  observation_period %>%
+  cohort <- observation_period %>%
     dplyr::group_by(.data$person_id) %>%
     dplyr::filter(dplyr::row_number() == 1) %>%
     dplyr::ungroup() %>%
-    createFutureDate(
+    createDate(
       "cohort_start_date", "observation_period_start_date",
       "observation_period_end_date"
     ) %>%
-    createFutureDate(
+    createDate(
       "cohort_end_date", "cohort_start_date", "observation_period_end_date"
+    )
+  cohort <- cohort %>%
+    dplyr::mutate(
+      cohort_definition_id = sample(1:3, nrow(cohort), replace = T)
     ) %>%
-    dplyr::mutate(cohort_definition_id = sample(1:3, dplyr::n())) %>%
     dplyr::select(
       "cohort_definition_id", "subject_id" = "person_id", "cohort_start_date",
       "cohort_end_date"
@@ -333,7 +331,7 @@ createCohort <- function(observation_period) {
 
 #' To create a random date between two dates
 #' @noRd
-createFutureDate <- function(x, newColumn, lowerLimit, upperLimit) {
+createDate <- function(x, newColumn, lowerLimit, upperLimit) {
   x %>%
     dplyr::rowwise() %>%
     dplyr::mutate(
@@ -351,6 +349,111 @@ createDrugExposure <- function(observation_period, concept) {
     dplyr::filter(.data$domain_id == "Drug") %>%
     dplyr::filter(.data$concept_class_id != "Ingredient") %>%
     dplyr::pull("concept_id")
-  observation_period %>%
-    dplyr::mutate(number_exposure = rpois(dplyr::n(), 3)) %>%
+  if (length(concepts) > 0) {
+    drug_exposure <- observation_period %>%
+      dplyr::mutate(number_records = rpois(dplyr::n(), 3)) %>%
+      tidyr::uncount(.data$number_records) %>%
+      createDate(
+        "drug_exposure_start_date", "observation_period_start_date",
+        "observation_period_end_date"
+      ) %>%
+      createDate(
+        "drug_exposure_end_date", "drug_exposure_start_date",
+        "observation_period_end_date"
+      ) %>%
+      dplyr::mutate(
+        drug_exposure_id = dplyr::row_number(),
+        drug_type_concept_id = 38000177
+      )
+    drug_exposure <- drug_exposure %>%
+      dplyr::mutate(
+        drug_concept_id = sample(concepts, nrow(drug_exposure), replace = T),
+        quantity = sample(
+          c(1, seq(5, 50, 5), seq(60, 100, 10)), nrow(drug_exposure),
+          replace = T
+        )
+      ) %>%
+      dplyr::select(
+        "drug_exposure_id", "person_id", "drug_concept_id",
+        "drug_exposure_start_date", "drug_exposure_end_date",
+        "drug_type_concept_id", "quantity"
+      )
+  } else {
+    drug_exposure <- dplyr::tibble(
+      drug_exposure_id = numeric(), person_id = numeric(),
+      drug_concept_id = numeric(),
+      drug_exposure_start_date = as.Date(x = integer(0), origin = "1970-01-01"),
+      drug_exposure_end_date = as.Date(x = integer(0), origin = "1970-01-01"),
+      drug_type_concept_id = numeric(), quantity = numeric()
+    )
+  }
+  return(drug_exposure)
+}
+
+#' To create a condition_occurrence table based on observation_period
+#' @noRd
+createConditionOccurrence <- function(observation_period, concept) {
+  concepts <- concept %>%
+    dplyr::filter(.data$domain_id == "Condition") %>%
+    dplyr::pull("concept_id")
+  if (length(concepts) > 0) {
+    condition_occurrence <- observation_period %>%
+      dplyr::mutate(number_records = rpois(dplyr::n(), 2)) %>%
+      tidyr::uncount(.data$number_records) %>%
+      createDate(
+        "condition_start_date", "observation_period_start_date",
+        "observation_period_end_date"
+      ) %>%
+      createDate(
+        "condition_end_date", "condition_start_date",
+        "observation_period_end_date"
+      ) %>%
+      dplyr::mutate(
+        condition_occurrence_id = dplyr::row_number(),
+        condition_type_concept_id = 32020
+      )
+    condition_occurrence <- condition_occurrence %>%
+      dplyr::mutate(condition_concept_id = sample(
+        concepts, nrow(condition_occurrence), replace = T
+      )) %>%
+      dplyr::select(
+        "condition_occurrence_id", "person_id", "condition_concept_id",
+        "condition_start_date", "condition_end_date",
+        "condition_type_concept_id"
+      )
+  } else {
+    condition_occurrence <- dplyr::tibble(
+      condition_occurrence_id = numeric(), person_id = numeric(),
+      condition_concept_id = numeric(),
+      condition_start_date = as.Date(x = integer(0), origin = "1970-01-01"),
+      condition_end_date = as.Date(x = integer(0), origin = "1970-01-01"),
+      condition_type_concept_id = numeric()
+    )
+  }
+  return(condition_occurrence)
+}
+
+#' To create visit occurrence from condition_occurrence and drug_exposure
+#' @noRd
+createVisitOccurrence <- function(condition_occurrence, drug_exposure) {
+  condition_occurrence %>%
+    dplyr::select(
+      "person_id", "visit_start_date" = "condition_start_date",
+      "visit_end_date" = "condition_end_date"
+    ) %>%
+    dplyr::union_all(
+      drug_exposure %>%
+        dplyr::select(
+          "person_id", "visit_start_date" = "drug_exposure_start_date",
+          "visit_end_date" = "drug_exposure_end_date"
+        )
+    ) %>%
+    dplyr::mutate(
+      visit_occurrence_id = dplyr::row_number(),
+      visit_concept_id = 9202
+    ) %>%
+    dplyr::select(
+      "visit_occurrence_id", "person_id", "visit_concept_id",
+      "visit_start_date", "visit_end_date"
+    )
 }
