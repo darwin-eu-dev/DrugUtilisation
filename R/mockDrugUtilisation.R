@@ -122,9 +122,9 @@ mockDrugUtilisation <- function(connectionDetails = list(
   cdm <- CDMConnector::cdm_from_con(
     db,
     cdm_schema = writeSchema,
-    cdm_tables = listTables[!(listTables %in% c("cohort1", "cohort2"))],
+    cdm_tables = listTables[!(listTables %in% names(cohorts))],
     write_schema = writeSchema,
-    cohort_tables = c("cohort1", "cohort2"),
+    cohort_tables = names(cohorts),
     write_prefix = connectionDetails$writePrefix
   )
 
