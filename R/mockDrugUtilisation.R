@@ -17,43 +17,22 @@
 #' It creates a mock database for testing drugutilisation package
 #'
 #' @param connectionDetails Details of the connection
-#' @param drug_exposure default null user can define its own table
-#' @param drug_strength default null user can define its own table
-#' @param observation_period default null user can define its own table
-#' @param condition_occurrence default null user can define its own table
-#' @param visit_occurrence default null user can define its own visit_occurrence table
-#' @param person default null user can define its own table
-#' @param drug_concept_id_size number of unique drug concept id
-#' @param ingredient_concept_id_size number of unique drug ingredient concept id
-#' @param drug_exposure_size number of unique drug exposure
-#' @param patient_size number of unique patient
-#' @param min_drug_exposure_start_date user define minimum drug exposure start date
-#' @param max_drug_exposure_start_date user define maximium drug exposure start date
-#' @param seed seed
-#' @param condition_concept_id_size number of unique row in the condition concept table
-#' @param visit_concept_id_size number of unique visit concept id
-#' @param visit_occurrence_id_size number of unique visit occurrence id
-#' @param earliest_date_of_birth the earliest date of birth of patient in person table format "dd-mm-yyyy"
-#' @param latest_date_of_birth the latest date of birth for patient in person table format "dd-mm-yyyy"
-#' @param earliest_observation_start_date the earliest observation start date for patient format "dd-mm-yyyy"
-#' @param latest_observation_start_date the latest observation start date for patient format "dd-mm-yyyy"
-#' @param min_days_to_observation_end the minimum number of days of the observational integer
-#' @param max_days_to_observation_end the maximum number of days of the observation period integer
-#' @param earliest_condition_start_date the earliest condition start date for patient format "dd-mm-yyyy"
-#' @param earliest_visit_start_date the earliest visit start date for patient format "dd-mm-yyyy"
-#' @param latest_condition_start_date the latest condition start date for patient format "dd-mm-yyyy"
-#' @param latest_visit_start_date the latest visit start date for patient format "dd-mm-yyyy"
-#' @param min_days_to_condition_end the minimum number of days of the condition integer
-#' @param min_days_to_visit_end the minimum number of days of the visit integer
-#' @param max_days_to_condition_end the maximum number of days of the condition integer
-#' @param max_days_to_visit_end the maximum number of days of the visit integer
-
-#' @param concept_ancestor the concept ancestor table
-#' @param ancestor_concept_id_size the size of ceoncept ancestor table
-
-#' @param cohort1 cohort table for test to run in getindication
-#' @param cohort2 cohort table for test to run in getindication
-#' @return
+#' @param numberIndividuals Number of individuals in the mock cdm
+#' @param seed Seed for the random numbers
+#' @param concept A concept tibble, if NULL a mock one is created
+#' @param concept_ancestor A concept_ancestor tibble, if NULL a mock one is
+#' created
+#' @param drug_strength A drug_strength tibble, if NULL a mock one is created
+#' @param person A person tibble, if NULL a mock one is created
+#' @param observation_period A observation_period tibble, if NULL a mock one is
+#' created
+#' @param drug_exposure A drug_exposure tibble, if NULL a mock one is created
+#' @param condition_occurrence A condition_occurrence tibble, if NULL a mock one
+#' is created
+#' @param ... Cohorts can be added to the cdm reference, cohort1 and cohort2
+#' will be created if not provided
+#'
+#' @return A cdm reference with the mock tables
 #' @export
 #'
 #' @examples
@@ -124,17 +103,17 @@ mockDrugUtilisation <- function(connectionDetails = list(
     writeTable(con, writeSchema, newTable, writePrefix, listTables[[newTable]])
   }
   for (nam in names(cohorts)) {
-    writeTable(con, writeSchema, cohort, writePrefix, cohorts[[nam]])
+    writeTable(con, writeSchema, nam, writePrefix, cohorts[[nam]])
     writeTable(
-      con, writeSchema, paste0(cohort, "_set"), writePrefix,
+      con, writeSchema, paste0(nam, "_set"), writePrefix,
       attr(cohorts[[nam]], "cohort_set")
     )
     writeTable(
-      con, writeSchema, paste0(cohort, "_attrition"), writePrefix,
+      con, writeSchema, paste0(nam, "_attrition"), writePrefix,
       attr(cohorts[[nam]], "cohort_attrition")
     )
     writeTable(
-      con, writeSchema, paste0(cohort, "_count"), writePrefix,
+      con, writeSchema, paste0(nam, "_count"), writePrefix,
       attr(cohorts[[nam]], "cohort_count")
     )
   }
@@ -159,7 +138,7 @@ writeTable <- function(con, writeSchema, name, writePrefix, x) {
     CDMConnector::inSchema(
       writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
     ),
-    x, overwrite = TRUE
+    as.data.frame(x), overwrite = TRUE
   )
 }
 
@@ -241,8 +220,8 @@ createPersonTable <- function(numberIndividuals) {
       birth_datetime = as.Date(
         paste0(.data$year_of_birth, "-01-01"), "%Y-%m-%d"
       ) +
-      months(.data$month_of_birth - 1) +
-      lubridate::days(.data$day_of_birth - 1)
+        months(.data$month_of_birth - 1) +
+        lubridate::days(.data$day_of_birth - 1)
     ) %>%
     dplyr::mutate(
       year_of_birth = lubridate::year(.data$birth_datetime),
