@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' \donttest{
-#'   library(xxx)
+#'   library(DrugUtilisation)
 #'   db <- DBI::dbConnect()
 #'   cdm <- mockCdm(db, ...)
 #'   cdm <- generateConceptCohortSet(

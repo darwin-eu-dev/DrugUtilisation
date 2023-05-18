@@ -48,7 +48,6 @@ Imports:
     tidyr,
     rlang,
     RJSONIO,
-    tibble,
     stringr,
     cli,
     PatientProfiles,
