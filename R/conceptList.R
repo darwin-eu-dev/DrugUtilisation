@@ -1,6 +1,6 @@
 # Copyright 2022 DARWIN EU (C)
 #
-# This file is part of DrugUtilizationCharacteristics
+# This file is part of DrugUtilisation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +14,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#' Get concept ids from a provided path to json files
+#'
+#' @param path path to a file or folder containing jsons to be read
+#' @param cdm A cdm reference created with CDMConnector
+#'
+#' @return list of concept_ids and respective concept_ids of interest
+#' @export
+#'
+#' @examples
+#'
+readConceptList <- function(path, cdm) {
+  # initial checks
+  conceptSets <- checkPath(path)
+  checkCdm(cdm)
+
+  # first part: read jsons
+  if (!is.null(path)) {
+    tryCatch(
+      expr = conceptList <- readConceptSet(conceptSets),
+      error = function(e) {
+        stop("The json file is not a properly formated OMOP concept set.")
+      }
+    )
+  }
+
+  # second part: produce output list
+  conceptFinalList <- formatConceptList(cdm, conceptList)
+
+  # return list
+  return(conceptFinalList)
+}
+
 #' Put concept ids from all cohorts of interest in the required list format
 #'
 #' @param conceptList table with all the concept ids read, with their respective
 #' cohort, exclusion and descendant information
+#' @param cdm A cdm reference created with CDMConnector
 #'
 #' @return list of concept_ids and respective cohort_definition_ids of interest
 #' @noRd
-formatConceptList <- function(cdm, conceptList) {
+formatConceptList <- function(conceptList, cdm) {
   conceptList <- conceptList %>%
     dplyr::filter(.data$include_descendants == FALSE) %>%
     dplyr::union(
@@ -55,38 +88,6 @@ formatConceptList <- function(cdm, conceptList) {
   for(n in conceptList$cohort_name %>% unique()) {
     conceptFinalList[[n]] <- conceptList %>% dplyr::filter(.data$cohort_name == n) %>% dplyr::select("drug_concept_id") %>% dplyr::pull()
   }
-  return(conceptFinalList)
-}
-
-#' Get concept ids from a provided path to json files
-#'
-#' @param path path to a file or folder containing jsons to be read
-#' @param cdm object created with CDMConnector::cdm_from_con.
-#'
-#' @return list of concept_ids and respective concept_ids of interest
-#' @export
-#'
-#' @examples
-#'
-readConceptList <- function(path, cdm) {
-  # initial checks
-  conceptSets <- checkPath(path)
-  checkCdm(cdm)
-
-  # first part: read jsons
-  if (!is.null(path)) {
-    tryCatch(
-      expr = conceptList <- readConceptSet(conceptSets),
-      error = function(e) {
-        stop("The json file is not a properly formated OMOP concept set.")
-      }
-    )
-  }
-
-  # second part: produce output list
-  conceptFinalList <- formatConceptList(cdm, conceptList)
-
-  # return list
   return(conceptFinalList)
 }
 
