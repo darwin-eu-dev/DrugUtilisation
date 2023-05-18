@@ -51,6 +51,9 @@ Imports:
     tibble,
     stringr,
     cli,
-    PatientProfiles
+    PatientProfiles,
+    magrittr,
+    purrr,
+    CodelistGenerator
 Depends: 
     R (>= 2.10)

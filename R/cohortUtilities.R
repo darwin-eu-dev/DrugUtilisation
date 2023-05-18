@@ -218,12 +218,12 @@ getEndName <- function(domain) {
 }
 
 #' @noRd
-emptyCohort <- function(cdm, name = CDMConnector:::uniqueTableName()) {
+emptyCohort <- function(cdm, name = CDMConnector::uniqueTableName()) {
   writePrefix <- attr(cdm, "write_prefix")
   writeSchema <- attr(cdm, "write_schema")
   con <- attr(cdm, "dbcon")
   if (!is.null(writePrefix)) {
-    name <- CDMConnector:::inSchema(
+    name <- CDMConnector::inSchema(
       writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
     )
     temporary <- FALSE
