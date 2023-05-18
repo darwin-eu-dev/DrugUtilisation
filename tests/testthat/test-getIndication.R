@@ -34,7 +34,8 @@ test_that("test case single indication", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -43,7 +44,8 @@ test_that("test case single indication", {
   )
 
   cdm <-
-    mockDrugUtilisation(connectionDetails,
+    mockDrugUtilisation(
+      connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -144,7 +146,6 @@ test_that("test case single indication", {
     indicationGap = NA
   )
 
-
   # check for indication NA all indication after
   expect_true(equalTibble(
     res_NA[["Any"]] %>%
@@ -198,7 +199,8 @@ test_that("test case single indication with unknown indication table", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -326,7 +328,8 @@ test_that("test case multiple indication with unknown indication table", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -435,7 +438,8 @@ test_that("test case multiple indication", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -556,7 +560,8 @@ test_that("test case indicationCohortName error message", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -640,7 +645,8 @@ test_that("test input checks", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -753,7 +759,8 @@ test_that("test case multiple indication with NA", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -881,12 +888,13 @@ test_that("test case multiple unknown indication table behavour", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   observation <- dplyr::tibble(
     person_id = 1,
-    observation_period_start_date = as.Date("2020-01-01")
+    observation_date = as.Date("2020-01-01")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -910,7 +918,7 @@ test_that("test case multiple unknown indication table behavour", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, 6),
-    unknownIndicationTable = c("observation_period", "condition_occurrence")
+    unknownIndicationTable = c("observation", "condition_occurrence")
   )
 
   expect_true(all(res_m$"0" %>% dplyr::select(indication_id) %>% dplyr::collect() == c(1, -1, -1)))
@@ -949,12 +957,13 @@ test_that("test case multiple unknown indication table behavour", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 2,
-    condition_start_date = as.Date("2018-01-02")
+    condition_start_date = as.Date("2018-01-02"),
+    condition_end_date = as.Date("2018-01-02")
   )
 
   observation <- dplyr::tibble(
     person_id = 1,
-    observation_period_start_date = as.Date("2020-01-01")
+    observation_date = as.Date("2020-01-01")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -978,7 +987,7 @@ test_that("test case multiple unknown indication table behavour", {
     targetCohortDefinitionId = 1,
     indicationDefinitionSet = indicationDefinitionSet,
     indicationGap = c(0, 1, NA),
-    unknownIndicationTable = c("observation_period", "condition_occurrence")
+    unknownIndicationTable = c("observation", "condition_occurrence")
   )
 
   expect_true(all(res_t[["0"]] %>% dplyr::pull("indication_id") == c(0, -1, -1)))
@@ -1012,15 +1021,9 @@ test_that("test case multiple unknown indication table behavour", {
 })
 
 test_that("test case empty targetCohortName", {
-  targetCohortName <-
-    dplyr::tibble(
-      subject_id = numeric(),
-      cohort_start_date = date(),
-      cohort_end_date = date(),
-      cohort_definition_id = numeric()
-    )
-
-  cdm <- mockDrugUtilisation(connectionDetails, cohort1 = targetCohortName)
+  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
+    dplyr::filter(.data$subject_id == 0)
 
   # check for empty targetCohortName
   expect_error(getIndication(

@@ -52,7 +52,9 @@ checkDependantVariables <- function(inputs) {
     if (!(inputs$targetCohortName %in% names(inputs$cdm))) {
       cli::cli_abort("targetCohortName is not in the cdm reference")
     }
-    numberRows <- cdm[[targetCohortName]] %>% dplyr::tally() %>% dplyr::pull()
+    numberRows <- inputs$cdm[[inputs$targetCohortName]] %>%
+      dplyr::tally() %>%
+      dplyr::pull()
     if (numberRows == 0) {
       cli::cli_abort("targetCohort is empty")
     }

@@ -50,6 +50,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
                                 observation_period = NULL,
                                 drug_exposure = NULL,
                                 condition_occurrence = NULL,
+                                observation = NULL,
                                 ...) {
   # get vocabulary
   vocab <- vocabularyTables(concept, concept_ancestor, drug_strength)
@@ -82,6 +83,11 @@ mockDrugUtilisation <- function(connectionDetails = list(
     )
   }
 
+  # create observation if NULL
+  if (is.null(observation)) {
+    observation <- createObservation(observation_period, concept)
+  }
+
   visit_occurrence <- createVisitOccurrence(condition_occurrence, drug_exposure)
 
   cohorts <- list(...)
@@ -92,7 +98,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
     drug_strength = drug_strength, person = person,
     observation_period = observation_period, drug_exposure = drug_exposure,
     condition_occurrence = condition_occurrence,
-    visit_occurrence = visit_occurrence
+    visit_occurrence = visit_occurrence, observation = observation
   )
 
   con <- connectionDetails$con
@@ -435,4 +441,41 @@ createVisitOccurrence <- function(condition_occurrence, drug_exposure) {
       "visit_occurrence_id", "person_id", "visit_concept_id",
       "visit_start_date", "visit_end_date"
     )
+}
+
+#' To create observation table based on observation_period
+#' @noRd
+createObservation <- function(observation_period, concept) {
+  concepts <- concept %>%
+    dplyr::filter(.data$domain_id == "Observation") %>%
+    dplyr::pull("concept_id")
+  if (length(concepts) > 0) {
+    observation <- observation_period %>%
+      dplyr::mutate(number_records = rpois(dplyr::n(), 2)) %>%
+      tidyr::uncount(.data$number_records) %>%
+      createDate(
+        "observation_date", "observation_period_start_date",
+        "observation_period_end_date"
+      ) %>%
+      dplyr::mutate(
+        observation_id = dplyr::row_number(),
+        observation_type_concept_id = 32020
+      )
+    observation <- observation %>%
+      dplyr::mutate(observation_concept_id = sample(
+        concepts, nrow(observation), replace = T
+      )) %>%
+      dplyr::select(
+        "observation_id", "person_id", "observation_concept_id",
+        "observation_date", "observation_type_concept_id"
+      )
+  } else {
+    observation <- dplyr::tibble(
+      observation_id = numeric(), person_id = numeric(),
+      observation_concept_id = numeric(),
+      observation_date = as.Date(x = integer(0), origin = "1970-01-01"),
+      observation_type_concept_id = numeric()
+    )
+  }
+  return(observation)
 }
