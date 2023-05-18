@@ -37,14 +37,14 @@ equalTibble <- function(x, y) {
 availableConnections <- list()
 
 availableConnections$duckdb <- list(
-  db = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
   writeSchema = "main",
   writePrefix = NULL
 )
 
 if (Sys.getenv("DB_USER") != "") {
   availableConnections$postgres <- list(
-    db = DBI::dbConnect(
+    con = DBI::dbConnect(
       RPostgres::Postgres(),
       dbname = "cdm_gold_202201",
       port = Sys.getenv("DB_PORT"),
@@ -59,7 +59,7 @@ if (Sys.getenv("DB_USER") != "") {
 
 if (Sys.getenv("CDM5_REDSHIFT_DBNAME") != "") {
   availableConnections$redshift <- list(
-    db = DBI::dbConnect(
+    con = DBI::dbConnect(
       RPostgres::Redshift(),
       dbname = Sys.getenv("CDM5_REDSHIFT_DBNAME"),
       port = Sys.getenv("CDM5_REDSHIFT_PORT"),
@@ -96,7 +96,7 @@ for (connectionDetails in availableConnections) {
 }
 
 connectionDetails <- list(
-  db = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
   writeSchema = "main",
   writePrefix = NULL
 )
