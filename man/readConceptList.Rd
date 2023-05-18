@@ -9,7 +9,7 @@ readConceptList(path, cdm)
 \arguments{
 \item{path}{path to a file or folder containing jsons to be read}
 
-\item{cdm}{object created with CDMConnector::cdm_from_con.}
+\item{cdm}{A cdm reference created with CDMConnector}
 }
 \value{
 list of concept_ids and respective concept_ids of interest

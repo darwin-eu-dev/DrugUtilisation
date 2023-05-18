@@ -15,8 +15,8 @@ getDoseInformation(
   sameIndexMode = "Sum",
   imputeDuration = "eliminate",
   imputeDailyDose = "eliminate",
-  durationRange = c(1, NA),
-  dailyDoseRange = c(0, NA)
+  durationRange = c(1, Inf),
+  dailyDoseRange = c(0, Inf)
 )
 }
 \arguments{
