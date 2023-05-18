@@ -42,7 +42,7 @@ Generates a cohort for a certain list of concepts.
 }
 \examples{
 \donttest{
-  library(xxx)
+  library(DrugUtilisation)
   db <- DBI::dbConnect()
   cdm <- mockCdm(db, ...)
   cdm <- generateConceptCohortSet(
