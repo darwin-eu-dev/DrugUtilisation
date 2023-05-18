@@ -116,8 +116,8 @@ getDoseInformation <- function(cdm,
                                sameIndexMode = "Sum",
                                imputeDuration = "eliminate",
                                imputeDailyDose = "eliminate",
-                               durationRange = c(1, NA),
-                               dailyDoseRange = c(0, NA)) {
+                               durationRange = c(1, Inf),
+                               dailyDoseRange = c(0, Inf)) {
   # tables to be deleted
   firstTempTable <- getOption("dbplyr_table_name", 0) + 1
 
