@@ -34,7 +34,8 @@ test_that("test case single indication table summary", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -488,7 +489,8 @@ test_that("test case multiple indication table summary", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
