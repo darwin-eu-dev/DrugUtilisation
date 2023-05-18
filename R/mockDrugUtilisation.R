@@ -51,6 +51,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
                                 drug_exposure = NULL,
                                 condition_occurrence = NULL,
                                 observation = NULL,
+                                extraTables = list(),
                                 ...) {
   # get vocabulary
   vocab <- vocabularyTables(concept, concept_ancestor, drug_strength)
@@ -64,6 +65,17 @@ mockDrugUtilisation <- function(connectionDetails = list(
   # create person if NULL
   if (is.null(person)) {
     person <- createPersonTable(numberIndividuals)
+  } else {
+    person <- person %>%
+      dplyr::mutate(birth_datetime = as.Date(
+        paste(
+          .data$year_of_birth,
+          dplyr::if_else(is.na(.data$month_of_birth), 1, .data$month_of_birth),
+          dplyr::if_else(is.na(.data$day_of_birth), 1, .data$day_of_birth),
+          sep = "-"
+        ),
+        "%Y-%m-%d"
+      ))
   }
 
   # create observation_period if NULL
@@ -123,6 +135,9 @@ mockDrugUtilisation <- function(connectionDetails = list(
       attr(cohorts[[nam]], "cohort_count")
     )
   }
+  for (newTable in names(extraTables)) {
+    writeTable(con, writeSchema, newTable, writePrefix, extraTables[[newTable]])
+  }
 
   cdm <- CDMConnector::cdm_from_con(
     con,
@@ -132,6 +147,12 @@ mockDrugUtilisation <- function(connectionDetails = list(
     cohort_tables = names(cohorts),
     write_prefix = connectionDetails$writePrefix
   )
+
+  for (newTable in names(extraTables)) {
+    cdm[[newTable]] <- dplyr::tbl(con, CDMConnector::inSchema(
+      writeSchema, paste0(writePrefix, newTable), CDMConnector::dbms(con)
+    ))
+  }
 
   return(cdm)
 }

@@ -138,6 +138,7 @@ test_that("test output format", {
       year_of_birth = as.integer(c(1995, 1993)),
       month_of_birth = as.integer(c(10, 11)),
       day_of_birth = as.integer(c(1, 12)),
+      birth_datetime = as.Date(c("1995-10-01", "1995-11-12")),
       gender_concept_id = c(8532, 8507)
     ),
     cohort1 = dplyr::tibble(
@@ -692,12 +693,10 @@ test_that("test case empty targetCohortName", {
       month_of_birth = as.integer(c(10, 11)),
       day_of_birth = as.integer(c(1, 12)),
       gender_concept_id = c(8532, 8507)
-    ),
-    cohort1 =  dplyr::tibble(subject_id = numeric(),
-                                cohort_start_date = date(),
-                                cohort_end_date =date(),
-                                cohort_definition_id = numeric())
+    )
   )
+  cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
+    dplyr::filter(.data$subject_id == 0)
   expect_error(getStratification(
     cdm = cdm, targetCohortName = "cohort1", sex = "Both", targetCohortId = 1
   ))
