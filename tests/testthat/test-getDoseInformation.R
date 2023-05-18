@@ -1,6 +1,7 @@
 
 test_that("test input parameters errors", {
-  cdm <- mockDrugUtilisation(connectionDetails,
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
     drug_strength = dplyr::tibble(
       drug_concept_id = c(1, 2, 3, 4),
       ingredient_concept_id = c(1, 1, 1, 1),
@@ -34,11 +35,12 @@ test_that("test input parameters errors", {
 })
 
 test_that("test overlapMode", {
-  cdm <- mockDrugUtilisation(connectionDetails,
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
       person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
-      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
+      drug_concept_id = c(2, 3, 4, 4, 3, 2, 2, 3, 5),
       drug_exposure_start_date = as.Date(c(
         "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
         "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
@@ -49,8 +51,20 @@ test_that("test overlapMode", {
       )),
       quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
     ),
+    concept = dplyr::tibble(
+      concept_id = c(1, 2, 3, 4, 5, 8576),
+      concept_name = c("ingredient1", "drug2", "drug3", "drug4", "drug5", "milligram"),
+      domain_id = c(rep("Drug", 5), "Unit"),
+      vocabulary_id = c(rep("RxNorm", 5), "Unit"),
+      standard_concept = "S",
+      concept_class_id = c("Ingredient", rep("Drug", 4), "Unit"),
+    ),
+    concept_ancestor = dplyr::tibble(
+      ancestor_concept_id = 1,
+      descendant_concept_id = 2:5
+    ),
     drug_strength = dplyr::tibble(
-      drug_concept_id = c(1, 2, 3, 4),
+      drug_concept_id = c(2, 3, 4, 5),
       ingredient_concept_id = c(1, 1, 1, 1),
       amount_value = c(10, 20, 30, 40),
       amount = c("numeric", "numeric", "numeric", "numeric"),
@@ -94,8 +108,8 @@ test_that("test overlapMode", {
     sameIndexMode = "Sum",
     imputeDuration = "eliminate",
     imputeDailyDose = "eliminate",
-    durationRange = c(1, NA),
-    dailyDoseRange = c(1, NA)
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
   )
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
@@ -114,8 +128,8 @@ test_that("test overlapMode", {
   # sub
   x <- getDoseInformation(
     cdm = cdm,
-    dusCohortName = "cohort1",
-    conceptSetPath = NULL,
+    targetCohortName = "cohort1",
+    conceptSetList = NULL,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -123,8 +137,8 @@ test_that("test overlapMode", {
     sameIndexMode = "Sum",
     imputeDuration = "eliminate",
     imputeDailyDose = "eliminate",
-    durationRange = c(1, NA),
-    dailyDoseRange = c(0, NA)
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
   )
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
@@ -143,8 +157,8 @@ test_that("test overlapMode", {
   # min
   x <- getDoseInformation(
     cdm = cdm,
-    dusCohortName = "cohort1",
-    conceptSetPath = NULL,
+    targetCohortName = "cohort1",
+    conceptSetList = NULL,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -152,8 +166,8 @@ test_that("test overlapMode", {
     sameIndexMode = "Sum",
     imputeDuration = "eliminate",
     imputeDailyDose = "eliminate",
-    durationRange = c(1, NA),
-    dailyDoseRange = c(0, NA)
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
   )
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
@@ -172,8 +186,8 @@ test_that("test overlapMode", {
   # max
   x <- getDoseInformation(
     cdm = cdm,
-    dusCohortName = "cohort1",
-    conceptSetPath = NULL,
+    targetCohortName = "cohort1",
+    conceptSetList = NULL,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -181,8 +195,8 @@ test_that("test overlapMode", {
     sameIndexMode = "Sum",
     imputeDuration = "eliminate",
     imputeDailyDose = "eliminate",
-    durationRange = c(1, NA),
-    dailyDoseRange = c(0, NA)
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
   )
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
@@ -201,8 +215,8 @@ test_that("test overlapMode", {
   # sum
   x <- getDoseInformation(
     cdm = cdm,
-    dusCohortName = "cohort1",
-    conceptSetPath = NULL,
+    targetCohortName = "cohort1",
+    conceptSetList = NULL,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -210,8 +224,8 @@ test_that("test overlapMode", {
     sameIndexMode = "Sum",
     imputeDuration = "eliminate",
     imputeDailyDose = "eliminate",
-    durationRange = c(1, NA),
-    dailyDoseRange = c(0, NA)
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
   )
   value_cohort_1 <- c(
     61, 0, 0, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
@@ -229,7 +243,8 @@ test_that("test overlapMode", {
 })
 
 test_that("test gapEra and eraJoinMode", {
-  cdm <- mockDrugUtilisation(connectionDetails,
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
       person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
@@ -434,7 +449,8 @@ test_that("test gapEra and eraJoinMode", {
 })
 
 test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
-  cdm <- mockDrugUtilisation(connectionDetails,
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
       person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
@@ -623,7 +639,7 @@ test_that("test splitSubexposures", {
     ))
   )
   cdm <- mockDrugUtilisation(connectionDetails)
- ## cdm[["cohort1"]] <- insertMockTable(cdm, "cohort1", x)
+  ## cdm[["cohort1"]] <- insertMockTable(cdm, "cohort1", x)
   db <- attr(cdm, "dbcon")
   DBI::dbWithTransaction(db, {
     DBI::dbWriteTable(db, "cohort1",
@@ -832,7 +848,8 @@ test_that("test splitSubexposures", {
 })
 
 test_that("test no exposure found", {
-  cdm <- mockDrugUtilisation(connectionDetails,
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:9,
       person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
@@ -915,51 +932,52 @@ test_that("test no exposure found", {
 })
 
 test_that("test empty dusCohortName", {
-cdm <- mockDrugUtilisation(connectionDetails,
-  drug_exposure = dplyr::tibble(
-    drug_exposure_id = 1:9,
-    person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
-    drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
-    drug_exposure_start_date = as.Date(c(
-      "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
-      "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
-    )),
-    drug_exposure_end_date = as.Date(c(
-      "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
-      "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
-    )),
-    quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
-  ),
-  drug_strength = dplyr::tibble(
-    drug_concept_id = c(1, 2, 3, 4),
-    ingredient_concept_id = c(1, 1, 1, 1),
-    amount_value = c(10, 20, 30, 40),
-    amount_unit_concept_id = c(8576, 8576, 8576, 8576),
-    numerator_value = as.numeric(NA),
-    numerator_unit_concept_id = as.numeric(NA),
-    denominator_value = as.numeric(NA),
-    denominator_unit_concept_id = as.numeric(NA)
-  ),
-  cohort1 = dplyr::tibble(subject_id = numeric(),
-                          cohort_start_date = date(),
-                          cohort_end_date =date(),
-                          cohort_definition_id = numeric())
-)
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:9,
+      person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
+      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
+        "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
+        "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
+      )),
+      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+    ),
+    drug_strength = dplyr::tibble(
+      drug_concept_id = c(1, 2, 3, 4),
+      ingredient_concept_id = c(1, 1, 1, 1),
+      amount_value = c(10, 20, 30, 40),
+      amount_unit_concept_id = c(8576, 8576, 8576, 8576),
+      numerator_value = as.numeric(NA),
+      numerator_unit_concept_id = as.numeric(NA),
+      denominator_value = as.numeric(NA),
+      denominator_unit_concept_id = as.numeric(NA)
+    ),
+    cohort1 = dplyr::tibble(subject_id = numeric(),
+                            cohort_start_date = date(),
+                            cohort_end_date =date(),
+                            cohort_definition_id = numeric())
+  )
 
 
-expect_error(getDoseInformation(
-  cdm = cdm,
-  dusCohortName = "cohort1",
-  conceptSetPath = NULL,
-  ingredientConceptId = 1,
-  gapEra = 30,
-  eraJoinMode = "Previous",
-  overlapMode = "Previous",
-  sameIndexMode = "Sum",
-  imputeDuration = "eliminate",
-  imputeDailyDose = "eliminate",
-  durationRange = c(1, NA),
-  dailyDoseRange = c(100, NA)
-))
+  expect_error(getDoseInformation(
+    cdm = cdm,
+    dusCohortName = "cohort1",
+    conceptSetPath = NULL,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Previous",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, NA),
+    dailyDoseRange = c(100, NA)
+  ))
 
 })

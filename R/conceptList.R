@@ -30,17 +30,15 @@ readConceptList <- function(path, cdm) {
   checkCdm(cdm)
 
   # first part: read jsons
-  if (!is.null(path)) {
-    tryCatch(
-      expr = conceptList <- readConceptSet(conceptSets),
-      error = function(e) {
-        stop("The json file is not a properly formated OMOP concept set.")
-      }
-    )
-  }
+  tryCatch(
+    expr = conceptList <- readConceptSet(conceptSets),
+    error = function(e) {
+      stop("The json file is not a properly formated OMOP concept set.")
+    }
+  )
 
   # second part: produce output list
-  conceptFinalList <- formatConceptList(cdm, conceptList)
+  conceptFinalList <- formatConceptList(conceptList, cdm)
 
   # return list
   return(conceptFinalList)

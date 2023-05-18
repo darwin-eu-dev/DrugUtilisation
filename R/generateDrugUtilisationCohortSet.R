@@ -132,6 +132,10 @@ generateDrugUtilisationCohortSet <- function(cdm,
 
   # create the cohort references
   cohortRef <- cohort %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ) %>%
     CDMConnector::computeQuery(
       name = paste0(attr(cdm, "write_prefix"), name),
       FALSE, attr(cdm, "write_schema"), TRUE

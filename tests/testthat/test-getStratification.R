@@ -701,6 +701,4 @@ test_that("test case empty targetCohortName", {
     cdm = cdm, targetCohortName = "cohort1", sex = "Both", targetCohortId = 1
   ))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
 })

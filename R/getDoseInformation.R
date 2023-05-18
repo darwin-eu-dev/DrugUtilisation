@@ -161,10 +161,6 @@ getDoseInformation <- function(cdm,
     cli::cli_abort("conceptSetList must have length 1")
   }
 
-  if (is.null(conceptSetList)) {
-
-  }
-
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
@@ -181,7 +177,7 @@ getDoseInformation <- function(cdm,
   # add daily dose
   cohort <- cohort %>%
     addDailyDose(cdm, ingredientConceptId) %>%
-    dplyr::select(-"quantity", -"drug_dose_type")
+    dplyr::select(-"quantity")
 
   # impute daily dose
   cohort <- imputeVariable(

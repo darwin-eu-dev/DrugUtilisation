@@ -450,7 +450,7 @@ test_that("test case single indication table summary", {
     minimumCellCount = 1,
     cohortId = 1
   )
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("test case multiple indication table summary", {
@@ -645,5 +645,4 @@ test_that("test case multiple indication table summary", {
     cohortId = 1
   )
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

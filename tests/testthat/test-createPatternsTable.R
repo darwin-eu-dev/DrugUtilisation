@@ -1,4 +1,16 @@
-# To ask Kim to add units and visits concepts ids in the mock concept
+test_that("check mock patterns", {
+  cdm <- mockDrugUtilisation(connectionDetails)
+
+  newpattern <- createPatternsTable(cdm)
+
+  expect_true(all(c(
+    "pattern_id", "amount", "amount_unit", "amount_unit_concept_id", "numerator",
+    "numerator_unit", "denominator", "denominator_unit",
+    "numerator_unit_concept_id", "denominator_unit_concept_id",
+    "number_concepts", "number_ingredients", "valid"
+  ) %in% colnames(newpattern)))
+
+})
 
 test_that("create patterns, correct output", {
  drug_strength <- tibble::tibble(
@@ -14,8 +26,8 @@ test_that("create patterns, correct output", {
 
  concept <- tibble::tibble(
    concept_name = c("Drug1", "Drug2", "Ing1", "Ing2", "Ing3", "AmountUnit", "NumUnit1", "NumUnit2","DenUnit", "DenUnit2","international unit", "milligram", "Actuation"),
-   concept_class_id = c("Branded Drug", "Branded Drug", "Ingredient", "Ingredient", "Ingredient"),
-   domain_id = "Drug",
+   concept_class_id = c(rep("Branded drug", 2), rep("Ingredient", 3), rep("Unit", 8)),
+   domain_id = c(rep("Drug", 5), rep("Unit", 8)),
    concept_id = c(1,2,13,14,15,4,7,8,10,11,8718,8576,45744809)
  )
 

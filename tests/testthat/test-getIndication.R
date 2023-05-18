@@ -161,8 +161,6 @@ test_that("test case single indication", {
       indication_id = c(1, 1, -1, 2)
     )
   ))
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test case single indication with unknown indication table", {
@@ -291,8 +289,6 @@ test_that("test case single indication with unknown indication table", {
       indication_id = c(1, 0, -1)
     )
   ))
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test case multiple indication with unknown indication table", {
@@ -402,8 +398,6 @@ test_that("test case multiple indication with unknown indication table", {
       indication_id = c(1, 0, -1)
     )
   ))
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test case multiple indication", {
@@ -515,9 +509,6 @@ test_that("test case multiple indication", {
     )
   ))
 
-
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test case indicationCohortName error message", {
@@ -612,7 +603,6 @@ test_that("test case indicationCohortName error message", {
     )
   ))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test input checks", {
@@ -726,7 +716,6 @@ test_that("test input checks", {
     )
   )
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test case multiple indication with NA", {
@@ -855,7 +844,6 @@ test_that("test case multiple indication with NA", {
     )
   ))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test case multiple unknown indication table behavour", {
@@ -1021,7 +1009,6 @@ test_that("test case multiple unknown indication table behavour", {
     0
   )
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })
 
 test_that("test case empty targetCohortName", {
@@ -1046,5 +1033,4 @@ test_that("test case empty targetCohortName", {
     unknownIndicationTable = NULL
   ))
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

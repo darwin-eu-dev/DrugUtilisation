@@ -26,10 +26,12 @@ addPattern <- function(table) {
   checkPatternTibble(table)
   # Join table with pattern table in DUS, add "pattern_id" and "unit" columns
   table <- table %>%
-    dplyr::left_join(patternfile, by = c(
-      "amount", "amount_unit_concept_id",
-      "numerator", "numerator_unit_concept_id",
-      "denominator","denominator_unit_concept_id"), copy = TRUE, na_matches = c("na"))
+    dplyr::left_join(
+      patternfile, by = c(
+        "amount", "amount_unit_concept_id", "numerator",
+        "numerator_unit_concept_id", "denominator","denominator_unit_concept_id"
+      ), copy = TRUE, na_matches = c("na")
+    )
 
   # Make standardised values
   table <- table %>%
