@@ -29,6 +29,9 @@
 #' @param drug_exposure A drug_exposure tibble, if NULL a mock one is created
 #' @param condition_occurrence A condition_occurrence tibble, if NULL a mock one
 #' is created
+#' @param observation A observation tibble, if NULL a mock one is created
+#' @param extraTables Extra tibbles to be instantiated that are not cohorts or
+#' cdm tables
 #' @param ... Cohorts can be added to the cdm reference, cohort1 and cohort2
 #' will be created if not provided
 #'

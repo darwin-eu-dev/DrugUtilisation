@@ -11,8 +11,6 @@ computeCohortCount(x, cdm)
 subject_id'}
 
 \item{cdm}{A cdm_reference object}
-
-\item{name}{Name of the generated table}
 }
 \value{
 A reference to a table in the database with the cohortCount

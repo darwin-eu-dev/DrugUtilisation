@@ -18,6 +18,7 @@
 #'
 #' @param x A table in the cdm with at lest: 'cohort_definition_id' and
 #' subject_id'
+#' @param cdm A cdm reference created using CDMConnector
 #' @param attrition An attrition table. If NULL a new attrition table is created.
 #' @param reason A character with the name of the reason.
 #'
@@ -98,7 +99,6 @@ addExcludedCounts <- function(attrition) {
 #' @param x A table in the cdm with at lest: 'cohort_definition_id' and
 #' subject_id'
 #' @param cdm A cdm_reference object
-#' @param name Name of the generated table
 #'
 #' @return A reference to a table in the database with the cohortCount
 #'

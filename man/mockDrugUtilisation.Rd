@@ -16,6 +16,8 @@ mockDrugUtilisation(
   observation_period = NULL,
   drug_exposure = NULL,
   condition_occurrence = NULL,
+  observation = NULL,
+  extraTables = list(),
   ...
 )
 }
@@ -42,6 +44,11 @@ created}
 
 \item{condition_occurrence}{A condition_occurrence tibble, if NULL a mock one
 is created}
+
+\item{observation}{A observation tibble, if NULL a mock one is created}
+
+\item{extraTables}{Extra tibbles to be instantiated that are not cohorts or
+cdm tables}
 
 \item{...}{Cohorts can be added to the cdm reference, cohort1 and cohort2
 will be created if not provided}
