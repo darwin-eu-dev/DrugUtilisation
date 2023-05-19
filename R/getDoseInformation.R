@@ -1,6 +1,6 @@
 # Copyright 2022 DARWIN EU (C)
 #
-# This file is part of DrugUtilizationCharacteristics
+# This file is part of DrugUtilisation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
 #' must contain at least 'drug_exposure', 'drug_strength' and
 #' observation_period' tables.
-#' @param dusCohortName Name of the cohort that we want to obtain the dose
+#' @param targetCohortName Name of the cohort that we want to obtain the dose
 #' information.
-#' @param conceptSetPath Path to a folder with the concept sets of interest.
-#' Concept sets must be stored in OMOP .json files. If NULL all the descendants
+#' @param conceptSetList List of concepts to be included. If NULL all the descendants
 #' of ingredient concept id will be used. By default: NULL.
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
@@ -116,8 +115,8 @@ getDoseInformation <- function(cdm,
                                sameIndexMode = "Sum",
                                imputeDuration = "eliminate",
                                imputeDailyDose = "eliminate",
-                               durationRange = c(1, NA),
-                               dailyDoseRange = c(0, NA)) {
+                               durationRange = c(1, Inf),
+                               dailyDoseRange = c(0, Inf)) {
   # tables to be deleted
   firstTempTable <- getOption("dbplyr_table_name", 0) + 1
 
@@ -161,10 +160,6 @@ getDoseInformation <- function(cdm,
     cli::cli_abort("conceptSetList must have length 1")
   }
 
-  if (is.null(conceptSetList)) {
-
-  }
-
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
@@ -174,14 +169,14 @@ getDoseInformation <- function(cdm,
 
   # correct duration
   cohort <- correctDuration(
-    cohort, durationRange, cdm, "drug_exposure_start_date",
+    cohort, imputeDuration, durationRange, cdm, "drug_exposure_start_date",
     "drug_exposure_end_date"
   )
 
   # add daily dose
   cohort <- cohort %>%
     addDailyDose(cdm, ingredientConceptId) %>%
-    dplyr::select(-"quantity", -"drug_dose_type")
+    dplyr::select(-"quantity")
 
   # impute daily dose
   cohort <- imputeVariable(

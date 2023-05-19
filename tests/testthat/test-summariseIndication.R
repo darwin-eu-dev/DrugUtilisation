@@ -34,7 +34,8 @@ test_that("test case single indication table summary", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -43,7 +44,7 @@ test_that("test case single indication table summary", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -450,7 +451,7 @@ test_that("test case single indication table summary", {
     minimumCellCount = 1,
     cohortId = 1
   )
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
+
 })
 
 test_that("test case multiple indication table summary", {
@@ -488,7 +489,8 @@ test_that("test case multiple indication table summary", {
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
-    condition_start_date = as.Date("2020-05-31")
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
   )
 
   indicationDefinitionSet <- dplyr::tibble(
@@ -497,7 +499,7 @@ test_that("test case multiple indication table summary", {
   )
 
   cdm <-
-    mockDrugUtilisation(
+    mockDrugUtilisation(connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence
@@ -645,5 +647,4 @@ test_that("test case multiple indication table summary", {
     cohortId = 1
   )
 
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

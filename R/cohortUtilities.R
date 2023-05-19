@@ -1,7 +1,24 @@
+# Copyright 2022 DARWIN EU (C)
+#
+# This file is part of DrugUtilisation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' Add a line in the attrition table. If the table does not exist it is created
 #'
 #' @param x A table in the cdm with at lest: 'cohort_definition_id' and
 #' subject_id'
+#' @param cdm A cdm reference created using CDMConnector
 #' @param attrition An attrition table. If NULL a new attrition table is created.
 #' @param reason A character with the name of the reason.
 #'
@@ -82,7 +99,6 @@ addExcludedCounts <- function(attrition) {
 #' @param x A table in the cdm with at lest: 'cohort_definition_id' and
 #' subject_id'
 #' @param cdm A cdm_reference object
-#' @param name Name of the generated table
 #'
 #' @return A reference to a table in the database with the cohortCount
 #'
@@ -202,12 +218,12 @@ getEndName <- function(domain) {
 }
 
 #' @noRd
-emptyCohort <- function(cdm, name = CDMConnector:::uniqueTableName()) {
+emptyCohort <- function(cdm, name = CDMConnector::uniqueTableName()) {
   writePrefix <- attr(cdm, "write_prefix")
   writeSchema <- attr(cdm, "write_schema")
   con <- attr(cdm, "dbcon")
   if (!is.null(writePrefix)) {
-    name <- CDMConnector:::inSchema(
+    name <- CDMConnector::inSchema(
       writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
     )
     temporary <- FALSE
@@ -323,7 +339,7 @@ requireDaysPriorHistory <- function(x, cdm, daysPriorHistory) {
 }
 
 #' @noRd
-unionCohort <- function(x, gap) {
+unionCohort <- function(x, gap, cdm) {
   x %>%
     dplyr::select(
       "cohort_definition_id",
@@ -459,6 +475,7 @@ imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
 
 #' @noRd
 correctDuration <- function(x,
+                            imputeDuration,
                             durationRange,
                             cdm,
                             start = "cohort_start_date",
@@ -489,14 +506,4 @@ correctDuration <- function(x,
     computeTable(cdm)
   attr(x, "numberImputations") <- numberImputations
   return(x)
-}
-
-#' @noRd
-getReferenceName <- function(tableRef) {
-  checkInputs(tableRef = tableRef)
-  x <- capture.output(dplyr::show_query(tableRef))
-  x <- x[length(x)]
-  x <- strsplit(x, "\\.")[[1]]
-  name <- x[length(x)]
-  return(name)
 }

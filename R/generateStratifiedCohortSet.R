@@ -364,8 +364,8 @@ getStratification <- function(cdm,
 
   targetCohort <- targetCohort %>%
     dplyr::filter(.data$cohort_definition_id == .env$targetCohortId) %>%
-    addSex(cdm = cdm) %>%
-    addAge(cdm = cdm) %>%
+    PatientProfiles::addSex(cdm = cdm) %>%
+    PatientProfiles::addAge(cdm = cdm) %>%
     dplyr::mutate(index_year = lubridate::year(.data$cohort_start_date)) %>%
     dplyr::select(
       "subject_id", "cohort_start_date", "cohort_end_date", "sex", "age",

@@ -1,3 +1,19 @@
+# Copyright 2022 DARWIN EU (C)
+#
+# This file is part of DrugUtilisation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 #' Generates a cohort for a certain list of concepts.
 #'
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con().
@@ -15,17 +31,6 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
-#'   library(xxx)
-#'   db <- DBI::dbConnect()
-#'   cdm <- mockCdm(db, ...)
-#'   cdm <- generateConceptCohortSet(
-#'     cdm = cdm,
-#'     name = "respiratory_complications_cohort",
-#'     conceptSetList = list(asthma = c(1, 2), covid = c(4, 5))
-#'   )
-#' }
-#'
 generateConceptCohortSet <- function(cdm,
                                      name,
                                      conceptSetList,
@@ -36,9 +41,10 @@ generateConceptCohortSet <- function(cdm,
                                      cohortDateRange = as.Date(c(NA, NA))) {
   # check input
   # offset must be smaller than gap
-  checkInput(
-    cdm, name, coneptSetList, daysPriorHistory, gap, washout, offset,
-    cohortDateRange
+  checkInputs(
+    cdm = cdm, name = name, coneptSetList = coneptSetList,
+    daysPriorHistory = daysPriorHistory, gap = gap, washout = washout,
+    offset = offset, cohortDateRange = cohortDateRange
   )
   # create cohort set
   cohortSetRef <- conceptSetFromConceptSetList(conceptSetList) %>%
@@ -61,7 +67,7 @@ generateConceptCohortSet <- function(cdm,
     cohortRef, cohortAttritionRef, "Satisfy daysPriorHistory"
   )
   # union overlap
-  cohortRef <- unionCohort(cohortRef, gap)
+  cohortRef <- unionCohort(cohortRef, gap, cdm)
   cohortAttritionRef <- addAttritionLine(
     cohortRef, cohortAttritionRef, "Join records within gap distance"
   )

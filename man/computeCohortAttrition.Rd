@@ -15,6 +15,8 @@ computeCohortAttrition(
 \item{x}{A table in the cdm with at lest: 'cohort_definition_id' and
 subject_id'}
 
+\item{cdm}{A cdm reference created using CDMConnector}
+
 \item{attrition}{An attrition table. If NULL a new attrition table is created.}
 
 \item{reason}{A character with the name of the reason.}
