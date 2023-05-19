@@ -78,7 +78,7 @@ for (connectionDetails in availableConnections) {
     connectionDetails$con, connectionDetails$writeSchema
   )
   # test code in that dbms
-  # test_check("DrugUtilisation")
+  test_check("DrugUtilisation")
   # get final tables
   finalTables <- CDMConnector::listTables(
     connectionDetails$con, connectionDetails$writeSchema
