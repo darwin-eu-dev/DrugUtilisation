@@ -169,7 +169,7 @@ getDoseInformation <- function(cdm,
 
   # correct duration
   cohort <- correctDuration(
-    cohort, durationRange, cdm, "drug_exposure_start_date",
+    cohort, imputeDuration, durationRange, cdm, "drug_exposure_start_date",
     "drug_exposure_end_date"
   )
 
