@@ -67,7 +67,7 @@ generateConceptCohortSet <- function(cdm,
     cohortRef, cohortAttritionRef, "Satisfy daysPriorHistory"
   )
   # union overlap
-  cohortRef <- unionCohort(cohortRef, gap)
+  cohortRef <- unionCohort(cohortRef, gap, cdm)
   cohortAttritionRef <- addAttritionLine(
     cohortRef, cohortAttritionRef, "Join records within gap distance"
   )

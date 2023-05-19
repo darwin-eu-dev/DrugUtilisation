@@ -339,7 +339,7 @@ requireDaysPriorHistory <- function(x, cdm, daysPriorHistory) {
 }
 
 #' @noRd
-unionCohort <- function(x, gap) {
+unionCohort <- function(x, gap, cdm) {
   x %>%
     dplyr::select(
       "cohort_definition_id",

@@ -108,7 +108,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   attrition <- computeCohortAttrition(cohort, cdm, attrition, reason)
 
   # eliminate overlap
-  cohort <- unionCohort(cohort, gapEra)
+  cohort <- unionCohort(cohort, gapEra, cdm)
   attrition <- computeCohortAttrition(cohort, cdm, attrition, "Join eras")
 
   # require daysPriorHistory
