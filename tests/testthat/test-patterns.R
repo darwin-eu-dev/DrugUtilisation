@@ -13,7 +13,7 @@ test_that("check mock patterns", {
 })
 
 test_that("create patterns, correct output", {
- drug_strength <- tibble::tibble(
+ drug_strength <- dplyr::tibble(
    drug_concept_id = c(1,1,2),
    ingredient_concept_id = c(13,14,15),
    amount_value = c(3,NA,NA),
@@ -24,7 +24,7 @@ test_that("create patterns, correct output", {
    denominator_unit_concept_id = c(NA,10,45744809)
  )
 
- concept <- tibble::tibble(
+ concept <- dplyr::tibble(
    concept_name = c("Drug1", "Drug2", "Ing1", "Ing2", "Ing3", "AmountUnit", "NumUnit1", "NumUnit2","DenUnit", "DenUnit2","international unit", "milligram", "Actuation"),
    concept_class_id = c(rep("Branded drug", 2), rep("Ingredient", 3), rep("Unit", 8)),
    domain_id = c(rep("Drug", 5), rep("Unit", 8)),
