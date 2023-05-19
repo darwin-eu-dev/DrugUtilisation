@@ -237,8 +237,7 @@ createPersonTable <- function(numberIndividuals) {
     person_id = 1:numberIndividuals,
     gender_concept_id = sample(c(8507, 8532), numberIndividuals, T),
     year_of_birth = sample(1950:2020, numberIndividuals, T),
-    month_of_birth = sample(1:12, numberIndividuals, T),
-    day_of_birth = sample(1:31, numberIndividuals, T),
+    day_of_birth = sample(1:365, numberIndividuals, T),
     birth_datetime = as.Date(NA),
     race_concept_id = as.numeric(NA),
     ethnicity_concept_id = as.numeric(NA),
@@ -250,7 +249,6 @@ createPersonTable <- function(numberIndividuals) {
       birth_datetime = as.Date(
         paste0(.data$year_of_birth, "-01-01"), "%Y-%m-%d"
       ) +
-        months(.data$month_of_birth - 1) +
         lubridate::days(.data$day_of_birth - 1)
     ) %>%
     dplyr::mutate(
