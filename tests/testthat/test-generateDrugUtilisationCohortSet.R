@@ -49,82 +49,90 @@ test_that("class", {
 })
 
 test_that("basic functionality drug_conceptId", {
-  cdm <- mockDrugUtilisation(connectionDetails, seed = 2)
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:4,
+      person_id = c(1, 1, 1, 1),
+      drug_concept_id = sample(c(1125360, 2905077, 43135274), 4, replace = T),
+      drug_exposure_start_date = as.Date(
+        c("2020-04-01", "2020-06-01", "2021-02-12", "2021-03-01"), "%Y-%m-%d"
+      ),
+      drug_exposure_end_date = as.Date(
+        c("2020-04-30", "2020-09-11", "2021-02-15", "2021-03-24"), "%Y-%m-%d"
+      ),
+      drug_type_concept_id = 38000177,
+      quantity = 1
+    )
+  )
   acetaminophen <- list(acetaminophen = c(1125360, 2905077, 43135274))
   # check gap
   cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, gapEra = 33
-  )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 5)
-  cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, gapEra = 34
-  )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 5)
-  cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, gapEra = 35
+    cdm, "dus", acetaminophen, gapEra = 0
   )
   expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 13
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 14
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 3)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 31
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 3)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 32
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 2)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 153
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 2)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 154
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen, gapEra = 1500
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
   # check first era
   cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, gapEra = 33, summariseMode = "FirstEra"
+    cdm, "dus", acetaminophen, gapEra = 1, summariseMode = "FirstEra"
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  expect_true(
+    cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   )
   expect_true(
-    cdm1$dus %>%
-      dplyr::filter(subject_id == 3) %>%
-      dplyr::pull("cohort_start_date") == as.Date("2021-08-27")
-  )
-  expect_true(
-    cdm1$dus %>%
-      dplyr::filter(subject_id == 3) %>%
-      dplyr::pull("cohort_end_date") == as.Date("2021-09-14")
+    cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2021-04-30")
   )
   cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, gapEra = 34, summariseMode = "FirstEra"
+    cdm, "dus", acetaminophen, gapEra = 40, summariseMode = "FirstEra"
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  expect_true(
+    cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   )
   expect_true(
-    cdm1$dus %>%
-      dplyr::filter(subject_id == 3) %>%
-      dplyr::pull("cohort_start_date") == as.Date("2021-08-27")
-  )
-  expect_true(
-    cdm1$dus %>%
-      dplyr::filter(subject_id == 3) %>%
-      dplyr::pull("cohort_end_date") == as.Date("2021-09-14")
-  )
-  cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, gapEra = 35, summariseMode = "FirstEra"
-  )
-  expect_true(
-    cdm1$dus %>%
-      dplyr::filter(subject_id == 3) %>%
-      dplyr::pull("cohort_start_date") == as.Date("2021-08-27")
-  )
-  expect_true(
-    cdm1$dus %>%
-      dplyr::filter(subject_id == 3) %>%
-      dplyr::pull("cohort_end_date") == as.Date("2021-12-05")
+    cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2020-09-11")
   )
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen, gapEra = 1500, summariseMode = "FirstEra"
   )
   expect_true(
-    cdm1$dus %>%
-      dplyr::filter(subject_id == 3) %>%
-      dplyr::pull("cohort_start_date") == as.Date("2021-08-27")
+    cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   )
   expect_true(
-    cdm1$dus %>%
-      dplyr::filter(subject_id == 3) %>%
-      dplyr::pull("cohort_end_date") == as.Date("2021-12-05")
+    cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2021-03-24")
   )
   # check fixedTime
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 30,
-    gapEra = 35
+    gapEra = 0
   )
   expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
   x <- all(
@@ -139,20 +147,7 @@ test_that("basic functionality drug_conceptId", {
     cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 30,
     gapEra = 400
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
-  x <- all(
-    cdm1$dus %>%
-      dplyr::mutate(
-        dif = !!CDMConnector::datediff("cohort_start_date", "cohort_end_date") + 1
-      ) %>%
-      dplyr::pull("dif") == 30
-  )
-  expect_true(x)
-  cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 30,
-    gapEra = 3
-  )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
   x <- all(
     cdm1$dus %>%
       dplyr::mutate(
@@ -163,9 +158,9 @@ test_that("basic functionality drug_conceptId", {
   expect_true(x)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 365,
-    gapEra = 35
+    gapEra = 0
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
   x <- all(
     cdm1$dus %>%
       dplyr::mutate(
@@ -174,5 +169,17 @@ test_that("basic functionality drug_conceptId", {
       dplyr::pull("dif") == 365
   )
   expect_true(x)
-
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 365,
+    gapEra = 1500
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  x <- all(
+    cdm1$dus %>%
+      dplyr::mutate(
+        dif = !!CDMConnector::datediff("cohort_start_date", "cohort_end_date") + 1
+      ) %>%
+      dplyr::pull("dif") == 365
+  )
+  expect_true(x)
 })

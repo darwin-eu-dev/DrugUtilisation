@@ -475,6 +475,7 @@ imputeVariable <- function(x, column, impute, range, imputeRound = FALSE) {
 
 #' @noRd
 correctDuration <- function(x,
+                            imputeDuration,
                             durationRange,
                             cdm,
                             start = "cohort_start_date",

@@ -101,7 +101,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   attrition <- computeCohortAttrition(cohort, cdm)
 
   # correct duration
-  cohort <- correctDuration(cohort, durationRange, cdm)
+  cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
   reason <- paste(
     "Duration imputation; affected rows:", attr(cohort, "numberImputations")
   )
