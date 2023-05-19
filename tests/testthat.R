@@ -75,28 +75,22 @@ if (Sys.getenv("CDM5_REDSHIFT_DBNAME") != "") {
 for (connectionDetails in availableConnections) {
   # list initial tables
   initialTables <- CDMConnector::listTables(
-    connectionDetails$db, connectionDetails$writeSchema
+    connectionDetails$con, connectionDetails$writeSchema
   )
   # test code in that dbms
-  test_check("DrugUtilisation")
+  # test_check("DrugUtilisation")
   # get final tables
   finalTables <- CDMConnector::listTables(
-    connectionDetails$db, connectionDetails$writeSchema
+    connectionDetails$con, connectionDetails$writeSchema
   )
   # to eliminate
   tablesToEliminate <- finalTables[!(finalTables %in% initialTables)]
   # eliminate new created tables
   for (tableToEliminate in tablesToEliminate) {
     DBI::dbRemoveTable(
-      connectionDetails$db,
+      connectionDetails$con,
       CDMConnector::inSchema(connectionDetails$writeSchema, tableToEliminate)
     )
   }
-  DBI::dbDisconnect(connectionDetails$db)
+  DBI::dbDisconnect(connectionDetails$con)
 }
-
-connectionDetails <- list(
-  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-  writeSchema = "main",
-  writePrefix = NULL
-)

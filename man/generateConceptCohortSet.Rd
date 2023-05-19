@@ -40,16 +40,3 @@ The function returns the 'cdm' object with the created cohort.
 \description{
 Generates a cohort for a certain list of concepts.
 }
-\examples{
-\donttest{
-  library(DrugUtilisation)
-  db <- DBI::dbConnect()
-  cdm <- mockCdm(db, ...)
-  cdm <- generateConceptCohortSet(
-    cdm = cdm,
-    name = "respiratory_complications_cohort",
-    conceptSetList = list(asthma = c(1, 2), covid = c(4, 5))
-  )
-}
-
-}
