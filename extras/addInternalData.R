@@ -37,7 +37,18 @@ mockConceptAncestor <- read_csv(
   here("extras", "concept_ancestor.csv"), show_col_types = FALSE
 )
 
+namesTable <- readr::read_csv(
+  here("extras", "namesTable.csv"),
+  col_types = list(
+    table_name = "c",
+    start_date_name = "c",
+    end_date_name = "c",
+    concept_id_name = "c",
+    source_concept_id_name = "c"
+  )
+)
+
 use_data(
-  patternfile, domainInformation, mockDrugStrength, mockConcept,
+  patternfile, domainInformation, mockDrugStrength, mockConcept, namesTable,
   mockConceptAncestor, internal = TRUE, overwrite = TRUE
 )

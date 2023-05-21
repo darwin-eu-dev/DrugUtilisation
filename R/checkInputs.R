@@ -27,7 +27,9 @@ checkInput <- function(x, nam) {
     "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDateRange",
     "imputeDuration", "durationRange", "attrition", "x", "reason", "tableRef",
     "targetCohortName", "ingredientConceptId", "eraJoinMode", "overlapMode",
-    "sameIndexMode", "imputeDailyDose", "dailyDoseRange"
+    "sameIndexMode", "imputeDailyDose", "dailyDoseRange", "x",
+    "indicationCohortName", "indicationGap", "unknownIndicationTable",
+    "nameStyle"
   )
   if (!(nam %in% listChecks)) {
     cli::cli_abort(paste("Input parameter could not be checked:", nam))
@@ -57,6 +59,16 @@ checkDependantVariables <- function(inputs) {
       dplyr::pull()
     if (numberRows == 0) {
       cli::cli_abort("targetCohort is empty")
+    }
+  }
+  if (all(c("indicationCohortName", "cdm") %in% nam)) {
+    if (!(inputs$indicationCohortName %in% names(inputs$cdm))) {
+      cli::cli_abort("indicationCohortName is not in the cdm reference")
+    }
+  }
+  if (all(c("unknownIndicationTable", "cdm") %in% nam)) {
+    if (!all(inputs$unknownIndicationTable %in% names(inputs$cdm))) {
+      cli::cli_abort("unknownIndicationTable is not in the cdm reference")
     }
   }
 }
@@ -533,5 +545,38 @@ checkInteger <- function(integer) {
     } else {
       return(FALSE)
     }
+  }
+}
+
+checkIndicationCohortName <- function(indicationCohortName) {
+  if (!is.character(indicationCohortName) & length(indicationCohortName) == 1) {
+    cli::cli_abort("indicationCohortName must be a character of length 1.")
+  }
+}
+
+checkIndicationGap <- function(indicationGap) {
+  errorMessage <- "indicationGap must be an integer (>= 0) vector"
+  if (!is.numeric(indicationGap)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (sum(indicationGap > 0) > 0) {
+    cli::cli_abort(errorMessage)
+  }
+  if (lapply(indicationGap, checkInteger) %>% unlist() %>% all()) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+checkUnknownIndicationTable <- function(unknownIndicationTable) {
+  options <- namesTable$table_name
+  errorMessage <- paste0(
+    "unknownIndicationTable must be a subset of c(",
+    paste0(options, collapse = ", "), ")"
+  )
+  if (!is.character(unknownIndicationTable)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unknownIndicationTable %in% options)) {
+    cli::cli_abort(errorMessage)
   }
 }
