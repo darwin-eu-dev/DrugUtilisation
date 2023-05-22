@@ -144,9 +144,9 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
           unknown_date = max(.data$unknown_date, na.rm = TRUE),
           .groups = "drop"
         ) %>%
-        dplyr::mutate(
-          diff_date = !!CDMConnector::datediff("unknown_date", indicationDate)
-        )
+        dplyr::mutate(diff_date = !!CDMConnector::datediff(
+          "unknown_date", "cohort_start_date"
+        ))
       for (gap in gaps) {
         xx <- xx %>%
           dplyr::mutate(!!unknownName(gap) := dplyr::if_else(
