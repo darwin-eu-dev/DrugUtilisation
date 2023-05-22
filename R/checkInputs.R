@@ -548,8 +548,9 @@ checkInteger <- function(integer) {
   if (!is.numeric(integer) | length(integer) > 1) {
     return(TRUE)
   } else {
-    if (abs(integer - round(integer)) > sqrt(.Machine$double.eps)) {
-      return(FALSE)
+    if (!is.infinite(integer) &&
+        abs(integer - round(integer)) > sqrt(.Machine$double.eps)) {
+      return(TRUE)
     } else {
       return(FALSE)
     }

@@ -78,10 +78,9 @@ addIndication <- function(x,
 addCohortIndication <- function(ind, cdm, cohortName, gaps) {
   for (gap in gaps) {
     columnName <- indicationName(gap)
-    xx <- ind %>%
-      PatientProfiles::addCohortIntersectFlag(
-        cdm, cohortName, window = c(-gap, 0)
-      )
+    xx <- PatientProfiles::addCohortIntersectFlag(
+      ind, cdm, cohortName, window = c(-gap, 0)
+    )
     newnames <- colnames(xx)[!(colnames(xx) %in% colnames(ind))]
     xx <- dplyr::mutate(xx, !!columnName := as.character(NA))
     for (nam in newnames) {
@@ -105,50 +104,54 @@ addCohortIndication <- function(ind, cdm, cohortName, gaps) {
 
 #' Add unknown indications
 #' @noRd
-addUnknownIndication <- function(x, cdm, unknownTables, gaps) {
+addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
   if (!is.null(unknownTables)) {
-    individualsUnknown <- x %>%
+    individualsUnknown <- ind %>%
       dplyr::filter(is.na(
-        .data[[tolower(paste0("indication_gap_", min(indicationGap)))]]
+        .data[[tolower(paste0("indication_gap_", min(gaps)))]]
       )) %>%
       dplyr::select("subject_id", "cohort_start_date") %>%
       dplyr::distinct() %>%
       computeTable(cdm)
     if (individualsUnknown %>% dplyr::tally() %>% dplyr::pull() > 0) {
-      xx <- NULL
-      for (unknownTable in unknownTables) {
+      for (ut in seq_along(unknownTables)) {
         unknownDate <- namesTable$start_date_name[
-          namesTable$table_name == unknownTable
+          namesTable$table_name == unknownTables[ut]
         ]
-        xx <- xx %>%
-          dplyr::union_all(
-            cdm[[unknownTable]] %>%
-              dplyr::select(
-                "subject_id" = "person_id", "unknown_date" = !!unknownDate
-              ) %>%
-              dplyr::inner_join(individualsUnknown, by = "subject_id") %>%
-              dplyr::filter(.data$unknown_date <= .data$cohort_start_date)
-          )
+        x <- cdm[[unknownTables[ut]]] %>%
+          dplyr::select(
+            "subject_id" = "person_id", "unknown_date" = !!unknownDate
+          ) %>%
+          dplyr::inner_join(individualsUnknown, by = "subject_id") %>%
+          dplyr::filter(.data$unknown_date <= .data$cohort_start_date)
+        if (ut == 1) {
+          xx <- x
+        } else {
+          xx <- dplyr::union_all(xx, x)
+        }
       }
       xx <- xx %>%
         dplyr::group_by(.data$subject_id, .data$cohort_start_date) %>%
-        dplyr::summarise(unknown_date = max(.data$unknown_date, na.rm = T)) %>%
+        dplyr::summarise(
+          unknown_date = max(.data$unknown_date, na.rm = TRUE),
+          .groups = "drop"
+        ) %>%
         dplyr::mutate(
           diff_date = !!CDMConnector::datediff("unknown_date", indicationDate)
         )
       for (gap in gaps) {
         xx <- xx %>%
           dplyr::mutate(!!unknownName(gap) := dplyr::if_else(
-            .data$diff_date < .env$gap, 1, 0
+            .data$diff_date <= .env$gap, 1, 0
           ))
       }
       xx <- xx %>%
         dplyr::select(-"diff_date", -"unknown_date") %>%
         computeTable(cdm)
-      x <- x %>%
+      ind <- ind %>%
         dplyr::left_join(xx, by = c("subject_id", "cohort_start_date"))
       for (gap in gaps) {
-        xx <- xx %>%
+        ind <- ind %>%
           dplyr::mutate(
             !!indicationName(gap) := dplyr::if_else(
               is.na(.data[[indicationName(gap)]]),
@@ -161,23 +164,25 @@ addUnknownIndication <- function(x, cdm, unknownTables, gaps) {
             )
           )
       }
-      x <- x %>%
+      ind <- ind %>%
         dplyr::select(
           "subject_id", "cohort_start_date", dplyr::starts_with("indication")
         ) %>%
         computeTable(cdm)
-    } else {
-      for (gap in gaps) {
-        columnName <- tolower(paste0("indication_gap_", gap))
-        x <- x %>%
-          dplyr::mutate(!!columnName := dplyr::if_else(
-            is.na(.data[[columnName]]), "no indication", .data[[columnName]]
-          ))
-      }
-      x <- x %>% computeTable(cdm)
     }
-    return(x)
-
+  }
+  for (gap in gaps) {
+    ind <- mutateNoIndication(ind, tolower(paste0("indication_gap_", gap)))
+  }
+  ind <- ind %>% computeTable(cdm)
+  return(ind)
 }
-  return(x)
+
+#' add no indication
+#' @noRd
+mutateNoIndication <- function (x, column) {
+  x %>%
+    dplyr::mutate(!!column := dplyr::if_else(
+      is.na(.data[[column]]), "no indication", .data[[column]]
+    ))
 }
