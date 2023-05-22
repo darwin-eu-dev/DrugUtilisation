@@ -2,6 +2,7 @@
 
 export("%>%")
 export(addDailyDose)
+export(addIndication)
 export(addPattern)
 export(comparePatternsTable)
 export(computeCohortAttrition)
