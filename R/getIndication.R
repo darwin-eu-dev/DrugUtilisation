@@ -40,33 +40,44 @@ addIndication <- function(x,
   )
 
   # sort indicationGap
-  indicationGap <- sort(indicationGap)
+  indicationGap <- sort(unique(indicationGap))
 
-  # original names of columns
-  originalColumns <- colnames(x)
-
-  # function to get the cohort name
+  # function to get names
   getCohortName <- function (name) {
     name <- substr(name, 1, tail(unlist(gregexpr('_', name)), n = 3) - 1)
   }
+  indicationName <- function(gap) {tolower(paste0("indication_gap_", gap))}
+  unknownName <- function(gap) {tolower(paste0("unknown_gap_", gap))}
+
+  # select to interest individuals
+  ind <- x %>%
+    dplyr::select("subject_id", "cohort_start_date" = indicationDate) %>%
+    dplyr::distinct()
 
   # add indications that are cohorts
-  x <- addCohortIndication()
+  ind <- addCohortIndication(ind, cdm, indicationCohortName, indicationGap)
 
   # add unknown indications
-  x <- addUnknownIndication(x, unknownIndicationTable, indicationGap)
+  ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap)
+
+  # add the indication columns to the original table
+  x <- x %>%
+    dplyr::left_join(
+      ind %>% dplyr::rename(!!indicationDate = "cohort_start_date"),
+      by = c("subject_id", indicationDate)
+    ) %>%
+    computeTable(cdm)
 
   return(x)
 }
 
 #' Add cohort indications
-addCohortIndication <- function(x, cdm, indicationCohortName, indicationGap, indicationDate) {
-  for (gap in indicationGap) {
-    columnName <- tolower(paste0("indication_gap_", gap))
+addCohortIndication <- function(x, cdm, cohortName, gaps) {
+  for (gap in gaps) {
+    columnName <- indicationName(gap)
     xx <- x %>%
       PatientProfiles::addCohortIntersectFlag(
-        cdm, indicationCohortName, indexDate = indicationDate,
-        window = c(-gap, 0)
+        cdm, cohortName, window = c(-gap, 0)
       ) %>%
       dplyr::mutate(!!columnName := as.character(NA))
     newnames <- colnames(xx)[!(colnames(xx) %in% colnames(x))]
@@ -77,7 +88,7 @@ addCohortIndication <- function(x, cdm, indicationCohortName, indicationGap, ind
           dplyr::if_else(
             is.na(.data[[columnName]]),
             !!getCohortName(nam),
-            paste0(.data[[columnName]], "&&", getCohortName(nam))
+            paste0(.data[[columnName]], "&&", !!getCohortName(nam))
           ),
           .data[[columnName]]
         ))
@@ -90,43 +101,78 @@ addCohortIndication <- function(x, cdm, indicationCohortName, indicationGap, ind
 }
 
 #' Add unknown indications
-addUnknownIndication <- function(x, unknownIndicationTable, indicationGap) {
-  if (!is.null(unknownIndicationTable)) {
+addUnknownIndication <- function(x, cdm, unknownTables, gaps) {
+  if (!is.null(unknownTables)) {
     individualsUnknown <- x %>%
       dplyr::filter(is.na(
         .data[[tolower(paste0("indication_gap_", min(indicationGap)))]]
       )) %>%
-      dplyr::select(
-        "person_id" = "subject_id", dplyr::all_of(indicationDate)
-      ) %>%
+      dplyr::select("subject_id", "cohort_start_date") %>%
       dplyr::distinct() %>%
       computeTable(cdm)
     if (individualsUnknown %>% dplyr::tally() %>% dplyr::pull() > 0) {
-      for (unknownTable in unknownIndicationTable) {
+      xx <- NULL
+      for (unknownTable in unknownTables) {
         unknownDate <- namesTable$start_date_name[
           namesTable$table_name == unknownTable
         ]
-        xx <- cdm[[unknownTable]] %>%
-          dplyr::inner_join(individualsUnknown, by = "person_id") %>%
-          dplyr::filter(.data[[unknownDate]] <= .data[[indicationDate]]) %>%
-          dplyr::group_by(.data$person_id, .data[[indicationDate]]) %>%
-          dplyr::summarise(diff_date = max(.data[[unknownDate]])) %>%
-          dplyr::mutate(
-            diff_date = !!CDMConnector::datediff("diff_date", indicationDate)
-          )
-        for (gap in indicationGap) {
-          xx <- xx %>%
-            dplyr::mutate(
-              !!tolower(paste0("unknown_gap_", .env$gap)) := dplyr::if_else(
-                .data$diff_date < .env$gap, 1, 0
-              )
-            )
-        }
         xx <- xx %>%
-          dplyr::select(-"diff_date") %>%
-          compute(cdm)
+          dplyr::union_all(
+            cdm[[unknownTable]] %>%
+              dplyr::select(
+                "subject_id" = "person_id", "unknown_date" = !!unknownDate
+              ) %>%
+              dplyr::inner_join(individualsUnknown, by = "subject_id") %>%
+              dplyr::filter(.data$unknown_date <= .data$cohort_start_date)
+          )
       }
+      xx <- xx %>%
+        dplyr::group_by(.data$subject_id, .data$cohort_start_date) %>%
+        dplyr::summarise(unknown_date = max(.data$unknown_date, na.rm = T)) %>%
+        dplyr::mutate(
+          diff_date = !!CDMConnector::datediff("unknown_date", indicationDate)
+        )
+      for (gap in gaps) {
+        xx <- xx %>%
+          dplyr::mutate(!!unknownName(gap) := dplyr::if_else(
+            .data$diff_date < .env$gap, 1, 0
+          ))
+      }
+      xx <- xx %>%
+        dplyr::select(-"diff_date", -"unknown_date") %>%
+        computeTable(cdm)
+      x <- x %>%
+        dplyr::left_join(xx, by = c("subject_id", "cohort_start_date"))
+      for (gap in gaps) {
+        xx <- xx %>%
+          dplyr::mutate(
+            !!indicationName(gap) := dplyr::if_else(
+              is.na(.data[[indicationName(gap)]]),
+              dplyr::if_else(
+                .data[[unknownName(gap)]] == 1,
+                "unknown indication",
+                "no indication"
+              ),
+              .data[[indicationName(gap)]]
+            )
+          )
+      }
+      x <- x %>%
+        dplyr::select(
+          "subject_id", "cohort_start_date", dplyr::starts_with("indication")
+        ) %>%
+        computeTable(cdm)
+    } else {
+      for (gap in gaps) {
+        columnName <- tolower(paste0("indication_gap_", gap))
+        x <- x %>%
+          dplyr::mutate(!!columnName := dplyr::if_else(
+            is.na(.data[[columnName]]), "no indication", .data[[columnName]]
+          ))
+      }
+      x <- x %>% computeTable(cdm)
     }
+    return(x)
 
 }
   return(x)

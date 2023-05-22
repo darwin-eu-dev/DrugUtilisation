@@ -32,15 +32,14 @@ test_that("test case single indication", {
       )
     )
   )
+  attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
+    cohortId = c(1, 2),
+    cohortName = c("asthma", "covid")
+  )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
     condition_start_date = as.Date("2020-05-31"),
     condition_end_date = as.Date("2020-05-31")
-  )
-
-  indicationDefinitionSet <- dplyr::tibble(
-    cohortId = c(1, 2),
-    cohortName = c("asthma", "covid")
   )
 
   cdm <-
@@ -52,15 +51,11 @@ test_that("test case single indication", {
     )
 
   # check for indication 0
-  res_0 <- getIndication(
-    cdm = cdm,
-    targetCohortName = "cohort1",
-    indicationCohortName = "cohort2",
-    targetCohortDefinitionId = 1,
-    indicationDefinitionSet = indicationDefinitionSet,
-    indicationGap = 0,
-    unknownIndicationTable = NULL
-  )
+  res_0 <- cdm$cohort1 %>%
+    addIndication(
+      cdm = cdm, indicationCohortName = "cohort2", indicationGap = 0,
+      unknownIndicationTable = NULL
+    )
 
   expect_true(equalTibble(
     res_0[["0"]] %>%
