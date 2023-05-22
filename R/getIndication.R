@@ -63,7 +63,7 @@ addIndication <- function(x,
   # add the indication columns to the original table
   x <- x %>%
     dplyr::left_join(
-      ind %>% dplyr::rename(!!indicationDate = "cohort_start_date"),
+      ind %>% dplyr::rename(!!indicationDate := "cohort_start_date"),
       by = c("subject_id", indicationDate)
     ) %>%
     computeTable(cdm)
@@ -72,6 +72,7 @@ addIndication <- function(x,
 }
 
 #' Add cohort indications
+#' @noRd
 addCohortIndication <- function(x, cdm, cohortName, gaps) {
   for (gap in gaps) {
     columnName <- indicationName(gap)
@@ -101,6 +102,7 @@ addCohortIndication <- function(x, cdm, cohortName, gaps) {
 }
 
 #' Add unknown indications
+#' @noRd
 addUnknownIndication <- function(x, cdm, unknownTables, gaps) {
   if (!is.null(unknownTables)) {
     individualsUnknown <- x %>%
