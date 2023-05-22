@@ -71,11 +71,11 @@ checkDependantVariables <- function(inputs) {
       cli::cli_abort("unknownIndicationTable is not in the cdm reference")
     }
   }
-  if (all(c("indicationDate", "cdm", "indicationCohortName") %in% nam)) {
+  if (all(c("indicationDate", "x") %in% nam)) {
     if (!(inputs$indicationDate %in%
-          colnames(inputs$cdm[[inputs$indicationCohortName]]))) {
+          colnames(inputs$x))) {
       cli::cli_abort(
-        "indicationDate must be a column in indicationCohortName table"
+        "indicationDate must be a column of x table"
       )
     }
   }

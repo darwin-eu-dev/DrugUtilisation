@@ -23,6 +23,8 @@ addIndication(
 \item{indicationGap}{Gap between the event and the indication}
 
 \item{unknownIndicationTable}{Tables to search unknown indications}
+
+\item{indicationDate}{Date of the indication}
 }
 \description{
 Get indication for a target cohort

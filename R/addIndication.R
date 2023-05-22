@@ -21,6 +21,7 @@
 #' @param indicationCohortName Name of indication cohort table
 #' @param indicationGap Gap between the event and the indication
 #' @param unknownIndicationTable Tables to search unknown indications
+#' @param indicationDate Date of the indication
 #'
 #' @return
 #' @export
@@ -41,13 +42,6 @@ addIndication <- function(x,
 
   # sort indicationGap
   indicationGap <- sort(unique(indicationGap))
-
-  # function to get names
-  getCohortName <- function (name) {
-    name <- substr(name, 1, tail(unlist(gregexpr('_', name)), n = 3) - 1)
-  }
-  indicationName <- function(gap) {tolower(paste0("indication_gap_", gap))}
-  unknownName <- function(gap) {tolower(paste0("unknown_gap_", gap))}
 
   # select to interest individuals
   ind <- x %>%
@@ -72,6 +66,20 @@ addIndication <- function(x,
 
   return(x)
 }
+
+#' get cohort names
+#' @noRd
+getCohortName <- function (name) {
+  name <- substr(name, 1, tail(unlist(gregexpr('_', name)), n = 3) - 1)
+}
+
+#' get indication name from gap
+#' @noRd
+indicationName <- function(gap) {tolower(paste0("indication_gap_", gap))}
+
+#' get unknown name from gap
+#' @noRd
+unknownName <- function(gap) {tolower(paste0("unknown_gap_", gap))}
 
 #' Add cohort indications
 #' @noRd
