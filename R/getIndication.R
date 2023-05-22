@@ -51,7 +51,9 @@ addIndication <- function(x,
 
   # select to interest individuals
   ind <- x %>%
-    dplyr::select("subject_id", "cohort_start_date" = indicationDate) %>%
+    dplyr::select(
+      "subject_id", "cohort_start_date" = dplyr::all_of(indicationDate)
+    ) %>%
     dplyr::distinct()
 
   # add indications that are cohorts
@@ -73,15 +75,15 @@ addIndication <- function(x,
 
 #' Add cohort indications
 #' @noRd
-addCohortIndication <- function(x, cdm, cohortName, gaps) {
+addCohortIndication <- function(ind, cdm, cohortName, gaps) {
   for (gap in gaps) {
     columnName <- indicationName(gap)
-    xx <- x %>%
+    xx <- ind %>%
       PatientProfiles::addCohortIntersectFlag(
         cdm, cohortName, window = c(-gap, 0)
-      ) %>%
-      dplyr::mutate(!!columnName := as.character(NA))
-    newnames <- colnames(xx)[!(colnames(xx) %in% colnames(x))]
+      )
+    newnames <- colnames(xx)[!(colnames(xx) %in% colnames(ind))]
+    xx <- dplyr::mutate(xx, !!columnName := as.character(NA))
     for (nam in newnames) {
       xx <- xx %>%
         dplyr::mutate(!!columnName := dplyr::if_else(
@@ -94,11 +96,11 @@ addCohortIndication <- function(x, cdm, cohortName, gaps) {
           .data[[columnName]]
         ))
     }
-    x <- xx %>%
-      dplyr::select(dplyr::all_of(c(colnames(x), columnName))) %>%
+    ind <- xx %>%
+      dplyr::select(dplyr::all_of(c(colnames(ind), columnName))) %>%
       computeTable(cdm)
   }
-  return(x)
+  return(ind)
 }
 
 #' Add unknown indications

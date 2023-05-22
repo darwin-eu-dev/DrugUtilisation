@@ -29,7 +29,7 @@ checkInput <- function(x, nam) {
     "targetCohortName", "ingredientConceptId", "eraJoinMode", "overlapMode",
     "sameIndexMode", "imputeDailyDose", "dailyDoseRange", "x",
     "indicationCohortName", "indicationGap", "unknownIndicationTable",
-    "nameStyle"
+    "indicationDate"
   )
   if (!(nam %in% listChecks)) {
     cli::cli_abort(paste("Input parameter could not be checked:", nam))
@@ -69,6 +69,14 @@ checkDependantVariables <- function(inputs) {
   if (all(c("unknownIndicationTable", "cdm") %in% nam)) {
     if (!all(inputs$unknownIndicationTable %in% names(inputs$cdm))) {
       cli::cli_abort("unknownIndicationTable is not in the cdm reference")
+    }
+  }
+  if (all(c("indicationDate", "cdm", "indicationCohortName") %in% nam)) {
+    if (!(inputs$indicationDate %in%
+          colnames(inputs$cdm[[inputs$indicationCohortName]]))) {
+      cli::cli_abort(
+        "indicationDate must be a column in indicationCohortName table"
+      )
     }
   }
 }
@@ -559,7 +567,7 @@ checkIndicationGap <- function(indicationGap) {
   if (!is.numeric(indicationGap)) {
     cli::cli_abort(errorMessage)
   }
-  if (sum(indicationGap > 0) > 0) {
+  if (sum(indicationGap < 0) > 0) {
     cli::cli_abort(errorMessage)
   }
   if (lapply(indicationGap, checkInteger) %>% unlist() %>% all()) {
@@ -568,15 +576,23 @@ checkIndicationGap <- function(indicationGap) {
 }
 
 checkUnknownIndicationTable <- function(unknownIndicationTable) {
-  options <- namesTable$table_name
-  errorMessage <- paste0(
-    "unknownIndicationTable must be a subset of c(",
-    paste0(options, collapse = ", "), ")"
-  )
-  if (!is.character(unknownIndicationTable)) {
-    cli::cli_abort(errorMessage)
+  if (!is.null(unknownIndicationTable)) {
+    options <- namesTable$table_name
+    errorMessage <- paste0(
+      "unknownIndicationTable must be a subset of c(",
+      paste0(options, collapse = ", "), ")"
+    )
+    if (!is.character(unknownIndicationTable)) {
+      cli::cli_abort(errorMessage)
+    }
+    if (!all(unknownIndicationTable %in% options)) {
+      cli::cli_abort(errorMessage)
+    }
   }
-  if (!all(unknownIndicationTable %in% options)) {
-    cli::cli_abort(errorMessage)
+}
+
+checkIndicationDate <- function(indicationDate) {
+  if (!is.character(indicationDate) & length(indicationDate) == 1) {
+    cli::cli_abort("indicationDate must be a character of length 1.")
   }
 }

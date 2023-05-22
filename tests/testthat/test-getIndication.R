@@ -33,8 +33,8 @@ test_that("test case single indication", {
     )
   )
   attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
-    cohortId = c(1, 2),
-    cohortName = c("asthma", "covid")
+    cohort_definition_id = c(1, 2),
+    cohort_name = c("asthma", "covid")
   )
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
@@ -51,57 +51,46 @@ test_that("test case single indication", {
     )
 
   # check for indication 0
-  res_0 <- cdm$cohort1 %>%
+  res0 <- cdm$cohort1 %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = 0,
       unknownIndicationTable = NULL
     )
-
-  expect_true(equalTibble(
-    res_0[["0"]] %>%
-      dplyr::collect() %>%
-      dplyr::arrange(cohort_start_date),
-    dplyr::tibble(
-      cohort_definition_id = c(1, 1, 1),
-      subject_id = c(1, 1, 2),
-      cohort_start_date = as.Date(c(
-        "2020-01-01", "2020-06-01", "2020-01-02"
-      )),
-      cohort_end_date = as.Date(c(
-        "2020-04-01", "2020-08-01", "2020-02-02"
-      )),
-      indication_id = c(-1, -1, -1)
-    ) %>%
-      dplyr::arrange(cohort_start_date)
-  ))
-  # check for indication 1
-  res_1 <- getIndication(
-    cdm = cdm,
-    targetCohortName = "cohort1",
-    indicationCohortName = "cohort2",
-    targetCohortDefinitionId = 1,
-    indicationDefinitionSet = indicationDefinitionSet,
-    indicationGap = 1,
-    unknownIndicationTable = NULL
+  expect_true(
+    setdiff(colnames(res0), colnames(cdm$cohort1)) == "indication_gap_0"
+  )
+  expect_true(
+    res0 %>%
+      dplyr::filter(.data$subject_id == 3) %>%
+      dplyr::pull("indication_gap_0") == "asthma"
+  )
+  expect_true(
+    all(is.na(res0 %>%
+      dplyr::filter(.data$subject_id != 3) %>%
+      dplyr::pull("indication_gap_0")))
   )
 
-  expect_true(equalTibble(
-    res_1[["1"]] %>%
-      dplyr::collect() %>%
-      dplyr::arrange(cohort_start_date),
-    dplyr::tibble(
-      cohort_definition_id = c(1, 1, 1),
-      subject_id = c(1, 1, 2),
-      cohort_start_date = as.Date(c(
-        "2020-01-01", "2020-06-01", "2020-01-02"
-      )),
-      cohort_end_date = as.Date(c(
-        "2020-04-01", "2020-08-01", "2020-02-02"
-      )),
-      indication_id = c(-1, -1, -1)
-    ) %>%
-      dplyr::arrange(cohort_start_date)
-  ))
+  # check for indication 1
+  res1 <- cdm$cohort1 %>%
+    addIndication(
+      cdm = cdm, indicationCohortName = "cohort2", indicationGap = 1,
+      unknownIndicationTable = NULL
+    )
+
+  expect_true(
+    setdiff(colnames(res1), colnames(cdm$cohort1)) == "indication_gap_1"
+  )
+  expect_true(
+    res1 %>%
+      dplyr::filter(.data$subject_id == 3) %>%
+      dplyr::pull("indication_gap_1") == "asthma"
+  )
+  expect_true(
+    all(is.na(res1 %>%
+                dplyr::filter(.data$subject_id != 3) %>%
+                dplyr::pull("indication_gap_1")))
+  )
+
   # check for indication 2
   res_2 <- getIndication(
     cdm = cdm,
