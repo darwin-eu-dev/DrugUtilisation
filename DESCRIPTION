@@ -48,20 +48,13 @@ Imports:
     tidyr,
     rlang,
     RJSONIO,
-<<<<<<< HEAD
     tibble,
-=======
->>>>>>> 5266d562347510d7f0dddcdfceb4d2ec87740968
     stringr,
     magrittr,
     cli,
-<<<<<<< HEAD
-    PatientProfiles
-=======
     PatientProfiles,
     magrittr,
     purrr,
     CodelistGenerator
->>>>>>> 5266d562347510d7f0dddcdfceb4d2ec87740968
 Depends: 
     R (>= 2.10)
