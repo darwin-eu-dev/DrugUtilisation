@@ -9,7 +9,19 @@
 Summarise patient-level drug utilisation in data mapped to the OMOP Common Data Model.
 }
 \author{
-\strong{Maintainer}: Marti Catala \email{marti.catalasabate@ndorms.ox.ac.uk}
+\strong{Maintainer}: Marti Catala \email{marti.catalasabate@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0003-3308-9905}{ORCID})
+
+Authors:
+\itemize{
+  \item Mike Du \email{mike.du@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9517-8834}{ORCID})
+  \item Yuchen Guo \email{yuchen.guo@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-0847-4855}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Edward Burn \email{edward.burn@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9286-1128}{ORCID}) [contributor]
+  \item Xintong Li \email{xintong.li@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-6872-5804}{ORCID}) [contributor]
+}
 
 }
 \keyword{internal}

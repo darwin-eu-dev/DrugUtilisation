@@ -7,11 +7,11 @@
 getIndication(
   cdm,
   targetCohortName,
-  targetCohortDefinitionIds,
+  targetCohortDefinitionId,
   indicationCohortName,
   indicationDefinitionSet,
   indicationGap,
-  unknownIndicationTables = c("condition_occurrence", "observation"),
+  unknownIndicationTable = c("condition_occurrence", "observation"),
   verbose = FALSE
 )
 }
@@ -21,7 +21,7 @@ It must contain the targetCohortName and indicationCohortName table in it.}
 
 \item{targetCohortName}{cohort table in the cdm contain list of target cohort for patients}
 
-\item{targetCohortDefinitionIds}{cohort definition ids to include to generate indication}
+\item{targetCohortDefinitionId}{cohort definition ids to include to generate indication}
 
 \item{indicationCohortName}{indication table that contain list of indication}
 
@@ -30,7 +30,7 @@ this function will only get indication for indication contain in this set}
 
 \item{indicationGap}{the maximum gap between the cohort start date and indication start date}
 
-\item{unknownIndicationTables}{tables to get extra indication from the default is to include
+\item{unknownIndicationTable}{tables to get extra indication from the default is to include
 condition_occurence and obersvation table in the cdm}
 
 \item{verbose}{Whether the code should print the process.}

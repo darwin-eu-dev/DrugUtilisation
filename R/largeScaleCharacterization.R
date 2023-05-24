@@ -25,7 +25,7 @@
 #' @param targetCohortId Cohort definition id for the analyzed target cohorts.
 #' It can be a vector or a number. If it is NULL all cohorts are analyzed. By
 #' default: NULL.
-#' @param temporalWindows Temporal windows that we want to characterize. It must
+#' @param temporalWindow Temporal windows that we want to characterize. It must
 #' be a list of numeric vectors of length two. The tables will be characterized
 #' between the first element and the second element respect to the
 #' cohort_start_date of each individual. To refer to any time prior set NA the
@@ -52,7 +52,7 @@
 #' contains the characterization of the desired cohorts of interest. The cohorts
 #' of interest are specified using 'targetCohortId' and 'targetCohortName'. The
 #' characterized tables are the ones specified in 'tablesToChacaterize'. Second
-#' ("temporalWindows") contains the windows used to do the characaterization.
+#' ("temporalWindow") contains the windows used to do the characaterization.
 #' Finally "overlap" is also included in the list.
 #'
 #' @export
@@ -61,7 +61,7 @@
 largeScaleCharacterization <- function(cdm,
                                        targetCohortName,
                                        targetCohortId = NULL,
-                                       temporalWindows = list(
+                                       temporalWindow = list(
                                          c(NA, -366), c(-365, -91),
                                          c(-365, -31), c(-90, -1), c(-30, -1),
                                          c(0, 0), c(1, 30), c(1, 90),
@@ -140,10 +140,10 @@ largeScaleCharacterization <- function(cdm,
     add = errorMessage
   )
 
-  # check temporalWindows
-  checkmate::assertList(temporalWindows, min.len = 1, add = errorMessage)
+  # check temporalWindow
+  checkmate::assertList(temporalWindow, min.len = 1, add = errorMessage)
   checkmate::assertTRUE(
-    all(unlist(lapply(temporalWindows, length)) == 2),
+    all(unlist(lapply(temporalWindow, length)) == 2),
     add = errorMessage
   )
 
@@ -167,7 +167,7 @@ largeScaleCharacterization <- function(cdm,
   )
 
   # overlap
-  checkmate::assertLogical(overlap, len = 1, add = errorMessage)
+  checkmate::assertLogical(overlap, any.missing = FALSE, add = errorMessage)
 
   # summarise
   checkmate::assertLogical(summarise, len = 1, add = errorMessage)
@@ -178,8 +178,16 @@ largeScaleCharacterization <- function(cdm,
   # report collection of errors
   checkmate::reportAssertions(collection = errorMessage)
 
+  if (length(overlap) > 1) {
+    if(length(overlap) != length(tablesToCharacterize)) {
+      stop("If length(overlap)>1 then length(overlap) = length(tablesToCharacterize)")
+    }
+  } else {
+    overlap <- rep(overlap, length(tablesToCharacterize))
+  }
+
   # write temporal windows tibble
-  temporalWindows <- lapply(temporalWindows, function(x) {
+  temporalWindow <- lapply(temporalWindow, function(x) {
     nam <- paste0(
       ifelse(is.na(x[1]), "Any", x[1]),
       ";",
@@ -236,7 +244,7 @@ largeScaleCharacterization <- function(cdm,
     ))) %>%
     dplyr::mutate(to_merge = 1) %>%
     dplyr::inner_join(
-      temporalWindows %>%
+      temporalWindow %>%
         dplyr::mutate(to_merge = 1),
       by = "to_merge",
       copy = TRUE
@@ -256,6 +264,7 @@ largeScaleCharacterization <- function(cdm,
   # events in the observation window will be observed. The result is a
   # temporary table in the database
   characterizedTable <- lapply(tablesToCharacterize, function(table_name) {
+    overlap.k <- overlap[tablesToCharacterize == table_name]
     # get start date depending on the table
     start_date <- get_start_date[[table_name]]
     # get end date depending on the table
@@ -268,7 +277,7 @@ largeScaleCharacterization <- function(cdm,
       # rename start date
       dplyr::rename("start_date" = .env$start_date)
     # rename or create end date
-    if (is.null(end_date) || isFALSE(overlap)) {
+    if (is.null(end_date) || isFALSE(overlap.k)) {
       study_table <- study_table %>%
         dplyr::mutate(end_date = .data$start_date)
     } else {
@@ -289,7 +298,7 @@ largeScaleCharacterization <- function(cdm,
       )))
     # obtain the time difference between the end of the event and the cohort
     # start date
-    if (is.null(end_date) || isFALSE(overlap)) {
+    if (is.null(end_date) || isFALSE(overlap.k)) {
       study_table <- study_table %>%
         dplyr::mutate(days_difference_end = .data$days_difference_start)
     } else {
@@ -304,7 +313,7 @@ largeScaleCharacterization <- function(cdm,
       # windows
       dplyr::mutate(to_merge = 1) %>%
       dplyr::inner_join(
-        temporalWindows %>%
+        temporalWindow %>%
           dplyr::mutate(to_merge = 1),
         by = "to_merge",
         copy = TRUE
@@ -415,7 +424,7 @@ largeScaleCharacterization <- function(cdm,
   result <- list()
   result$characterization <- characterizedTables
   result$denominator <- subjects_denominator
-  result$temporalWindows <- temporalWindows
+  result$temporalWindow <- temporalWindow
   result$tablesToCharacterize <- tablesToCharacterize
   result$overlap <- overlap
 

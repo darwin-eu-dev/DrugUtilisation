@@ -5,113 +5,56 @@
 \title{It creates a mock database for testing drugutilisation package}
 \usage{
 mockDrugUtilisation(
-  drug_exposure = NULL,
-  drug_strength = NULL,
-  observation_period = NULL,
-  condition_occurrence = NULL,
-  visit_occurrence = NULL,
+  connectionDetails = list(con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
+    writeSchema = "main", writePrefix = NULL),
+  numberIndividuals = 10,
+  seed = 1,
+  concept = NULL,
   concept_ancestor = NULL,
+  drug_strength = NULL,
   person = NULL,
-  cohort1 = NULL,
-  cohort2 = NULL,
-  drug_concept_id_size = 5,
-  ancestor_concept_id_size = 5,
-  condition_concept_id_size = 5,
-  visit_concept_id_size = 5,
-  visit_occurrence_id_size = 5,
-  ingredient_concept_id_size = 1,
-  drug_exposure_size = 10,
-  patient_size = 1,
-  min_drug_exposure_start_date = "2000-01-01",
-  max_drug_exposure_start_date = "2020-01-01",
-  earliest_date_of_birth = NULL,
-  latest_date_of_birth = NULL,
-  earliest_observation_start_date = NULL,
-  latest_observation_start_date = NULL,
-  min_days_to_observation_end = NULL,
-  max_days_to_observation_end = NULL,
-  earliest_condition_start_date = NULL,
-  latest_condition_start_date = NULL,
-  min_days_to_condition_end = NULL,
-  max_days_to_condition_end = NULL,
-  earliest_visit_start_date = NULL,
-  latest_visit_start_date = NULL,
-  min_days_to_visit_end = NULL,
-  max_days_to_visit_end = NULL,
-  seed = 1
+  observation_period = NULL,
+  drug_exposure = NULL,
+  condition_occurrence = NULL,
+  observation = NULL,
+  extraTables = list(),
+  ...
 )
 }
 \arguments{
-\item{drug_exposure}{default null user can define its own table}
+\item{connectionDetails}{Details of the connection}
 
-\item{drug_strength}{default null user can define its own table}
+\item{numberIndividuals}{Number of individuals in the mock cdm}
 
-\item{observation_period}{default null user can define its own table}
+\item{seed}{Seed for the random numbers}
 
-\item{condition_occurrence}{default null user can define its own table}
+\item{concept}{A concept tibble, if NULL a mock one is created}
 
-\item{visit_occurrence}{default null user can define its own visit_occurrence table}
+\item{concept_ancestor}{A concept_ancestor tibble, if NULL a mock one is
+created}
 
-\item{concept_ancestor}{the concept ancestor table}
+\item{drug_strength}{A drug_strength tibble, if NULL a mock one is created}
 
-\item{person}{default null user can define its own table}
+\item{person}{A person tibble, if NULL a mock one is created}
 
-\item{cohort1}{cohort table for test to run in getindication}
+\item{observation_period}{A observation_period tibble, if NULL a mock one is
+created}
 
-\item{cohort2}{cohort table for test to run in getindication}
+\item{drug_exposure}{A drug_exposure tibble, if NULL a mock one is created}
 
-\item{drug_concept_id_size}{number of unique drug concept id}
+\item{condition_occurrence}{A condition_occurrence tibble, if NULL a mock one
+is created}
 
-\item{ancestor_concept_id_size}{the size of ceoncept ancestor table}
+\item{observation}{A observation tibble, if NULL a mock one is created}
 
-\item{condition_concept_id_size}{number of unique row in the condition concept table}
+\item{extraTables}{Extra tibbles to be instantiated that are not cohorts or
+cdm tables}
 
-\item{visit_concept_id_size}{number of unique visit concept id}
-
-\item{visit_occurrence_id_size}{number of unique visit occurrence id}
-
-\item{ingredient_concept_id_size}{number of unique drug ingredient concept id}
-
-\item{drug_exposure_size}{number of unique drug exposure}
-
-\item{patient_size}{number of unique patient}
-
-\item{min_drug_exposure_start_date}{user define minimum drug exposure start date}
-
-\item{max_drug_exposure_start_date}{user define maximium drug exposure start date}
-
-\item{earliest_date_of_birth}{the earliest date of birth of patient in person table format "dd-mm-yyyy"}
-
-\item{latest_date_of_birth}{the latest date of birth for patient in person table format "dd-mm-yyyy"}
-
-\item{earliest_observation_start_date}{the earliest observation start date for patient format "dd-mm-yyyy"}
-
-\item{latest_observation_start_date}{the latest observation start date for patient format "dd-mm-yyyy"}
-
-\item{min_days_to_observation_end}{the minimum number of days of the observational integer}
-
-\item{max_days_to_observation_end}{the maximum number of days of the observation period integer}
-
-\item{earliest_condition_start_date}{the earliest condition start date for patient format "dd-mm-yyyy"}
-
-\item{latest_condition_start_date}{the latest condition start date for patient format "dd-mm-yyyy"}
-
-\item{min_days_to_condition_end}{the minimum number of days of the condition integer}
-
-\item{max_days_to_condition_end}{the maximum number of days of the condition integer}
-
-\item{earliest_visit_start_date}{the earliest visit start date for patient format "dd-mm-yyyy"}
-
-\item{latest_visit_start_date}{the latest visit start date for patient format "dd-mm-yyyy"}
-
-\item{min_days_to_visit_end}{the minimum number of days of the visit integer}
-
-\item{max_days_to_visit_end}{the maximum number of days of the visit integer}
-
-\item{seed}{seed}
+\item{...}{Cohorts can be added to the cdm reference, cohort1 and cohort2
+will be created if not provided}
 }
 \value{
-
+A cdm reference with the mock tables
 }
 \description{
 It creates a mock database for testing drugutilisation package

@@ -1,10 +1,11 @@
 test_that("test initial errors", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2),
       year_of_birth = as.integer(c(1995, 1993)),
       month_of_birth = as.integer(c(10, 11)),
       day_of_birth = as.integer(c(1, 12)),
+      birth_datetime = as.Date(c("1995-10-01", "1993-11-12")),
       gender_concept_id = c(8532, 8507)
     ),
     cohort1 = dplyr::tibble(
@@ -131,12 +132,13 @@ test_that("test initial errors", {
 })
 
 test_that("test output format", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2),
       year_of_birth = as.integer(c(1995, 1993)),
       month_of_birth = as.integer(c(10, 11)),
       day_of_birth = as.integer(c(1, 12)),
+      birth_datetime = as.Date(c("1995-10-01", "1995-11-12")),
       gender_concept_id = c(8532, 8507)
     ),
     cohort1 = dplyr::tibble(
@@ -161,7 +163,7 @@ test_that("test output format", {
 })
 
 test_that("test sex strata", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -210,7 +212,7 @@ test_that("test sex strata", {
     targetCohortId = 1,
                          sex = c("Female", "Male")
     )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 2)
   expect_true(
     x %>%
@@ -231,7 +233,7 @@ test_that("test sex strata", {
     targetCohortId = 1,
     sex = c("Both", "Female", "Male")
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 3)
   expect_true(
     x %>%
@@ -258,7 +260,7 @@ test_that("test sex strata", {
     targetCohortId = 1,
     sex = c("Male")
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 1)
   expect_true(
     x %>%
@@ -270,7 +272,7 @@ test_that("test sex strata", {
 })
 
 test_that("test ageGroup strata", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -319,7 +321,7 @@ test_that("test ageGroup strata", {
     targetCohortId = 1,
     ageGroup = list(c(0,19), c(20, 39), c(40,59), c(0, 150), c(0,50))
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 5)
   expect_true(
     x %>%
@@ -355,7 +357,7 @@ test_that("test ageGroup strata", {
 })
 
 test_that("test indexYear strata", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -404,7 +406,7 @@ test_that("test indexYear strata", {
     targetCohortId = 1,
     indexYearGroup = list(2010, c(2010,2020), c(2000,2035), 2034)
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 4)
   expect_true(
     x %>%
@@ -434,7 +436,7 @@ test_that("test indexYear strata", {
 })
 
 test_that("test indication strata", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -480,14 +482,14 @@ test_that("test indication strata", {
   indicationTable <- getIndication(
     cdm = cdm,
     targetCohortName = "cohort1",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
-      indication_id = c(1, 2),
-      indication_name = c("covid", "tuberculosis")
+      cohortId = c(1, 2),
+      cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = c(7, 30, 10000),
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   )
 
   x <- getStratification(
@@ -496,7 +498,7 @@ test_that("test indication strata", {
     targetCohortId = 1,
     indicationTable = indicationTable
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 13)
   cdi_counts <- c(9, 2, 0, 1, 6, 4, 1, 1, 3, 6, 3, 1, 2)
   for (k in 1:length(cdi_counts)){
@@ -510,7 +512,7 @@ test_that("test indication strata", {
 })
 
 test_that("test multiple conditions", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -556,14 +558,14 @@ test_that("test multiple conditions", {
   indicationTable <- getIndication(
     cdm = cdm,
     targetCohortName = "cohort1",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
-      indication_id = c(1, 2),
-      indication_name = c("covid", "tuberculosis")
+      cohortId = c(1, 2),
+      cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = 7,
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   )
 
   x <- getStratification(
@@ -575,7 +577,7 @@ test_that("test multiple conditions", {
     indexYearGroup = list(c(2010, 2019), c(2020, 2035)),
     indicationTable = indicationTable
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 60)
   cdi_counts <- c(
     6, 2, 0, 0, 4,
@@ -602,7 +604,7 @@ test_that("test multiple conditions", {
 })
 
 test_that("test oneStrata option", {
-  cdm <- mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(connectionDetails,
     person = dplyr::tibble(
       person_id = c(1, 2, 3, 4, 5, 6, 7, 8),
       year_of_birth = as.integer(c(1991, 1990, 1989, 1997, 2002, 1879, 1978, 2000)),
@@ -648,14 +650,14 @@ test_that("test oneStrata option", {
   indicationTable <- getIndication(
     cdm = cdm,
     targetCohortName = "cohort1",
-    targetCohortDefinitionIds = 1,
+    targetCohortDefinitionId = 1,
     indicationCohortName = "cohort2",
     indicationDefinitionSet = dplyr::tibble(
-      indication_id = c(1, 2),
-      indication_name = c("covid", "tuberculosis")
+      cohortId = c(1, 2),
+      cohortName = c("covid", "tuberculosis")
     ),
     indicationGap = 7,
-    unknownIndicationTables = "condition_occurrence"
+    unknownIndicationTable = "condition_occurrence"
   )
 
   x <- getStratification(
@@ -668,7 +670,7 @@ test_that("test oneStrata option", {
     indicationTable = indicationTable,
     oneStrata = TRUE
   )
-  strata <- attr(x, "settings")
+  strata <- attr(x, "cohortSet")
   expect_true(strata %>% nrow() == 9)
   cdi_counts <- c(6, 2, 0, 0, 4, 3, 1, 5, 2)
   for (k in 1:length(cdi_counts)){
@@ -679,4 +681,24 @@ test_that("test oneStrata option", {
         dplyr::pull("n") == cdi_counts[k]
     )
   }
+})
+
+
+test_that("test case empty targetCohortName", {
+
+  cdm <- mockDrugUtilisation(connectionDetails,
+    person = dplyr::tibble(
+      person_id = c(1, 2),
+      year_of_birth = as.integer(c(1995, 1993)),
+      month_of_birth = as.integer(c(10, 11)),
+      day_of_birth = as.integer(c(1, 12)),
+      gender_concept_id = c(8532, 8507)
+    )
+  )
+  cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
+    dplyr::filter(.data$subject_id == 0)
+  expect_error(getStratification(
+    cdm = cdm, targetCohortName = "cohort1", sex = "Both", targetCohortId = 1
+  ))
+
 })

@@ -6,17 +6,17 @@
 \usage{
 getDoseInformation(
   cdm,
-  dusCohortName,
-  conceptSetPath = NULL,
+  targetCohortName,
   ingredientConceptId,
+  conceptSetList = NULL,
   gapEra = 30,
   eraJoinMode = "Previous",
   overlapMode = "Previous",
   sameIndexMode = "Sum",
   imputeDuration = "eliminate",
   imputeDailyDose = "eliminate",
-  durationRange = c(1, NA),
-  dailyDoseRange = c(0, NA)
+  durationRange = c(1, Inf),
+  dailyDoseRange = c(0, Inf)
 )
 }
 \arguments{
@@ -24,15 +24,14 @@ getDoseInformation(
 must contain at least 'drug_exposure', 'drug_strength' and
 observation_period' tables.}
 
-\item{dusCohortName}{Name of the cohort that we want to obtain the dose
+\item{targetCohortName}{Name of the cohort that we want to obtain the dose
 information.}
-
-\item{conceptSetPath}{Path to a folder with the concept sets of interest.
-Concept sets must be stored in OMOP .json files. If NULL all the descendants
-of ingredient concept id will be used. By default: NULL.}
 
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
+
+\item{conceptSetList}{List of concepts to be included. If NULL all the descendants
+of ingredient concept id will be used. By default: NULL.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era. By default: 180.}
