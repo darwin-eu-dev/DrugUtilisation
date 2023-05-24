@@ -9,7 +9,7 @@ test_that("test case single indication table summary", {
     cohort_end_date = as.Date(c(
       "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
     ))
-  ) # this is the targetCohort
+  )
   indicationCohortName <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 2, 3, 1),
     subject_id = c(1, 3, 1, 2, 1),
@@ -37,10 +37,9 @@ test_that("test case single indication table summary", {
     condition_start_date = as.Date("2020-05-31"),
     condition_end_date = as.Date("2020-05-31")
   )
-
-  indicationDefinitionSet <- dplyr::tibble(
-    cohortId = c(1, 2),
-    cohortName = c("asthma", "covid")
+  attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
+    cohort_definition_id = c(1, 2),
+    cohort_name = c("asthma", "covid")
   )
 
   cdm <-
@@ -50,18 +49,10 @@ test_that("test case single indication table summary", {
       condition_occurrence = condition_occurrence
     )
 
-  # check for indication 0
-  res_0 <- suppressWarnings(getIndication(
-    cdm = cdm,
-    targetCohortName = "cohort1",
-    indicationCohortName = "cohort2",
-    targetCohortDefinitionId = 1,
-    indicationDefinitionSet = indicationDefinitionSet,
-    indicationGap = 0,
-    unknownIndicationTable = NULL
-  ))
-
-  result_1 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCount = 1)
+  res_0 <- cdm$cohort1 %>%
+    addIndication(cdm, "cohort2", 0, NULL)
+  class(res_0) <- c("GeneratedCohortSet", class(res_0))
+  result_1 <- summariseIndication(res_0, cdm, minimumCellCount = 1)
   result_2 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCount = 2)
   result_3 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCount = 3)
   result_4 <- summariseIndication(cdm = cdm, indicationList = res_0, minimumCellCount = 4)

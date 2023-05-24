@@ -57,14 +57,16 @@ addIndication <- function(x,
   ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap)
 
   # add the indication columns to the original table
-  x <- x %>%
+  result <- x %>%
     dplyr::left_join(
       ind %>% dplyr::rename(!!indicationDate := "cohort_start_date"),
       by = c("subject_id", indicationDate)
     ) %>%
     computeTable(cdm)
 
-  return(x)
+  result <- PatientProfiles::addAttributes(result, x)
+
+  return(result)
 }
 
 #' get cohort names

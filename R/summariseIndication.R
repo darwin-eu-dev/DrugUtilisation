@@ -36,10 +36,11 @@ summariseIndication <- function(x,
                                 minimumCellCount = 5) {
   # initialChecks
   checkX(x) # cohort_definition_id and at least one indication, generatedCohortSet
+  checkCdm(cdm)
   checkStrata(strata, x)
   checkMinimumCellCount(minimumCellCount)
   if (length(indicationColumns(x)) == 0) {
-    cli::cli_abort("No indication columns found")
+    cli::cli_abort("x must have at least one indication, use addIndication() to add indication columns")
   }
 
   # summarise indication columns
@@ -75,7 +76,8 @@ indicationColumns <- function(x) {
 summariseCohortIndication <- function(x) {
   cs <- CDMConnector::cohortSet(x)
   cohortIds <- x %>%
-    dplyr::distinct("cohort_definition_id") %>%
+    dplyr::select("cohort_definition_id") %>%
+    dplyr::distinct() %>%
     dplyr::pull()
   result <- list()
   for (cohortId in cohortIds) {
