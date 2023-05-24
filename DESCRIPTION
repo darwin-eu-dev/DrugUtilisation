@@ -48,12 +48,9 @@ Imports:
     rlang,
     RJSONIO,
     tibble,
-<<<<<<< HEAD
-    stringr
-=======
     stringr,
+    magrittr,
     cli,
     PatientProfiles
->>>>>>> 06678e22401741122800ea0f25936c72724603fd
 Depends: 
     R (>= 2.10)

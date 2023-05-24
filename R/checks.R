@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # checks used throughout the package
 #' @noRd
 checkPath <- function(path) {
@@ -31,7 +30,8 @@ checkPath <- function(path) {
     }
   }
   return(conceptSets)
-=======
+}
+
 #' @noRd
 checkAgeGroup <- function(ageGroup) {
   checkmate::assertList(ageGroup, min.len = 1, null.ok = TRUE)
@@ -111,7 +111,6 @@ checkCategory <- function(category) {
     }
   }
   return(result)
->>>>>>> 06678e22401741122800ea0f25936c72724603fd
 }
 
 #' @noRd
@@ -125,11 +124,7 @@ checkCdm <- function(cdm, tables = NULL) {
       cli::cli_abort(paste0(
         "tables: ",
         paste0(tables, collapse = ", "),
-<<<<<<< HEAD
         " are not present in the cdm object"
-=======
-        "are nor present in the cdm object"
->>>>>>> 06678e22401741122800ea0f25936c72724603fd
       ))
     }
   }
@@ -137,7 +132,6 @@ checkCdm <- function(cdm, tables = NULL) {
 }
 
 #' @noRd
-<<<<<<< HEAD
 checkPatternTibble <- function(x) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
     cli::cli_abort("x is not a valid table")
@@ -147,11 +141,9 @@ checkPatternTibble <- function(x) {
     cli::cli_abort(" 'amount', 'amount_unit_concept_id', 'numerator', 'numerator_unit_concept_id', 'denominator' and 'denominator_unit_concept_id' are not all columns of {x}")
   }
   invisible(NULL)
-=======
+}
 
 checkListTable <- function(listTables) {
-
-
   checkmate::assertTRUE(length(listTables) == length(unique(names(listTables))))
 
   namesTables <- names(listTables)
@@ -199,6 +191,4 @@ checkListTable <- function(listTables) {
       checkmate::reportAssertions(collection = errorMessage)
     }
   }
-
->>>>>>> 06678e22401741122800ea0f25936c72724603fd
 }

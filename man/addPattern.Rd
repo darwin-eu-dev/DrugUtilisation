@@ -8,13 +8,9 @@ addPattern(table)
 }
 \arguments{
 \item{table}{table}
-
-\item{cdm}{cdm}
-
-\item{ingredientConceptId}{ingredientConceptId}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
+}
+\value{
+table with a pattern_id and unit columns
 }
 \description{
 add pattern info to a table containing drug_strength information

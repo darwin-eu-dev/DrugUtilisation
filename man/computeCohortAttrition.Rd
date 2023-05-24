@@ -8,8 +8,7 @@ computeCohortAttrition(
   x,
   cdm,
   attrition = NULL,
-  reason = "Qualifying initial events",
-  name = CDMConnector::uniqueTableName()
+  reason = "Qualifying initial events"
 )
 }
 \arguments{

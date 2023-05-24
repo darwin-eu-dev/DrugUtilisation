@@ -89,7 +89,7 @@ createPatternsTable <- function(cdm) {
       .groups = "drop"
     ) %>%
     dplyr::mutate(pattern_id = dplyr::row_number()) %>%
-    dplyr::relocate(.data$pattern_id) %>% dplyr::collect()
+    dplyr::relocate(pattern_id) %>% dplyr::collect()
 
   # Here add logic valid column of patterns
   patternfile <- patternfile %>%

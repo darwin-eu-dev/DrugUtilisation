@@ -2,17 +2,13 @@
 
 export("%>%")
 export(addDailyDose)
-<<<<<<< HEAD
 export(addPattern)
 export(comparePatternsTable)
-export(createPatternsTable)
-export(generateDrugUtilisationCohort)
-=======
 export(computeCohortAttrition)
 export(computeCohortCount)
+export(createPatternsTable)
 export(generateConceptCohortSet)
 export(generateDrugUtilisationCohortSet)
->>>>>>> 06678e22401741122800ea0f25936c72724603fd
 export(getDoseInformation)
 export(getIndication)
 export(getOverlappingCohortSubjects)
