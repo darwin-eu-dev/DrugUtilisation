@@ -26,7 +26,7 @@ checkInput <- function(x, nam) {
     "cdm", "conceptSetList", "name", "summariseMode", "fixedTime",
     "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDateRange",
     "imputeDuration", "durationRange", "attrition", "x", "reason", "tableRef",
-    "targetCohortName", "ingredientConceptId", "eraJoinMode", "overlapMode",
+    "targetCohortName", "ingredientConceptId", "sample", "eraJoinMode", "overlapMode",
     "sameIndexMode", "imputeDailyDose", "dailyDoseRange", "x",
     "indicationCohortName", "indicationGap", "unknownIndicationTable",
     "indicationDate"
@@ -541,6 +541,12 @@ checkSameIndexMode <- function(sameIndexMode) {
 checkIngredientConceptId <- function(ingredientConceptId) {
   if (checkInteger(ingredientConceptId)) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
+  }
+}
+
+checkSample <- function(sample) {
+  if (checkInteger(sample)) {
+    cli::cli_abort("sample is not an integer of length 1")
   }
 }
 

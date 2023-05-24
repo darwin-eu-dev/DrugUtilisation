@@ -1,6 +1,9 @@
 test_that("functionality of addDailyDose function",{
   drug_strength <- dplyr::tibble(
-    drug_concept_id = c(1:37),
+    drug_concept_id = c(2905077,  1516983,   2905075,  1503327,  1516978,  1503326,   1503328,   1516980,  29050773, 1125360,   15033297,  15030327,
+                        15033427, 15036327,  15394662, 43135274, 11253605, 431352774, 431359274, 112530,   1539465,  29050772,  431352074, 15394062,
+                        43135277, 15033327,  11253603, 15516980, 5034327,  1539462,   15033528,  15394636, 15176980, 1539463,   431395274, 15186980,
+                        15316978),
     ingredient_concept_id = c(rep(1,37)),
     amount_value = c(100,200,300,400,500,600,700,rep(NA,30)),
     amount = c(rep("numeric",7),rep(NA,30)),
@@ -16,15 +19,21 @@ test_that("functionality of addDailyDose function",{
   )
 
   cdm <- mockDrugUtilisation(connectionDetails,
+                             seed = 11,
                              drug_strength = drug_strength,
                              numberIndividuals = 50)
+
+  cdm[["drug_exposure"]] <- cdm[["drug_exposure"]] %>%
+    dplyr::group_by(drug_concept_id) %>%
+    dplyr::filter(dplyr::row_number() == 1) %>%
+    dplyr::ungroup()
 
   # should only add patterns 1 to 9, which are drugs 1:7, 10, 11, 25, 30
   result <- addDailyDose(cdm$drug_exposure, cdm, 1) %>%
     dplyr::collect() %>% dplyr::arrange(drug_concept_id)
 
   expect_true(nrow(result) == cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull("n"))
-  expect_true(all(result %>% dplyr::filter(!is.na(daily_dose)) %>% dplyr::select(drug_concept_id) %>% dplyr::pull() %in% c(1:7,10,11,25,30)))
+  expect_true(all(result %>% dplyr::filter(!is.na(daily_dose)) %>% dplyr::select(drug_concept_id) %>% dplyr::pull() %in% c(1125360, 1516978, 1539462, 2905077)))
 
   compareNA <- function(v1,v2) {
     same <- (v1 - v2 < 0.01) | (is.na(v1) & is.na(v2))
@@ -32,14 +41,9 @@ test_that("functionality of addDailyDose function",{
     return(same)
   }
 
-  # daily dose depends on pattern_id: standarisation and function
-  # expect_true(all(compareNA(result %>% dplyr::select(daily_dose) %>%
-  #                             dplyr::arrange("drug_concept_id") %>% dplyr::pull(),
-  #                           c(100, 100, 0.2, 600, 600, 600, 600, 600,
-  #                             NA, 0.005, 0.5853, NA, NA, NA, NA, NA, NA, NA, NA,
-  #                             NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-  #                             NA, 0.96, 0.96, 0.96, NA, NA, NA, NA, NA, NA,
-  #                             NA, NA, 600, NA, NA, NA, NA, NA, NA))))
+#  daily dose depends on pattern_id: standarisation and function
+  expect_true(all(compareNA(result %>% dplyr::select(daily_dose) %>% dplyr::pull(),
+                           c(0.005, NA, NA, 29.069, NA, 600, NA, 5.555, NA))))
 })
 
 test_that("test for negative quantity or daily dose",{
@@ -103,9 +107,12 @@ test_that("test for negative quantity or daily dose",{
 
 test_that("test for different ingredient concept ids",{
   drug_strength <- dplyr::tibble(
-    drug_concept_id = c(1:37),
-    ingredient_concept_id = c(1,2,rep(1,33),2,3),
-    amount_value = c(-100,200,300,400,500,600,700,rep(NA,30)),
+    drug_concept_id = c(2905077,  1516983,   2905075,  1503327,  1516978,  1503326,   1503328,   1516980,  29050773, 1125360,   15033297,  15030327,
+                        15033427, 15036327,  15394662, 43135274, 11253605, 431352774, 431359274, 112530,   1539465,  29050772,  431352074, 15394062,
+                        43135277, 15033327,  11253603, 15516980, 5034327,  1539462,   15033528,  15394636, 15176980, 1539463,   431395274, 15186980,
+                        15316978),
+    ingredient_concept_id = c(2,1,rep(1,33),2,3),
+    amount_value = c(100,200,300,400,500,600,700,rep(NA,30)),
     amount = c(rep("numeric",7),rep(NA,30)),
     amount_unit_concept_id = c(8718, 9655, 8576, 44819154, 9551, 8587, 9573, rep(NA,30)),
     numerator_value = c(rep(NA,7),1,300,5,10,13,20,3,5,2,1,1,4,11,270,130,32,34,40,42,15,100,105,25,44,7,3,8,12,1,31),
@@ -119,14 +126,20 @@ test_that("test for different ingredient concept ids",{
   )
 
   cdm <- mockDrugUtilisation(connectionDetails,
+                             seed = 11,
                              drug_strength = drug_strength,
                              numberIndividuals = 50)
+
+  cdm[["drug_exposure"]] <- cdm[["drug_exposure"]] %>%
+    dplyr::group_by(drug_concept_id) %>%
+    dplyr::filter(dplyr::row_number() == 1) %>%
+    dplyr::ungroup()
 
   result <- addDailyDose(cdm$drug_exposure, cdm, 2) %>%
     dplyr::collect() %>% dplyr::arrange(drug_concept_id)
 
   expect_true(nrow(result) == cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull("n"))
-  expect_true(all(result %>% dplyr::filter(!is.na(daily_dose)) %>% dplyr::select(drug_concept_id) %>% dplyr::pull() %in% c(2)))
+  expect_true(all(result %>% dplyr::filter(!is.na(daily_dose)) %>% dplyr::select(drug_concept_id) %>% dplyr::pull() %in% c(2905077 )))
 
   compareNA <- function(v1,v2) {
     same <- (v1 - v2 < 0.01) | (is.na(v1) & is.na(v2))
@@ -134,13 +147,8 @@ test_that("test for different ingredient concept ids",{
     return(same)
   }
 
-  # expect_true(all(compareNA(result %>% dplyr::select(daily_dose) %>%
-  #                             dplyr::arrange("drug_concept_id") %>% dplyr::pull(),
-  #                           c(NA, NA, 0.2, NA, NA, NA, NA, NA,
-  #                             NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-  #                             NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-  #                             NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
-  #                             NA, NA, NA, NA, NA, NA, NA, NA, NA))))
+  expect_true(all(compareNA(result %>% dplyr::select(daily_dose) %>% dplyr::pull(),
+                            c(NA, NA, NA, NA, NA, NA, NA, 5.555, NA))))
 
 })
 
