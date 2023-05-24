@@ -1,0 +1,38 @@
+concept_id,concept_name,domain_id,vocabulary_id,concept_class_id,standard_concept,concept_code,valid_start_date,valid_end_date,invalid_reason
+8505,hour,Unit,UCUM,Unit,S,h,1970-01-01,2099-12-31,NA
+8507,MALE,Gender,Gender,Gender,S,M,1970-01-01,2099-12-31,NA
+8532,FEMALE,Gender,Gender,Gender,S,F,1970-01-01,2099-12-31,NA
+8576,milligram,Unit,UCUM,Unit,S,mg,1970-01-01,2099-12-31,NA
+8587,milliliter,Unit,UCUM,Unit,S,mL,1970-01-01,2099-12-31,NA
+8718,international unit,Unit,UCUM,Unit,S,[iU],1970-01-01,2099-12-31,NA
+9202,Outpatient Visit,Visit,Visit,Visit,S,OP,1970-01-01,2099-12-31,NA
+9551,milliequivalent,Unit,UCUM,Unit,S,10*-3.eq,1970-01-01,2099-12-31,NA
+9655,microgram,Unit,UCUM,Unit,S,ug,1970-01-01,2099-12-31,NA
+32020,EHR encounter diagnosis,Type Concept,Condition Type,Condition Type,NA,OMOP4822160,1970-01-01,2099-12-31,NA
+317009,Asthma,Condition,SNOMED,Clinical Finding,S,195967001,2002-01-31,2099-12-31,NA
+378253,Headache,Condition,SNOMED,Clinical Finding,S,25064002,2002-01-31,2099-12-31,NA
+432526,Needs influenza immunization,Observation,SNOMED,Clinical Finding,S,185903001,2002-01-31,2099-12-31,NA
+761948,Influenza A virus subtype H1 2009 pandemic strain present,Measurement,SNOMED,Clinical Finding,S,231000124101,2011-03-01,2099-12-31,NA
+1539403,simvastatin,Drug,RxNorm,Ingredient,S,36567,1970-01-01,2099-12-31,NA
+1539462,simvastatin 5 MG Oral Tablet,Drug,RxNorm,Clinical Drug,S,312962,1970-01-01,2099-12-31,NA
+1539463,simvastatin 10 MG Oral Tablet,Drug,RxNorm,Clinical Drug,S,314231,1970-01-01,2099-12-31,NA
+3655500,Assessment using Headache Impact Test-6,Procedure,SNOMED,Procedure,S,865925009,2020-07-31,2099-12-31,NA
+3655501,Headache Impact Test-6,Measurement,SNOMED,Staging / Scales,S,865926005,2020-07-31,2099-12-31,NA
+4062501,Asthma screening,Measurement,SNOMED,Procedure,S,171231001,2002-01-31,2099-12-31,NA
+4214676,Asthma medication review,Procedure,SNOMED,Procedure,S,394720003,2003-01-31,2099-12-31,NA
+4266367,Influenza,Condition,SNOMED,Clinical Finding,S,6142004,2002-01-31,2099-12-31,NA
+1125315,acetaminophen,Drug,RxNorm,Ingredient,S,161,1970-01-01,2099-12-31,NA
+1125360,acetaminophen 500 MG Oral Capsule,Drug,RxNorm,Clinical Drug,S,198439,1970-01-01,2099-12-31,NA
+1503297,metformin,Drug,RxNorm,Ingredient,S,6809,1970-01-01,2099-12-31,NA
+1503327,metformin 1000 MG,Drug,RxNorm,Clinical Drug Comp,S,316255,1970-01-01,2099-12-31,NA
+1503328,metformin 500 MG,Drug,RxNorm,Clinical Drug Comp,S,316256,1970-01-01,2099-12-31,NA
+1516976,insulin detemir,Drug,RxNorm,Ingredient,S,139825,2005-07-24,2099-12-31,NA
+1516978,insulin detemir 100 UNT/ML Injectable Solution,Drug,RxNorm,Clinical Drug,S,484322,1970-01-01,2099-12-31,NA
+1516980,3 ML insulin detemir 100 UNT/ML Pen Injector,Drug,RxNorm,Quant Clinical Drug,S,847239,2009-05-03,2099-12-31,NA
+3661634,Consultation for asthma,Observation,SNOMED,Procedure,S,866203004,2020-07-31,2099-12-31,NA
+2905077,200 ML acetaminophen 48 MG/ML Oral Solution by Pharmacy Choice,Drug,RxNorm Extension,Marketed Product,S,OMOP5121887,2021-06-30,2099-12-31,NA
+43135274,Acetaminophen 400 MG / Caffeine 50 MG / Codeine 20 MG Oral Tablet [PRONTALGINE],Drug,RxNorm Extension,Branded Drug,S,OMOP451014,2017-08-24,2099-12-31,NA
+4141052,History of headache,Observation,SNOMED,Context-dependent,S,425978000,2007-07-31,2099-12-31,NA
+4313306,Administration of influenza vaccine,Procedure,SNOMED,Procedure,S,86198006,2002-01-31,2099-12-31,NA
+38000177,Prescription written,Type Concept,Drug Type,Drug Type,NA,OMOP4822241,1970-01-01,2099-12-31,NA
+44814724,Period covering healthcare encounters,Type Concept,Obs Period Type,Obs Period Type,NA,OMOP4822291,1970-01-01,2099-12-31,NA

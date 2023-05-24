@@ -65,7 +65,8 @@ addDailyDose <- function(table,
           cdm$drug_strength %>%
             dplyr::filter(.data$ingredient_concept_id %in% .env$ingredientConceptId),
           by = c("drug_concept_id")
-        ) %>% addPattern() %>%
+        ) %>%
+        addPattern() %>%
         dplyr::mutate(
           # Change this with all different formula values
           daily_dose = dplyr::case_when(

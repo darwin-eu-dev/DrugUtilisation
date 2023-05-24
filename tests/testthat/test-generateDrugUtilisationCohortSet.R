@@ -1,433 +1,185 @@
 test_that("test inputs", {
-  cdm <- mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(connectionDetails)
   expect_error(generateDrugUtilisationCohortSet())
   expect_error(generateDrugUtilisationCohortSet(cdm = cdm))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", 1))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(1)))
-  x <- generateDrugUtilisationCohortSet(cdm, "dus", list(albuterol = 1))
-  expect_true(all(colnames(x) == c(
+  expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
+  x <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
+  expect_true(all(colnames(x$dus) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"
   )))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = "1"
+    cdm, "dus", list(acetaminophen = 1125360), cohortDateRange = 1
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, conceptSetPath = here::here()
+    cdm, "dus", list(acetaminophen = 1125360), cohortDateRange = "2020-01-05"
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, conceptSetPath = here::here("inst")
-  ))
-  expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, studyStartDate = 1
-  ))
-  expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, studyEndDate = "2020-01-05"
-  ))
-  expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, summariseMode = "2020-01-05"
+    cdm, "dus", list(acetaminophen = 1125360), summariseMode = "2020-01-05"
   ))
   xx <- generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, summariseMode = "FixedTime"
+    cdm, "dus", list(acetaminophen = 1125360), summariseMode = "FixedTime"
   )
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, summariseMode = "FixedTime",
+    cdm, "dus", list(acetaminophen = 1125360), summariseMode = "FixedTime",
     fixedTime = "1"
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, daysPriorHistory = "7"
+    cdm, "dus", list(acetaminophen = 1125360), daysPriorHistory = "7"
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, gapEra = "7"
+    cdm, "dus", list(acetaminophen = 1125360), gapEra = "7"
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, imputeDuration = "7"
+    cdm, "dus", list(acetaminophen = 1125360), imputeDuration = "7"
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, imputeDuration = -7
+    cdm, "dus", list(acetaminophen = 1125360), imputeDuration = -7
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm = cdm, ingredientConceptId = 1, durationRange = -7
+    cdm, "dus", list(acetaminophen = 1125360), durationRange = -7
   ))
 })
 
 test_that("class", {
-  cdm <- mockDrugUtilisation()
-  cohort <- generateDrugUtilisationCohortSet(cdm = cdm, ingredientConceptId = 1)
-  expect_true("GeneratedCohortSet" %in% class(cohort))
+  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
+  expect_true("GeneratedCohortSet" %in% class(cdm$dus))
 })
 
 test_that("basic functionality drug_conceptId", {
-  concept1 <- system.file(package = "DrugUtilisation", "concept1.json")
-  cdm <- mockDrugUtilisation(seed = 1)
-  out_put_1 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 834,
-    daysPriorHistory = NULL
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:4,
+      person_id = c(1, 1, 1, 1),
+      drug_concept_id = sample(c(1125360, 2905077, 43135274), 4, replace = T),
+      drug_exposure_start_date = as.Date(
+        c("2020-04-01", "2020-06-01", "2021-02-12", "2021-03-01"), "%Y-%m-%d"
+      ),
+      drug_exposure_end_date = as.Date(
+        c("2020-04-30", "2020-09-11", "2021-02-15", "2021-03-24"), "%Y-%m-%d"
+      ),
+      drug_type_concept_id = 38000177,
+      quantity = 1
+    )
+  )
+  acetaminophen <- list(acetaminophen = c(1125360, 2905077, 43135274))
+  # check gap
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 0
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 13
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 14
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 3)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 31
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 3)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 32
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 2)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 153
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 2)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 154
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 1500
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  # check first era
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 1, summariseMode = "FirstEra"
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  expect_true(
+    cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   )
   expect_true(
-    out_put_1 %>%
-      dplyr::summarise(max(cohort_start_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(max(drug_exposure_start_date, na.rm = TRUE)) %>%
-      dplyr::pull()
+    cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2020-04-30")
+  )
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 40, summariseMode = "FirstEra"
+  )
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  expect_true(
+    cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   )
   expect_true(
-    out_put_1 %>%
-      dplyr::summarise(min(cohort_start_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(min(drug_exposure_start_date, na.rm = TRUE)) %>%
-      dplyr::pull()
+    cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2020-09-11")
+  )
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, gapEra = 1500, summariseMode = "FirstEra"
   )
   expect_true(
-    out_put_1 %>%
-      dplyr::summarise(max(cohort_end_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(max(drug_exposure_end_date, na.rm = TRUE)) %>%
-      dplyr::pull()
+    cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   )
   expect_true(
-    out_put_1 %>%
-      dplyr::summarise(min(cohort_end_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(min(drug_exposure_end_date, na.rm = TRUE)) %>%
-      dplyr::pull()
+    cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2021-03-24")
   )
-  expect_true(
-    out_put_1 %>%
-      dplyr::filter(subject_id != 1) %>%
-      dplyr::count() %>%
-      dplyr::pull() == 0
+  # check fixedTime
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 30,
+    gapEra = 0
   )
-  expect_true(
-    out_put_1 %>%
-      dplyr::filter(subject_id == 1) %>%
-      dplyr::count() %>%
-      dplyr::pull() != 0
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  x <- all(
+    cdm1$dus %>%
+      dplyr::mutate(
+        dif = !!CDMConnector::datediff("cohort_start_date", "cohort_end_date") + 1
+      ) %>%
+      dplyr::pull("dif") == 30
   )
-
-  out_put_2 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 835,
-    daysPriorHistory = NULL
+  expect_true(x)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 30,
+    gapEra = 400
   )
-  expect_true(out_put_2 %>% dplyr::tally() %>% dplyr::pull("n") == 3)
-
-  out_put_3 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 836,
-    daysPriorHistory = NULL
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  x <- all(
+    cdm1$dus %>%
+      dplyr::mutate(
+        dif = !!CDMConnector::datediff("cohort_start_date", "cohort_end_date") + 1
+      ) %>%
+      dplyr::pull("dif") == 30
   )
-  expect_true(out_put_3 %>% dplyr::tally() %>% dplyr::pull("n") == 2)
-
-
-  out_put_11 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    gapEra = 834,
-    daysPriorHistory = NULL
+  expect_true(x)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 365,
+    gapEra = 0
   )
-  expect_equal(out_put_1 %>% dplyr::collect(), out_put_11 %>% dplyr::collect())
-
-  out_put_4 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 2972
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  x <- all(
+    cdm1$dus %>%
+      dplyr::mutate(
+        dif = !!CDMConnector::datediff("cohort_start_date", "cohort_end_date") + 1
+      ) %>%
+      dplyr::pull("dif") == 365
   )
-  expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  out_put_4 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 2973
+  expect_true(x)
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm, "dus", acetaminophen, summariseMode = "FixedTime", fixedTime = 365,
+    gapEra = 1500
   )
-  expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 0)
-
-  out_put_5 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    summariseMode = "FirstEra",
-    gapEra = 834,
-    daysPriorHistory = NULL
+  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  x <- all(
+    cdm1$dus %>%
+      dplyr::mutate(
+        dif = !!CDMConnector::datediff("cohort_start_date", "cohort_end_date") + 1
+      ) %>%
+      dplyr::pull("dif") == 365
   )
-  expect_true(out_put_5 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  out_put_6 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    summariseMode = "FixedTime",
-    fixedTime = 365,
-    gapEra = 834,
-    daysPriorHistory = NULL
-  )
-  expect_true(out_put_6 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
-})
-
-test_that("basic functionality unique path", {
-  concept1 <- system.file(package = "DrugUtilisation", "concept1")
-  cdm <- mockDrugUtilisation(seed = 1)
-  out_put_1 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 834,
-    daysPriorHistory = NULL
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::summarise(max(cohort_start_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(max(drug_exposure_start_date, na.rm = TRUE)) %>%
-      dplyr::pull()
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::summarise(min(cohort_start_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(min(drug_exposure_start_date, na.rm = TRUE)) %>%
-      dplyr::pull()
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::summarise(max(cohort_end_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(max(drug_exposure_end_date, na.rm = TRUE)) %>%
-      dplyr::pull()
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::summarise(min(cohort_end_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(min(drug_exposure_end_date, na.rm = TRUE)) %>%
-      dplyr::pull()
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::filter(subject_id != 1) %>%
-      dplyr::count() %>%
-      dplyr::pull() == 0
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::filter(subject_id == 1) %>%
-      dplyr::count() %>%
-      dplyr::pull() != 0
-  )
-
-  out_put_2 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 835,
-    daysPriorHistory = NULL
-  )
-  expect_true(out_put_2 %>% dplyr::tally() %>% dplyr::pull("n") == 3)
-
-  out_put_3 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 836,
-    daysPriorHistory = NULL
-  )
-  expect_true(out_put_3 %>% dplyr::tally() %>% dplyr::pull("n") == 2)
-
-
-  out_put_11 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    gapEra = 834,
-    daysPriorHistory = NULL
-  )
-  expect_equal(out_put_1 %>% dplyr::collect(), out_put_11 %>% dplyr::collect())
-
-  out_put_4 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 2972
-  )
-  expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  out_put_4 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 2973
-  )
-  expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 0)
-
-  out_put_5 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    summariseMode = "FirstEra",
-    gapEra = 834,
-    daysPriorHistory = NULL
-  )
-  expect_true(out_put_5 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  out_put_6 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    summariseMode = "FixedTime",
-    fixedTime = 365,
-    gapEra = 834,
-    daysPriorHistory = NULL
-  )
-  expect_true(out_put_6 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
-})
-
-test_that("basic functionality multiple paths", {
-  concept1 <- system.file(package = "DrugUtilisation", "concepts")
-  cdm <- mockDrugUtilisation(seed = 1)
-  out_put_1 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 834,
-    daysPriorHistory = NULL
-  ) %>%
-    dplyr::filter(cohort_definition_id == 1)
-  expect_true(
-    out_put_1 %>%
-      dplyr::summarise(max(cohort_start_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(max(drug_exposure_start_date, na.rm = TRUE)) %>%
-      dplyr::pull()
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::summarise(min(cohort_start_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(min(drug_exposure_start_date, na.rm = TRUE)) %>%
-      dplyr::pull()
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::summarise(max(cohort_end_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(max(drug_exposure_end_date, na.rm = TRUE)) %>%
-      dplyr::pull()
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::summarise(min(cohort_end_date, na.rm = TRUE)) %>%
-      dplyr::pull() ==
-      cdm$drug_exposure %>%
-      dplyr::filter(drug_concept_id == 1) %>%
-      dplyr::summarise(min(drug_exposure_end_date, na.rm = TRUE)) %>%
-      dplyr::pull()
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::filter(subject_id != 1) %>%
-      dplyr::count() %>%
-      dplyr::pull() == 0
-  )
-  expect_true(
-    out_put_1 %>%
-      dplyr::filter(subject_id == 1) %>%
-      dplyr::count() %>%
-      dplyr::pull() != 0
-  )
-
-  out_put_2 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 835,
-    daysPriorHistory = NULL
-  ) %>%
-    dplyr::filter(cohort_definition_id == 1)
-  expect_true(out_put_2 %>% dplyr::tally() %>% dplyr::pull("n") == 3)
-
-  out_put_3 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 836,
-    daysPriorHistory = NULL
-  ) %>%
-    dplyr::filter(cohort_definition_id == 1)
-  expect_true(out_put_3 %>% dplyr::tally() %>% dplyr::pull("n") == 2)
-
-
-  out_put_11 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    gapEra = 834,
-    daysPriorHistory = NULL
-  ) %>%
-    dplyr::filter(cohort_definition_id == 1)
-  expect_equal(out_put_1 %>% dplyr::collect(), out_put_11 %>% dplyr::collect())
-
-  out_put_4 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 2972
-  )
-  expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  out_put_4 <- generateDrugUtilisationCohortSet(
-    cdm,
-    conceptSetPath = concept1,
-    gapEra = 2973
-  ) %>%
-    dplyr::filter(cohort_definition_id == 1)
-  expect_true(out_put_4 %>% dplyr::tally() %>% dplyr::pull("n") == 0)
-
-  out_put_5 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    summariseMode = "FirstEra",
-    gapEra = 834,
-    daysPriorHistory = NULL
-  ) %>%
-    dplyr::filter(cohort_definition_id == 1)
-  expect_true(out_put_5 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  out_put_6 <- generateDrugUtilisationCohortSet(
-    cdm,
-    ingredientConceptId = 1,
-    conceptSetPath = concept1,
-    summariseMode = "FixedTime",
-    fixedTime = 365,
-    gapEra = 834,
-    daysPriorHistory = NULL
-  ) %>%
-    dplyr::filter(cohort_definition_id == 1)
-  expect_true(out_put_6 %>% dplyr::tally() %>% dplyr::pull("n") == 1)
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
-
+  expect_true(x)
 })

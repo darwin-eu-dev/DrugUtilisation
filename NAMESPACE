@@ -2,6 +2,10 @@
 
 export("%>%")
 export(addDailyDose)
+<<<<<<< HEAD
+=======
+export(addIndication)
+>>>>>>> 5266d562347510d7f0dddcdfceb4d2ec87740968
 export(addPattern)
 export(comparePatternsTable)
 export(computeCohortAttrition)
@@ -11,13 +15,11 @@ export(generateConceptCohortSet)
 export(generateDrugUtilisationCohortSet)
 export(getDoseInformation)
 export(getIndication)
-export(getOverlappingCohortSubjects)
 export(getStratification)
 export(getTableOne)
 export(largeScaleCharacterization)
 export(mockDrugUtilisation)
 export(readConceptList)
-export(summariseDoseIndicationTable)
 export(summariseDoseTable)
 export(summariseIndication)
 importFrom(magrittr,"%>%")

@@ -101,14 +101,14 @@ generateDrugUtilisationCohortSet <- function(cdm,
   attrition <- computeCohortAttrition(cohort, cdm)
 
   # correct duration
-  cohort <- correctDuration(cohort, durationRange, cdm)
+  cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
   reason <- paste(
     "Duration imputation; affected rows:", attr(cohort, "numberImputations")
   )
   attrition <- computeCohortAttrition(cohort, cdm, attrition, reason)
 
   # eliminate overlap
-  cohort <- unionCohort(cohort, gapEra)
+  cohort <- unionCohort(cohort, gapEra, cdm)
   attrition <- computeCohortAttrition(cohort, cdm, attrition, "Join eras")
 
   # require daysPriorHistory
@@ -124,7 +124,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   attrition <- computeCohortAttrition(cohort, cdm, attrition, "cohortDateRange applied")
 
   # apply summariseMode
-  cohort <- applySummariseMode(cohort, cdm, summariseMode)
+  cohort <- applySummariseMode(cohort, cdm, summariseMode, fixedTime)
   attrition <- computeCohortAttrition(
     cohort, cdm, attrition,
     paste("summariseMode:", summariseMode, "applied")
@@ -132,6 +132,10 @@ generateDrugUtilisationCohortSet <- function(cdm,
 
   # create the cohort references
   cohortRef <- cohort %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ) %>%
     CDMConnector::computeQuery(
       name = paste0(attr(cdm, "write_prefix"), name),
       FALSE, attr(cdm, "write_schema"), TRUE
