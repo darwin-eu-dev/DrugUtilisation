@@ -49,7 +49,7 @@ test_that("test functionality",{
 
   result <- dailyDoseCoverage(cdm, sample = 10, ingredient = 1, conceptList = concepts)
 
-  expect_true(result == 0)
+  expect_true(is.na(result))
 
   result <- dailyDoseCoverage(cdm, sample = 10, ingredient = 1)
 
