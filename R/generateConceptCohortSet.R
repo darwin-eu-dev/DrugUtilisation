@@ -41,18 +41,20 @@ generateConceptCohortSet <- function(cdm,
                                      cohortDateRange = as.Date(c(NA, NA))) {
   # check input
   # offset must be smaller than gap
-  checkInputs(
-    cdm = cdm, name = name, conceptSetList = conceptSetList,
-    daysPriorHistory = daysPriorHistory, gapEra = gap,
-    priorUseWashout = washout,# offset = offset,
-    cohortDateRange = cohortDateRange
-  )
+  # checkInputs(
+  #   cdm = cdm, name = name, conceptSetList = conceptSetList,
+  #   daysPriorHistory = daysPriorHistory, gapEra = gap,
+  #   priorUseWashout = washout,# offset = offset,
+  #   cohortDateRange = cohortDateRange
+  # )
 
   cohortStartDateRange <- cohortDateRange[1]
   cohortEndDateRange <- cohortDateRange[2]
 
   # create cohort set
-  cohortSetRef <- conceptSetFromConceptSetList(conceptSetList) %>%
+  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
+
+  cohortSet <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
       days_prior_history = dplyr::if_else(
         is.null(.env$daysPriorHistory), NA, .env$daysPriorHistory
@@ -64,45 +66,49 @@ generateConceptCohortSet <- function(cdm,
       cohort_end_date_range = .env$cohortEndDateRange
     )
   # subset tables
-  cohortRef <- subsetTables(cdm, cohortSetRef)
-  cohortAttritionRef <- addAttritionLine(cohortRef)
-  # check daysPriorHistory
-  cohortRef <- minimumDaysPriorHistory(cohortRef, cdm, daysPriorHistory)
-  cohortAttritionRef <- addAttritionLine(
-    cohortRef, cohortAttritionRef, "Satisfy daysPriorHistory"
-  )
-  # union overlap
-  cohortRef <- unionCohort(cohortRef, gap, cdm)
-  cohortAttritionRef <- addAttritionLine(
-    cohortRef, cohortAttritionRef, "Join records within gap distance"
-  )
-  # apply washout
-  cohortRef <- applyWashout(cohortRef, washout)
-  cohortAttritionRef <- addAttritionLine(
-    cohortRef, cohortAttritionRef, "Washout applied"
-  )
-  # offset
-  cohortRef <- cohortRef %>%
-    dplyr::mutate(
-      cohort_end_date = !!CDMConnector::dateadd("cohort_end_date", offset)
-    )
-  # minimum cohort start date
-  cohortRef <- applyMinimumStartDate(cohortRef, minimumCohortStartDate)
-  cohortAttritionRef <- addAttritionLine(
-    cohortRef, cohortAttritionRef, "Trimming cohort_start_date"
-  )
-  # maximum cohort end date
-  cohortRef <- applyMaximumEndDate(cohortRef, maximumCohortEndDate)
-  cohortAttritionRef <- addAttritionLine(
-    cohortRef, cohortAttritionRef, "Trimming cohort_end_date"
-  )
+  cohortRef <- subsetTables(cdm, conceptSet)
+  cohortAttritionRef <- computeCohortAttrition(cohortRef, cdm)
+  # # check daysPriorHistory
+  # cohortRef <- minimumDaysPriorHistory(cohortRef, cdm, daysPriorHistory)
+  # cohortAttritionRef <- addAttritionLine(
+  #   cohortRef, cohortAttritionRef, "Satisfy daysPriorHistory"
+  # )
+  # # union overlap
+  # cohortRef <- unionCohort(cohortRef, gap, cdm)
+  # cohortAttritionRef <- addAttritionLine(
+  #   cohortRef, cohortAttritionRef, "Join records within gap distance"
+  # )
+  # # apply washout
+  # cohortRef <- applyWashout(cohortRef, washout)
+  # cohortAttritionRef <- addAttritionLine(
+  #   cohortRef, cohortAttritionRef, "Washout applied"
+  # )
+  # # offset
+  # cohortRef <- cohortRef %>%
+  #   dplyr::mutate(
+  #     cohort_end_date = !!CDMConnector::dateadd("cohort_end_date", offset)
+  #   )
+  # # minimum cohort start date
+  # cohortRef <- applyMinimumStartDate(cohortRef, minimumCohortStartDate)
+  # cohortAttritionRef <- addAttritionLine(
+  #   cohortRef, cohortAttritionRef, "Trimming cohort_start_date"
+  # )
+  # # maximum cohort end date
+  # cohortRef <- applyMaximumEndDate(cohortRef, maximumCohortEndDate)
+  # cohortAttritionRef <- addAttritionLine(
+  #   cohortRef, cohortAttritionRef, "Trimming cohort_end_date"
+  # )
   # get counts
-  cohortCountRef <- computeCohortCount(cohort)
+  cohortCountRef <- computeCohortCount(cohortRef, cdm)
   # clean tables
 
+  cohortSetRef <- cohortSet %>%
+    insertTable(cdm, paste0(name, "_set"), FALSE)
+
   # validate cohort
-  cohort <- CDMConnector::newGeneratedCohortSet(
+  cdm[[name]] <- CDMConnector::newGeneratedCohortSet(
     cohortRef, cohortSetRef, cohortAttritionRef, cohortCountRef
   )
+  return(cdm)
 }
 
