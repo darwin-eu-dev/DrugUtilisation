@@ -594,10 +594,10 @@ checkIndicationDate <- function(indicationDate) {
 }
 
 checkX <- function(x) {
-  errorMessage <- "x must be a GeneratedCohortSet"
-  if (!("GeneratedCohortSet" %in% class(x))) {
-    cli::cli_abort(errorMessage)
-  }
+  # errorMessage <- "x must be a GeneratedCohortSet"
+  # if (!("GeneratedCohortSet" %in% class(x))) {
+  #   cli::cli_abort(errorMessage)
+  # }
 }
 
 checkStrata <- function(strata, x) {
