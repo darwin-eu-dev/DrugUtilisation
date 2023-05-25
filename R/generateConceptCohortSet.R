@@ -62,8 +62,8 @@ generateConceptCohortSet <- function(cdm,
       gap = .env$gap,
       washout = .env$washout,
       offset = .env$offset,
-      cohort_start_date_range = .env$cohortStartDateRange,
-      cohort_end_date_range = .env$cohortEndDateRange
+      cohort_start_date_range = .env$cohortDateRange[1],
+      cohort_end_date_range = .env$cohortDateRange[2]
     )
   # subset tables
   cohortRef <- subsetTables(cdm, conceptSet)

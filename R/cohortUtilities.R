@@ -194,6 +194,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
       ) %>%
       computeTable(cdm)
   }
+  class(cohort) <- c("GeneratedCohortSet", class(cohort))
   return(cohort)
 }
 
