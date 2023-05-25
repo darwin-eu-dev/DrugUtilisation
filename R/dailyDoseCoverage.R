@@ -84,7 +84,7 @@ dailyDoseCoverage <- function(cdm,
     dplyr::pull()
 
   if(coverage_den == 0) {
-    coverage = 0
+    coverage <- NA
   } else {
     coverage <- coverage_num/coverage_den*100
   }
