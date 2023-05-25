@@ -44,14 +44,14 @@ generateConceptCohortSet <- function(cdm,
   checkInputs(
     cdm = cdm, name = name, conceptSetList = conceptSetList,
     daysPriorHistory = daysPriorHistory, gapEra = gap,
-    priorUseWashout = washout, offset = offset,
+    priorUseWashout = washout,# offset = offset,
     cohortDateRange = cohortDateRange
   )
   # create cohort set
   cohortSetRef <- conceptSetFromConceptSetList(conceptSetList) %>%
     dplyr::mutate(
       days_prior_history = dplyr::if_else(
-        is.null(.env$daysPriorHistory), NA, .env$dayPriorHistory
+        is.null(.env$daysPriorHistory), NA, .env$daysPriorHistory
       ),
       gap = .env$gap,
       washout = .env$washout,
