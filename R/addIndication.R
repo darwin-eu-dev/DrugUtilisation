@@ -89,7 +89,7 @@ addCohortIndication <- function(ind, cdm, cohortName, gaps) {
   for (gap in gaps) {
     columnName <- indicationName(gap)
     xx <- PatientProfiles::addCohortIntersectFlag(
-      ind, cdm, cohortName, window = c(-gap, 0)
+      ind, cdm, cohortName, targetEndDate = NULL, window = c(-gap, 0)
     )
     newnames <- colnames(xx)[!(colnames(xx) %in% colnames(ind))]
     xx <- dplyr::mutate(xx, !!columnName := as.character(NA))

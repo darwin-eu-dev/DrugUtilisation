@@ -27,14 +27,14 @@
 #' @export
 #'
 #' @examples
-computeCohortAttrition <- function(cohortRef,
+computeCohortAttrition <- function(x,
                                    cdm,
                                    attrition = NULL,
                                    reason = "Qualifying initial records") {
   checkInputs(
-    cohortRef = cohortRef, cdm = cdm, attrition = attrition, reason = reason
+    x = x, cdm = cdm, attrition = attrition, reason = reason
   )
-  attrition <- addAttritionLine(cohortRef, cdm, attrition, reason) %>%
+  attrition <- addAttritionLine(x, cdm, attrition, reason) %>%
     computeTable(cdm)
   return(attrition)
 }
@@ -107,14 +107,15 @@ addExcludedCounts <- function(attrition) {
 #' @examples
 computeCohortCount <- function(x,
                                cdm) {
-  x %>%
+  checkInputs(x = x, cdm = cdm)
+  return(x %>%
     dplyr::group_by(.data$cohort_definition_id) %>%
     dplyr::summarise(
       number_records = dplyr::n(),
       number_subjects = dplyr::n_distinct(.data$subject_id),
       .groups = "drop"
     ) %>%
-    computeTable(cdm)
+    computeTable(cdm))
 }
 
 #' @noRd
