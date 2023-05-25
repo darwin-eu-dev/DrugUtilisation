@@ -47,6 +47,10 @@ generateConceptCohortSet <- function(cdm,
     priorUseWashout = washout,# offset = offset,
     cohortDateRange = cohortDateRange
   )
+
+  cohortStartDateRange <- cohortDateRange[1]
+  cohortEndDateRange <- cohortDateRange[2]
+
   # create cohort set
   cohortSetRef <- conceptSetFromConceptSetList(conceptSetList) %>%
     dplyr::mutate(
