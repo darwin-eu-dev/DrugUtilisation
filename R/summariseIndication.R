@@ -44,7 +44,7 @@ summariseIndication <- function(x,
   }
 
   # summarise indication columns
-  result <- summariseCohortIndication(x, minimumCellCount)
+  result <- summariseCohortIndication(x, strata, minimumCellCount)
 
   # get denominator counts
   denominator <- getDenominatorCount(result)
@@ -73,7 +73,7 @@ indicationColumns <- function(x) {
   return(names)
 }
 
-summariseCohortIndication <- function(x, minimumCellCount) {
+summariseCohortIndication <- function(x, strata, minimumCellCount) {
   cs <- CDMConnector::cohortSet(x)
   cohortIds <- x %>%
     dplyr::select("cohort_definition_id") %>%
