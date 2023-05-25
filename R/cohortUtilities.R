@@ -30,7 +30,7 @@
 computeCohortAttrition <- function(x,
                                    cdm,
                                    attrition = NULL,
-                                   reason = "Qualifying initial events") {
+                                   reason = "Qualifying initial records") {
   checkInputs(
     x = x, cdm = cdm, attrition = attrition, reason = reason
   )

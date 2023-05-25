@@ -215,17 +215,6 @@ checkDailyDoseRange <- function(dailyDoseRange) {
   }
 }
 
-checkX <- function(x) {
-  errorMessage <- "x should be a table with at least 'cohort_definition_id' and
-  'subject_id' as columns."
-  if (!("tbl" %in% class(x))) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!all(c("cohort_definition_id", "subject_id") %in% colnames(x))) {
-    cli::cli_abort(errorMessage)
-  }
-}
-
 checkAttrition <- function(attrition) {
   if (!is.null(attrition)) {
     errorMessage <- "attrition should be a table with at least:
@@ -602,4 +591,32 @@ checkIndicationDate <- function(indicationDate) {
   if (!is.character(indicationDate) & length(indicationDate) == 1) {
     cli::cli_abort("indicationDate must be a character of length 1.")
   }
+}
+
+checkX <- function(x) {
+  errorMessage <- "x must be a GeneratedCohortSet"
+  if (!("GeneratedCohortSet" %in% class(x))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+checkStrata <- function(strata, x) {
+  errorMessage <- "strata must be a named list of columns in x"
+  if (!is.list(strata)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(strata) > 0) {
+    if (!is.character(unlist(strata))) {
+      cli::cli_abort(errorMessage)
+    }
+    if (!all(unlist(strata) %in% colnames(x))) {
+      cli::cli_abort(errorMessage)
+    }
+  }
+}
+
+checkMinimumCellCount <- function(minimumCellCount) {
+  checkmate::assertIntegerish(
+    minimumCellCount, lower = 0, any.missing = F, len = 1
+  )
 }

@@ -310,8 +310,7 @@ test_that("test indicationDate", {
 
   # change indicationDate
   cdm$cohort1 <- cdm$cohort1 %>%
-    dplyr::rename("start_date" = "cohort_start_date") %>%
-    CDMConnector::computeQuery()
+    dplyr::rename("start_date" = "cohort_start_date")
   res012infS <- cdm$cohort1 %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2",

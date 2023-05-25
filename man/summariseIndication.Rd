@@ -5,26 +5,14 @@
 \title{This function is used to summarise the indication table over multiple
 cohorts.}
 \usage{
-summariseIndication(
-  cdm,
-  cohortId = NULL,
-  indicationList = NULL,
-  minimumCellCount = 5
-)
+summariseIndication(x, cdm, strata = list(), minimumCellCount = 5)
 }
 \arguments{
-\item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
-must contain the 'doseTableName' table and  also 'strataCohortName' and
-'indicationList' if specified. It is a compulsory input, no default
-value is provided.}
+\item{x}{Tibble that contains indication and strata}
 
-\item{cohortId}{cohort definition id of the cohorts in the strata cohort
-table that you want to summarise. By default cohortId = NULL, then all
-cohorts in strataCohort will be summarised.}
+\item{cdm}{cdm_reference created by CDMConnector}
 
-\item{indicationList}{is a list of tables that contains the indication
-information. You must use the getIndication function to obtain this list. No
-default value is provided.}
+\item{strata}{Stratification list}
 
 \item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}

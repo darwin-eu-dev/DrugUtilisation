@@ -98,34 +98,34 @@ generateDrugUtilisationCohortSet <- function(cdm,
     cli::cli_abort("No record found with the current specifications in
     drug_exposure table")
   }
-  attrition <- computeCohortAttrition(cohort, cdm)
+  attrition <- addAttritionLine(cohort, cdm, NULL, "Qualifying initial records")
 
   # correct duration
   cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
   reason <- paste(
     "Duration imputation; affected rows:", attr(cohort, "numberImputations")
   )
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, reason)
+  attrition <- addAttritionLine(cohort, cdm, attrition, reason)
 
   # eliminate overlap
   cohort <- unionCohort(cohort, gapEra, cdm)
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, "Join eras")
+  attrition <- addAttritionLine(cohort, cdm, attrition, "Join eras")
 
   # require daysPriorHistory
   cohort <- requireDaysPriorHistory(cohort, cdm, daysPriorHistory)
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, "daysPriorHistory applied")
+  attrition <- addAttritionLine(cohort, cdm, attrition, "daysPriorHistory applied")
 
   # require priorUseWashout
   cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, "priorUseWashout applied")
+  attrition <- addAttritionLine(cohort, cdm, attrition, "priorUseWashout applied")
 
   # require cohortDateRange
   cohort <- trimCohortDateRange(cohort, cdm, cohortDateRange)
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, "cohortDateRange applied")
+  attrition <- addAttritionLine(cohort, cdm, attrition, "cohortDateRange applied")
 
   # apply summariseMode
   cohort <- applySummariseMode(cohort, cdm, summariseMode, fixedTime)
-  attrition <- computeCohortAttrition(
+  attrition <- addAttritionLine(
     cohort, cdm, attrition,
     paste("summariseMode:", summariseMode, "applied")
   )
