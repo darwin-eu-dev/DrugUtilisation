@@ -119,9 +119,13 @@ generateDrugUtilisationCohortSet <- function(cdm,
   cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
   attrition <- addAttritionLine(cohort, cdm, attrition, "priorUseWashout applied")
 
-  # require cohortDateRange
-  cohort <- trimCohortDateRange(cohort, cdm, cohortDateRange)
-  attrition <- addAttritionLine(cohort, cdm, attrition, "cohortDateRange applied")
+  # trim start date
+  cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
+  attrition <- addAttritionLine(cohort, cdm, attrition, "cohort_start_date >= cohort_dates_range_start")
+
+  # trim end date
+  cohort <- trimEndDate(cohort, cdm, cohortDateRange[2])
+  attrition <- addAttritionLine(cohort, cdm, attrition, "cohort_end_date <= cohort_dates_range_end")
 
   # apply summariseMode
   cohort <- applySummariseMode(cohort, cdm, summariseMode, fixedTime)

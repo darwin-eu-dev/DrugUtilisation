@@ -40,20 +40,17 @@ generateConceptCohortSet <- function(cdm,
                                      offset = 0,
                                      cohortDateRange = as.Date(c(NA, NA))) {
   # check input
-  # offset must be smaller than gap
-  # checkInputs(
-  #   cdm = cdm, name = name, conceptSetList = conceptSetList,
-  #   daysPriorHistory = daysPriorHistory, gapEra = gap,
-  #   priorUseWashout = washout,# offset = offset,
-  #   cohortDateRange = cohortDateRange
-  # )
+  checkInputs(
+    cdm = cdm, name = name, conceptSetList = conceptSetList,
+    daysPriorHistory = daysPriorHistory, gapEra = gap,
+    priorUseWashout = washout, offset = offset,
+    cohortDateRange = cohortDateRange
+  )
 
-  cohortStartDateRange <- cohortDateRange[1]
-  cohortEndDateRange <- cohortDateRange[2]
-
-  # create cohort set
+  # create conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
+  # create cohortSet
   cohortSet <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
       days_prior_history = dplyr::if_else(
@@ -65,45 +62,59 @@ generateConceptCohortSet <- function(cdm,
       cohort_start_date_range = .env$cohortDateRange[1],
       cohort_end_date_range = .env$cohortDateRange[2]
     )
+
   # subset tables
   cohortRef <- subsetTables(cdm, conceptSet)
   cohortAttritionRef <- computeCohortAttrition(cohortRef, cdm)
-  # # check daysPriorHistory
-  # cohortRef <- minimumDaysPriorHistory(cohortRef, cdm, daysPriorHistory)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Satisfy daysPriorHistory"
-  # )
-  # # union overlap
-  # cohortRef <- unionCohort(cohortRef, gap, cdm)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Join records within gap distance"
-  # )
-  # # apply washout
-  # cohortRef <- applyWashout(cohortRef, washout)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Washout applied"
-  # )
-  # # offset
-  # cohortRef <- cohortRef %>%
-  #   dplyr::mutate(
-  #     cohort_end_date = !!CDMConnector::dateadd("cohort_end_date", offset)
-  #   )
-  # # minimum cohort start date
-  # cohortRef <- applyMinimumStartDate(cohortRef, minimumCohortStartDate)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Trimming cohort_start_date"
-  # )
-  # # maximum cohort end date
-  # cohortRef <- applyMaximumEndDate(cohortRef, maximumCohortEndDate)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Trimming cohort_end_date"
-  # )
+
+  # check daysPriorHistory
+  cohortRef <- requireDaysPriorHistory(cohortRef, cdm, daysPriorHistory)
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cdm, cohortAttritionRef, "Satisfy daysPriorHistory"
+  )
+
+
+  # union overlap
+  cohortRef <- unionCohort(cohortRef, gap, cdm)
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cdm, cohortAttritionRef, "Join records within gap distance"
+  )
+
+  # apply washout
+  cohortRef <- applyWashout(cohortRef, washout)
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cohortAttritionRef, "Washout applied"
+  )
+
+  # trim start date
+  cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
+  attrition <- computeCohortAttrition(
+    cohort, cdm, attrition, "cohort_start_date >= cohort_dates_range_start"
+  )
+
+  # offset
+  cohortRef <- cohortRef %>%
+    dplyr::mutate(
+      cohort_end_date = !!CDMConnector::dateadd("cohort_end_date", offset)
+    ) %>%
+    computeTable(cdm)
+
+  # trim end date
+  cohort <- trimEndDate(cohort, cdm, cohortDateRange[2])
+  attrition <- computeCohortAttrition(
+    cohort, cdm, attrition, "cohort_end_date <= cohort_dates_range_end"
+  )
+
   # get counts
   cohortCountRef <- computeCohortCount(cohortRef, cdm)
-  # clean tables
 
+  # insert set
   cohortSetRef <- cohortSet %>%
     insertTable(cdm, paste0(name, "_set"), FALSE)
+
+  # insert attrition
+  cohortAttritionRef <- cohortAttritionRef %>%
+    computeTable(cdm)
 
   # validate cohort
   cdm[[name]] <- CDMConnector::newGeneratedCohortSet(

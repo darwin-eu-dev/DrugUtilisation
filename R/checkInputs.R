@@ -15,70 +15,29 @@
 # limitations under the License.
 
 checkInputs <- function(...) {
-  inputs <- list(...)
-  lapply(names(inputs), function(x) {checkInput(inputs[[x]], x)})
-  checkDependantVariables(inputs)
-  invisible(NULL)
-}
-
-checkInput <- function(x, nam) {
   listChecks <- c(
     "cdm", "conceptSetList", "name", "summariseMode", "fixedTime",
     "daysPriorHistory", "gapEra", "priorUseWashout", "cohortDateRange",
-    "imputeDuration", "durationRange", "attrition", "x", "reason", "tableRef",
+    "imputeDuration", "durationRange", "attrition", "reason", "tableRef",
     "targetCohortName", "ingredientConceptId", "sample", "eraJoinMode", "overlapMode",
-    "sameIndexMode", "imputeDailyDose", "dailyDoseRange", "x",
+    "sameIndexMode", "imputeDailyDose", "dailyDoseRange", "x", "xx",
     "indicationCohortName", "indicationGap", "unknownIndicationTable",
-    "indicationDate"
+    "indicationDate", "offset", "cohort"
   )
-  if (!(nam %in% listChecks)) {
-    cli::cli_abort(paste("Input parameter could not be checked:", nam))
-  }
-  eval(parse(text = paste0(
-    "output <- check", toupper(substr(nam, 1, 1)), substr(nam, 2, nchar(nam)),
-    "(x)"
-  )))
-  return(output)
-}
-
-checkDependantVariables <- function(inputs) {
-  nam <- names(inputs)
-  if (all(c("name", "cdm") %in% nam)) {
-    if (inputs$name %in% names(inputs$cdm)) {
-      cli::cli_alert_warning(
-        "A cohort with this name already exist in the cdm object. It will be overwritten."
-      )
+  inputs <- list(...)
+  lapply(names(inputs), function(x) {
+    if (!(x %in% listChecks)) {
+      cli::cli_abort(paste("Input parameter could not be checked:", x))
     }
-  }
-  if (all(c("targetCohortName", "cdm") %in% nam)) {
-    if (!(inputs$targetCohortName %in% names(inputs$cdm))) {
-      cli::cli_abort("targetCohortName is not in the cdm reference")
-    }
-    numberRows <- inputs$cdm[[inputs$targetCohortName]] %>%
-      dplyr::tally() %>%
-      dplyr::pull()
-    if (numberRows == 0) {
-      cli::cli_abort("targetCohort is empty")
-    }
-  }
-  if (all(c("indicationCohortName", "cdm") %in% nam)) {
-    if (!(inputs$indicationCohortName %in% names(inputs$cdm))) {
-      cli::cli_abort("indicationCohortName is not in the cdm reference")
-    }
-  }
-  if (all(c("unknownIndicationTable", "cdm") %in% nam)) {
-    if (!all(inputs$unknownIndicationTable %in% names(inputs$cdm))) {
-      cli::cli_abort("unknownIndicationTable is not in the cdm reference")
-    }
-  }
-  if (all(c("indicationDate", "x") %in% nam)) {
-    if (!(inputs$indicationDate %in%
-          colnames(inputs$x))) {
-      cli::cli_abort(
-        "indicationDate must be a column of x table"
-      )
-    }
-  }
+    funName <- paste0(
+      "check", toupper(substr(x, 1, 1)), substr(x, 2, nchar(x))
+    )
+    varName <- eval(parse(text = paste0("names(formals(", funName, ")")))
+    eval(parse(text = paste0(
+      funName, "(", paste0(paste0("inputs[[", varName, "]]"), collapse = ", "), ")"
+    )))
+  })
+  invisible(NULL)
 }
 
 checkCdm <- function(cdm) {
@@ -114,12 +73,17 @@ checkConceptSetList <- function(x) {
   }
 }
 
-checkName <- function(name) {
+checkName <- function(name, cdm) {
   checkmate::assertCharacter(name, len = 1, any.missing = FALSE)
   if (name %in% CDMConnector::tbl_group("all")) {
     cli::cli_abort(
       'name can not one of the stadard tables of the cdm. To see standard
       tables: CDMConnector::tbl_group("all")'
+    )
+  }
+  if (name %in% names(cdm)) {
+    cli::cli_alert_warning(
+      "A cohort with this name already exist in the cdm object. It will be overwritten."
     )
   }
 }
@@ -315,12 +279,21 @@ checkConsistentCohortSet<- function(cs,
   return(parameters)
 }
 
-checkTargetCohortName <- function(targetCohortName) {
+checkTargetCohortName <- function(targetCohortName, cdm) {
   errorMessage <- "targetCohortName must be a character string of length 1"
   check <- !is.character(targetCohortName) | length(targetCohortName) > 1 |
     any(is.na(targetCohortName)) | any(nchar(targetCohortName) == 0)
   if (check) {
     cli::cli_abort(errorMessage)
+  }
+  if (!(targetCohortName %in% names(cdm))) {
+    cli::cli_abort("targetCohortName is not in the cdm reference")
+  }
+  numberRows <- cdm[[targetCohortName]] %>%
+    dplyr::tally() %>%
+    dplyr::pull()
+  if (numberRows == 0) {
+    cli::cli_abort("targetCohort is empty")
   }
 }
 
@@ -552,9 +525,12 @@ checkInteger <- function(integer) {
   }
 }
 
-checkIndicationCohortName <- function(indicationCohortName) {
+checkIndicationCohortName <- function(indicationCohortName, cdm) {
   if (!is.character(indicationCohortName) & length(indicationCohortName) == 1) {
     cli::cli_abort("indicationCohortName must be a character of length 1.")
+  }
+  if (!(indicationCohortName %in% names(cdm))) {
+    cli::cli_abort("indicationCohortName is not in the cdm reference")
   }
 }
 
@@ -571,7 +547,7 @@ checkIndicationGap <- function(indicationGap) {
   }
 }
 
-checkUnknownIndicationTable <- function(unknownIndicationTable) {
+checkUnknownIndicationTable <- function(unknownIndicationTable, cdm) {
   if (!is.null(unknownIndicationTable)) {
     options <- namesTable$table_name
     errorMessage <- paste0(
@@ -584,20 +560,38 @@ checkUnknownIndicationTable <- function(unknownIndicationTable) {
     if (!all(unknownIndicationTable %in% options)) {
       cli::cli_abort(errorMessage)
     }
-  }
-}
-
-checkIndicationDate <- function(indicationDate) {
-  if (!is.character(indicationDate) & length(indicationDate) == 1) {
-    cli::cli_abort("indicationDate must be a character of length 1.")
+    if (!all(unknownIndicationTable %in% names(cdm))) {
+      cli::cli_abort("unknownIndicationTable is not in the cdm reference")
+    }
   }
 }
 
 checkX <- function(x) {
-  # errorMessage <- "x must be a GeneratedCohortSet"
-  # if (!("GeneratedCohortSet" %in% class(x))) {
-  #   cli::cli_abort(errorMessage)
-  # }
+  if (!("tbl_sql" %in% class(x))) {
+    cli::cli_abort("x must be a table in the database")
+  }
+}
+
+checkXx <- function(xx) {
+  if (!("tbl" %in% class(xx))) {
+    cli::cli_abort("xx must be a tibble")
+  }
+}
+
+checkIndicationDate <- function(indicationDate, x) {
+  if (!is.character(indicationDate) & length(indicationDate) == 1) {
+    cli::cli_abort("indicationDate must be a character of length 1.")
+  }
+  if (!(indicationDate %in% colnames(x))) {
+    cli::cli_abort("indicationDate must be a column of x")
+  }
+}
+
+checkCohort <- function(cohort) {
+  errorMessage <- "cohort must be a GeneratedCohortSet"
+  if (!("GeneratedCohortSet" %in% class(cohort))) {
+    cli::cli_abort(errorMessage)
+  }
 }
 
 checkStrata <- function(strata, x) {
@@ -619,4 +613,17 @@ checkMinimumCellCount <- function(minimumCellCount) {
   checkmate::assertIntegerish(
     minimumCellCount, lower = 0, any.missing = F, len = 1
   )
+}
+
+checkOffset <- function(offset) {
+  checkmate::assertIntegerish(offset, lower = 0, any.missing = F, len = 1)
+}
+
+checkColumns <- function(x, columns) {
+  if (!all(columns %in% colnames(x))) {
+    cli::cli_abort(paste0(
+      substitute(x), " must contain: `", paste0(columns, collapse = "`, `"),
+      "` as column(s)"
+    ))
+  }
 }
