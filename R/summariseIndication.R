@@ -44,7 +44,7 @@ summariseIndication <- function(x,
   }
 
   # summarise indication columns
-  result <- summariseCohortIndication(x)
+  result <- summariseCohortIndication(x, minimumCellCount)
 
   # get denominator counts
   denominator <- getDenominatorCount(result)
@@ -73,7 +73,7 @@ indicationColumns <- function(x) {
   return(names)
 }
 
-summariseCohortIndication <- function(x) {
+summariseCohortIndication <- function(x, minimumCellCount) {
   cs <- CDMConnector::cohortSet(x)
   cohortIds <- x %>%
     dplyr::select("cohort_definition_id") %>%
@@ -87,7 +87,8 @@ summariseCohortIndication <- function(x) {
       PatientProfiles::summariseCharacteristics(
         strata = strata,
         variables = list(indications = indicationColumns(x)),
-        functions = list(indications = c("count", "%"))
+        functions = list(indications = c("count", "%")),
+        suppressCellCount = minimumCellCount
       )
   }
   result <- dplyr::bind_rows(result, .id = "cohort_name")
@@ -98,13 +99,13 @@ getDenominatorCount <- function(result) {
   result %>%
     dplyr::filter(.data$variable == "number records") %>%
     dplyr::select(
-      "cohort_name", "strata_name", "srata_level", "denominator" = "value"
+      "cohort_name", "strata_name", "strata_level", "denominator" = "value"
     )
 }
 
 getIndicationCount <- function(result) {
   result %>%
-    dplyr::filter(.data$estimate %in% c("count", "%")) %>%
+    dplyr::filter(!(.data$variable %in% c("number subjects", "number records"))) %>%
     tidyr::separate("estimate", c("indication_name", "estimate"), ": ") %>%
     tidyr::pivot_wider(names_from = "estimate", values_from = "value") %>%
     dplyr::mutate(

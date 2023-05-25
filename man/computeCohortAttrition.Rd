@@ -8,7 +8,7 @@ computeCohortAttrition(
   x,
   cdm,
   attrition = NULL,
-  reason = "Qualifying initial events"
+  reason = "Qualifying initial records"
 )
 }
 \arguments{
