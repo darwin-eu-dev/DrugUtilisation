@@ -42,7 +42,7 @@ generateConceptCohortSet <- function(cdm,
   # check input
   # offset must be smaller than gap
   checkInputs(
-    cdm = cdm, name = name, coneptSetList = coneptSetList,
+    cdm = cdm, name = name, conceptSetList = conceptSetList,
     daysPriorHistory = daysPriorHistory, gap = gap, washout = washout,
     offset = offset, cohortDateRange = cohortDateRange
   )
