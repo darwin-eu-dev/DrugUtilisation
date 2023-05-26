@@ -22,6 +22,7 @@
 #' the study. It is a compulsory input, no default value is provided.
 #' @param conceptSetList List of concepts to be included. If NULL all the descendants
 #' of ingredient concept id will be used. By default: NULL.
+#' @param initialDailyDose Whether initial dose
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era. By default: 180.
 #' @param eraJoinMode How two different continuous exposures are joined in an
@@ -85,18 +86,24 @@
 #' @export
 #'
 #' @examples
-addDoseInformation <- function(dusCohort,
-                               cdm,
-                               ingredientConceptId,
-                               conceptSetList = NULL,
-                               gapEra = 30,
-                               eraJoinMode = "Previous", # proposal "Zero"
-                               overlapMode = "Previous", # proposal "Sum"
-                               sameIndexMode = "Sum",
-                               imputeDuration = "eliminate",
-                               imputeDailyDose = "eliminate",
-                               durationRange = c(1, Inf),
-                               dailyDoseRange = c(0, Inf)) {
+addDrugUse <- function(dusCohort,
+                       cdm,
+                       ingredientConceptId,
+                       conceptSetList = NULL,
+                       initialDailyDose = TRUE,
+                       numberExposures = TRUE,
+                       duration = TRUE,
+                       cumulativeDose = TRUE,
+                       numberEras = TRUE,
+                       supplementary = FALSE,
+                       gapEra = 30,
+                       eraJoinMode = "Zero",
+                       overlapMode = "Sum",
+                       sameIndexMode = "Sum",
+                       imputeDuration = "eliminate",
+                       imputeDailyDose = "eliminate",
+                       durationRange = c(1, Inf),
+                       dailyDoseRange = c(0, Inf)) {
   # tables to be deleted
   firstTempTable <- getOption("dbplyr_table_name", 0) + 1
 

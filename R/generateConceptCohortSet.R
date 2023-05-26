@@ -59,8 +59,8 @@ generateConceptCohortSet <- function(cdm,
       gap = .env$gap,
       washout = .env$washout,
       offset = .env$offset,
-      cohort_start_date_range = .env$cohortDateRange[1],
-      cohort_end_date_range = .env$cohortDateRange[2]
+      cohort_date_range_start = .env$cohortDateRange[1],
+      cohort_date_range_end = .env$cohortDateRange[2]
     )
 
   # subset tables
@@ -105,21 +105,37 @@ generateConceptCohortSet <- function(cdm,
     cohort, cdm, attrition, "cohort_end_date <= cohort_dates_range_end"
   )
 
-  # get counts
-  cohortCountRef <- computeCohortCount(cohortRef, cdm)
-
-  # insert set
+  # create the cohort references
+  cohortRef <- cohort %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ) %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
   cohortSetRef <- cohortSet %>%
     insertTable(cdm, paste0(name, "_set"), FALSE)
+  cohortAttritionRef <- attrition %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
+  cohortCountRef <- computeCohortCount(cohort, cdm) %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name, "_count"),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
 
-  # insert attrition
-  cohortAttritionRef <- cohortAttritionRef %>%
-    computeTable(cdm)
-
-  # validate cohort
+  # create the resultant GeneratedCohortSet
   cdm[[name]] <- CDMConnector::newGeneratedCohortSet(
-    cohortRef, cohortSetRef, cohortAttritionRef, cohortCountRef
+    cohortRef = cohortRef,
+    cohortSetRef = cohortSetRef,
+    cohortAttritionRef = cohortAttritionRef,
+    cohortCountRef = cohortCountRef
   )
+
   return(cdm)
 }
 

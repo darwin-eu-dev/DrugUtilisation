@@ -33,18 +33,21 @@
 summariseIndication <- function(x,
                                 cdm,
                                 strata = list(),
+                                indicationVariables = indicationColumns(x),
                                 minimumCellCount = 5) {
   # initialChecks
-  checkX(x) # cohort_definition_id and at least one indication, generatedCohortSet
-  checkCdm(cdm)
-  checkStrata(strata, x)
-  checkMinimumCellCount(minimumCellCount)
+  checkInputs(
+    x = x, cdm = cdm, strata = strata, indications = indications,
+    minimumCellCount = minimumCellCount
+  )
   if (length(indicationColumns(x)) == 0) {
     cli::cli_abort("x must have at least one indication, use addIndication() to add indication columns")
   }
 
   # summarise indication columns
-  result <- summariseCohortIndication(x, strata, minimumCellCount)
+  result <- summariseCohortIndication(
+    x, strata, indicationVariables, minimumCellCount
+  )
 
   # get denominator counts
   denominator <- getDenominatorCount(result)
@@ -65,6 +68,15 @@ summariseIndication <- function(x,
   return(result)
 }
 
+#' Obtain automatically the indication columns
+#'
+#' @param x Tibble
+#'
+#' @return Name of the indication columns
+#'
+#' @export
+#'
+#' @examples
 indicationColumns <- function(x) {
   names <- colnames(x)[substr(colnames(x), 1, 15) == "indication_gap_"]
   names <- names[!is.na(suppressWarnings(
@@ -73,7 +85,11 @@ indicationColumns <- function(x) {
   return(names)
 }
 
-summariseCohortIndication <- function(x, strata, minimumCellCount) {
+#' @noRd
+summariseCohortIndication <- function(x,
+                                      strata,
+                                      indicationVariables,
+                                      minimumCellCount) {
   cs <- CDMConnector::cohortSet(x)
   cohortIds <- x %>%
     dplyr::select("cohort_definition_id") %>%
@@ -86,7 +102,7 @@ summariseCohortIndication <- function(x, strata, minimumCellCount) {
       dplyr::collect() %>%
       PatientProfiles::summariseCharacteristics(
         strata = strata,
-        variables = list(indications = indicationColumns(x)),
+        variables = list(indications = indicationVariables),
         functions = list(indications = c("count", "%")),
         suppressCellCount = minimumCellCount
       )

@@ -84,8 +84,8 @@ generateDrugUtilisationCohortSet <- function(cdm,
       days_prior_history = .env$daysPriorHistory,
       gap_era = .env$gapEra,
       prior_use_washout = .env$priorUseWashout,
-      cohort_dates_range_start = .env$cohortDateRange[1],
-      cohort_dates_range_end = .env$cohortDateRange[2],
+      cohort_date_range_start = .env$cohortDateRange[1],
+      cohort_date_range_end = .env$cohortDateRange[2],
       impute_duration = .env$imputeDuration,
       duration_range_min = .env$durationRange[1],
       duration_range_max = .env$durationRange[2]
@@ -98,40 +98,47 @@ generateDrugUtilisationCohortSet <- function(cdm,
     cli::cli_abort("No record found with the current specifications in
     drug_exposure table")
   }
-  attrition <- addAttritionLine(cohort, cdm, NULL, "Qualifying initial records")
+  attrition <- computeCohortAttrition(cohort, cdm)
 
   # correct duration
   cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
   reason <- paste(
     "Duration imputation; affected rows:", attr(cohort, "numberImputations")
   )
-  attrition <- addAttritionLine(cohort, cdm, attrition, reason)
+  attrition <- computeCohortAttrition(cohort, cdm, attrition, reason)
 
   # eliminate overlap
   cohort <- unionCohort(cohort, gapEra, cdm)
-  attrition <- addAttritionLine(cohort, cdm, attrition, "Join eras")
+  attrition <- computeCohortAttrition(cohort, cdm, attrition, "Join eras")
 
   # require daysPriorHistory
   cohort <- requireDaysPriorHistory(cohort, cdm, daysPriorHistory)
-  attrition <- addAttritionLine(cohort, cdm, attrition, "daysPriorHistory applied")
+  attrition <- computeCohortAttrition(
+    cohort, cdm, attrition, "daysPriorHistory applied"
+  )
 
   # require priorUseWashout
   cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
-  attrition <- addAttritionLine(cohort, cdm, attrition, "priorUseWashout applied")
+  attrition <- computeCohortAttrition(
+    cohort, cdm, attrition, "priorUseWashout applied"
+  )
 
   # trim start date
   cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
-  attrition <- addAttritionLine(cohort, cdm, attrition, "cohort_start_date >= cohort_dates_range_start")
+  attrition <- computeCohortAttrition(
+    cohort, cdm, attrition, "cohort_start_date >= cohort_date_range_start"
+  )
 
   # trim end date
   cohort <- trimEndDate(cohort, cdm, cohortDateRange[2])
-  attrition <- addAttritionLine(cohort, cdm, attrition, "cohort_end_date <= cohort_dates_range_end")
+  attrition <- computeCohortAttrition(
+    cohort, cdm, attrition, "cohort_end_date <= cohort_date_range_end"
+  )
 
   # apply summariseMode
   cohort <- applySummariseMode(cohort, cdm, summariseMode, fixedTime)
-  attrition <- addAttritionLine(
-    cohort, cdm, attrition,
-    paste("summariseMode:", summariseMode, "applied")
+  attrition <- computeCohortAttrition(
+    cohort, cdm, attrition, paste("summariseMode:", summariseMode, "applied")
   )
 
   # create the cohort references

@@ -5,7 +5,13 @@
 \title{This function is used to summarise the indication table over multiple
 cohorts.}
 \usage{
-summariseIndication(x, cdm, strata = list(), minimumCellCount = 5)
+summariseIndication(
+  x,
+  cdm,
+  strata = list(),
+  indicationVariables = indicationColumns(x),
+  minimumCellCount = 5
+)
 }
 \arguments{
 \item{x}{Tibble that contains indication and strata}
