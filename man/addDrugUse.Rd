@@ -34,7 +34,17 @@ the study. It is a compulsory input, no default value is provided.}
 \item{conceptSetList}{List of concepts to be included. If NULL all the descendants
 of ingredient concept id will be used. By default: NULL.}
 
-\item{initialDailyDose}{Whether initial dose}
+\item{initialDailyDose}{Whether initial dose should be displayed}
+
+\item{numberExposures}{Whether number exposures should be displayed}
+
+\item{duration}{Whether duration should be displayed}
+
+\item{cumulativeDose}{Whether cumulative dose should be displayed}
+
+\item{numberEras}{Whether the number of eras should be displayed}
+
+\item{supplementary}{Whether all supplementary variables should be displayed}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era. By default: 180.}

@@ -17,38 +17,34 @@
 #' This function is used to summarise the dose and/or indication over multiple
 #' cohorts.
 #'
-#' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
-#' must contain the 'doseTableName' table and  also 'strataCohortName' and
-#' 'indicationList' if specified. It is a compulsory input, no default
-#' value is provided.
-#' @param targetCohortName target cohort which table one is created for, character
-#' @param targetCohortId target cohort definition ids aiming to include, can be a list of integers or NULL. When Null, use all ids
-#' @param ageGroups A list of age groups we are interested in adding count. Each group should contain a vector with min age and max
-#' age. e.g. `list(c(0,10),c(20,30))` Can be NULL. If NULL, do not consider age groups
-#' @param windowVisitOcurrence A vector of window, using which visit occurrence count will be checked.
-#' @param covariatesTableName covariatesTableName
-#' @param covariatesSet covariatesSet
-#' @param covariatesWindow covariatesWindow
-#' @param ... you can add as many covariates tables that you want following the
-#' pattern: xxxTableName, xxxSet, xxxWindow, where xxxTableName would be the
-#' cohort table name in the cdm, xxxSet the cohortSet and xxxWindow the window
-#' to asses the covariates. xxx will be the name of
+#' @param cohort A cohort in the cdm
+#' @param cdm A cdm_reference created by CDMConnector
+#' @param ageGroup A list of age groups.
+#' @param windowVisitOcurrence Window to count visit occurrences.
+#' @param covariates Named list of windows to check covariates. The name must
+#' point to a cohortTableName in the cdm.
 #' @param minimumCellCount minimum counts due to obscure
-#' @return
+#'
+#' @return A summary of the characteristics of the individuals
 #'
 #' @export
 #'
 #' @examples
-getTableOne <- function(cdm,
-                        targetCohortName,
-                        targetCohortId = NULL,
-                        ageGroups = NULL,
-                        windowVisitOcurrence = NULL,
-                        covariatesTableName = NULL,
-                        covariatesSet = NULL,
-                        covariatesWindow = NULL,
-                        ...,
-                        minimumCellCount = 5) {
+#' \donttest{
+#' cdm <- mockDrugUtilisation(numberIndividuals = 1000)
+#' summariseTableOne(
+#'   cdm$cohort1,
+#'   cdm,
+#'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
+#'   windowVisitOcurrence = c(-180, 0)
+#' )
+#' }
+summariseTableOne <- function(cohort,
+                              cdm,
+                              ageGroup = NULL,
+                              windowVisitOcurrence = NULL,
+                              covariates = list(),
+                              minimumCellCount = 5) {
 
 
   listTables <- list(...)
@@ -56,8 +52,8 @@ getTableOne <- function(cdm,
   checkListTable(listTables)
 
   if (!is.null(covariatesTableName) &
-    !is.null(covariatesWindow) &
-    !is.null(covariatesSet)) {
+      !is.null(covariatesWindow) &
+      !is.null(covariatesSet)) {
     listTables <- c(listTables, list(
       "covariatesTableName" = covariatesTableName,
       "covariatesSet" = covariatesSet,
@@ -112,8 +108,8 @@ getTableOne <- function(cdm,
     dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
     dplyr::distinct() %>%
     PatientProfiles::addDemographics(cdm,
-                    ageGroup = ageGroups,
-                    futureObservation = FALSE) %>%
+                                     ageGroup = ageGroups,
+                                     futureObservation = FALSE) %>%
     dplyr::compute()
 
   result <- targetCohort %>%

@@ -22,7 +22,12 @@
 #' the study. It is a compulsory input, no default value is provided.
 #' @param conceptSetList List of concepts to be included. If NULL all the descendants
 #' of ingredient concept id will be used. By default: NULL.
-#' @param initialDailyDose Whether initial dose
+#' @param initialDailyDose Whether initial dose should be displayed
+#' @param numberExposures Whether number exposures should be displayed
+#' @param duration Whether duration should be displayed
+#' @param cumulativeDose Whether cumulative dose should be displayed
+#' @param numberEras Whether the number of eras should be displayed
+#' @param supplementary Whether all supplementary variables should be displayed
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era. By default: 180.
 #' @param eraJoinMode How two different continuous exposures are joined in an
