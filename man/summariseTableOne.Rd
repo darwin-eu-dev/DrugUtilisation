@@ -8,6 +8,7 @@ cohorts.}
 summariseTableOne(
   cohort,
   cdm,
+  strata = list(),
   ageGroup = NULL,
   windowVisitOcurrence = NULL,
   covariates = list(),
@@ -18,6 +19,8 @@ summariseTableOne(
 \item{cohort}{A cohort in the cdm}
 
 \item{cdm}{A cdm_reference created by CDMConnector}
+
+\item{strata}{Stratification list}
 
 \item{ageGroup}{A list of age groups.}
 

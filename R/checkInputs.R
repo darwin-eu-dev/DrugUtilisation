@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# check functions
+
 checkInputs <- function(...) {
   inputs <- list(...)
   lapply(names(inputs), function(x) {
@@ -70,7 +72,7 @@ checkName <- function(name, cdm) {
     )
   }
   if (name %in% names(cdm)) {
-    cli::cli_alert_warning(
+    cli::cli_warn(
       "A cohort with this name already exist in the cdm object. It will be overwritten."
     )
   }
@@ -346,8 +348,8 @@ checkCohort <- function(cohort) {
   }
 }
 
-checkStrata <- function(strata, x) {
-  errorMessage <- "strata must be a named list of columns in x"
+checkStrata <- function(strata, cohort) {
+  errorMessage <- "strata must be a named list of columns in cohort"
   if (!is.list(strata)) {
     cli::cli_abort(errorMessage)
   }
@@ -355,7 +357,7 @@ checkStrata <- function(strata, x) {
     if (!is.character(unlist(strata))) {
       cli::cli_abort(errorMessage)
     }
-    if (!all(unlist(strata) %in% colnames(x))) {
+    if (!all(unlist(strata) %in% colnames(cohort))) {
       cli::cli_abort(errorMessage)
     }
   }
@@ -370,6 +372,86 @@ checkMinimumCellCount <- function(minimumCellCount) {
 checkOffset <- function(offset) {
   checkmate::assertIntegerish(offset, lower = 0, any.missing = F, len = 1)
 }
+
+checkDrugUseVariables <- function(drugUseVariables, cohort) {
+  errorMessage <- "drugUseVariables must contain columns of cohort"
+  if (!is.character(drugUseVariables)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(drugUseVariables %in% colnames(cohort))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+checkInitialDailyDose <- function(initialDailyDose, cohort) {
+  if (!is.logical(initialDailyDose) | length(initialDailyDose) != 1) {
+    cli::cli_warn("initialDailyDose must be TRUE or FALSE")
+  }
+  if (initialDailyDose & "initial_dose" %in% colnames(cohort)) {
+    cli::cli_warn("`initial_dose` column will be overwrite")
+  }
+}
+
+checkNumberExposures <- function(numberExposures, cohort) {
+  if (!is.logical(numberExposures) | length(numberExposures) != 1) {
+    cli::cli_warn("numberExposures must be TRUE or FALSE")
+  }
+  if (numberExposures & "number_exposures" %in% colnames(cohort)) {
+    cli::cli_warn("`number_exposures` column will be overwrite")
+  }
+}
+
+checkDuration <- function(duration, cohort) {
+  if (!is.logical(duration) | length(duration) != 1) {
+    cli::cli_warn("duration must be TRUE or FALSE")
+  }
+  if (duration & "duration" %in% colnames(cohort)) {
+    cli::cli_warn("`duration` column will be overwrite")
+  }
+}
+
+checkCumulativeDose <- function(cumulativeDose, cohort) {
+  if (!is.logical(cumulativeDose) | length(cumulativeDose) != 1) {
+    cli::cli_warn("cumulativeDose must be TRUE or FALSE")
+  }
+  if (cumulativeDose & "cumulative_dose" %in% colnames(cohort)) {
+    cli::cli_warn("`cumulative_dose` column will be overwrite")
+  }
+}
+
+checkNumberEras <- function(numberEras, cohort) {
+  if (!is.logical(numberEras) | length(numberEras) != 1) {
+    cli::cli_warn("numberEras must be TRUE or FALSE")
+  }
+  if (numberEras & "number_eras" %in% colnames(cohort)) {
+    cli::cli_warn("`number_eras` column will be overwrite")
+  }
+}
+
+checkSupplementary <- function(supplementary) {
+  if (!is.logical(supplementary) | length(supplementary) != 1) {
+    cli::cli_warn("supplementary must be TRUE or FALSE")
+  }
+  if (supplementary) {
+    variables <- c(
+      "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
+      "number_exposures", "number_subexposures", "number_continuous_exposures",
+      "number_eras", "number_gaps", "number_unexposed_periods",
+      "number_subexposures_overlap", "number_eras_overlap",
+      "number_continuous_exposure_overlap", "initial_daily_dose",
+      "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
+      "number_subexposures_no_overlap", "number_eras_no_overlap",
+      "number_continuous_exposures_no_overlap",
+      "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
+    )
+    variables <- variables[variables %in% colnames(cohort)]
+    if (length(variables) > 0) {
+      cli::cli_warn(paste0("`", paste0(variables, collapse = "`, `"), "` column will be overwrite"))
+    }
+  }
+}
+
+# other functions
 
 checkPatternTibble <- function(x) {
   if (!isTRUE(inherits(x, "tbl_dbi"))) {
@@ -475,7 +557,7 @@ checkConsistentCohortSet<- function(cs,
   ) {
     notPresent <- names(conceptSetList)[!(conceptSetList %in% cs$cohort_name)]
     if (length(notPresent) > 0) {
-      cli::cli_alert_warning(paste0(
+      cli::cli_warn(paste0(
         "Different names in conceptSetList (",
         paste0(notPresent, collapse = ", "), ") than in the created cohortSet."
       ))
@@ -489,7 +571,7 @@ checkConsistentCohortSet<- function(cs,
       gapEra <- unique(cs$gap_era)
     } else {
       if (!all(cs$gap_era == gapEra)) {
-        cli::cli_alert_warning(glue::glue_collapse(
+        cli::cli_warn(glue::glue_collapse(
           "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
         ))
       }
@@ -503,7 +585,7 @@ checkConsistentCohortSet<- function(cs,
       imputeDuration <- unique(cs$impute_duration)
     } else {
       if (imputeDuration != cs$impute_duration) {
-        cli::cli_alert_warning(glue::glue(
+        cli::cli_warn(glue::glue(
           "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
         ))
       }
@@ -519,13 +601,13 @@ checkConsistentCohortSet<- function(cs,
       )
     } else {
       if (!identical(durationRange, c(cs$duration_range_min, cs$duration_range_max))) {
-        cli::cli_alert_warning(glue::glue_collapse(
+        cli::cli_warn(glue::glue_collapse(
           "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
         ))
       }
     }
   } else {
-    cli::cli_alert_warning("targetCohortName was not generated by DrugUtilisation package")
+    cli::cli_warn("targetCohortName was not generated by DrugUtilisation package")
   }
   parameters <- list(
     gapEra = gapEra, imputeDuration = imputeDuration,

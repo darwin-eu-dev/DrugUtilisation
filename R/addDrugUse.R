@@ -16,7 +16,7 @@
 
 #' Add new columns with dose related information to the cohort
 #'
-#' @param x Table in the database
+#' @param cohort Cohort in the cdm
 #' @param cdm cdm_reference created with CDMConnector::cdmFromCon
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
@@ -91,7 +91,7 @@
 #' @export
 #'
 #' @examples
-addDrugUse <- function(dusCohort,
+addDrugUse <- function(cohort,
                        cdm,
                        ingredientConceptId,
                        conceptSetList = NULL,
@@ -130,15 +130,18 @@ addDrugUse <- function(dusCohort,
 
   # initial checks
   checkInputs(
-    dusCohort = dusCohort, cdm = cdm, ingredientConceptId = ingredientConceptId,
-    gapEra = gapEra, eraJoinMode = eraJoinMode, overlapMode = overlapMode,
-    sameIndexMode = sameIndexMode, imputeDuration = imputeDuration,
-    imputeDailyDose = imputeDailyDose, durationRange = durationRange,
-    dailyDoseRange = dailyDoseRange, conceptSetList = conceptSetList
+    cohort = cohort, cdm = cdm, ingredientConceptId = ingredientConceptId,
+    conceptSetList = conceptSetList, initialDailyDose = initialDailyDose,
+    numberExposures = numberExposures, duration = duration,
+    cumulativeDose = cumulativeDose, numberEras = numberEras,
+    supplementary = supplementary, gapEra = gapEra, eraJoinMode = eraJoinMode,
+    overlapMode = overlapMode, sameIndexMode = sameIndexMode,
+    imputeDuration = imputeDuration, imputeDailyDose = imputeDailyDose,
+    durationRange = durationRange, dailyDoseRange = dailyDoseRange
   )
 
   # consistency with cohortSet
-  cs <- CDMConnector::cohortSet(dusCohort)
+  cs <- CDMConnector::cohortSet(cohort)
   parameters <- checkConsistentCohortSet(
     cs, conceptSetList, gapEra, imputeDuration, durationRange,
     missing(gapEra), missing(imputeDuration), missing(durationRange)
@@ -147,15 +150,18 @@ addDrugUse <- function(dusCohort,
   imputeDuration <- parameters$imputeDuration
   durationRange <- parameters$durationRange
   if (length(conceptSetList) > 1) {
-    cli::cli_abort("conceptSetList must have length 1")
+    cli::cli_abort("Only one concept set is allowed")
   }
+
+  # save original reference
+  originalCohort <- cohort
 
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
-  cohort <- initialSubset(cdm, dusCohort, conceptSet)
+  cohort <- initialSubset(cdm, cohort, conceptSet)
 
   # correct duration
   cohort <- correctDuration(
@@ -209,7 +215,7 @@ addDrugUse <- function(dusCohort,
     computeTable(cdm)
 
   # add attributes back to the cohort
-  dusCohortDose <- PatientProfiles::addAttributes(dusCohortDose, dusCohort)
+  dusCohortDose <- PatientProfiles::addAttributes(dusCohortDose, originalCohort)
 
   # drop intermediary tables that were created in the process
   lastTempTable <- getOption("dbplyr_table_name", 0)

@@ -14,14 +14,14 @@ summariseIndication(
 )
 }
 \arguments{
-\item{x}{Tibble that contains indication and strata}
-
 \item{cdm}{cdm_reference created by CDMConnector}
 
 \item{strata}{Stratification list}
 
 \item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}
+
+\item{cohort}{Cohort with indications and strata}
 }
 \value{
 A Tibble with 4 columns: cohort_definition_id, variable, estimate and

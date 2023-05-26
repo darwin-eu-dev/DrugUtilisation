@@ -5,7 +5,7 @@
 \title{Add new columns with dose related information to the cohort}
 \usage{
 addDrugUse(
-  dusCohort,
+  cohort,
   cdm,
   ingredientConceptId,
   conceptSetList = NULL,
@@ -26,6 +26,8 @@ addDrugUse(
 )
 }
 \arguments{
+\item{cohort}{Cohort in the cdm}
+
 \item{cdm}{cdm_reference created with CDMConnector::cdmFromCon}
 
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
@@ -109,8 +111,6 @@ should be a numeric vector of length two, with no NAs and the first value
 should be equal or smaller than the second one. It is only required if
 imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
 NULL.}
-
-\item{x}{Table in the database}
 }
 \value{
 The function returns the dose information for all the individuals of

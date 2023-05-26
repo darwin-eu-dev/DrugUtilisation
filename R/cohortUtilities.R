@@ -151,7 +151,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
   }
   cohort <- emptyCohort(cdm)
   if (!any(domains %in% domainInformation$domain_id)) {
-    cli::cli_alert_warning(paste0(
+    cli::cli_warn(paste0(
       "All concepts domain_id (",
       paste(domains, collapse = ", "),
       ") not supported, generated cohort is empty. The supported domain_id are: ",
@@ -161,7 +161,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
     return(cohort)
   }
   if (length(domains[!(domains %in% domainInformation$domain_id)]) > 0) {
-    cli::cli_alert_warning(paste(
+    cli::cli_warn(paste(
       "concepts with domain_id:",
       paste(
         domains[!(domains %in% domainInformation$domain_id)], collapse = ", "

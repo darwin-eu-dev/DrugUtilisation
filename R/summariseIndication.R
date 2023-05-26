@@ -17,7 +17,7 @@
 #' This function is used to summarise the indication table over multiple
 #' cohorts.
 #'
-#' @param x Tibble that contains indication and strata
+#' @param cohort Cohort with indications and strata
 #' @param cdm cdm_reference created by CDMConnector
 #' @param strata Stratification list
 #' @param minimumCellCount Minimum counts that a group can have. Cohorts with
