@@ -455,19 +455,6 @@ isInteger <- function(integer) {
   }
 }
 
-checkDrugUtilisationCohortSet <- function(cs) {
-  expectedColnames <- c(
-    "cohort_definition_id", "cohort_name", "summarise_mode", "fixed_time",
-    "days_prior_history", "gap_era", "prior_use_washout",
-    "cohort_dates_range_start", "cohort_dates_range_end", "impute_duration",
-    "duration_range_min", "duration_range_max"
-  )
-  return(
-    length(colnames(cs)) == length(expectedColnames) &
-      all(expectedColnames %in% colnames(cs))
-  )
-}
-
 checkConsistentCohortSet<- function(cs,
                                     conceptSetList,
                                     gapEra,
@@ -476,56 +463,69 @@ checkConsistentCohortSet<- function(cs,
                                     missingGapEra,
                                     missingImputeDuration,
                                     missingDurationRange) {
-  notPresent <- names(conceptSetList)[!(conceptSetList %in% cs$cohort_name)]
-  if (length(notPresent) > 0) {
-    cli::cli_alert_warning(paste0(
-      "Different names in conceptSetList (",
-      paste0(notPresent, collapse = ", "), ") than in the created cohortSet."
-    ))
-  }
-  if (missingGapEra == TRUE) {
-    if (length(unique(cs$gap_era)) > 1) {
-      cli::cli_abort(
-        "More than one gapEra found in cohortSet, please specify gapEra"
-      )
-    }
-    gapEra <- unique(cs$gap_era)
-  } else {
-    if (!all(cs$gap_era == gapEra)) {
-      cli::cli_alert_warning(glue::glue_collapse(
-        "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
+  expectedColnames <- c(
+    "cohort_definition_id", "cohort_name", "summarise_mode", "fixed_time",
+    "days_prior_history", "gap_era", "prior_use_washout",
+    "cohort_dates_range_start", "cohort_dates_range_end", "impute_duration",
+    "duration_range_min", "duration_range_max"
+  )
+  if (
+    length(colnames(cs)) == length(expectedColnames) &
+      all(expectedColnames %in% colnames(cs))
+  ) {
+    notPresent <- names(conceptSetList)[!(conceptSetList %in% cs$cohort_name)]
+    if (length(notPresent) > 0) {
+      cli::cli_alert_warning(paste0(
+        "Different names in conceptSetList (",
+        paste0(notPresent, collapse = ", "), ") than in the created cohortSet."
       ))
     }
-  }
-  if (missingImputeDuration == TRUE) {
-    if (length(unique(cs$impute_duration)) > 1) {
-      cli::cli_abort(
-        "More than one imputeDuration found in cohortSet, please specify imputeDuration"
+    if (missingGapEra == TRUE) {
+      if (length(unique(cs$gap_era)) > 1) {
+        cli::cli_abort(
+          "More than one gapEra found in cohortSet, please specify gapEra"
+        )
+      }
+      gapEra <- unique(cs$gap_era)
+    } else {
+      if (!all(cs$gap_era == gapEra)) {
+        cli::cli_alert_warning(glue::glue_collapse(
+          "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
+        ))
+      }
+    }
+    if (missingImputeDuration == TRUE) {
+      if (length(unique(cs$impute_duration)) > 1) {
+        cli::cli_abort(
+          "More than one imputeDuration found in cohortSet, please specify imputeDuration"
+        )
+      }
+      imputeDuration <- unique(cs$impute_duration)
+    } else {
+      if (imputeDuration != cs$impute_duration) {
+        cli::cli_alert_warning(glue::glue(
+          "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
+        ))
+      }
+    }
+    if (missingDurationRange == TRUE) {
+      if (length(unique(cs$duration_range_min)) > 1 | length(unique(cs$duration_range_max)) > 1) {
+        cli::cli_abort(
+          "More than one durationRange found in cohortSet, please specify durationRange"
+        )
+      }
+      durationRange <- c(
+        unique(cs$duration_range_min), unique(cs$duration_range_max)
       )
+    } else {
+      if (!identical(durationRange, c(cs$duration_range_min, cs$duration_range_max))) {
+        cli::cli_alert_warning(glue::glue_collapse(
+          "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
+        ))
+      }
     }
-    imputeDuration <- unique(cs$impute_duration)
   } else {
-    if (imputeDuration != cs$impute_duration) {
-      cli::cli_alert_warning(glue::glue(
-        "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
-      ))
-    }
-  }
-  if (missingDurationRange == TRUE) {
-    if (length(unique(cs$duration_range_min)) > 1 | length(unique(cs$duration_range_max)) > 1) {
-      cli::cli_abort(
-        "More than one durationRange found in cohortSet, please specify durationRange"
-      )
-    }
-    durationRange <- c(
-      unique(cs$duration_range_min), unique(cs$duration_range_max)
-    )
-  } else {
-    if (!identical(durationRange, c(cs$duration_range_min, cs$duration_range_max))) {
-      cli::cli_alert_warning(glue::glue_collapse(
-        "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
-      ))
-    }
+    cli::cli_alert_warning("targetCohortName was not generated by DrugUtilisation package")
   }
   parameters <- list(
     gapEra = gapEra, imputeDuration = imputeDuration,
