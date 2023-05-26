@@ -91,6 +91,18 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+#' )
+#' cdm$dus_cohort %>%
+#'   addDrugUse(cdm, 1125315)
+#' }
+#'
 addDrugUse <- function(cohort,
                        cdm,
                        ingredientConceptId,
@@ -211,7 +223,16 @@ addDrugUse <- function(cohort,
   dusCohortDose <- dusCohort %>%
     dplyr::left_join(
       doseTable, by = c("sibject_id", "cohort_start_date", "cohort_end_date")
-    ) %>%
+    )
+
+  if (!supplementary) {
+    variables <- c(
+      "initial_daily_dose", "number_exposures", "duration",
+      "cumulative_dose", "number_eras"
+    )[c(
+      initialDailyDose, numberExposures, duration, cumulativeDose, numberEras
+    )]
+  }
     computeTable(cdm)
 
   # add attributes back to the cohort
@@ -934,12 +955,12 @@ summariseCohort <- function(x, cdm) {
       )
     ) %>%
     # end replace NA
-    dplyr::mutate(follow_up_days = !!CDMConnector::datediff(
+    dplyr::mutate(duration = !!CDMConnector::datediff(
       "cohort_start_date", "cohort_end_date"
     ) + 1) %>%
     dplyr::mutate(
       exposed_days =
-        .data$follow_up_days - .data$unexposed_days - .data$gap_days
+        .data$duration - .data$unexposed_days - .data$gap_days
     ) %>%
     dplyr::mutate(
       number_subexposures_no_overlap =

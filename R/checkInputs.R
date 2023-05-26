@@ -24,7 +24,8 @@ checkInputs <- function(...) {
     )
     varName <- eval(parse(text = paste0("names(formals(", funName, "))")))
     eval(parse(text = paste0(
-      funName, "(", paste0(paste0("inputs[[", varName, "]]"), collapse = ", "), ")"
+      funName, "(",
+      paste0( paste0("inputs[[\"", varName, "\"]]"), collapse = ", "), ")"
     )))
   })
   invisible(NULL)
@@ -39,16 +40,16 @@ checkCdm <- function(cdm) {
   }
 }
 
-checkConceptSetList <- function(x) {
+checkConceptSetList <- function(conceptSetList) {
   errorMessage <- "conceptSetList must be a uniquely named list of integerish,
   no NA are allowed"
-  if (!is.list(x)) {
+  if (!is.list(conceptSetList)) {
     cli::cli_abort(errorMessage)
   }
-  if (!all(sapply(x, is.numeric))) {
+  if (!all(sapply(conceptSetList, is.numeric))) {
     cli::cli_abort(errorMessage)
   }
-  x <- unlist(x)
+  x <- unlist(conceptSetList)
   if (any(is.na(x))) {
     cli::cli_abort(errorMessage)
   }

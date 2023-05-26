@@ -119,3 +119,17 @@ dusCohortName.
 \description{
 Add new columns with dose related information to the cohort
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(CodelistGenerator)
+
+cdm <- mockDrugUtilisation()
+cdm <- generateDrugUtilisationCohortSet(
+  cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+)
+cdm$dus_cohort \%>\%
+  addDrugUse(cdm, 1125315)
+}
+
+}

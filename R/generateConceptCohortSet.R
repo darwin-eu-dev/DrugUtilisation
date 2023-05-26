@@ -81,7 +81,7 @@ generateConceptCohortSet <- function(cdm,
   )
 
   # apply washout
-  cohortRef <- applyWashout(cohortRef, washout)
+  cohortRef <- requirePriorUseWashout(cohortRef, cdm, washout)
   cohortAttritionRef <- computeCohortAttrition(
     cohortRef, cohortAttritionRef, "Washout applied"
   )
