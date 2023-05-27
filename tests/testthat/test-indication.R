@@ -360,3 +360,129 @@ test_that("test indicationDate", {
   ))
 
 })
+
+test_that("test attributes", {
+  targetCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
+    ))
+  )
+  indicationCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 3, 1),
+    subject_id = c(1, 3, 1, 2, 1),
+    cohort_start_date = as.Date(
+      c(
+        "2019-12-30",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    ),
+    cohort_end_date = as.Date(
+      c(
+        "2019-12-30",
+        "2020-01-01",
+        "2020-05-25",
+        "2020-01-01",
+        "2020-05-25"
+      )
+    )
+  )
+  attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
+    cohort_definition_id = c(1, 2),
+    cohort_name = c("asthma", "covid")
+  )
+  condition_occurrence <- dplyr::tibble(
+    person_id = 1,
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
+  )
+
+  cdm <-
+    mockDrugUtilisation(
+      connectionDetails,
+      cohort1 = targetCohortName,
+      cohort2 = indicationCohortName,
+      condition_occurrence = condition_occurrence
+    )
+
+  cdm$cohort1new <- cdm$cohort1 %>%
+    addIndication(
+      cdm = cdm, indicationCohortName = "cohort2",
+      indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL
+    )
+  expect_identical(attributes(cdm$cohort1), attributes(cdm$cohort1new))
+})
+
+test_that("summariseIndication", {
+  targetCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 2),
+    subject_id = c(1, 1, 2, 3),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
+    ))
+  )
+  indicationCohortName <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 2, 3, 1),
+    subject_id = c(1, 3, 1, 2, 1),
+    cohort_start_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+    ))
+  )
+  condition_occurrence <- dplyr::tibble(
+    person_id = 1,
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31")
+  )
+  attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
+    cohort_definition_id = c(1, 2),
+    cohort_name = c("asthma", "covid")
+  )
+
+  cdm <-mockDrugUtilisation(
+    connectionDetails, cohort1 = targetCohortName,
+    cohort2 = indicationCohortName, condition_occurrence = condition_occurrence
+  )
+
+  res <- cdm$cohort1 %>%
+    addIndication(
+      cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
+      unknownIndicationTable = "condition_occurrence"
+    )
+
+  result <- summariseIndication(res, cdm)
+
+  # expect columns
+  # expect values
+
+  result <- summariseIndication(res, cdm, indicationVariables = "indication_gap_inf")
+
+  expect_error(summariseIndication(
+    res, cdm, indicationVariables = "indication_gap_15"
+  ))
+
+  res <- res %>%
+    PatientProfiles::addAge(
+      cdm, ageGroup = list("young" = c(0, 49), "old" = c(50, 150))
+    ) %>%
+    PatientProfiles::addSex(cdm)
+
+  result <- summariseIndication(
+    res, cdm, strata = list(
+      "age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")
+    )
+  )
+
+})

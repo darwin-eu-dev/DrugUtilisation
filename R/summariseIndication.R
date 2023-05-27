@@ -37,7 +37,7 @@ summariseIndication <- function(x,
                                 minimumCellCount = 5) {
   # initialChecks
   checkInputs(
-    x = x, cdm = cdm, strata = strata, indications = indications,
+    x = x, cdm = cdm, strata = strata, indicationVariables = indicationVariables,
     minimumCellCount = minimumCellCount
   )
   if (length(indicationColumns(x)) == 0) {
@@ -60,8 +60,12 @@ summariseIndication <- function(x,
     dplyr::inner_join(
       denominator, by = c("cohort_name", "strata_name", "strata_level")
     ) %>%
+    dplyr::select(
+      "cohort_name", "strata_name", "strata_level", "indication_gap",
+      "indication_name", "count", "denominator", "%"
+    ) %>%
     dplyr::mutate(
-      cdm_name = CDMConnector::cdmName(cdm),
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = "DrugUtilisation_v0.2.0_summariseIndication"
     )
 

@@ -290,7 +290,7 @@ trimStartDate <- function(cohort, cdm, startDate) {
 
 #' @noRd
 trimEndDate <- function(cohort, cdm, endDate) {
-  if (!is.na(cendDate)) {
+  if (!is.na(endDate)) {
     cohort <- cohort %>%
       dplyr::mutate(cohort_start_date = min(
         .data$cohort_start_date, !!.env$endDate

@@ -150,10 +150,15 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
           "unknown_date", "cohort_start_date"
         ))
       for (gap in gaps) {
-        xx <- xx %>%
-          dplyr::mutate(!!unknownName(gap) := dplyr::if_else(
-            .data$diff_date <= .env$gap, 1, 0
-          ))
+        if (is.infinite(gap)) {
+          xx <- xx %>%
+            dplyr::mutate(!!unknownName(gap) := 1)
+        } else {
+          xx <- xx %>%
+            dplyr::mutate(!!unknownName(gap) := dplyr::if_else(
+              .data$diff_date <= .env$gap, 1, 0
+            ))
+        }
       }
       xx <- xx %>%
         dplyr::select(-"diff_date", -"unknown_date") %>%

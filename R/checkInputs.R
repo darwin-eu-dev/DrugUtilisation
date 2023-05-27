@@ -87,8 +87,10 @@ checkSummariseMode <- function(summariseMode) {
   }
 }
 
-checkFixedTime <- function(fixedTime) {
-  checkmate::assertIntegerish(fixedTime, lower = 1, any.missing = F, len = 1)
+checkFixedTime <- function(fixedTime, summariseMode) {
+  if (summariseMode == "FixedTime") {
+    checkmate::assertIntegerish(fixedTime, lower = 1, any.missing = F, len = 1)
+  }
 }
 
 checkDaysPriorHistory <- function(daysPriorHistory) {
@@ -99,6 +101,10 @@ checkDaysPriorHistory <- function(daysPriorHistory) {
 
 checkGapEra <- function(gapEra) {
   checkmate::assertIntegerish(gapEra, lower = 0, any.missing = F, len = 1)
+}
+
+checkGap <- function(gap) {
+  checkmate::assertIntegerish(gap, lower = 0, any.missing = F, len = 1)
 }
 
 checkPriorUseWashout <- function(priorUseWashout) {
@@ -317,6 +323,25 @@ checkUnknownIndicationTable <- function(unknownIndicationTable, cdm) {
     }
     if (!all(unknownIndicationTable %in% names(cdm))) {
       cli::cli_abort("unknownIndicationTable is not in the cdm reference")
+    }
+  }
+}
+
+checkIndicationVariables <- function(indicationVariables, x) {
+  errorMessage <- "indicationVariables must point to character columns in x"
+  if (!is.character(indicationVariables) | length(indicationVariables) == 0) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(indicationVariables %in% colnames(x))) {
+    cli::cli_abort(errorMessage)
+  }
+  x <- x %>%
+    dplyr::select(dplyr::all_of(indicationVariables)) %>%
+    head(1) %>%
+    dplyr::collect()
+  for (k in seq_along(x)) {
+    if (!is.character(x[[k]])) {
+      cli::cli_abort(errorMessage)
     }
   }
 }

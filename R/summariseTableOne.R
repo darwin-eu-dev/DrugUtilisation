@@ -62,7 +62,7 @@ summariseTableOne <- function(cohort,
     )
   for (k in seq_along(covariates)) {
     cohort <- cohrot %>%
-      PatientProfiles::addCohortIntersect(
+      PatientProfiles::addIntersect(
         cdm, names(covariates)[k], window = covariates[[k]]
       )
   }
