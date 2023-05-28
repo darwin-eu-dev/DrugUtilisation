@@ -56,6 +56,10 @@ summariseTableOne <- function(cohort,
 
   # add characteristics
   cohort <- cohort %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ) %>%
     PatientProfiles::addDemographics(cdm)
   if (!is.null(windowVisitOcurrence)) {
     cohort <- cohort %>%
@@ -71,9 +75,32 @@ summariseTableOne <- function(cohort,
       )
   }
 
+  # get variables
+  variables <- list(
+    dates = c("cohort_start_date", "cohort_end_date"),
+    numeric = c(
+      "age", "number_visits"[!is.null(windowVisitOcurrence)], "prior_history",
+      "future_observation"
+    ),
+    categorical = c("sex", "age_group"[!is.null(ageGroup)])
+  )
+  variables$covariates <- colnames(cohort)[!c(colnames(cohort) %in% c(
+    "subject_id", "cohort_definition_id", unlist(variables)
+  ))]
+
+  print(variables)
+
+  # set functions
+  functions <- list(
+    covariates = c("count", "%"),
+    dates = c("median", "q25", "q75"),
+    numeric = c("median", "q25", "q75"),
+    categorical = c("count", "%")
+  )
+
   # summarise results
   results <- cohort %>%
-    summariseCohortTableOne(strata, minimumCellCount) %>%
+    summariseCohortTableOne(strata, variables, functions, minimumCellCount) %>%
     dplyr::mutate(
       cdm_name = CDMConnector::cdmName(cdm),
       generated_by = "DrugUtilisation_v0.2.0_summariseTableOne"
@@ -85,6 +112,8 @@ summariseTableOne <- function(cohort,
 #' @noRd
 summariseCohortTableOne <- function(x,
                                     strata,
+                                    variables,
+                                    functions,
                                     minimumCellCount) {
   cs <- CDMConnector::cohortSet(x)
   cohortIds <- x %>%
@@ -97,7 +126,8 @@ summariseCohortTableOne <- function(x,
       dplyr::filter(.data$cohort_definition_id == .env$cohortId) %>%
       dplyr::collect() %>%
       PatientProfiles::summariseCharacteristics(
-        strata = strata, suppressCellCount = minimumCellCount
+        strata = strata, variables = variables, functions = functions,
+        suppressCellCount = minimumCellCount
       )
   }
   result <- dplyr::bind_rows(result, .id = "cohort_name")
