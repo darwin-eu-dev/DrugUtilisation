@@ -88,8 +88,6 @@ summariseTableOne <- function(cohort,
     "subject_id", "cohort_definition_id", unlist(variables)
   ))]
 
-  print(variables)
-
   # set functions
   functions <- list(
     covariates = c("count", "%"),
