@@ -327,20 +327,20 @@ checkUnknownIndicationTable <- function(unknownIndicationTable, cdm) {
   }
 }
 
-checkIndicationVariables <- function(indicationVariables, x) {
-  errorMessage <- "indicationVariables must point to character columns in x"
+checkIndicationVariables <- function(indicationVariables, cohort) {
+  errorMessage <- "indicationVariables must point to character columns in cohort"
   if (!is.character(indicationVariables) | length(indicationVariables) == 0) {
     cli::cli_abort(errorMessage)
   }
-  if (!all(indicationVariables %in% colnames(x))) {
+  if (!all(indicationVariables %in% colnames(cohort))) {
     cli::cli_abort(errorMessage)
   }
-  x <- x %>%
+  cohort <- cohort %>%
     dplyr::select(dplyr::all_of(indicationVariables)) %>%
     head(1) %>%
     dplyr::collect()
-  for (k in seq_along(x)) {
-    if (!is.character(x[[k]])) {
+  for (k in seq_along(cohort)) {
+    if (!is.character(cohort[[k]])) {
       cli::cli_abort(errorMessage)
     }
   }

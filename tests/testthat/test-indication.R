@@ -464,10 +464,21 @@ test_that("summariseIndication", {
 
   result <- summariseIndication(res, cdm)
 
-  # expect columns
-  # expect values
+  expect_true(all(c(
+    "cohort_name", "strata_name", "strata_level", "indication_gap",
+    "indication_name", "count", "denominator", "%", "cdm_name", "generated_by"
+  ) %in% colnames(result)))
+  expect_true(ncol(result) == 10)
+  expect_true(all(sort(unique(result$indication_gap)) == c(0, 7, 30, Inf)))
 
   result <- summariseIndication(res, cdm, indicationVariables = "indication_gap_inf")
+
+  expect_true(all(c(
+    "cohort_name", "strata_name", "strata_level", "indication_gap",
+    "indication_name", "count", "denominator", "%", "cdm_name", "generated_by"
+  ) %in% colnames(result)))
+  expect_true(ncol(result) == 10)
+  expect_true(all(sort(unique(result$indication_gap)) == c(Inf)))
 
   expect_error(summariseIndication(
     res, cdm, indicationVariables = "indication_gap_15"
@@ -475,7 +486,7 @@ test_that("summariseIndication", {
 
   res <- res %>%
     PatientProfiles::addAge(
-      cdm, ageGroup = list("young" = c(0, 49), "old" = c(50, 150))
+      cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))
     ) %>%
     PatientProfiles::addSex(cdm)
 
@@ -484,5 +495,37 @@ test_that("summariseIndication", {
       "age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")
     )
   )
+
+  expect_true(all(c(
+    "cohort_name", "strata_name", "strata_level", "indication_gap",
+    "indication_name", "count", "denominator", "%", "cdm_name", "generated_by"
+  ) %in% colnames(result)))
+  expect_true(ncol(result) == 10)
+  x <- tidyr::expand_grid(
+    cohort_name = CDMConnector::cohortSet(res) %>% dplyr::pull("cohort_name"),
+    strata_name = c("overall", "age", "sex", "age & sex")
+  ) %>%
+    dplyr::inner_join(
+      dplyr::tibble(
+        strata_name = c(
+          "age", "age", "sex", "sex", "age & sex", "age & sex", "age & sex",
+          "age & sex", "overall"
+        ),
+        strata_level = c(
+          "<40", ">=40", "Male", "Female", "<40 & Female", "<40 & Male",
+          ">=40 & Female", ">=40 & Male", NA
+        )
+      ),
+      by = "strata_name", relationship = "many-to-many"
+    )
+  expect_identical(
+    nrow(result),
+    result %>%
+      dplyr::inner_join(
+        x, by = c("cohort_name", "strata_name", "strata_level")
+      ) %>%
+      nrow()
+  )
+  expect_true(all(sort(unique(result$indication_gap)) == c(0, 7, 30, Inf)))
 
 })

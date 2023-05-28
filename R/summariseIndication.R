@@ -30,23 +30,20 @@
 #' @export
 #'
 #' @examples
-summariseIndication <- function(x,
+summariseIndication <- function(cohort,
                                 cdm,
                                 strata = list(),
-                                indicationVariables = indicationColumns(x),
+                                indicationVariables = indicationColumns(cohort),
                                 minimumCellCount = 5) {
   # initialChecks
   checkInputs(
-    x = x, cdm = cdm, strata = strata, indicationVariables = indicationVariables,
+    cohort = cohort, cdm = cdm, strata = strata, indicationVariables = indicationVariables,
     minimumCellCount = minimumCellCount
   )
-  if (length(indicationColumns(x)) == 0) {
-    cli::cli_abort("x must have at least one indication, use addIndication() to add indication columns")
-  }
 
   # summarise indication columns
   result <- summariseCohortIndication(
-    x, strata, indicationVariables, minimumCellCount
+    cohort, strata, indicationVariables, minimumCellCount
   )
 
   # get denominator counts
