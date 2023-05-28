@@ -477,6 +477,32 @@ checkSupplementary <- function(supplementary) {
   }
 }
 
+checkWindowVisitOcurrence <- function(windowVisitOccurrence) {
+  checkmate::assertNumeric(
+    windowVisitOccurrence, any.missing = FALSE, null.ok = TRUE, len = 2
+  )
+}
+
+checkCovariates <- function(covariates, cdm) {
+  if (!is.null(covariates)){
+    errorMessage <- "covariates should be a named list of two numeric values
+    (windows). First element of the window must be smaller than the second one.
+    Names should point to tables of the cdm."
+    if (!is.list(covariates)) {
+      cli::cli_abort(errorMessage)
+    }
+    if (!all(lengths(covariates) == 2)) {
+      cli::cli_abort(errorMessage)
+    }
+    if (!(length(names(covariates)) == length(covariates))) {
+      cli::cli_abort(errorMessage)
+    }
+    if (!all(names(covariates) %in% names(cdm))) {
+      cli::cli_abort(errorMessage)
+    }
+  }
+}
+
 # other functions
 
 checkPatternTibble <- function(x) {
@@ -641,3 +667,5 @@ checkConsistentCohortSet<- function(cs,
   )
   return(parameters)
 }
+
+

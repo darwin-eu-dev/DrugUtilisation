@@ -56,23 +56,50 @@ summariseTableOne <- function(cohort,
 
   # add characteristics
   cohort <- cohort %>%
-    PatientProfiles::addDemographics(cdm) %>%
-    PatientProfiles::addTableIntersectFlag(
-      cdm, "visit_occurrence", window = windowVisitOcurrence
-    )
-  for (k in seq_along(covariates)) {
-    cohort <- cohrot %>%
+    PatientProfiles::addDemographics(cdm)
+  if (!is.null(windowVisitOcurrence)) {
+    cohort <- cohort %>%
       PatientProfiles::addIntersect(
+        cdm, "visit_occurrence", "flag", window = windowVisitOcurrence,
+        targetEndDate = NULL, nameStyle = "number_visits"
+      )
+  }
+  for (k in seq_along(covariates)) {
+    cohort <- cohort %>%
+      PatientProfiles::addCohortIntersectFlag(
         cdm, names(covariates)[k], window = covariates[[k]]
       )
   }
 
   # summarise results
   results <- cohort %>%
-    dplyr::collect() %>%
-    PatientProfiles::summariseCharacteristics(
-      cdm = cdm, suppressCellCount = minimumCellCount
+    summariseCohortTableOne(strata, minimumCellCount) %>%
+    dplyr::mutate(
+      cdm_name = CDMConnector::cdmName(cdm),
+      generated_by = "DrugUtilisation_v0.2.0_summariseTableOne"
     )
 
   return(results)
+}
+
+#' @noRd
+summariseCohortTableOne <- function(x,
+                                    strata,
+                                    minimumCellCount) {
+  cs <- CDMConnector::cohortSet(x)
+  cohortIds <- x %>%
+    dplyr::select("cohort_definition_id") %>%
+    dplyr::distinct() %>%
+    dplyr::pull()
+  result <- list()
+  for (cohortId in cohortIds) {
+    result[[cs$cohort_name[cs$cohort_definition_id == cohortId]]] <- x %>%
+      dplyr::filter(.data$cohort_definition_id == .env$cohortId) %>%
+      dplyr::collect() %>%
+      PatientProfiles::summariseCharacteristics(
+        strata = strata, suppressCellCount = minimumCellCount
+      )
+  }
+  result <- dplyr::bind_rows(result, .id = "cohort_name")
+  return(result)
 }
