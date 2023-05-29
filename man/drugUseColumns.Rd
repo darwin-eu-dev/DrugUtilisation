@@ -17,15 +17,16 @@ Obtain automatically the drug use columns
 }
 \examples{
 \donttest{
-library(drugUtilisation)
+library(DrugUtilisation)
 library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
 cdm <- generateDrugUtilisationCohortSet(
   cdm, "dus", getDrugIngredientCodes(cdm, "acetaminophen")
 )
-cdm$dus <- cdm$dus \%>\%
-  addDrugUse(cdm, 1125315)
-drugUseColumns(cdm$dus)
+#cdm$dus <- cdm$dus \%>\%
+#  addDrugUse(cdm, 1125315)
+#drugUseColumns(cdm$dus)
 }
+
 }

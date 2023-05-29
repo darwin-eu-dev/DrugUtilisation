@@ -66,7 +66,7 @@ summariseDrugUse<- function(cohort,
 #'
 #' @examples
 #' \donttest{
-#' library(drugUtilisation)
+#' library(DrugUtilisation)
 #' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
