@@ -5,8 +5,8 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", 1))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(1)))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
-  x <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
-  expect_true(all(colnames(x$dus) == c(
+  cdmNew <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
+  expect_true(all(colnames(cdmNew$dus) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"
   )))
   expect_error(generateDrugUtilisationCohortSet(
@@ -18,8 +18,12 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = 1125360), summariseMode = "2020-01-05"
   ))
-  xx <- generateDrugUtilisationCohortSet(
+  expect_error(generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = 1125360), summariseMode = "FixedTime"
+  ))
+  cdmNew <- generateDrugUtilisationCohortSet(
+    cdm, "dus", list(acetaminophen = 1125360), summariseMode = "FixedTime",
+    fixedTime = 365
   )
   expect_error(generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = 1125360), summariseMode = "FixedTime",

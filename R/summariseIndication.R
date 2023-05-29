@@ -17,9 +17,10 @@
 #' This function is used to summarise the indication table over multiple
 #' cohorts.
 #'
-#' @param x Tibble that contains indication and strata
+#' @param cohort Cohort with indications and strata
 #' @param cdm cdm_reference created by CDMConnector
 #' @param strata Stratification list
+#' @param indicationVariables Variables that point to an indication column
 #' @param minimumCellCount Minimum counts that a group can have. Cohorts with
 #' less counts than this value are obscured. By default: 5.
 #'
@@ -30,21 +31,21 @@
 #' @export
 #'
 #' @examples
-summariseIndication <- function(x,
+summariseIndication <- function(cohort,
                                 cdm,
                                 strata = list(),
+                                indicationVariables = indicationColumns(cohort),
                                 minimumCellCount = 5) {
   # initialChecks
-  checkX(x) # cohort_definition_id and at least one indication, generatedCohortSet
-  checkCdm(cdm)
-  checkStrata(strata, x)
-  checkMinimumCellCount(minimumCellCount)
-  if (length(indicationColumns(x)) == 0) {
-    cli::cli_abort("x must have at least one indication, use addIndication() to add indication columns")
-  }
+  checkInputs(
+    cohort = cohort, cdm = cdm, strata = strata, indicationVariables = indicationVariables,
+    minimumCellCount = minimumCellCount
+  )
 
   # summarise indication columns
-  result <- summariseCohortIndication(x, strata, minimumCellCount)
+  result <- summariseCohortIndication(
+    cohort, strata, indicationVariables, minimumCellCount
+  )
 
   # get denominator counts
   denominator <- getDenominatorCount(result)
@@ -57,14 +58,27 @@ summariseIndication <- function(x,
     dplyr::inner_join(
       denominator, by = c("cohort_name", "strata_name", "strata_level")
     ) %>%
+    dplyr::select(
+      "cohort_name", "strata_name", "strata_level", "indication_gap",
+      "indication_name", "count", "denominator", "%"
+    ) %>%
     dplyr::mutate(
-      cdm_name = CDMConnector::cdmName(cdm),
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = "DrugUtilisation_v0.2.0_summariseIndication"
     )
 
   return(result)
 }
 
+#' Obtain automatically the indication columns
+#'
+#' @param x Tibble
+#'
+#' @return Name of the indication columns
+#'
+#' @export
+#'
+#' @examples
 indicationColumns <- function(x) {
   names <- colnames(x)[substr(colnames(x), 1, 15) == "indication_gap_"]
   names <- names[!is.na(suppressWarnings(
@@ -73,7 +87,11 @@ indicationColumns <- function(x) {
   return(names)
 }
 
-summariseCohortIndication <- function(x, strata, minimumCellCount) {
+#' @noRd
+summariseCohortIndication <- function(x,
+                                      strata,
+                                      indicationVariables,
+                                      minimumCellCount) {
   cs <- CDMConnector::cohortSet(x)
   cohortIds <- x %>%
     dplyr::select("cohort_definition_id") %>%
@@ -86,7 +104,7 @@ summariseCohortIndication <- function(x, strata, minimumCellCount) {
       dplyr::collect() %>%
       PatientProfiles::summariseCharacteristics(
         strata = strata,
-        variables = list(indications = indicationColumns(x)),
+        variables = list(indications = indicationVariables),
         functions = list(indications = c("count", "%")),
         suppressCellCount = minimumCellCount
       )

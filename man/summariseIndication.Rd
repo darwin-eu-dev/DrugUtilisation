@@ -5,14 +5,22 @@
 \title{This function is used to summarise the indication table over multiple
 cohorts.}
 \usage{
-summariseIndication(x, cdm, strata = list(), minimumCellCount = 5)
+summariseIndication(
+  cohort,
+  cdm,
+  strata = list(),
+  indicationVariables = indicationColumns(cohort),
+  minimumCellCount = 5
+)
 }
 \arguments{
-\item{x}{Tibble that contains indication and strata}
+\item{cohort}{Cohort with indications and strata}
 
 \item{cdm}{cdm_reference created by CDMConnector}
 
 \item{strata}{Stratification list}
+
+\item{indicationVariables}{Variables that point to an indication column}
 
 \item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}

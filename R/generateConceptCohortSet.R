@@ -40,75 +40,100 @@ generateConceptCohortSet <- function(cdm,
                                      offset = 0,
                                      cohortDateRange = as.Date(c(NA, NA))) {
   # check input
-  # offset must be smaller than gap
-  # checkInputs(
-  #   cdm = cdm, name = name, conceptSetList = conceptSetList,
-  #   daysPriorHistory = daysPriorHistory, gapEra = gap,
-  #   priorUseWashout = washout,# offset = offset,
-  #   cohortDateRange = cohortDateRange
-  # )
+  checkInputs(
+    cdm = cdm, name = name, conceptSetList = conceptSetList,
+    daysPriorHistory = daysPriorHistory, gap = gap,
+    priorUseWashout = washout, offset = offset,
+    cohortDateRange = cohortDateRange
+  )
 
-  cohortStartDateRange <- cohortDateRange[1]
-  cohortEndDateRange <- cohortDateRange[2]
-
-  # create cohort set
+  # create conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
+  # create cohortSet
   cohortSet <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
-      days_prior_history = dplyr::if_else(
-        is.null(.env$daysPriorHistory), NA, .env$daysPriorHistory
-      ),
+      days_prior_history = dplyr::coalesce(.env$daysPriorHistory, as.numeric(NA)),
       gap = .env$gap,
       washout = .env$washout,
       offset = .env$offset,
-      cohort_start_date_range = .env$cohortDateRange[1],
-      cohort_end_date_range = .env$cohortDateRange[2]
+      cohort_date_range_start = .env$cohortDateRange[1],
+      cohort_date_range_end = .env$cohortDateRange[2]
     )
+
   # subset tables
   cohortRef <- subsetTables(cdm, conceptSet)
   cohortAttritionRef <- computeCohortAttrition(cohortRef, cdm)
-  # # check daysPriorHistory
-  # cohortRef <- minimumDaysPriorHistory(cohortRef, cdm, daysPriorHistory)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Satisfy daysPriorHistory"
-  # )
-  # # union overlap
-  # cohortRef <- unionCohort(cohortRef, gap, cdm)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Join records within gap distance"
-  # )
-  # # apply washout
-  # cohortRef <- applyWashout(cohortRef, washout)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Washout applied"
-  # )
-  # # offset
-  # cohortRef <- cohortRef %>%
-  #   dplyr::mutate(
-  #     cohort_end_date = !!CDMConnector::dateadd("cohort_end_date", offset)
-  #   )
-  # # minimum cohort start date
-  # cohortRef <- applyMinimumStartDate(cohortRef, minimumCohortStartDate)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Trimming cohort_start_date"
-  # )
-  # # maximum cohort end date
-  # cohortRef <- applyMaximumEndDate(cohortRef, maximumCohortEndDate)
-  # cohortAttritionRef <- addAttritionLine(
-  #   cohortRef, cohortAttritionRef, "Trimming cohort_end_date"
-  # )
-  # get counts
-  cohortCountRef <- computeCohortCount(cohortRef, cdm)
-  # clean tables
 
+  # check daysPriorHistory
+  cohortRef <- requireDaysPriorHistory(cohortRef, cdm, daysPriorHistory)
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cdm, cohortAttritionRef, "Satisfy daysPriorHistory"
+  )
+
+
+  # union overlap
+  cohortRef <- unionCohort(cohortRef, gap, cdm)
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cdm, cohortAttritionRef, "Join records within gap distance"
+  )
+
+  # apply washout
+  cohortRef <- requirePriorUseWashout(cohortRef, cdm, washout)
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cdm, cohortAttritionRef, "Washout applied"
+  )
+
+  # trim start date
+  cohortRef <- trimStartDate(cohortRef, cdm, cohortDateRange[1])
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cdm, cohortAttritionRef, "cohort_start_date >= cohort_dates_range_start"
+  )
+
+  # offset
+  cohortRef <- cohortRef %>%
+    dplyr::mutate(
+      cohort_end_date = !!CDMConnector::dateadd("cohort_end_date", offset)
+    ) %>%
+    computeTable(cdm)
+
+  # trim end date
+  cohortRef <- trimEndDate(cohortRef, cdm, cohortDateRange[2])
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cdm, cohortAttritionRef, "cohort_end_date <= cohort_dates_range_end"
+  )
+
+  # create the cohort references
+  cohortRef <- cohortRef %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date"
+    ) %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
   cohortSetRef <- cohortSet %>%
     insertTable(cdm, paste0(name, "_set"), FALSE)
+  cohortAttritionRef <- cohortAttritionRef %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
+  cohortCountRef <- computeCohortCount(cohortRef, cdm) %>%
+    CDMConnector::computeQuery(
+      name = paste0(attr(cdm, "write_prefix"), name, "_count"),
+      FALSE, attr(cdm, "write_schema"), TRUE
+    )
 
-  # validate cohort
+  # create the resultant GeneratedCohortSet
   cdm[[name]] <- CDMConnector::newGeneratedCohortSet(
-    cohortRef, cohortSetRef, cohortAttritionRef, cohortCountRef
+    cohortRef = cohortRef,
+    cohortSetRef = cohortSetRef,
+    cohortAttritionRef = cohortAttritionRef,
+    cohortCountRef = cohortCountRef
   )
+
   return(cdm)
 }
 

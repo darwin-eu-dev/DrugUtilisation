@@ -125,77 +125,78 @@ createPatternsTable <- function(cdm) {
   # Check errors in input
   checkCdm(cdm)
 
-  # Start code
-  amount_unit_db <- cdm[["concept"]] %>%
-    dplyr::select(
-      "amount_unit_concept_id" = "concept_id",
-      "amount_unit" = "concept_name"
+  # create patterns
+  x <- cdm[["drug_strength"]] %>%
+    dplyr::left_join(
+      cdm[["concept"]] %>%
+        dplyr::select(
+          "amount_unit_concept_id" = "concept_id",
+          "amount_unit" = "concept_name"
+        ),
+      by = "amount_unit_concept_id"
     ) %>%
-    computeTable(cdm)
-
-  numerator_unit_db <- cdm[["concept"]] %>%
-    dplyr::select(
-      "numerator_unit_concept_id" = "concept_id",
-      "numerator_unit" = "concept_name"
+    dplyr::left_join(
+      cdm[["concept"]] %>%
+        dplyr::select(
+          "numerator_unit_concept_id" = "concept_id",
+          "numerator_unit" = "concept_name"
+        ),
+      by = "numerator_unit_concept_id"
     ) %>%
-    computeTable(cdm)
-
-  denominator_unit_db <- cdm[["concept"]] %>%
-    dplyr::select(
-      "denominator_unit_concept_id" = "concept_id",
-      "denominator_unit" = "concept_name"
+    dplyr::left_join(
+      cdm[["concept"]] %>%
+        dplyr::select(
+          "denominator_unit_concept_id" = "concept_id",
+          "denominator_unit" = "concept_name"
+        ),
+      by = "denominator_unit_concept_id"
     ) %>%
-    computeTable(cdm)
-
-  ingredient_db <- cdm[["concept"]] %>%
-    dplyr::select(
-      "ingredient_concept_id" = "concept_id",
-      "ingredient_name" = "concept_name"
+    dplyr::mutate(
+      amount = ifelse(is.na(.data$amount_value), NA, "numeric"),
+      numerator = ifelse(is.na(.data$numerator_value), NA, "numeric"),
+      denominator = ifelse(is.na(.data$denominator_value), NA, "numeric")
     ) %>%
-    computeTable(cdm)
-
-  drug_db <- cdm[["concept"]] %>%
     dplyr::select(
-      "drug_concept_id" = "concept_id",
-      "drug_name" = "concept_name"
-    ) %>%
-    computeTable(cdm)
-
-  x <- cdm$drug_strength %>%
-    dplyr::left_join(drug_db, by = "drug_concept_id", copy = TRUE) %>%
-    dplyr::left_join(ingredient_db, by = "ingredient_concept_id", copy = TRUE) %>%
-    dplyr::mutate(amount = ifelse(is.na(.data$amount_value), NA, "numeric")) %>%
-    dplyr::left_join(amount_unit_db, by = "amount_unit_concept_id", copy = TRUE) %>%
-    dplyr::mutate(numerator = ifelse(is.na(.data$numerator_value), NA, "numeric")) %>%
-    dplyr::left_join(numerator_unit_db, by = "numerator_unit_concept_id", copy = TRUE) %>%
-    dplyr::mutate(denominator = ifelse(is.na(.data$denominator_value), NA, "numeric")) %>%
-    dplyr::left_join(denominator_unit_db, by = "denominator_unit_concept_id", copy = TRUE) %>%
-    dplyr::select(
-      "drug_concept_id", "ingredient_concept_id", "amount", "amount_unit", "amount_unit_concept_id", "numerator",
-      "numerator_unit", "numerator_unit_concept_id", "denominator", "denominator_unit", "amount_value",
-      "numerator_value", "denominator_value", "denominator_unit_concept_id", "ingredient_name", "drug_name"
+      "drug_concept_id", "ingredient_concept_id", "amount", "amount_unit",
+      "amount_unit_concept_id", "numerator", "numerator_unit",
+      "numerator_unit_concept_id", "denominator", "denominator_unit",
+      "amount_value", "numerator_value", "denominator_value",
+      "denominator_unit_concept_id"
     ) %>%
     computeTable(cdm)
 
   patternfile <- x %>%
-    dplyr::group_by(.data$amount, .data$amount_unit, .data$amount_unit_concept_id, .data$numerator, .data$numerator_unit,
-                    .data$denominator, .data$denominator_unit, .data$numerator_unit_concept_id, .data$denominator_unit_concept_id) %>%
+    dplyr::group_by(
+      .data$amount, .data$amount_unit, .data$amount_unit_concept_id,
+      .data$numerator, .data$numerator_unit, .data$denominator,
+      .data$denominator_unit, .data$numerator_unit_concept_id,
+      .data$denominator_unit_concept_id
+    ) %>%
     dplyr::summarise(
       number_concepts = dplyr::n_distinct(.data$drug_concept_id),
       number_ingredients = dplyr::n_distinct(.data$ingredient_concept_id),
       .groups = "drop"
     ) %>%
     dplyr::mutate(pattern_id = dplyr::row_number()) %>%
-    dplyr::relocate(.data$pattern_id) %>%
+    dplyr::relocate("pattern_id") %>%
     dplyr::collect()
 
   # Here add logic valid column of patterns
   patternfile <- patternfile %>%
-    dplyr::mutate(
-      valid =
-        dplyr::if_else ((!is.na(.data$amount) & grepl("gram|international unit|liter|milliequivalent", .data$amount_unit) & is.na(.data$denominator_unit) & is.na(.data$numerator_unit)) |
-                          (!is.na(.data$numerator) & grepl("gram|international unit|liter|milliequivalent", .data$numerator_unit) &
-                             grepl("hour", .data$denominator_unit)),TRUE,FALSE))
+    dplyr::mutate(valid = dplyr::if_else (
+      (
+        !is.na(.data$amount) &
+          grepl("gram|international unit|liter|milliequivalent", .data$amount_unit) &
+          is.na(.data$denominator_unit) &
+          is.na(.data$numerator_unit)
+      ) | (
+        !is.na(.data$numerator) &
+          grepl("gram|international unit|liter|milliequivalent", .data$numerator_unit) &
+          grepl("hour", .data$denominator_unit)
+      ),
+      TRUE,
+      FALSE
+    ))
 
   return(patternfile)
 }

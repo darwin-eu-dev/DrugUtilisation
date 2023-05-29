@@ -107,14 +107,15 @@ addExcludedCounts <- function(attrition) {
 #' @examples
 computeCohortCount <- function(x,
                                cdm) {
-  x %>%
+  checkInputs(x = x, cdm = cdm)
+  return(x %>%
     dplyr::group_by(.data$cohort_definition_id) %>%
     dplyr::summarise(
       number_records = dplyr::n(),
       number_subjects = dplyr::n_distinct(.data$subject_id),
       .groups = "drop"
     ) %>%
-    computeTable(cdm)
+    computeTable(cdm))
 }
 
 #' @noRd
@@ -150,7 +151,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
   }
   cohort <- emptyCohort(cdm)
   if (!any(domains %in% domainInformation$domain_id)) {
-    cli::cli_alert_warning(paste0(
+    cli::cli_warn(paste0(
       "All concepts domain_id (",
       paste(domains, collapse = ", "),
       ") not supported, generated cohort is empty. The supported domain_id are: ",
@@ -160,7 +161,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
     return(cohort)
   }
   if (length(domains[!(domains %in% domainInformation$domain_id)]) > 0) {
-    cli::cli_alert_warning(paste(
+    cli::cli_warn(paste(
       "concepts with domain_id:",
       paste(
         domains[!(domains %in% domainInformation$domain_id)], collapse = ", "
@@ -194,7 +195,6 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
       ) %>%
       computeTable(cdm)
   }
-  class(cohort) <- c("GeneratedCohortSet", class(cohort))
   return(cohort)
 }
 
@@ -276,24 +276,25 @@ requirePriorUseWashout <- function(cohort, cdm, washout) {
 }
 
 #' @noRd
-trimCohortDateRange <- function(cohort, cdm, cohortDateRange) {
-  modified <- 0
-  if (!is.na(cohortDateRange[1])) {
+trimStartDate <- function(cohort, cdm, startDate) {
+  if (!is.na(startDate)) {
     cohort <- cohort %>%
       dplyr::mutate(cohort_start_date = max(
-        .data$cohort_start_date, !!cohortDateRange[1]
-      ))
-    modified <- 1
+        .data$cohort_start_date, !!.env$startDate
+      )) %>%
+      dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) %>%
+      computeTable(cdm)
   }
-  if (!is.na(cohortDateRange[2])) {
+  return(cohort)
+}
+
+#' @noRd
+trimEndDate <- function(cohort, cdm, endDate) {
+  if (!is.na(endDate)) {
     cohort <- cohort %>%
       dplyr::mutate(cohort_start_date = min(
-        .data$cohort_start_date, !!cohortDateRange[2]
-      ))
-    modified <- 1
-  }
-  if (modified == 1) {
-    cohort <- cohort %>%
+        .data$cohort_start_date, !!.env$endDate
+      )) %>%
       dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) %>%
       computeTable(cdm)
   }
@@ -330,18 +331,21 @@ computeTable <- function(x,
 #' @noRd
 requireDaysPriorHistory <- function(x, cdm, daysPriorHistory) {
   if (!is.null(daysPriorHistory)) {
-    x <- x %>%
+    xNew <- x %>%
       PatientProfiles::addPriorHistory(cdm) %>%
       dplyr::filter(.data$prior_history >= .env$daysPriorHistory) %>%
       dplyr::select(-"prior_history") %>%
       computeTable(cdm)
+    xNew <- PatientProfiles::addAttributes(xNew, x)
+    return(xNew)
+  } else {
+    return(x)
   }
-  return(x)
 }
 
 #' @noRd
 unionCohort <- function(x, gap, cdm) {
-  x %>%
+  xNew <- x %>%
     dplyr::select(
       "cohort_definition_id",
       "subject_id",
@@ -388,6 +392,8 @@ unionCohort <- function(x, gap, cdm) {
     ))) %>%
     dplyr::select(-"era_id") %>%
     computeTable(cdm)
+  xNew <- PatientProfiles::addAttributes(xNew, x)
+  return(xNew)
 }
 
 #' @noRd
