@@ -247,14 +247,17 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::arrange(
       .data$cohort_name, .data$table_name, .data$window_id, .data$concept_id
     ) %>%
-    dplyr::select(
-      "cohort_name", "table_name", "window_name", "concept_id",
-      "concept_name", "count", "denominator_count", "%"
-    ) %>%
     dplyr::mutate(
+      strata_name = "overall", strata_level = as.character(NA),
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = "DrugUtilisation_v0.2.0_summariseLargeScaleCharacteristics"
+    ) %>%
+    dplyr::select(
+      "cohort_name", "strata_name", "strata_level", "table_name", "window_name",
+      "concept_id", "concept_name", "count", "denominator_count", "%",
+      "cdm_name", "generated_by"
     )
+
 
   return(result)
 }

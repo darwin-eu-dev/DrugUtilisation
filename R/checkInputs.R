@@ -454,7 +454,7 @@ checkNumberEras <- function(numberEras, cohort) {
   }
 }
 
-checkSupplementary <- function(supplementary) {
+checkSupplementary <- function(supplementary, cohort) {
   if (!is.logical(supplementary) | length(supplementary) != 1) {
     cli::cli_warn("supplementary must be TRUE or FALSE")
   }
