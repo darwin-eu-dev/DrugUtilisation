@@ -503,6 +503,63 @@ checkCovariates <- function(covariates, cdm) {
   }
 }
 
+checkOverlap <- function(overlap, tablesToCharacterize) {
+  if (length(overlap) == 1) {
+    checkmate::assertLogical(overlap, any.missing = FALSE)
+  } else {
+    checkmate::assertLogical(
+      overlap, any.missing = FALSE, len = length(tablesToCharacterize)
+    )
+  }
+}
+
+checkBigMark <- function(bigMark) {
+  checkmate::checkCharacter(bigMark, min.chars = 0, len = 1, any.missing = F)
+}
+
+checkWindow <- function(window) {
+  errorMessage <- "window should be a list of numeric two vectors intervals"
+  if (!is.list(window)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!is.numeric(unlist(window))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(lengths(window) == 2)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(!is.na(unlist(window)))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(unlist(lapply(window, function(x) {x[1] <= x[2]})))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+checkTablesToCharacterize <- function(tablesToCharacterize, cdm) {
+  choices <- c(
+    "visit_occurrence", "condition_occurrence", "drug_exposure",
+    "procedure_occurrence", "device_exposure", "measurement", "observation",
+    "drug_era", "condition_era", "specimen"
+  )
+  errorMessage <- paste0(
+    "tablesToCharacterize must point to tables in the cdm. Choice between: ",
+    paste0(choices, ", ")
+  )
+  if (!is.character(tablesToCharacterize)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(tablesToCharacterize) != length(unique(tablesToCharacterize))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(tablesToCharacterize %in% choices)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(tablesToCharacterize %in% names(cdm))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
 # other functions
 
 checkPatternTibble <- function(x) {

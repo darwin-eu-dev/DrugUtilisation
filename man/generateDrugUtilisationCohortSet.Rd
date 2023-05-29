@@ -9,7 +9,7 @@ generateDrugUtilisationCohortSet(
   name,
   conceptSetList,
   summariseMode = "AllEras",
-  fixedTime = 365,
+  fixedTime = NULL,
   daysPriorHistory = 0,
   gapEra = 30,
   priorUseWashout = 0,

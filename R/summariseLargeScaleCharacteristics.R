@@ -139,8 +139,8 @@ summariseLargeScaleCharacteristics <- function(cohort,
         is.na(.data$end_date), .data$start_date, .data$end_date
       )) %>%
       dplyr::mutate(
-        start_date = min(.data$start_date, .data$obs_end, na.rm = T),
-        end_date = max(.data$end_date, .data$obs_start, na.rm = T)
+        start_date = pmin(.data$start_date, .data$obs_end, na.rm = T),
+        end_date = pmax(.data$end_date, .data$obs_start, na.rm = T)
       ) %>%
       dplyr::filter(.data$start_date <= .data$end_date) %>%
       dplyr::mutate(
@@ -212,8 +212,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
       dplyr::union_all(
         denI %>%
           dplyr::select(
-            "cohort_definition_id", "subject_id", "cohort_start_date",
-            "concept_id"
+            "cohort_definition_id", "subject_id", "cohort_start_date"
           ) %>%
           dplyr::distinct() %>%
           dplyr::group_by(.data$cohort_definition_id) %>%
@@ -248,6 +247,9 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::select(
       "cohort_name", "table_name", "window_name", "concept_id",
       "concept_name", "count", "denominator_count", "%"
+    ) %>%
+    dplyr::arrange(
+      .data$cohort_name, .data$table_name, .data$window_name, .data$concept_id
     )
 
   return(result)
