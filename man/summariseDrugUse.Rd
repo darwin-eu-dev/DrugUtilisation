@@ -9,6 +9,7 @@ summariseDrugUse(
   cdm,
   strata = list(),
   drugUseVariables = drugUseColumns(cohort),
+  drugUseEstimates = c("mean", "q25", "q75"),
   minimumCellCount = 5
 )
 }
@@ -20,6 +21,8 @@ summariseDrugUse(
 \item{strata}{Stratification list}
 
 \item{drugUseVariables}{Name of columns with drug use variables}
+
+\item{drugUseEstimates}{Estimates that we want for the columns}
 
 \item{minimumCellCount}{Below this number counts will be supressed}
 }

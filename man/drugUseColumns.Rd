@@ -4,10 +4,10 @@
 \alias{drugUseColumns}
 \title{Obtain automatically the drug use columns}
 \usage{
-drugUseColumns(x)
+drugUseColumns(cohort)
 }
 \arguments{
-\item{x}{Tibble}
+\item{cohort}{A cohort}
 }
 \value{
 Name of the drug use columns
