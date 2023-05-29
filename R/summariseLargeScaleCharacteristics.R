@@ -218,7 +218,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
           dplyr::group_by(.data$cohort_definition_id) %>%
           dplyr::summarise(denominator_count = dplyr::n(), .groups = "drop") %>%
           dplyr::collect() %>%
-          dplyr::mutate(window_name = window$window_name[i])
+          dplyr::mutate(window_name = window$window_name[i], window_id = i)
       )
   }
 
@@ -244,12 +244,12 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::inner_join(
       CDMConnector::cohortSet(cohort), by = "cohort_definition_id"
     ) %>%
+    dplyr::arrange(
+      .data$cohort_name, .data$table_name, .data$window_id, .data$concept_id
+    ) %>%
     dplyr::select(
       "cohort_name", "table_name", "window_name", "concept_id",
       "concept_name", "count", "denominator_count", "%"
-    ) %>%
-    dplyr::arrange(
-      .data$cohort_name, .data$table_name, .data$window_name, .data$concept_id
     )
 
   return(result)

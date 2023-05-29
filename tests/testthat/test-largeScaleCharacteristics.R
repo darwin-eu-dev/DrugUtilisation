@@ -64,9 +64,11 @@ test_that("basic functionality large scale characteristics", {
     cohort_interest = cohort_interest, drug_exposure = drug_exposure,
     condition_occurrence = condition_occurrence
   )
-  result <- cdm$cohort_interest %>%
-    summariseLargeScaleCharacteristics(
-      cdm, tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
-      minimumCellCount = 1
-    )
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      summariseLargeScaleCharacteristics(
+        cdm, tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
+        minimumCellCount = 1
+      )
+  )
 })
