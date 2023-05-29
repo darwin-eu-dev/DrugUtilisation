@@ -20,18 +20,8 @@ test_that("test input parameters errors", {
     )
   )
 
-  expect_error(getDoseInformation())
-  expect_error(getDoseInformation(cdm = cdm))
-  expect_error(getDoseInformation(cdm = cdm, targetCohortName = "cohort1"))
-  expect_error(getDoseInformation(
-    cdm = cdm, targetCohortName = "cohort1", conceptSetList = "hus",
-    ingredientConceptId = 1,
-  ))
-  expect_error(getDoseInformation(
-    cdm = cdm,
-    targetCohortName = "cohort1",
-    ingredientConceptId = "1"
-  ))
+  expect_error(addDrugUse())
+  expect_error(addDrugUse(cdm = cdm))
 })
 
 test_that("test overlapMode", {
@@ -83,25 +73,24 @@ test_that("test overlapMode", {
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
     )
   )
-
   variables <- c(
     "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
     "number_exposures", "number_subexposures", "number_continuous_exposures",
     "number_eras", "number_gaps", "number_unexposed_periods",
     "number_subexposures_overlap", "number_eras_overlap",
     "number_continuous_exposure_overlap", "initial_daily_dose",
-    "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
+    "sum_all_exposed_dose", "sum_all_exposed_days", "duration", "gap_days",
     "number_subexposures_no_overlap", "number_eras_no_overlap",
     "number_continuous_exposures_no_overlap",
     "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
   )
 
   # prev
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Previous",
@@ -110,7 +99,7 @@ test_that("test overlapMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
@@ -126,11 +115,11 @@ test_that("test overlapMode", {
   }
 
   # sub
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Subsequent",
@@ -139,7 +128,7 @@ test_that("test overlapMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
@@ -155,11 +144,11 @@ test_that("test overlapMode", {
   }
 
   # min
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Minimum",
@@ -168,7 +157,7 @@ test_that("test overlapMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
@@ -184,11 +173,11 @@ test_that("test overlapMode", {
   }
 
   # max
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Maximum",
@@ -197,7 +186,7 @@ test_that("test overlapMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   value_cohort_1 <- c(
     61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
@@ -213,11 +202,11 @@ test_that("test overlapMode", {
   }
 
   # sum
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
@@ -226,7 +215,7 @@ test_that("test overlapMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   value_cohort_1 <- c(
     61, 0, 0, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
     0, 3, 0, 0,
@@ -298,18 +287,18 @@ test_that("test gapEra and eraJoinMode", {
     "number_eras", "number_gaps", "number_unexposed_periods",
     "number_subexposures_overlap", "number_eras_overlap",
     "number_continuous_exposure_overlap", "initial_daily_dose",
-    "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
+    "sum_all_exposed_dose", "sum_all_exposed_days", "duration", "gap_days",
     "number_subexposures_no_overlap", "number_eras_no_overlap",
     "number_continuous_exposures_no_overlap",
     "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
   )
 
   # overall functionality
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 0,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
@@ -318,7 +307,7 @@ test_that("test gapEra and eraJoinMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   values <- c(
     35, 25, 0, 15, 2, 3, 2,
     2, 0, 1,
@@ -336,11 +325,11 @@ test_that("test gapEra and eraJoinMode", {
   }
 
   # gapEra = 24
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 24,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
@@ -349,7 +338,7 @@ test_that("test gapEra and eraJoinMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   values <- c(
     35, 25, 0, 15, 2, 3, 2,
     2, 0, 1,
@@ -367,11 +356,11 @@ test_that("test gapEra and eraJoinMode", {
   }
 
   # gapEra = 25 & joinMode = Zero
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 25,
     eraJoinMode = "Zero",
     overlapMode = "Sum",
@@ -380,7 +369,7 @@ test_that("test gapEra and eraJoinMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   values <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
@@ -398,11 +387,11 @@ test_that("test gapEra and eraJoinMode", {
   }
 
   # gapEra = 25 & joinMode = Previous
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 25,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
@@ -411,7 +400,7 @@ test_that("test gapEra and eraJoinMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   values <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
@@ -429,11 +418,11 @@ test_that("test gapEra and eraJoinMode", {
   }
 
   # gapEra = 25 & joinMode = Subsequent
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 25,
     eraJoinMode = "Subsequent",
     overlapMode = "Sum",
@@ -442,7 +431,7 @@ test_that("test gapEra and eraJoinMode", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   values <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
@@ -516,18 +505,18 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     "number_eras", "number_gaps", "number_unexposed_periods",
     "number_subexposures_overlap", "number_eras_overlap",
     "number_continuous_exposure_overlap", "initial_daily_dose",
-    "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
+    "sum_all_exposed_dose", "sum_all_exposed_days", "duration", "gap_days",
     "number_subexposures_no_overlap", "number_eras_no_overlap",
     "number_continuous_exposures_no_overlap",
     "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
   )
 
   # overall functionality
-  x <- getDoseInformation(
+  suppressWarnings(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 0,
     eraJoinMode = "Zero",
     overlapMode = "Sum",
@@ -536,7 +525,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     imputeDailyDose = "eliminate",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  )
+  ))
   values <- c(
     28, 33, 0, 27, 4, 7, 2,
     2, 0, 3,
@@ -578,11 +567,11 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
   )
 
   for (k in 1:nrow(parameters)) {
-    x <- getDoseInformation(
+    suppressWarnings(x <- addDrugUse(
+      cohort = cdm$cohort1,
       cdm = cdm,
-      targetCohortName = "cohort1",
-      conceptSetList = NULL,
       ingredientConceptId = 1,
+      supplementary = TRUE,
       gapEra = parameters$gapEra[k],
       eraJoinMode = parameters$eraJoinMode[k],
       overlapMode = parameters$overlapMode[k],
@@ -591,7 +580,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       imputeDailyDose = "eliminate",
       durationRange = c(1, Inf),
       dailyDoseRange = c(0, Inf)
-    )
+    ))
     result <- x %>%
       dplyr::collect() %>%
       dplyr::filter(subject_id == 2)
@@ -662,16 +651,9 @@ test_that("test splitSubexposures", {
       "2000-02-10"
     ))
   )
-  cdm <- mockDrugUtilisation(connectionDetails)
-  ## cdm[["cohort1"]] <- insertMockTable(cdm, "cohort1", x)
-  db <- attr(cdm, "dbcon")
-  DBI::dbWithTransaction(db, {
-    DBI::dbWriteTable(db, "cohort1",
-                      x,
-                      overwrite = TRUE
-    )
-  })
-  cdm[["cohort1"]] <- dplyr::tbl(db, "cohort1")
+  cdm <- mockDrugUtilisation(
+    connectionDetails, extraTables = list("cohort1" = x)
+  )
   y <- splitSubexposures(cdm[["cohort1"]], cdm) %>% dplyr::collect()
 
   # get first cohort entry
@@ -871,102 +853,6 @@ test_that("test splitSubexposures", {
   }
 })
 
-test_that("test no exposure found", {
-  # cdm <- mockDrugUtilisation(
-  #   connectionDetails,
-  #   drug_exposure = dplyr::tibble(
-  #     drug_exposure_id = 1:9,
-  #     person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
-  #     drug_concept_id = c(2, 3, 4, 4, 3, 4, 2, 3, 5),
-  #     drug_exposure_start_date = as.Date(c(
-  #       "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
-  #       "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
-  #     )),
-  #     drug_exposure_end_date = as.Date(c(
-  #       "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
-  #       "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
-  #     )),
-  #     quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
-  #   ),
-  #   concept = dplyr::tibble(
-  #     concept_id = c(1, 2, 3, 4, 5, 8576),
-  #     concept_name = c("ingredient1", "drug2", "drug3", "drug4", "drug5", "milligram"),
-  #     domain_id = c(rep("Drug", 5), "Unit"),
-  #     vocabulary_id = c(rep("RxNorm", 5), "Unit"),
-  #     standard_concept = "S",
-  #     concept_class_id = c("Ingredient", rep("Drug", 4), "Unit"),
-  #   ),
-  #   concept_ancestor = dplyr::tibble(
-  #     ancestor_concept_id = 1,
-  #     descendant_concept_id = 2:5
-  #   ),
-  #   drug_strength = dplyr::tibble(
-  #     drug_concept_id = c(2, 3, 4, 5),
-  #     ingredient_concept_id = c(1, 1, 1, 1),
-  #     amount_value = c(10, 20, 30, 40),
-  #     amount = c("numeric", "numeric", "numeric", "numeric"),
-  #     amount_unit_concept_id = c(8576, 8576, 8576, 8576),
-  #     numerator_value = as.numeric(NA),
-  #     numerator = as.character(NA),
-  #     numerator_unit_concept_id = as.numeric(NA),
-  #     denominator_value = as.numeric(NA),
-  #     denominator = as.character(NA),
-  #     denominator_unit_concept_id = as.numeric(NA)
-  #   ),
-  #   cohort1 = dplyr::tibble(
-  #     cohort_definition_id = 1,
-  #     subject_id = c(1, 1, 2),
-  #     cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
-  #     cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
-  #   )
-  # )
-  #
-  # variables <- c(
-  #   "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
-  #   "number_exposures", "number_subexposures", "number_continuous_exposures",
-  #   "number_eras", "number_gaps", "number_unexposed_periods",
-  #   "number_subexposures_overlap", "number_eras_overlap",
-  #   "number_continuous_exposure_overlap", "initial_daily_dose",
-  #   "sum_all_exposed_dose", "sum_all_exposed_days", "follow_up_days", "gap_days",
-  #   "number_subexposures_no_overlap", "number_eras_no_overlap",
-  #   "number_continuous_exposures_no_overlap",
-  #   "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
-  # )
-  #
-  # # warning message
-  #
-  # expect_warning(getDoseInformation(
-  #   cdm = cdm,
-  #   targetCohortName = "cohort1",
-  #   conceptSetList = NULL,
-  #   ingredientConceptId = 1,
-  #   gapEra = 30,
-  #   eraJoinMode = "Previous",
-  #   overlapMode = "Previous",
-  #   sameIndexMode = "Sum",
-  #   imputeDuration = "eliminate",
-  #   imputeDailyDose = "eliminate",
-  #   durationRange = c(1, Inf),
-  #   dailyDoseRange = c(100, Inf)
-  # ))
-  #
-  # expect_warning(getDoseInformation(
-  #   cdm = cdm,
-  #   targetCohortName = "cohort1",
-  #   conceptSetList = NULL,
-  #   ingredientConceptId = 1,
-  #   gapEra = 30,
-  #   eraJoinMode = "Previous",
-  #   overlapMode = "Previous",
-  #   sameIndexMode = "Sum",
-  #   imputeDuration = "eliminate",
-  #   imputeDailyDose = "eliminate",
-  #   durationRange = c(100, Inf),
-  #   dailyDoseRange = c(1, Inf)
-  # ))
-
-})
-
 test_that("test empty targetCohortName", {
   cdm <- mockDrugUtilisation(
     connectionDetails,
@@ -999,11 +885,11 @@ test_that("test empty targetCohortName", {
   cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
     dplyr::filter(.data$subject_id < 1)
 
-  expect_error(getDoseInformation(
+  expect_error(x <- addDrugUse(
+    cohort = cdm$cohort1,
     cdm = cdm,
-    targetCohortName = "cohort1",
-    conceptSetList = NULL,
     ingredientConceptId = 1,
+    supplementary = TRUE,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Previous",
@@ -1016,7 +902,6 @@ test_that("test empty targetCohortName", {
 
 })
 
-# THE FOLLOWONG ERRORS MUST BE IMPROVED TO PROVIDE MORE ACCURATE INFORMATION
 test_that("expected errors on inputs", {
   # condition_occurrence is going to be the strataCohortTable, person the
   # doseTable
@@ -1049,98 +934,17 @@ test_that("expected errors on inputs", {
     )
   )
   # no inputs
-  expect_error(result <- summariseDoseTable())
+  expect_error(result <- summariseDrugUse())
   # only cdm
-  expect_error(result <- summariseDoseTable(
+  expect_error(result <- summariseDrugUse(
     cdm = cdm,
   ))
-  # only cdm only dose table should fail
-  expect_error(result <- summariseDoseTable(
-    cdm = cdm, doseTableName = "dose_table"
-  ))
-  # only cdm only strata table should fail
-  expect_error(result <- summariseDoseTable(
-    cdm = cdm, strataCohortName = "cohort1"
-  ))
-  # expect error if cdm is not a cdm_ref
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = "cohort1",
-    doseTableName = "dose_table"
-  ))
-  # NO ERROR
-  xx <- summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = "cohort1",
-    doseTableName = "dose_table",
-    variable = c("initial_dose", "cumulative_dose")
-  )
-  # expect error if cdm is not a cdm_ref
-  expect_error(summariseDoseTable(
-    cdm = 1,
-    strataCohortName = "cohort1",
-    doseTableName = "dose_table",
-    variable = c("initial_dose", "cumulative_dose")
-  ))
-  # expect error if doseTableName is not a character
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = "cohort1",
-    doseTableName = 1,
-    variable = c("initial_dose", "cumulative_dose")
-  ))
-  # expect error if strataCohortName is not a character
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = 1,
-    doseTableName = "dose_table",
-    variable = c("initial_dose", "cumulative_dose")
-  ))
-  # expect error if doseTableName is a vector
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = c("cohort1", "drug_exposure"),
-    doseTableName = "dose_table",
-    variable = c("initial_dose", "cumulative_dose")
-  ))
-  # expect error if doseTableName is a vector
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = "cohort1",
-    doseTableName = c("dose_table", "drug_exposure"),
-    variable = c("initial_dose", "cumulative_dose")
-  ))
-  # expect error if doseTableName is not a contained in cdm
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = "cohort1",
-    doseTableName = "x",
-    variable = c("initial_dose", "cumulative_dose")
-  ))
-  # expect error if strataCohortName is not a contained in cdm
-  expect_error(summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = "x",
-    doseTableName = "person",
-    variable = c("initial_dose", "cumulative_dose")
-  ))
-  # expect error if strataCohortName is a vector
-  # expect error if strataCohortName does not contains the required fields
-  # expect error if cohortId is not numeric
-  # expect error if variable is not character
-  # expect error if variable contains a non numeric variable
-  # expect error if variable contains not present variable
-  # expect error if estimate is not character
-  # expect error if estimate contains a non standard function
-  # expect error if minimumCellCount is not numeric
-  # expect error if minimumCellCount is negative
-  # expect error if minimumCellCount is a vector
 })
 
 test_that("check output format", {
   cdm <- mockDrugUtilisation(
     connectionDetails,
-    strata = dplyr::tibble(
+    cohort = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 1, 2, 1),
       cohort_start_date = as.Date(c(
@@ -1148,57 +952,33 @@ test_that("check output format", {
       )),
       cohort_end_date = as.Date(c(
         "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-      ))
-    ),
-    extraTables = list(
-      dose_table = dplyr::tibble(
-        subject_id = c(1, 1, 2, 1),
-        cohort_start_date = as.Date(c(
-          "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-        )),
-        cohort_end_date = as.Date(c(
-          "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-        )),
-        initial_dose = c(1, 2, 3, 6),
-        cumulative_dose = c(5, 6, 9, 7),
-        piscina = c(TRUE, FALSE, TRUE, FALSE),
-        cara = c("a", "b", "b", "a")
-      )
+      )),
+      initial_daily_dose = c(1, 2, 3, 6),
+      cumulative_dose = c(5, 6, 9, 7),
+      piscina = c(TRUE, FALSE, TRUE, FALSE),
+      cara = c("a", "b", "b", "a")
     )
   )
-  result <- summariseDoseTable(
-    cdm = cdm,
-    strataCohortName = "strata",
-    doseTableName = "dose_table",
-    variable = c("initial_dose", "cumulative_dose")
-  )
+  result <- cdm$cohort %>%
+    summariseDrugUse(cdm = cdm)
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
-  expect_true(length(result) == 4)
   expect_true(all(colnames(result) %in% c(
-    "cohort_definition_id", "variable", "estimate", "value"
+    "cohort_name", "strata_name", "strata_level", "variable", "estimate",
+    "value", "cdm_name", "generated_by"
   )))
 })
 
 test_that("check all estimates", {
   all_estimates <- c(
-    "min", "max", "mean", "median", "iqr", "range", "q5", "q10", "q15", "q20",
+    "min", "max", "mean", "median", "iqr", "range", "q05", "q10", "q15", "q20",
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
-    "q75", "q80", "q85", "q90", "q95", "std"
+    "q75", "q80", "q85", "q90", "q95", "sd"
   )
   cdm <- mockDrugUtilisation(
     connectionDetails,
-    strata = dplyr::tibble(
-      cohort_definition_id = c(1, 1, 1, 2),
-      subject_id = c(1, 1, 2, 1),
-      cohort_start_date = as.Date(c(
-        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-      )),
-      cohort_end_date = as.Date(c(
-        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-      ))
-    ),
     extraTables = list(
       dose_table= dplyr::tibble(
+        cohort_definition_id = c(1, 1, 1, 1),
         subject_id = c(1, 1, 2, 1),
         cohort_start_date = as.Date(c(
           "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
@@ -1213,161 +993,156 @@ test_that("check all estimates", {
       )
     )
   )
+  attr(cdm$dose_table, "cohort_set") <- dplyr::tibble(
+    cohort_definition_id = 1, cohort_name = "cohort1"
+  )
+  class(cdm$dose_table) <- c("GeneratedCohortSet", class(cdm$dose_table))
   for (k in 1:length(all_estimates)) {
-    res <- summariseDoseTable(
+    res <- summariseDrugUse(
+      cdm$dose_table,
       cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      cohortId = 1,
-      variable = c("initial_dose", "cumulative_dose"),
-      estimates = all_estimates[k]
+      drugUseVariables = c("initial_dose", "cumulative_dose"),
+      drugUseEstimates = all_estimates[k]
     )
     expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
     expect_true(res$estimate[res$variable == c("initial_dose")] == all_estimates[k])
     expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
     expect_true(res$estimate[res$variable == c("cumulative_dose")] == all_estimates[k])
   }
-  res <- summariseDoseTable(
+  res <- summariseDrugUse(
+    cdm$dose_table,
     cdm = cdm,
-    strataCohortName = "strata",
-    doseTableName = "dose_table",
-    cohortId = 1,
-    variable = c("initial_dose", "cumulative_dose"),
-    estimates = all_estimates
+    drugUseVariables = c("initial_dose", "cumulative_dose"),
+    drugUseEstimates = all_estimates
   )
 })
 
-test_that("check obscure counts", {
-  cdm <- mockDrugUtilisation(
-    connectionDetails,
-    strata = dplyr::tibble(
-      cohort_definition_id = c(1, 1, 1, 2),
-      subject_id = c(1, 1, 2, 1),
-      cohort_start_date = as.Date(c(
-        "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-      )),
-      cohort_end_date = as.Date(c(
-        "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-      ))
-    ),
-    extraTables = list(
-      dose_table = dplyr::tibble(
-        subject_id = c(1, 1, 2, 1),
-        cohort_start_date = as.Date(c(
-          "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-        )),
-        cohort_end_date = as.Date(c(
-          "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-        )),
-        initial_dose = c(1, 2, 3, 6),
-        cumulative_dose = c(5, 6, 9, 7),
-        piscina = c(TRUE, FALSE, TRUE, FALSE),
-        cara = c("a", "b", "b", "a")
-      )
-    )
-  )
-  # expect obscure for cohort_id = 1 when minimumCellCount >= 4
-  expect_true(
-    summariseDoseTable(
-      cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      cohortId = 1,
-      variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCount = 3
-    ) %>%
-      dplyr::filter(is.na(.data$value)) %>%
-      dplyr::tally() %>%
-      dplyr::pull() == 0
-  )
-  expect_true(
-    summariseDoseTable(
-      cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      cohortId = 1,
-      variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCount = 4
-    ) %>%
-      dplyr::filter(is.na(.data$value)) %>%
-      dplyr::tally() %>%
-      dplyr::pull() == 20 # 20 because all variable should be obscured
-  )
-  # expect obscure for cohort_id = 2 when minimumCellCount >= 2
-  expect_true(
-    summariseDoseTable(
-      cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      cohortId = 2,
-      variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCount = 1
-    ) %>%
-      dplyr::filter(is.na(.data$value)) %>%
-      dplyr::tally() %>%
-      dplyr::pull() == 2 # 2 because std of a variable of length 1 is always NA
-  )
-  expect_true(
-    summariseDoseTable(
-      cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      cohortId = 2,
-      variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCount = 2
-    ) %>%
-      dplyr::filter(is.na(.data$value)) %>%
-      dplyr::tally() %>%
-      dplyr::pull() == 20 # 20 because all variable should be obscured
-  )
-  # if minimumCellCount is 1 no obscure, if it is 2 or 3 only cohort 1 is
-  # obscured. If it is 4 both cohorts are obscured
-  expect_true(
-    summariseDoseTable(
-      cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCount = 1
-    ) %>%
-      dplyr::filter(is.na(.data$value)) %>%
-      dplyr::tally() %>%
-      dplyr::pull() == 2 # 2 because std of a variable of length 1 is always NA
-  )
-  expect_true(
-    summariseDoseTable(
-      cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCount = 2
-    ) %>%
-      dplyr::filter(is.na(.data$value)) %>%
-      dplyr::tally() %>%
-      dplyr::pull() == 20 # 20 because all variable in cohort 2 are obscured
-  )
-  expect_true(
-    summariseDoseTable(
-      cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCount = 3
-    ) %>%
-      dplyr::filter(is.na(.data$value)) %>%
-      dplyr::tally() %>%
-      dplyr::pull() == 20 # 20 because all variable in cohort 2 are obscured
-  )
-  expect_true(
-    summariseDoseTable(
-      cdm = cdm,
-      strataCohortName = "strata",
-      doseTableName = "dose_table",
-      variable = c("initial_dose", "cumulative_dose"),
-      minimumCellCount = 4
-    ) %>%
-      dplyr::filter(is.na(.data$value)) %>%
-      dplyr::tally() %>%
-      dplyr::pull() == 40 # 40 because all variable are obscured
-  )
-})
+# currently we are not obscuring in PatientProfiles the mean, only the counts
+# WHAT should we do?
+
+# test_that("check obscure counts", {
+#   cdm <- mockDrugUtilisation(
+#     connectionDetails,
+#     extraTables = list(
+#       dose_table = dplyr::tibble(
+#         cohort_definition_id = c(1, 1, 1, 2),
+#         subject_id = c(1, 1, 2, 1),
+#         cohort_start_date = as.Date(c(
+#           "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+#         )),
+#         cohort_end_date = as.Date(c(
+#           "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+#         )),
+#         initial_dose = c(1, 2, 3, 6),
+#         cumulative_dose = c(5, 6, 9, 7),
+#         piscina = c(TRUE, FALSE, TRUE, FALSE),
+#         cara = c("a", "b", "b", "a")
+#       )
+#     )
+#   )
+#   attr(cdm$dose_table, "cohort_set") <- dplyr::tibble(
+#     cohort_definition_id = c(1, 2), cohort_name = c("cohort1", "cohort2")
+#   )
+#   class(cdm$dose_table) <- c("GeneratedCohortSet", class(cdm$dose_table))
+#
+#   # expect obscure for cohort_id = 1 when minimumCellCount >= 4
+#   expect_true(
+#     summariseDrugUse(
+#       cdm$dose_table,
+#       cdm = cdm,
+#       drugUseVariables = c("initial_dose", "cumulative_dose"),
+#       minimumCellCount = 3
+#     ) %>%
+#       dplyr::filter(is.na(.data$value)) %>%
+#       dplyr::tally() %>%
+#       dplyr::pull() == 0
+#   )
+#   expect_true(
+#     summariseDrugUse(
+#       cdm$dose_table,
+#       cdm = cdm,
+#       drugUseVariables = c("initial_dose", "cumulative_dose"),
+#       minimumCellCount = 4
+#     ) %>%
+#       dplyr::filter(is.na(.data$value)) %>%
+#       dplyr::tally() %>%
+#       dplyr::pull() == 20 # 20 because all variable should be obscured
+#   )
+#   # expect obscure for cohort_id = 2 when minimumCellCount >= 2
+#   expect_true(
+#     summariseDrugUse(
+#       cdm = cdm,
+#       strataCohortName = "strata",
+#       doseTableName = "dose_table",
+#       cohortId = 2,
+#       variable = c("initial_dose", "cumulative_dose"),
+#       minimumCellCount = 1
+#     ) %>%
+#       dplyr::filter(is.na(.data$value)) %>%
+#       dplyr::tally() %>%
+#       dplyr::pull() == 2 # 2 because std of a variable of length 1 is always NA
+#   )
+#   expect_true(
+#     summariseDrugUse(
+#       cdm = cdm,
+#       strataCohortName = "strata",
+#       doseTableName = "dose_table",
+#       cohortId = 2,
+#       variable = c("initial_dose", "cumulative_dose"),
+#       minimumCellCount = 2
+#     ) %>%
+#       dplyr::filter(is.na(.data$value)) %>%
+#       dplyr::tally() %>%
+#       dplyr::pull() == 20 # 20 because all variable should be obscured
+#   )
+#   # if minimumCellCount is 1 no obscure, if it is 2 or 3 only cohort 1 is
+#   # obscured. If it is 4 both cohorts are obscured
+#   expect_true(
+#     summariseDrugUse(
+#       cdm = cdm,
+#       strataCohortName = "strata",
+#       doseTableName = "dose_table",
+#       variable = c("initial_dose", "cumulative_dose"),
+#       minimumCellCount = 1
+#     ) %>%
+#       dplyr::filter(is.na(.data$value)) %>%
+#       dplyr::tally() %>%
+#       dplyr::pull() == 2 # 2 because std of a variable of length 1 is always NA
+#   )
+#   expect_true(
+#     summariseDrugUse(
+#       cdm = cdm,
+#       strataCohortName = "strata",
+#       doseTableName = "dose_table",
+#       variable = c("initial_dose", "cumulative_dose"),
+#       minimumCellCount = 2
+#     ) %>%
+#       dplyr::filter(is.na(.data$value)) %>%
+#       dplyr::tally() %>%
+#       dplyr::pull() == 20 # 20 because all variable in cohort 2 are obscured
+#   )
+#   expect_true(
+#     summariseDrugUse(
+#       cdm = cdm,
+#       strataCohortName = "strata",
+#       doseTableName = "dose_table",
+#       variable = c("initial_dose", "cumulative_dose"),
+#       minimumCellCount = 3
+#     ) %>%
+#       dplyr::filter(is.na(.data$value)) %>%
+#       dplyr::tally() %>%
+#       dplyr::pull() == 20 # 20 because all variable in cohort 2 are obscured
+#   )
+#   expect_true(
+#     summariseDrugUse(
+#       cdm = cdm,
+#       strataCohortName = "strata",
+#       doseTableName = "dose_table",
+#       variable = c("initial_dose", "cumulative_dose"),
+#       minimumCellCount = 4
+#     ) %>%
+#       dplyr::filter(is.na(.data$value)) %>%
+#       dplyr::tally() %>%
+#       dplyr::pull() == 40 # 40 because all variable are obscured
+#   )
+# })

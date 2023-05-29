@@ -269,7 +269,7 @@ checkSameIndexMode <- function(sameIndexMode) {
 }
 
 checkIngredientConceptId <- function(ingredientConceptId, cdm) {
-  if (checkInteger(ingredientConceptId)) {
+  if (!isInteger(ingredientConceptId)) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
   }
   if (cdm[["concept"]] %>%
@@ -560,6 +560,24 @@ checkTablesToCharacterize <- function(tablesToCharacterize, cdm) {
   }
 }
 
+checkDrugUseEstimates <- function(drugUseEstimates) {
+  choices <- PatientProfiles::availableFunctions() %>%
+    dplyr::filter(.data$variable_classification == "numeric") %>%
+    dplyr::pull("format_key")
+  errorMessage <- paste0(
+    "drugUseEstimates must be a subset of: ", paste0(choices, collapse = ", ")
+  )
+  if (!is.character(drugUseEstimates)) {
+    cli::cli_abort(errorMessage)
+  }
+  if (length(drugUseEstimates) != length(unique(drugUseEstimates))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(drugUseEstimates %in% choices)) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
 # other functions
 
 checkPatternTibble <- function(x) {
@@ -662,7 +680,7 @@ checkConsistentCohortSet<- function(cs,
   )
   if (
     length(colnames(cs)) == length(expectedColnames) &
-      all(expectedColnames %in% colnames(cs))
+    all(expectedColnames %in% colnames(cs))
   ) {
     notPresent <- names(conceptSetList)[!(conceptSetList %in% cs$cohort_name)]
     if (length(notPresent) > 0) {

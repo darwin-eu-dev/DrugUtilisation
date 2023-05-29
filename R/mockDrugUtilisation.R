@@ -138,9 +138,6 @@ mockDrugUtilisation <- function(connectionDetails = list(
       attr(cohorts[[nam]], "cohort_count")
     )
   }
-  for (newTable in names(extraTables)) {
-    writeTable(con, writeSchema, newTable, writePrefix, extraTables[[newTable]])
-  }
 
   cdm <- CDMConnector::cdm_from_con(
     con,
@@ -152,6 +149,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
   )
 
   for (newTable in names(extraTables)) {
+    writeTable(con, writeSchema, newTable, writePrefix, extraTables[[newTable]])
     cdm[[newTable]] <- dplyr::tbl(con, CDMConnector::inSchema(
       writeSchema, paste0(writePrefix, newTable), CDMConnector::dbms(con)
     ))

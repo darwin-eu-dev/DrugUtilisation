@@ -125,18 +125,11 @@ addDrugUse <- function(cohort,
   firstTempTable <- getOption("dbplyr_table_name", 0) + 1
 
   if (is.null(conceptSetList)) {
-    conceptSetList <- tryCatch(
-      expr = {
-        CodelistGenerator::getDrugIngredientCodes(
-          cdm,
-          cdm[["concept"]] %>%
-            dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-            dplyr::pull("concept_name")
-        )
-      },
-      error = {
-        cli::cli_abort("ingredientConceptId is not found in the vocabulary")
-      }
+    conceptSetList <- CodelistGenerator::getDrugIngredientCodes(
+      cdm,
+      cdm[["concept"]] %>%
+        dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+        dplyr::pull("concept_name")
     )
   }
 
@@ -219,21 +212,17 @@ addDrugUse <- function(cohort,
   # summarise cohort to obtain the dose table
   doseTable <- summariseCohort(cohort, cdm)
 
-  if (!supplementary) {
-    variables <- c(
-      "initial_daily_dose", "number_exposures", "duration",
-      "cumulative_dose", "number_eras"
-    )[c(
-      initialDailyDose, numberExposures, duration, cumulativeDose, numberEras
-    )]
-    doseTable <- doseTable %>%
-      dplyr::select(dplyr::all_of(variables))
-  }
+  # select variables of interest
+  doseTable <- doseTable %>%
+    dplyr::select(dplyr::all_of(getVariables(
+      initialDailyDose, numberExposures, duration, cumulativeDose, numberEras,
+      supplementary
+    )))
 
   # add dose table to dusCohort
-  dusCohortDose <- dusCohort %>%
+  dusCohortDose <- originalCohort %>%
     dplyr::left_join(
-      doseTable, by = c("sibject_id", "cohort_start_date", "cohort_end_date")
+      doseTable, by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
     CDMConnector::computeQuery()
 
@@ -998,4 +987,36 @@ summariseCohort <- function(x, cdm) {
     computeTable(cdm)
 
   return(x)
+}
+
+#' @noRd
+getVariables <- function(initialDailyDose,
+                         numberExposures,
+                         duration,
+                         cumulativeDose,
+                         numberEras,
+                         supplementary) {
+  variables <- c(
+    "initial_daily_dose", "number_exposures", "duration",
+    "cumulative_dose", "number_eras"
+  )[c(
+    initialDailyDose, numberExposures, duration, cumulativeDose, numberEras
+  )]
+  if(supplementary) {
+    variables <- c(
+      variables, "gap_days", "unexposed_days", "not_considered_days",
+      "number_subexposures", "number_continuous_exposures", "number_gaps",
+      "number_unexposed_periods", "number_subexposures_overlap",
+      "number_eras_overlap", "number_continuous_exposure_overlap",
+      "cumulative_gap_dose", "cumulative_not_considered_dose",
+      "sum_all_exposed_dose", "sum_all_exposed_days", "exposed_days",
+      "number_subexposures_no_overlap", "number_eras_no_overlap",
+      "number_continuous_exposures_no_overlap", "proportion_gap_dose",
+      "proportion_not_considered_dose", "first_era_days"
+    )
+  }
+  variables <- c(
+    "subject_id", "cohort_start_date", "cohort_end_date", variables
+  )
+  return(variables)
 }
