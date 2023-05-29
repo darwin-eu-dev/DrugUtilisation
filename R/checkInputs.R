@@ -675,14 +675,16 @@ checkConsistentCohortSet<- function(cs,
   expectedColnames <- c(
     "cohort_definition_id", "cohort_name", "summarise_mode", "fixed_time",
     "days_prior_history", "gap_era", "prior_use_washout",
-    "cohort_dates_range_start", "cohort_dates_range_end", "impute_duration",
+    "cohort_date_range_start", "cohort_date_range_end", "impute_duration",
     "duration_range_min", "duration_range_max"
   )
   if (
     length(colnames(cs)) == length(expectedColnames) &
     all(expectedColnames %in% colnames(cs))
   ) {
-    notPresent <- names(conceptSetList)[!(conceptSetList %in% cs$cohort_name)]
+    notPresent <- names(conceptSetList)[!(
+      names(conceptSetList) %in% cs$cohort_name
+    )]
     if (length(notPresent) > 0) {
       cli::cli_warn(paste0(
         "Different names in conceptSetList (",
