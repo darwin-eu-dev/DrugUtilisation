@@ -591,7 +591,7 @@ checkPatternTibble <- function(x) {
   invisible(NULL)
 }
 
-checkListTable <- function(listTables) {
+checkListTable <- function(listTables, cdm) {
 
   checkmate::assertTRUE(length(listTables) == length(unique(names(listTables))))
 

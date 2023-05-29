@@ -717,68 +717,6 @@ addGapDailyDose <- function(x, cdm, eraJoinMode) {
 }
 
 #' @noRd
-getConceptList <- function(conceptSetPath, ingredientConceptId, cdm) {
-  if (!is.null(conceptSetPath)) {
-    conceptSets <- dplyr::tibble(concept_set_path = .env$conceptSetPath) %>%
-      dplyr::mutate(
-        concept_set_name =
-          tools::file_path_sans_ext(basename(.data$concept_set_path))
-      ) %>%
-      dplyr::mutate(cohort_definition_id = 1)
-
-    tryCatch(
-      expr = conceptList <- readConceptSets(conceptSets),
-      error = function(e) {
-        stop("The json file is not a properly formated OMOP concept set.")
-      }
-    )
-
-    conceptList <- conceptList %>%
-      dplyr::filter(.data$include_descendants == FALSE) %>%
-      dplyr::union(
-        cdm[["concept_ancestor"]] %>%
-          dplyr::select(
-            "concept_id" = "ancestor_concept_id",
-            "descendant_concept_id"
-          ) %>%
-          dplyr::inner_join(
-            conceptList %>%
-              dplyr::filter(.data$include_descendants == TRUE),
-            copy = TRUE,
-            by = "concept_id"
-          ) %>%
-          dplyr::select(-"concept_id") %>%
-          dplyr::rename("concept_id" = "descendant_concept_id") %>%
-          dplyr::collect()
-      ) %>%
-      dplyr::select(-"include_descendants") %>%
-      dplyr::rename("drug_concept_id" = "concept_id")
-    # eliminate the ones that is_excluded = TRUE
-    conceptList <- conceptList %>%
-      dplyr::filter(.data$is_excluded == FALSE) %>%
-      dplyr::select("drug_concept_id") %>%
-      dplyr::anti_join(
-        conceptList %>%
-          dplyr::filter(.data$is_excluded == TRUE),
-        by = "drug_concept_id"
-      )
-    if (!is.null(ingredientConceptId)) {
-      conceptList <- cdm[["drug_strength"]] %>%
-        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-        dplyr::select("drug_concept_id") %>%
-        dplyr::collect() %>%
-        dplyr::inner_join(conceptList, by = "drug_concept_id")
-    }
-  } else {
-    conceptList <- cdm[["drug_strength"]] %>%
-      dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-      dplyr::select("drug_concept_id") %>%
-      dplyr::collect()
-  }
-  return(conceptList)
-}
-
-#' @noRd
 summariseCohort <- function(x, cdm) {
   x <- x %>%
     dplyr::mutate(exposed_dose = .data$daily_dose * .data$subexposed_days) %>%

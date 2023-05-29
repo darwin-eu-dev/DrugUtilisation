@@ -32,7 +32,8 @@
 #'
 #' @examples
 #' \donttest{
-#' cdm <- mockDrugUtilisation(numberIndividuals = 1000)
+#' library(DrugUtilisation)
+#' cdm <- mockDrugUtilisation(numberIndividuals = 100)
 #' summariseTableOne(
 #'   cdm$cohort1,
 #'   cdm,
@@ -60,7 +61,7 @@ summariseTableOne <- function(cohort,
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
     ) %>%
-    PatientProfiles::addDemographics(cdm)
+    PatientProfiles::addDemographics(cdm, ageGroup = ageGroup)
   if (!is.null(windowVisitOcurrence)) {
     cohort <- cohort %>%
       PatientProfiles::addIntersect(
@@ -84,17 +85,20 @@ summariseTableOne <- function(cohort,
     ),
     categorical = c("sex", "age_group"[!is.null(ageGroup)])
   )
-  variables$covariates <- colnames(cohort)[!c(colnames(cohort) %in% c(
-    "subject_id", "cohort_definition_id", unlist(variables)
-  ))]
 
   # set functions
   functions <- list(
-    covariates = c("count", "%"),
     dates = c("median", "q25", "q75"),
     numeric = c("median", "q25", "q75"),
     categorical = c("count", "%")
   )
+
+  if (length(covariates) > 0) {
+    variables$covariates <- colnames(cohort)[!c(colnames(cohort) %in% c(
+      "subject_id", "cohort_definition_id", unlist(variables)
+    ))]
+    functions$covariates <- c("count", "%")
+  }
 
   # summarise results
   results <- cohort %>%

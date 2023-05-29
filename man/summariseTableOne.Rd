@@ -40,7 +40,8 @@ cohorts.
 }
 \examples{
 \donttest{
-cdm <- mockDrugUtilisation(numberIndividuals = 1000)
+library(DrugUtilisation)
+cdm <- mockDrugUtilisation(numberIndividuals = 100)
 summariseTableOne(
   cdm$cohort1,
   cdm,

@@ -356,7 +356,7 @@ createDrugExposure <- function(observation_period, concept) {
     dplyr::pull("concept_id")
   if (length(concepts) > 0) {
     drug_exposure <- observation_period %>%
-      dplyr::mutate(number_records = rpois(dplyr::n(), 3)) %>%
+      dplyr::mutate(number_records = stats::rpois(dplyr::n(), 3)) %>%
       tidyr::uncount(.data$number_records) %>%
       createDate(
         "drug_exposure_start_date", "observation_period_start_date",
@@ -403,7 +403,7 @@ createConditionOccurrence <- function(observation_period, concept) {
     dplyr::pull("concept_id")
   if (length(concepts) > 0) {
     condition_occurrence <- observation_period %>%
-      dplyr::mutate(number_records = rpois(dplyr::n(), 2)) %>%
+      dplyr::mutate(number_records = stats::rpois(dplyr::n(), 2)) %>%
       tidyr::uncount(.data$number_records) %>%
       createDate(
         "condition_start_date", "observation_period_start_date",
@@ -471,7 +471,7 @@ createObservation <- function(observation_period, concept) {
     dplyr::pull("concept_id")
   if (length(concepts) > 0) {
     observation <- observation_period %>%
-      dplyr::mutate(number_records = rpois(dplyr::n(), 2)) %>%
+      dplyr::mutate(number_records = stats::rpois(dplyr::n(), 2)) %>%
       tidyr::uncount(.data$number_records) %>%
       createDate(
         "observation_date", "observation_period_start_date",
