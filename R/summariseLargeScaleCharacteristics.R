@@ -250,6 +250,10 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::select(
       "cohort_name", "table_name", "window_name", "concept_id",
       "concept_name", "count", "denominator_count", "%"
+    ) %>%
+    dplyr::mutate(
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
+      generated_by = "DrugUtilisation_v0.2.0_summariseLargeScaleCharacteristics"
     )
 
   return(result)

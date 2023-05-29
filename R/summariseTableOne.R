@@ -100,7 +100,7 @@ summariseTableOne <- function(cohort,
   results <- cohort %>%
     summariseCohortTableOne(strata, variables, functions, minimumCellCount) %>%
     dplyr::mutate(
-      cdm_name = CDMConnector::cdmName(cdm),
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = "DrugUtilisation_v0.2.0_summariseTableOne"
     )
 

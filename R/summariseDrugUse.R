@@ -47,7 +47,7 @@ summariseDrugUse<- function(cohort,
   # tidy final result
   result <- result %>%
     dplyr::mutate(
-      cdm_name = CDMConnector::cdmName(cdm),
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = "DrugUtilisation_v0.2.0_summariseDrugUse"
     )
 

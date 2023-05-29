@@ -219,12 +219,6 @@ addDrugUse <- function(cohort,
   # summarise cohort to obtain the dose table
   doseTable <- summariseCohort(cohort, cdm)
 
-  # add dose table to dusCohort
-  dusCohortDose <- dusCohort %>%
-    dplyr::left_join(
-      doseTable, by = c("sibject_id", "cohort_start_date", "cohort_end_date")
-    )
-
   if (!supplementary) {
     variables <- c(
       "initial_daily_dose", "number_exposures", "duration",
@@ -232,8 +226,16 @@ addDrugUse <- function(cohort,
     )[c(
       initialDailyDose, numberExposures, duration, cumulativeDose, numberEras
     )]
+    doseTable <- doseTable %>%
+      dplyr::select(dplyr::all_of(variables))
   }
-    computeTable(cdm)
+
+  # add dose table to dusCohort
+  dusCohortDose <- dusCohort %>%
+    dplyr::left_join(
+      doseTable, by = c("sibject_id", "cohort_start_date", "cohort_end_date")
+    ) %>%
+    CDMConnector::computeQuery()
 
   # add attributes back to the cohort
   dusCohortDose <- PatientProfiles::addAttributes(dusCohortDose, originalCohort)
