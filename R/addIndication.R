@@ -72,7 +72,7 @@ addIndication <- function(x,
 #' get cohort names
 #' @noRd
 getCohortName <- function (name) {
-  name <- substr(name, 1, tail(unlist(gregexpr('_', name)), n = 3) - 1)
+  name <- substr(name, 1, utils::tail(unlist(gregexpr('_', name)), n = 3) - 1)
 }
 
 #' get indication name from gap

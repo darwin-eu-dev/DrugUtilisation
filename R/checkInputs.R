@@ -337,7 +337,7 @@ checkIndicationVariables <- function(indicationVariables, cohort) {
   }
   cohort <- cohort %>%
     dplyr::select(dplyr::all_of(indicationVariables)) %>%
-    head(1) %>%
+    utils::head(1) %>%
     dplyr::collect()
   for (k in seq_along(cohort)) {
     if (!is.character(cohort[[k]])) {
