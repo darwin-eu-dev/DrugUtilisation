@@ -73,10 +73,11 @@ summariseDrugUse<- function(cohort,
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm, "dus", getDrugIngredientCodes(cdm, "acetaminophen")
 #' )
-#' cdm$dus <- cdm$dus %>%
-#'   addDrugUse(cdm, 1125315)
-#' drugUseColumns(cdm$dus)
+#' #cdm$dus <- cdm$dus %>%
+#' #  addDrugUse(cdm, 1125315)
+#' #drugUseColumns(cdm$dus)
 #' }
+#'
 drugUseColumns <- function(cohort) {
   checkInputs(cohort = cohort)
   names <- colnames(cohort) [colnames(cohort) %in% c(
