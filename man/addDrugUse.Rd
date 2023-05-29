@@ -128,8 +128,8 @@ cdm <- mockDrugUtilisation()
 cdm <- generateDrugUtilisationCohortSet(
   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 )
-cdm$dus_cohort \%>\%
-  addDrugUse(cdm, 1125315)
+#cdm$dus_cohort \%>\%
+#   addDrugUse(cdm, 1125315)
 }
 
 }

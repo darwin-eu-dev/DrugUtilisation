@@ -2,7 +2,8 @@
 % Please edit documentation in R/summariseLargeScaleCharacteristics.R
 \name{summariseLargeScaleCharacteristics}
 \alias{summariseLargeScaleCharacteristics}
-\title{Explain function}
+\title{This function is used to summarise the lasrge scale characteristics of a
+cohort table}
 \usage{
 summariseLargeScaleCharacteristics(
   cohort,
@@ -17,9 +18,20 @@ summariseLargeScaleCharacteristics(
 )
 }
 \arguments{
+\item{cohort}{cohort}
+
 \item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
 must contain the 'targetCohort' table and all the tables that we want to
 characterize. It is a compulsory input, no default value is provided.}
+
+\item{window}{Temporal windows that we want to characterize. It must
+be a list of numeric vectors of length two. The tables will be characterized
+between the first element and the second element respect to the
+cohort_start_date of each individual. To refer to any time prior set NA the
+first element of the vector. To refer to any time after the index date set NA
+the second element of the vector. By default: list(c(NA, -366), c(-365, -90),
+c(-365, -31), c(-90, -1), c(-30, -1), c(0, 0), c(1, 30), c(1, 90),
+c(31, 365), c(91, 365), c(366, NA)).}
 
 \item{tablesToCharacterize}{Name of the tables in the cdm that we want to
 summarize. The available tables to characterize are: "visit_occurrence",
@@ -35,25 +47,7 @@ TRUE) or only incident ones (overlap = FALSE).}
 obscured changing its value by NA. 'obscured' column of characterization
 tibble is TRUE when a count has been obscured. Otherwise it is FALSE.}
 
-\item{targetCohortName}{Name of the table in the cdm that contains the
-target cohort that we want to characterize. It is a compulsory input, no
-default value is provided.}
-
-\item{targetCohortId}{Cohort definition id for the analyzed target cohorts.
-It can be a vector or a number. If it is NULL all cohorts are analyzed. By
-default: NULL.}
-
-\item{temporalWindow}{Temporal windows that we want to characterize. It must
-be a list of numeric vectors of length two. The tables will be characterized
-between the first element and the second element respect to the
-cohort_start_date of each individual. To refer to any time prior set NA the
-first element of the vector. To refer to any time after the index date set NA
-the second element of the vector. By default: list(c(NA, -366), c(-365, -90),
-c(-365, -31), c(-90, -1), c(-30, -1), c(0, 0), c(1, 30), c(1, 90),
-c(31, 365), c(91, 365), c(366, NA)).}
-
-\item{summarise}{Whether we want patient-level data (FALSE) or summarised
-aggregated data (TRUE).}
+\item{bigMark}{Thousands separator}
 }
 \value{
 The output of this function is a 3 elements list. First
@@ -65,5 +59,6 @@ characterized tables are the ones specified in 'tablesToChacaterize'. Second
 Finally "overlap" is also included in the list.
 }
 \description{
-Explain function
+This function is used to summarise the lasrge scale characteristics of a
+cohort table
 }

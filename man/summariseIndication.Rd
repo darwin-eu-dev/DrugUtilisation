@@ -20,6 +20,8 @@ summariseIndication(
 
 \item{strata}{Stratification list}
 
+\item{indicationVariables}{Variables that point to an indication column}
+
 \item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}
 }

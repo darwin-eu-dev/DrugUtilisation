@@ -14,18 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Explain function
+#' This function is used to summarise the lasrge scale characteristics of a
+#' cohort table
 #'
+#' @param cohort cohort
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
 #' must contain the 'targetCohort' table and all the tables that we want to
 #' characterize. It is a compulsory input, no default value is provided.
-#' @param targetCohortName Name of the table in the cdm that contains the
-#' target cohort that we want to characterize. It is a compulsory input, no
-#' default value is provided.
-#' @param targetCohortId Cohort definition id for the analyzed target cohorts.
-#' It can be a vector or a number. If it is NULL all cohorts are analyzed. By
-#' default: NULL.
-#' @param temporalWindow Temporal windows that we want to characterize. It must
+#' @param window Temporal windows that we want to characterize. It must
 #' be a list of numeric vectors of length two. The tables will be characterized
 #' between the first element and the second element respect to the
 #' cohort_start_date of each individual. To refer to any time prior set NA the
@@ -41,11 +37,10 @@
 #' "procedure_occurrence", "measurement").
 #' @param overlap Whether you want to consider overlapping events (overlap =
 #' TRUE) or only incident ones (overlap = FALSE).
-#' @param summarise Whether we want patient-level data (FALSE) or summarised
-#' aggregated data (TRUE).
 #' @param minimumCellCount All counts lower than minimumCellCount will be
 #' obscured changing its value by NA. 'obscured' column of characterization
 #' tibble is TRUE when a count has been obscured. Otherwise it is FALSE.
+#' @param bigMark Thousands separator
 #'
 #' @return The output of this function is a 3 elements list. First
 #' ("Characterization") is a reference to a temporal table in the database. It
