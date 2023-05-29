@@ -74,11 +74,12 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                  "measurement"
                                                ),
                                                overlap = TRUE,
-                                               minimumCellCount = 5) {
+                                               minimumCellCount = 5,
+                                               bigMark = ",") {
   checkInputs(
     cohort = cohort, cdm = cdm, window = window,
     tablesToCharacterize = tablesToCharacterize, overlap = overlap,
-    minimumCellCount = minimumCellCount
+    minimumCellCount = minimumCellCount, bigMark = bigMark
   )
 
   # correct overlap
@@ -86,28 +87,169 @@ summariseLargeScaleCharacteristics <- function(cohort,
     overlap <- rep(overlap, length(tablesToCharacterize))
   }
 
-  # select only the cohort variables
-  cohort <- cohort %>%
-    dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date")
+  window <- lapply(window, function(x){
+    dplyr::tibble(
+      lower_bound = x[1], upper_bound = x[2], window_name = tolower(
+        paste0(x[1], " to ", x[2])
+      )
+    )
+  }) %>%
+    dplyr::bind_rows()
 
-  # add flags
+  # compute denominator
+  den <- cohort %>%
+    dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date") %>%
+    dplyr::distinct() %>%
+    dplyr::inner_join(
+      cdm[["observation_period"]] %>%
+        dplyr::select(
+          "subject_id" = "person_id",
+          "obs_start" = "observation_period_start_date",
+          "obs_end" = "observation_period_end_date"
+        ),
+      by = "subject_id"
+    ) %>%
+    CDMConnector::computeQuery()
+
+  # add counts
+  result <- NULL
   for (k in seq_along(tablesToCharacterize)) {
-    cohort <- cohort %>%
-      PatientProfiles::addIntersect(
-        cdm, tablesToCharacterize[k], window = window,
-        filterVariable = PatientProfiles::getConceptName(tablesToCharacterize[k]),
-        value = "flag", targetEndDate = ifelse(
-          overlap[k] == FALSE,
-          PatientProfiles::getEndName(tablesToCharacterize[k]),
-          NULL
-        ), nameStyle = paste0(tablesToCharacterize[k], "-{id_name}-{widow_name}")
+    resultK <- den %>%
+      dplyr::inner_join(
+        cdm[[tablesToCharacterize[k]]] %>%
+          dplyr::select(
+            "subject_id" = "person_id",
+            "start_date" = PatientProfiles::getStartName(
+              tablesToCharacterize[k]
+            ), "end_date" = ifelse(
+              overlap[k],
+              PatientProfiles::getEndName(
+                tablesToCharacterize[k]
+              ),
+              PatientProfiles::getStartName(
+                tablesToCharacterize[k]
+              )
+            ), "concept_id" = PatientProfiles::getConceptName(
+              tablesToCharacterize[k]
+            )
+          ),
+        by = "subject_id"
+      ) %>%
+      dplyr::mutate("end_date" = dplyr::if_else(
+        is.na(.data$end_date), .data$start_date, .data$end_date
+      )) %>%
+      dplyr::mutate(
+        start_date = min(.data$start_date, .data$obs_end, na.rm = T),
+        end_date = max(.data$end_date, .data$obs_start, na.rm = T)
+      ) %>%
+      dplyr::filter(.data$start_date <= .data$end_date) %>%
+      dplyr::mutate(
+        start_dif = !!CDMConnector::datediff("cohort_start_date", "start_date"),
+        end_dif = !!CDMConnector::datediff("cohort_start_date", "end_date")
+      ) %>%
+      dplyr::select(
+        "cohort_definition_id", "subject_id", "cohort_start_date", "concept_id",
+        "start_dif", "end_dif"
+      ) %>%
+      CDMConnector::computeQuery()
+    for (i in 1:nrow(window)) {
+      resultKI <- resultK
+      if (!is.infinite(window$upper_bound[i])) {
+        resultKI <- resultKI %>%
+          dplyr::filter(.data$start_dif <= !!window$upper_bound[i])
+      }
+      if (!is.infinite(window$lower_bound[i])) {
+        resultKI <- resultKI %>%
+          dplyr::filter(.data$end_dif >= !!window$lower_bound[i])
+      }
+      result <- result %>%
+        dplyr::union_all(
+          resultKI %>%
+            dplyr::select(
+              "cohort_definition_id", "subject_id", "cohort_start_date",
+              "concept_id"
+            ) %>%
+            dplyr::distinct() %>%
+            dplyr::group_by(.data$cohort_definition_id, .data$concept_id) %>%
+            dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
+            dplyr::inner_join(
+              cdm[["concept"]] %>%
+                dplyr::select("concept_id", "concept_name"),
+              by = "concept_id"
+            ) %>%
+            dplyr::collect() %>%
+            dplyr::mutate(
+              table_name = tablesToCharacterize[k],
+              window_name = window$window_name[i]
+            )
+        )
+    }
+  }
+
+  # add denominator_count
+  denominatorCount <- NULL
+  den <- den %>%
+    dplyr::mutate(
+      start_dif = !!CDMConnector::datediff("cohort_start_date", "obs_start"),
+      end_dif = !!CDMConnector::datediff("cohort_start_date", "obs_end")
+    ) %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date", "start_dif",
+      "end_dif"
+    ) %>%
+    CDMConnector::computeQuery()
+  for (i in 1:nrow(window)) {
+    denI <- den
+    if (!is.infinite(window$upper_bound[i])) {
+      denI <- denI %>%
+        dplyr::filter(.data$start_dif <= !!window$upper_bound[i])
+    }
+    if (!is.infinite(window$lower_bound[i])) {
+      denI <- denI %>%
+        dplyr::filter(.data$end_dif >= !!window$lower_bound[i])
+    }
+    denominatorCount <- denominatorCount %>%
+      dplyr::union_all(
+        denI %>%
+          dplyr::select(
+            "cohort_definition_id", "subject_id", "cohort_start_date",
+            "concept_id"
+          ) %>%
+          dplyr::distinct() %>%
+          dplyr::group_by(.data$cohort_definition_id) %>%
+          dplyr::summarise(denominator_count = dplyr::n(), .groups = "drop") %>%
+          dplyr::collect() %>%
+          dplyr::mutate(window_name = window$window_name[i])
       )
   }
 
-  # summarise
-  result <- PatientProfiles::summariseCharacteristics(
-    cohort, variables = variables, functions = list(numeric = "count")
-  )
+  # join all together
+  result <- result %>%
+    dplyr::inner_join(
+      denominatorCount,
+      by = c("cohort_definition_id", "window_name")
+    ) %>%
+    dplyr::mutate(
+      "%" = 100 * .data$count / .data$denominator_count,
+      "count" = dplyr::if_else(
+        .data$count < minimumCellCount,
+        paste0("<", minimumCellCount),
+        base::format(.data$count, big.mark = bigMark)
+      ),
+      "denominator_count" = dplyr::if_else(
+        .data$denominator_count < minimumCellCount,
+        paste0("<", minimumCellCount),
+        base::format(.data$denominator_count, big.mark = bigMark)
+      )
+    ) %>%
+    dplyr::inner_join(
+      CDMConnector::cohortSet(cohort), by = "cohort_definition_id"
+    ) %>%
+    dplyr::select(
+      "cohort_name", "table_name", "window_name", "concept_id",
+      "concept_name", "count", "denominator_count", "%"
+    )
 
   return(result)
 }
+
