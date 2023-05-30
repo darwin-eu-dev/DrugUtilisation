@@ -31,6 +31,6 @@ domainInformation <- readr::read_csv(
 )
 
 usethis::use_data(
-  mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation
+  mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,
   internal = TRUE, overwrite = TRUE
 )
