@@ -544,7 +544,7 @@ checkTablesToCharacterize <- function(tablesToCharacterize, cdm) {
   )
   errorMessage <- paste0(
     "tablesToCharacterize must point to tables in the cdm. Choice between: ",
-    paste0(choices, ", ")
+    paste0(choices, collapse = ", ")
   )
   if (!is.character(tablesToCharacterize)) {
     cli::cli_abort(errorMessage)
