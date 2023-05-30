@@ -52,3 +52,19 @@ use_data(
   patternfile, domainInformation, mockDrugStrength, mockConcept, namesTable,
   mockConceptAncestor, internal = TRUE, overwrite = TRUE
 )
+
+reportGenerator <- list(
+  "indication" = list(
+    columnNames  = c(
+      "cohort_name", "strata_name", "strata_level", "indication_gap",
+      "indication_name", "count", "denominator", "cdm_name", "generated_by"
+    ),
+    columnType = c("chr", "chr", "chr", "dbl", "chr", "chr", "chr", "chr", "chr"),
+    functions = "DrugUtilisation::displayIndication"
+  )
+)
+
+use_data(
+  reportGenerator, internal = FALSE, overwrite = TRUE,
+)
+
