@@ -6,3 +6,4 @@
 README.Rmd
 docs/
 extras/
+^data-raw$

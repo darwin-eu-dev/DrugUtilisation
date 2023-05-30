@@ -125,9 +125,7 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
       computeTable(cdm)
     if (individualsUnknown %>% dplyr::tally() %>% dplyr::pull() > 0) {
       for (ut in seq_along(unknownTables)) {
-        unknownDate <- namesTable$start_date_name[
-          namesTable$table_name == unknownTables[ut]
-        ]
+        unknownDate <- PatientProfiles::getStartName(unknownTables[ut])
         x <- cdm[[unknownTables[ut]]] %>%
           dplyr::select(
             "subject_id" = "person_id", "unknown_date" = !!unknownDate

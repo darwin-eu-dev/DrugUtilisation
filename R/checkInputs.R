@@ -310,15 +310,8 @@ checkIndicationGap <- function(indicationGap) {
 
 checkUnknownIndicationTable <- function(unknownIndicationTable, cdm) {
   if (!is.null(unknownIndicationTable)) {
-    options <- namesTable$table_name
-    errorMessage <- paste0(
-      "unknownIndicationTable must be a subset of c(",
-      paste0(options, collapse = ", "), ")"
-    )
+    errorMessage <- "unknownIndicationTable must point to a table in the cdm"
     if (!is.character(unknownIndicationTable)) {
-      cli::cli_abort(errorMessage)
-    }
-    if (!all(unknownIndicationTable %in% options)) {
       cli::cli_abort(errorMessage)
     }
     if (!all(unknownIndicationTable %in% names(cdm))) {
