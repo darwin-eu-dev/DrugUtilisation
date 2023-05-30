@@ -7,3 +7,5 @@ README.Rmd
 docs/
 extras/
 ^data-raw$
+^pkgdown$
+^_pkgdown\.yaml$
