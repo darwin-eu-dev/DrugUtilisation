@@ -8,8 +8,8 @@ concept sets and ingredient}
 dailyDoseCoverage(
   cdm,
   sample = NULL,
-  ingredient = NULL,
-  conceptList = NULL,
+  ingredientConceptId = NULL,
+  conceptSetList = NULL,
   seed = 1
 )
 }
@@ -19,10 +19,9 @@ dailyDoseCoverage(
 \item{sample}{A number indicating the size of the random sample to take from
 the 'person' table of the cdm}
 
-\item{ingredient}{Code indicating the ingredient of interest}
+\item{ingredientConceptId}{Code indicating the ingredient of interest}
 
-\item{conceptList}{List in the format given by 'conceptList.R' of concept
-sets of interest}
+\item{conceptSetList}{A concept list that we want to test}
 
 \item{seed}{Seed for the random sample}
 }

@@ -79,9 +79,8 @@ addDailyDose <- function(drugExposure,
 #' @param cdm A cdm reference created using CDMConnector
 #' @param sample A number indicating the size of the random sample to take from
 #' the 'person' table of the cdm
-#' @param ingredient Code indicating the ingredient of interest
-#' @param conceptList List in the format given by 'conceptList.R' of concept
-#' sets of interest
+#' @param ingredientConceptId Code indicating the ingredient of interest
+#' @param conceptSetList A concept list that we want to test
 #' @param seed Seed for the random sample
 #'
 #' @return The function returns information of the coverage of computeDailyDose.R
@@ -91,20 +90,24 @@ addDailyDose <- function(drugExposure,
 #' @examples
 dailyDoseCoverage <- function(cdm,
                               sample = NULL,
-                              ingredient = NULL,
-                              conceptList = NULL,
+                              ingredientConceptId = NULL,
+                              conceptSetList = NULL,
                               seed = 1) {
-
-  if(!is.null(conceptList)) {
-    checkInputs(
-      cdm = cdm, sample = sample, ingredientConceptId = ingredient,
-      conceptSetList = conceptList
-    )
-  } else {
-    checkInputs(
-      cdm = cdm, sample = sample, ingredientConceptId = ingredient
+  # add conceptSetList if needed
+  if (is.null(conceptSetList)) {
+    conceptSetList <- CodelistGenerator::getDrugIngredientCodes(
+      cdm,
+      cdm[["concept"]] %>%
+        dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+        dplyr::pull("concept_name")
     )
   }
+
+  # initial checks
+  checkInputs(
+    cdm = cdm, sample = sample, ingredientConceptId = ingredientConceptId,
+    conceptSetList = conceptSetList
+  )
 
   set.seed(seed)
 
