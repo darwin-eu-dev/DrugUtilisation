@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-library(magrittr)
+library(dplyr)
 
 # add the mock vocabulary data
 mockDrugStrength <- readr::read_csv(
@@ -37,13 +37,13 @@ patternfile <- readr::read_csv(
   here::here("data-raw", "pattern_drug_strength.csv"),
   col_types = list(
     pattern_id = "numeric",
-    amount = "numeric",
+    amount_numeric = "numeric",
     amount_unit = "character",
     amount_unit_concept_id = "numeric",
-    numerator = "numeric",
+    numerator_numeric = "numeric",
     numerator_unit = "character",
     numerator_unit_concept_id = "numeric",
-    denominator = "numeric",
+    denominator_numeric = "numeric",
     denominator_unit = "character",
     denominator_unit_concept_id = "numeric",
     valid = "logical",

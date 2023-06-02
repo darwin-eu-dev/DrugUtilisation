@@ -1,4 +1,4 @@
-pattern_id,amount,amount_unit,amount_unit_concept_id,numerator,numerator_unit,numerator_unit_concept_id,denominator,denominator_unit,denominator_unit_concept_id,valid,pattern_name,unit
+pattern_id,amount_numeric,amount_unit,amount_unit_concept_id,numerator_numeric,numerator_unit,numerator_unit_concept_id,denominator_numeric,denominator_unit,denominator_unit_concept_id,valid,pattern_name,unit
 NA,1,50% cell culture infectious dose,9276,0,NA,NA,0,NA,NA,FALSE,NA,NA
 NA,1,50% tissue culture infectious dose,9414,0,NA,NA,0,NA,NA,FALSE,NA,NA
 NA,1,Actuation,45744809,0,NA,NA,0,NA,NA,FALSE,NA,NA
