@@ -16,40 +16,63 @@
 
 #' add pattern info to a table containing drug_strength information
 #'
-#' @param table table
+#' @param drugList Table in the cdm that has contain drug_concept_id
+#' @param cdm cdm_reference
+#' @param ingredientConceptId ingredientConceptId
 #'
-#' @return table with a pattern_id and unit columns
+#' @return It adds pattern_id and unit to the current table
 #' @export
 #'
 #' @examples
-addPattern <- function(table) {
-  checkPatternTibble(table)
-  # Join table with pattern table in DUS, add "pattern_id" and "unit" columns
-  table <- table %>%
+addPattern <- function(drugList, cdm, ingredientConceptId) {
+  # initial checks
+  checkInputs(
+    drugList = drugList, cdm = cdm, ingredientConceptId = ingredientConceptId
+  )
+
+  # select only pattern_id and unit
+  drugList <- drugList %>%
     dplyr::left_join(
-      patternfile, by = c(
-        "amount", "amount_unit_concept_id", "numerator",
-        "numerator_unit_concept_id", "denominator","denominator_unit_concept_id"
-      ), copy = TRUE, na_matches = c("na")
+      drugList %>%
+        dplyr::select("drug_concept_id") %>%
+        addPatternInternal(cdm, ingredientConceptId) %>%
+        dplyr::select("drug_concept_id", "pattern_id", "unit"),
+      by = "drug_concept_id"
+    ) %>%
+    CDMConnector::computeQuery()
+
+  return(drugList)
+}
+
+#' @noRd
+addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
+  drugList %>%
+    dplyr::inner_join(
+      cdm[["drug_strength"]] %>%
+        dplyr::filter(ingredient_concept_id == .env$ingredientConceptId) %>%
+        dplyr::mutate(
+          amount_num = dplyr::if_else(is.numeric(.data$amount_value), 1, 0),
+          numerator_num = dplyr::if_else(
+            is.numeric(.data$numerator_value), 1, 0
+          ),
+          denominator_num = dplyr::if_else(
+            is.numeric(.data$denominator_value), 1, 0
+          )
+        ) %>%
+        dplyr::inner_join(
+          patternfile,
+          by = c(
+            "amount_num", "amount_unit_concept_id", "numerator_num",
+            "numerator_unit_concept_id", "denominator_num",
+            "denominator_unit_concept_id"
+          ), copy = TRUE
+        ) %>%
+        dplyr::select(
+          "drug_concept_id", "amount_value", "numerator_value",
+          "denominator_value", "patern_id", "unit"
+        ),
+      by = "drug_concept_id"
     )
-
-  # Make standardised values
-  table <- table %>%
-    dplyr::mutate(amount_value = ifelse(
-      .data$amount_unit_concept_id == 9655,
-      .data$amount_value / 1000, .data$amount_value)) %>%
-    dplyr::mutate(numerator_value = ifelse(
-      .data$numerator_unit_concept_id == 9655,
-      .data$numerator_value / 1000, .data$numerator_value)) %>%
-    dplyr::mutate(denominator_value = ifelse(
-      .data$denominator_unit_concept_id == 8519,
-      .data$denominator_value * 1000, .data$denominator_value)) %>%
-    dplyr::mutate(numerator_value = ifelse(
-      .data$numerator_unit_concept_id == 9439,
-      .data$numerator_value / 1000000, .data$numerator_value)) %>%
-    dplyr::compute()
-
-  return(table)
 }
 
 #' Function to compare a given tibble of drug strength patterns with the
@@ -69,7 +92,6 @@ addPattern <- function(table) {
 #' @export
 #'
 #' @examples
-
 comparePatternsTable <- function(pattern_tibble, addId = TRUE) {
   # Check errors in input
   checkPatternTibble(pattern_tibble)

@@ -571,6 +571,32 @@ checkDrugUseEstimates <- function(drugUseEstimates) {
   }
 }
 
+checkDrugExposure <- function(drugExposure) {
+  errorMessage <- "drugExposure must be a table in the cdm with
+  `drug_concept_id`, `quantity`, `drug_exposure_start_date` and
+  `drug_exposure_end_date` as columns"
+  if (!("tbl_sql" %in% class(drugExposure))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all(c(
+    "drug_concept_id", "quantity", "drug_exposure_start_date",
+    "drug_exposure_end_date"
+  ) %in% colnames(drugExposure))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
+checkDrugList <- function(drugList) {
+  errorMessage <- "drugList must be a table in the cdm with `drug_concept_id`
+  as column"
+  if (!("tbl_sql" %in% class(drugList))) {
+    cli::cli_abort(errorMessage)
+  }
+  if (!all("drug_concept_id" %in% colnames(drugList))) {
+    cli::cli_abort(errorMessage)
+  }
+}
+
 # other functions
 
 checkPatternTibble <- function(x) {

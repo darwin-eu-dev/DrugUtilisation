@@ -16,96 +16,61 @@
 
 #' add daily dose information to a drug_exposure table
 #'
-#' @param table table to which add daily_dose
+#' @param drugExposure drugExposure it must contain drug_concept_id, quantity,
+#' drug_exposure_start_date and drug_exposure_end_date as columns
 #' @param cdm cdm
 #' @param ingredientConceptId ingredientConceptId for which to filter the
 #' drugs of interest
-#' @param tablePrefix The stem for the permanent tables that will
-#' be created. If NULL, temporary tables will be used throughout.
 #'
-#'
-#' @return table with added columns: days_exposed, daily_dose, unit
+#' @return same input table
 #' @export
 #'
 #' @examples
-addDailyDose <- function(table,
+addDailyDose <- function(drugExposure,
                          cdm,
-                         ingredientConceptId,
-                         tablePrefix = NULL) {
-  errorMessage <- checkmate::makeAssertCollection()
+                         ingredientConceptId) {
   # initial checks
-  checkmate::assertClass(cdm, "cdm_reference", add = errorMessage)
-  checkmate::assertCount(ingredientConceptId, add = errorMessage)
-  checkmate::assertFALSE(c("daily_dose") %in% colnames(table), add = errorMessage)
-  checkmate::assertTRUE(c("drug_strength") %in% names(cdm), add = errorMessage)
-  # checks for tableprefix
-  checkmate::assertCharacter(
-    tablePrefix, len = 1, null.ok = TRUE, add = errorMessage
+  checkInputs(
+    drugExposure = drugExposure, cdm = cdm,
+    ingredientConceptId = ingredientConceptId
   )
-  checkmate::reportAssertions(collection = errorMessage)
 
-  if ("days_exposed" %in% colnames(table)) {
-    warning("'days_exposed' will be overwritten.")
-  }
-
-  table <- table %>%
-    dplyr::mutate(days_exposed = CDMConnector::datediff(
+  # select only pattern_id and unit
+  dailyDose <- drugExposure %>%
+    dplyr::select(
+      "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
+      "quantity"
+    ) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(days_exposed = !!CDMConnector::datediff(
       start = "drug_exposure_start_date",
       end = "drug_exposure_end_date"
-    ) + 1)
+    ) + 1) %>%
+    dplyr::inner_join(
+      drugExposure %>%
+        dplyr::select("drug_concept_id") %>%
+        addPatternInternal(drugExposure, cdm, ingredientConceptId),
+      by = "drug_concept_id"
+    ) %>%
+    standardUnits() %>%
+    applyFormula() %>%
+    dplyr::select(
+      "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
+      "quantity", "daily_dose", "unit"
+    ) %>%
+    CDMConnector::computeQuery()
 
-  table <- table %>%
+  # add the information back to the initial table
+  drugExposure <- drugExposure %>%
     dplyr::left_join(
-      table %>%
-        dplyr::select(
-          "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id"
-        ) %>%
-        dplyr::distinct() %>%
-        dplyr::inner_join(
-          cdm$drug_strength %>%
-            dplyr::filter(.data$ingredient_concept_id %in% .env$ingredientConceptId),
-          by = c("drug_concept_id")
-        ) %>%
-        addPattern() %>%
-        dplyr::mutate(
-          # Change this with all different formula values
-          daily_dose = dplyr::case_when(
-            is.na(.data$quantity) ~ as.numeric(NA),
-            .data$quantity < 0 ~ as.numeric(NA),
-            .data$pattern_id %in% c(1:5) ~
-              .data$amount_value * .data$quantity / .data$days_exposed,
-            .data$pattern_id %in% c(6,7)  &&
-              .data$denominator_value > 24
-            ~ .data$numerator_value * 24 / .data$denominator_value,
-            .data$pattern_id %in% c(6,7)  &&
-              .data$denominator_value <= 24
-            ~ .data$numerator_value,
-            .data$pattern_id %in% c(8,9)
-            ~ .data$numerator_value * 24,
-            .default = as.numeric(NA)
-          )
-        ) %>%
-        dplyr::mutate(daily_dose = dplyr::if_else(.data$daily_dose <= 0, NA, .data$daily_dose)) %>%
-        dplyr::select(
-          "days_exposed", "quantity", "drug_concept_id", "drug_exposure_id",
-          "daily_dose", "unit"
-        ),
-      by = c("days_exposed", "quantity", "drug_concept_id", "drug_exposure_id")
+      dailyDose,
+      by = c(
+        "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
+        "quantity"
+      )
     )
 
-  if(is.null(tablePrefix)){
-    table <- table %>%
-      CDMConnector::computeQuery()
-  } else {
-    table <- table %>%
-      CDMConnector::computeQuery(name = paste0(tablePrefix,
-                                               "_person_sample"),
-                                 temporary = FALSE,
-                                 schema = attr(cdm, "write_schema"),
-                                 overwrite = TRUE)
-  }
-
-  return(table)
+  return(drugExposure)
 }
 
 #' Check coverage of daily dose computation in a sample of the cdm for selected
@@ -184,4 +149,50 @@ dailyDoseCoverage <- function(cdm,
   }
 
   return(coverage)
+}
+
+standardUnits <- function(drugExposure) {
+  drugExposure <- drugExposure %>%
+    dplyr::mutate(
+      amount_value = ifelse(
+        .data$amount_unit_concept_id == 9655,
+        .data$amount_value / 1000, .data$amount_value
+      ),
+      numerator_value = ifelse(
+        .data$numerator_unit_concept_id == 9655,
+        .data$numerator_value / 1000, .data$numerator_value
+      ),
+      denominator_value = ifelse(
+        .data$denominator_unit_concept_id == 8519,
+        .data$denominator_value * 1000, .data$denominator_value
+      ),
+      numerator_value = ifelse(
+        .data$numerator_unit_concept_id == 9439,
+        .data$numerator_value / 1000000, .data$numerator_value
+      )
+    )
+}
+
+applyFormula <- function(drugExposure) {
+  drugExposure <- drugExposure %>%
+    dplyr::mutate(
+      daily_dose = dplyr::case_when(
+        is.na(.data$quantity) ~
+          as.numeric(NA),
+        .data$quantity < 0 ~
+          as.numeric(NA),
+        .data$pattern_id %in% c(1:5) ~
+          .data$amount_value * .data$quantity / .data$days_exposed,
+        .data$pattern_id %in% c(6,7)  & .data$denominator_value > 24 ~
+          .data$numerator_value * 24 / .data$denominator_value,
+        .data$pattern_id %in% c(6,7) & .data$denominator_value <= 24 ~
+          .data$numerator_value,
+        .data$pattern_id %in% c(8,9) ~
+          .data$numerator_value * 24,
+        .default = as.numeric(NA)
+      )
+    ) %>%
+    dplyr::mutate(daily_dose = dplyr::if_else(
+      .data$daily_dose <= 0, as.numeric(NA), .data$daily_dose
+    ))
 }
