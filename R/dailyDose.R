@@ -68,7 +68,8 @@ addDailyDose <- function(drugExposure,
         "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
         "quantity"
       )
-    )
+    ) %>%
+    CDMConnector::computeQuery()
 
   return(drugExposure)
 }
@@ -92,6 +93,7 @@ dailyDoseCoverage <- function(cdm,
                               sample = NULL,
                               ingredientConceptId = NULL,
                               conceptSetList = NULL,
+                              stratifyByConcept = TRUE,
                               seed = 1) {
   # add conceptSetList if needed
   if (is.null(conceptSetList)) {
@@ -106,52 +108,75 @@ dailyDoseCoverage <- function(cdm,
   # initial checks
   checkInputs(
     cdm = cdm, sample = sample, ingredientConceptId = ingredientConceptId,
-    conceptSetList = conceptSetList
+    conceptSetList = conceptSetList, stratifyByConcept = stratifyByConcept,
+    seed = seed
   )
 
-  set.seed(seed)
+  # extract concept sets
+  conceptSet <- conceptSetFromConceptSetList(conceptSetList) %>%
+    dplyr::rename("drug_concept_id" = "concept_id")
 
-  if(!is.null(conceptList)) {
-    concepts_interest <- unname(unlist(conceptList))
-  } else {
-    concepts_interest <- cdm$drug_exposure %>%
-      dplyr::select("drug_concept_id") %>%
-      dplyr::distinct() %>%
-      dplyr::pull()
+  # random sample
+  if (!is.null(sample)) {
+    set.seed(seed)
+    cdm[["drug_exposure"]] <- cdm[["drug_exposure"]] %>%
+      dplyr::inner_join(
+        cdm[["person"]] %>%
+          dplyr::select("person_id") %>%
+          dplyr::slice_sample(n = sample),
+        by = "person_id"
+      )
   }
 
-  coverage_cohort <-  cdm$drug_exposure %>%
-    dplyr::filter(.data$drug_concept_id %in% .env$concepts_interest) %>%
-    dplyr::inner_join(
-      cdm$person %>%
-        dplyr::select("person_id") %>%
-        dplyr::slice_sample(n = sample),
-      by = "person_id"
+  # compute daily dose
+  doseCoverage <- cdm[["drug_exposure"]] %>%
+    dplyr::inner_join(conceptSet, by = "drug_concept_id", copy = TRUE) %>%
+    addDailyDose(cdm, ingredientConceptId)
+
+  # summarise counts
+  result <- doseCoverage %>%
+    dplyr::group_by(.data$cohort_definition_id, .data$drug_concept_id) %>%
+    dplyr::summarise(
+      number_records = dplyr::n(),
+      number_dose = sum(!is.na(.data$daily_dose), na.rm = TRUE),
+      .groups = "drop"
     ) %>%
-    dplyr::inner_join(
-      cdm$drug_strength %>%
-        dplyr::filter(.data$ingredient_concept_id == .env$ingredient) %>%
-        dplyr::select("drug_concept_id"),
-      by = "drug_concept_id"
+    dplyr::collect() %>%
+    dplyr::right_join(
+      attr(conceptSet, "cohort_set"), by = "cohort_definition_id"
     ) %>%
-    addDailyDose(cdm, ingredient)
+    dplyr::mutate(
+      number_records = dplyr::if_else(
+        is.na(.data$number_records), 0, .data$number_records
+      ),
+      number_dose = dplyr::if_else(
+        is.na(.data$number_dose), 0, .data$number_dose
+      )
+    )
 
-  coverage_num <- coverage_cohort %>%
-    dplyr::filter(!is.na(.data$daily_dose)) %>%
-    dplyr::tally() %>%
-    dplyr::pull()
+  # get overall counts
+  result <- result %>%
+    dplyr::group_by(.data$cohort_definition_id, .data$cohort_name) %>%
+    dplyr::summarise(
+      number_records = sum(.data$number_records),
+      number_dose = sum(.data$number_dose),
+      .groups = "drop"
+    ) %>%
+    dplyr::mutate(drug_concept_id = as.numeric(NA)) %.%
+    dplyr::union_all(result) %>%
+    dplyr::mutate(coverage = .data$number_dose/.data$number_records) %>%
+    dplyr::arrange(.data$cohort_definition_id, .data$number_records) %>%
+    dplyr::select(
+      "concept_set" = "cohort_name", "drug_concept_id", "number_records",
+      "number_dose", "coverage"
+    )
 
-  coverage_den <- coverage_cohort %>%
-    dplyr::tally() %>%
-    dplyr::pull()
-
-  if(coverage_den == 0) {
-    coverage <- NA
-  } else {
-    coverage <- coverage_num/coverage_den*100
+  if (stratifyByConcept) {
+    result <- result %>%
+      dplyr::filter(is.na(.data$drug_concept_id))
   }
 
-  return(coverage)
+  return(result)
 }
 
 standardUnits <- function(drugExposure) {
