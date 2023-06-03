@@ -51,7 +51,9 @@ patternfile <- readr::read_csv(
     unit = "character"
   )
 ) %>%
-  dplyr::select(-"valid", -"pattern_name")
+  dplyr::select(-c(
+    "valid", "pattern_name", "amount_unit", "numerator_unit", "denominator_unit"
+  ))
 
 usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,

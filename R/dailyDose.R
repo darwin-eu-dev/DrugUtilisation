@@ -49,7 +49,8 @@ addDailyDose <- function(drugExposure,
     dplyr::inner_join(
       drugExposure %>%
         dplyr::select("drug_concept_id") %>%
-        addPatternInternal(drugExposure, cdm, ingredientConceptId),
+        dplyr::distinct() %>%
+        addPatternInternal(cdm, ingredientConceptId),
       by = "drug_concept_id"
     ) %>%
     standardUnits() %>%
@@ -180,21 +181,21 @@ dailyDoseCoverage <- function(cdm,
 }
 
 standardUnits <- function(drugExposure) {
-  drugExposure <- drugExposure %>%
+  drugExposure %>%
     dplyr::mutate(
-      amount_value = ifelse(
+      amount_value = dplyr::if_else(
         .data$amount_unit_concept_id == 9655,
         .data$amount_value / 1000, .data$amount_value
       ),
-      numerator_value = ifelse(
+      numerator_value = dplyr::if_else(
         .data$numerator_unit_concept_id == 9655,
         .data$numerator_value / 1000, .data$numerator_value
       ),
-      denominator_value = ifelse(
+      denominator_value = dplyr::if_else(
         .data$denominator_unit_concept_id == 8519,
         .data$denominator_value * 1000, .data$denominator_value
       ),
-      numerator_value = ifelse(
+      numerator_value = dplyr::if_else(
         .data$numerator_unit_concept_id == 9439,
         .data$numerator_value / 1000000, .data$numerator_value
       )
@@ -202,7 +203,7 @@ standardUnits <- function(drugExposure) {
 }
 
 applyFormula <- function(drugExposure) {
-  drugExposure <- drugExposure %>%
+  drugExposure %>%
     dplyr::mutate(
       daily_dose = dplyr::case_when(
         is.na(.data$quantity) ~

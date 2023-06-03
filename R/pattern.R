@@ -35,6 +35,7 @@ addPattern <- function(drugList, cdm, ingredientConceptId) {
     dplyr::left_join(
       drugList %>%
         dplyr::select("drug_concept_id") %>%
+        dplyr::distinct() %>%
         addPatternInternal(cdm, ingredientConceptId) %>%
         dplyr::select("drug_concept_id", "pattern_id", "unit"),
       by = "drug_concept_id"
@@ -51,12 +52,12 @@ addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
       cdm[["drug_strength"]] %>%
         dplyr::filter(ingredient_concept_id == .env$ingredientConceptId) %>%
         dplyr::mutate(
-          amount_numeric = dplyr::if_else(is.numeric(.data$amount_value), 1, 0),
+          amount_numeric = dplyr::if_else(!is.na(.data$amount_value), 1, 0),
           numerator_numeric = dplyr::if_else(
-            is.numeric(.data$numerator_value), 1, 0
+            !is.na(.data$numerator_value), 1, 0
           ),
           denominator_numeric = dplyr::if_else(
-            is.numeric(.data$denominator_value), 1, 0
+            !is.na(.data$denominator_value), 1, 0
           )
         ) %>%
         dplyr::inner_join(
@@ -65,11 +66,12 @@ addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
             "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
             "numerator_unit_concept_id", "denominator_numeric",
             "denominator_unit_concept_id"
-          ), copy = TRUE
+          ), copy = TRUE, na_matches = "na"
         ) %>%
         dplyr::select(
           "drug_concept_id", "amount_value", "numerator_value",
-          "denominator_value", "patern_id", "unit"
+          "denominator_value", "pattern_id", "unit", "amount_unit_concept_id",
+          "numerator_unit_concept_id", "denominator_unit_concept_id"
         ),
       by = "drug_concept_id"
     )
