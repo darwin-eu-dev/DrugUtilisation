@@ -4,7 +4,7 @@
 \alias{patternTable}
 \title{Function to create a tibble with the patterns from current drug strength table}
 \usage{
-patternTable(cdm, counts = TRUE)
+patternTable(cdm, recordCount = FALSE)
 }
 \arguments{
 \item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must

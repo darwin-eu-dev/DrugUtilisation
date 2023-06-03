@@ -7,19 +7,20 @@ concept sets and ingredient}
 \usage{
 dailyDoseCoverage(
   cdm,
+  ingredientConceptId,
   sample = NULL,
-  ingredientConceptId = NULL,
   conceptSetList = NULL,
+  stratifyByConcept = TRUE,
   seed = 1
 )
 }
 \arguments{
 \item{cdm}{A cdm reference created using CDMConnector}
 
+\item{ingredientConceptId}{Code indicating the ingredient of interest}
+
 \item{sample}{A number indicating the size of the random sample to take from
 the 'person' table of the cdm}
-
-\item{ingredientConceptId}{Code indicating the ingredient of interest}
 
 \item{conceptSetList}{A concept list that we want to test}
 
