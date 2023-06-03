@@ -269,6 +269,9 @@ checkSameIndexMode <- function(sameIndexMode) {
 }
 
 checkIngredientConceptId <- function(ingredientConceptId, cdm) {
+  if (is.null(ingredientConceptId)) {
+    cli::cli_abort("ingredientConceptId ca not be NULL")
+  }
   if (!isInteger(ingredientConceptId)) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
   }
@@ -597,70 +600,19 @@ checkDrugList <- function(drugList) {
   }
 }
 
+checkStratifyByConcept <- function(stratifyByConcept) {
+  checkmate::assertLogical(stratifyByConcept, any.missing = FALSE, len = 1)
+}
+
+checkSeed <- function(seed) {
+  checkmate::assertIntegerish(seed, lower = 1, len = 1)
+}
+
+checkRecordCount <- function(recordCount) {
+  checkmate::assertLogical(recordCount, any.missing = FALSE, len = 1)
+}
+
 # other functions
-
-checkPatternTibble <- function(x) {
-  if (!isTRUE(inherits(x, "tbl_dbi"))) {
-    cli::cli_abort("x is not a valid table")
-  }
-  checkColnames <- all(c("amount", "amount_unit_concept_id", "numerator", "numerator_unit_concept_id", "denominator", "denominator_unit_concept_id") %in% colnames(x))
-  if(!checkColnames) {
-    cli::cli_abort(" 'amount', 'amount_unit_concept_id', 'numerator', 'numerator_unit_concept_id', 'denominator' and 'denominator_unit_concept_id' are not all columns of {x}")
-  }
-  invisible(NULL)
-}
-
-checkListTable <- function(listTables, cdm) {
-
-  checkmate::assertTRUE(length(listTables) == length(unique(names(listTables))))
-
-  namesTables <- names(listTables)
-
-  namesTables <- lapply(stringr::str_split(namesTables, "[[:upper:]]"),
-                        function(x) {
-                          x[1]
-                        }) %>%
-    unlist() %>%
-    unique()
-
-  if (length(namesTables) > 0) {
-    for (k in 1:length(namesTables)) {
-      errorMessage <- checkmate::makeAssertCollection()
-      name <- namesTables[k]
-      tableName <- listTables[[paste0(name, "TableName")]]
-      set <- listTables[[paste0(name, "Set")]]
-      lookbackWindow <- listTables[[paste0(name, "Window")]]
-      checkmate::assertTibble(set, add = errorMessage)
-      checkmate::assertTRUE(all(c("cohortId", "cohortName") %in% colnames(set)),
-                            add = errorMessage)
-      checkmate::assertIntegerish(set$cohortId, add = errorMessage)
-      checkmate::assertCharacter(set$cohortName,
-                                 any.missing = FALSE, add = errorMessage)
-      checkmate::assertIntegerish(
-        lookbackWindow,
-        min.len = 1,
-        max.len = 2,
-        null.ok = FALSE,
-        add = errorMessage
-      )
-      checkmate::assertTRUE(tableName %in% names(cdm), add = errorMessage)
-      checkmate::assertTRUE(all(
-        colnames(cdm[[tableName]]) %in% c(
-          "cohort_definition_id",
-          "subject_id",
-          "cohort_start_date",
-          "cohort_end_date"
-        )
-      ),
-      add = errorMessage)
-      if (!errorMessage$isEmpty()) {
-        errorMessage$push(paste0("- In ", name))
-      }
-      checkmate::reportAssertions(collection = errorMessage)
-    }
-  }
-}
-
 checkColumns <- function(x, columns) {
   if (!all(columns %in% colnames(x))) {
     cli::cli_abort(paste0(

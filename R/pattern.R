@@ -87,9 +87,9 @@ addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
 #' @export
 #'
 #' @examples
-patternTable <- function(cdm, counts = TRUE) {
+patternTable <- function(cdm, recordCount = FALSE) {
   # Initial chekc on inputs
-  checkInputs(cdm = cdm)
+  checkInputs(cdm = cdm, recordCount = recordCount)
 
   # create patterns
   x <- cdm[["drug_strength"]] %>%
@@ -136,29 +136,43 @@ patternTable <- function(cdm, counts = TRUE) {
     dplyr::distinct() %>%
     dplyr::collect()
 
-  # get counts
-  if (counts) {
-    patternCounts <- x %>%
+  pattern <- x %>%
+    dplyr::group_by(
+      .data$amount_numeric, .data$amount_unit, .data$amount_unit_concept_id,
+      .data$numerator_numeric, .data$numerator_unit,
+      .data$numerator_unit_concept_id, .data$denominator_numeric,
+      .data$denominator_unit, .data$denominator_unit_concept_id
+    ) %>%
+    dplyr::summarise(
+      number_concepts = dplyr::n_distinct(.data$drug_concept_id),
+      number_ingredients = dplyr::n_distinct(.data$ingredient_concept_id),
+      .groups = "drop"
+    ) %>%
+    dplyr::collect()
+
+  # get recordCount
+  if (recordCount) {
+    recordCounts <- cdm[["drug_exposure"]] %>%
+      dplyr::inner_join(x, by = "drug_concept_id") %>%
       dplyr::group_by(
         .data$amount_numeric, .data$amount_unit_concept_id,
         .data$numerator_numeric, .data$numerator_unit_concept_id,
         .data$denominator_numeric, .data$denominator_unit_concept_id
       ) %>%
-      dplyr::summarise(
-        number_concepts = dplyr::n_distinct(.data$drug_concept_id),
-        number_ingredients = dplyr::n_distinct(.data$ingredient_concept_id),
-        .groups = "drop"
-      ) %>%
+      dplyr::summarise(number_records = dplyr::n(), .groups = "drop") %>%
       dplyr::collect()
     pattern <- pattern %>%
       dplyr::left_join(
-        patternCounts,
+        recordCounts,
         by = c(
           "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
           "numerator_unit_concept_id", "denominator_numeric",
           "denominator_unit_concept_id"
         )
-      )
+      ) %>%
+      dplyr::mutate(number_records = dplyr::if_else(
+        is.na(.data$number_records), 0, .data$number_records
+      ))
   }
 
   # present patterns
@@ -177,10 +191,10 @@ patternTable <- function(cdm, counts = TRUE) {
       )
     ) %>%
     dplyr::mutate(
-      consideration = dplyr::if_else(
+      validity = dplyr::if_else(
         is.na(pattern_id),
-        "Considered in DrugUtilisation but no formula provided",
-        "Pattern and formula identified"
+        "no formula provided",
+        "valid"
       )
     )
 
@@ -195,21 +209,23 @@ patternTable <- function(cdm, counts = TRUE) {
       )
     ) %>%
     dplyr::mutate(
-      patern_id = as.character(NA),
-      consideration = "This pattern is not considered in DrugUtilisation"
+      pattern_id = as.numeric(NA),
+      validity = "new pattern, inform please"
     )
 
-  if (nrow(newPattern)) {
+  if (nrow(newPattern) > 0) {
     cli::cli_alert_info(
       "This cdm contains non standard patterns please inform the mantainer of
       the package or open an issue in
-      https://github.com/darwin-eu-dev/DrugUtilisation so your new patterns
-      could be supported"
+      https://github.com/darwin-eu/DrugUtilisation so your new patterns could
+      be supported"
     )
   }
 
   # join supported and non supported patterns
-  pattern <- dplyr::union_all(presentPattern, newPattern)
+  pattern <- dplyr::union_all(presentPattern, newPattern) %>%
+    dplyr::relocate(dplyr::starts_with("number")) %>%
+    dplyr::relocate(c("pattern_id", "validity"))
 
   return(pattern)
 }

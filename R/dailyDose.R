@@ -79,9 +79,9 @@ addDailyDose <- function(drugExposure,
 #' concept sets and ingredient
 #'
 #' @param cdm A cdm reference created using CDMConnector
+#' @param ingredientConceptId Code indicating the ingredient of interest
 #' @param sample A number indicating the size of the random sample to take from
 #' the 'person' table of the cdm
-#' @param ingredientConceptId Code indicating the ingredient of interest
 #' @param conceptSetList A concept list that we want to test
 #' @param seed Seed for the random sample
 #'
@@ -91,13 +91,14 @@ addDailyDose <- function(drugExposure,
 #'
 #' @examples
 dailyDoseCoverage <- function(cdm,
+                              ingredientConceptId,
                               sample = NULL,
-                              ingredientConceptId = NULL,
                               conceptSetList = NULL,
                               stratifyByConcept = TRUE,
                               seed = 1) {
   # add conceptSetList if needed
   if (is.null(conceptSetList)) {
+    checkInputs(ingredientConceptId = ingredientConceptId, cdm = cdm)
     conceptSetList <- CodelistGenerator::getDrugIngredientCodes(
       cdm,
       cdm[["concept"]] %>%
@@ -136,10 +137,13 @@ dailyDoseCoverage <- function(cdm,
 
   # summarise counts
   result <- doseCoverage %>%
+    dplyr::mutate(
+      daily_dose = dplyr::if_else(is.na(.data$daily_dose), 0, 1)
+    ) %>%
     dplyr::group_by(.data$cohort_definition_id, .data$drug_concept_id) %>%
     dplyr::summarise(
       number_records = dplyr::n(),
-      number_dose = sum(!is.na(.data$daily_dose), na.rm = TRUE),
+      number_dose = sum(.data$daily_dose, na.rm = TRUE),
       .groups = "drop"
     ) %>%
     dplyr::collect() %>%
@@ -163,16 +167,18 @@ dailyDoseCoverage <- function(cdm,
       number_dose = sum(.data$number_dose),
       .groups = "drop"
     ) %>%
-    dplyr::mutate(drug_concept_id = as.numeric(NA)) %.%
+    dplyr::mutate(drug_concept_id = as.numeric(NA)) %>%
     dplyr::union_all(result) %>%
     dplyr::mutate(coverage = .data$number_dose/.data$number_records) %>%
-    dplyr::arrange(.data$cohort_definition_id, .data$number_records) %>%
+    dplyr::arrange(
+      .data$cohort_definition_id, dplyr::desc(.data$number_records)
+    ) %>%
     dplyr::select(
       "concept_set" = "cohort_name", "drug_concept_id", "number_records",
       "number_dose", "coverage"
     )
 
-  if (stratifyByConcept) {
+  if (stratifyByConcept == FALSE) {
     result <- result %>%
       dplyr::filter(is.na(.data$drug_concept_id))
   }
