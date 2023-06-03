@@ -50,7 +50,9 @@ addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
   drugList %>%
     dplyr::inner_join(
       cdm[["drug_strength"]] %>%
-        dplyr::filter(ingredient_concept_id == .env$ingredientConceptId) %>%
+        dplyr::filter(
+          .data$ingredient_concept_id == .env$ingredientConceptId
+        ) %>%
         dplyr::mutate(
           amount_numeric = dplyr::if_else(!is.na(.data$amount_value), 1, 0),
           numerator_numeric = dplyr::if_else(
@@ -81,6 +83,7 @@ addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
 #'
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
 #' must contain 'drug_strength' and 'concept' tables.
+#' @param recordCount Whether number of records per pattern should be computed
 #'
 #' @return The function creates a tibble with the different patterns found in
 #' the table, plus a column of potentially valid and invalid combinations.
@@ -192,9 +195,7 @@ patternTable <- function(cdm, recordCount = FALSE) {
     ) %>%
     dplyr::mutate(
       validity = dplyr::if_else(
-        is.na(pattern_id),
-        "no formula provided",
-        "valid"
+        is.na(.data$pattern_id), "no formula provided", "valid"
       )
     )
 

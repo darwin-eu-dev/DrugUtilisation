@@ -24,6 +24,8 @@ the 'person' table of the cdm}
 
 \item{conceptSetList}{A concept list that we want to test}
 
+\item{stratifyByConcept}{Whether to stratify the result by drug_concept_id}
+
 \item{seed}{Seed for the random sample}
 }
 \value{
