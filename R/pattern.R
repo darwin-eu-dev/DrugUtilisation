@@ -30,6 +30,13 @@ addPattern <- function(drugList, cdm, ingredientConceptId) {
     drugList = drugList, cdm = cdm, ingredientConceptId = ingredientConceptId
   )
 
+  # insert as temporal if it is a local tbl
+  if (!("tbl_sql" %in% class(drugList))) {
+    name <- CDMConnector::uniqueTableName()
+    DBI::dbWriteTable(attr(cdm, "dbcon"), name, drugList, temporary = TRUE)
+    drugList <- dplyr::tbl(attr(cdm, "dbcon"), name)
+  }
+
   # select only pattern_id and unit
   drugList <- drugList %>%
     dplyr::left_join(
@@ -229,4 +236,44 @@ patternTable <- function(cdm, recordCount = FALSE) {
     dplyr::relocate(c("pattern_id", "validity"))
 
   return(pattern)
+}
+
+#' Function to stratify a conceptSetList by unit
+#'
+#' @param conceptSetList List of concept sets
+#' @param cdm cdm reference
+#' @param ingredientConceptId ConceptId that refers to an ingredient
+#'
+#' @return The conceptSetList stratified by unit
+#'
+#' @examples
+#' \donttest{
+#'
+#' }
+#'
+stratifyByConcept <- function(conceptSetList, cdm, ingredientConceptId) {
+  # check initial inputs
+  checkInputs(
+    conceptSetList = conceptSetList, cdm = cdm,
+    ingredientConceptId = ingredientConceptId
+  )
+
+  # add the conceptSet to a tibble
+  x <- lapply(conceptSetList, function(x){
+    dplyr::tibble(drug_concept_id = x) %>%
+      addPattern(cdm, ingredientConceptId) %>%
+      dplyr::filter(!is.na(.data$unit)) %>%
+      dplyr::select("drug_concept_id", "unit") %>%
+      dplyr::collect() %>%
+      split(.$unit) %>%
+      lapply(dplyr::pull, var = "drug_concept_id")
+  })
+
+  # rename
+  result <- unlist(lapply(names(x), function(nam) {
+    names(x[[nam]]) <- paste(nam, names(x[[nam]]), sep = " unit: ")
+    x[[nam]]
+  }), recursive = FALSE)
+
+  return(result)
 }
