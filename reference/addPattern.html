@@ -42,20 +42,28 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addPattern</span><span class="op">(</span><span class="va">table</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addPattern</span><span class="op">(</span><span class="va">drugList</span>, <span class="va">cdm</span>, <span class="va">ingredientConceptId</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>table</dt>
-<dd><p>table</p></dd>
+    <dl><dt>drugList</dt>
+<dd><p>Table in the cdm that has contain drug_concept_id</p></dd>
+
+
+<dt>cdm</dt>
+<dd><p>cdm_reference</p></dd>
+
+
+<dt>ingredientConceptId</dt>
+<dd><p>ingredientConceptId</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>table with a pattern_id and unit columns</p>
+<p>It adds pattern_id and unit to the current table</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

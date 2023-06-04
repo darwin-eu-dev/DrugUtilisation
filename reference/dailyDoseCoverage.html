@@ -50,9 +50,10 @@ concept sets and ingredient</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dailyDoseCoverage</span><span class="op">(</span></span>
 <span>  <span class="va">cdm</span>,</span>
+<span>  <span class="va">ingredientConceptId</span>,</span>
 <span>  sample <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  ingredient <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  conceptList <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  conceptSetList <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  stratifyByConcept <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -63,18 +64,21 @@ concept sets and ingredient</p>
 <dd><p>A cdm reference created using CDMConnector</p></dd>
 
 
+<dt>ingredientConceptId</dt>
+<dd><p>Code indicating the ingredient of interest</p></dd>
+
+
 <dt>sample</dt>
 <dd><p>A number indicating the size of the random sample to take from
 the 'person' table of the cdm</p></dd>
 
 
-<dt>ingredient</dt>
-<dd><p>Code indicating the ingredient of interest</p></dd>
+<dt>conceptSetList</dt>
+<dd><p>A concept list that we want to test</p></dd>
 
 
-<dt>conceptList</dt>
-<dd><p>List in the format given by 'conceptList.R' of concept
-sets of interest</p></dd>
+<dt>stratifyByConcept</dt>
+<dd><p>Whether to stratify the result by drug_concept_id</p></dd>
 
 
 <dt>seed</dt>
