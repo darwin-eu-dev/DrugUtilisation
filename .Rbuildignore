@@ -4,8 +4,7 @@
 ^\.github$
 ^codecov\.yml$
 README.Rmd
-docs/
-extras/
+^extras/
 ^data-raw$
 ^_pkgdown\.yml$
 ^docs$

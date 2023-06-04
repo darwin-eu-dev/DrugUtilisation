@@ -4,21 +4,19 @@
 \alias{addDailyDose}
 \title{add daily dose information to a drug_exposure table}
 \usage{
-addDailyDose(table, cdm, ingredientConceptId, tablePrefix = NULL)
+addDailyDose(drugExposure, cdm, ingredientConceptId)
 }
 \arguments{
-\item{table}{table to which add daily_dose}
+\item{drugExposure}{drugExposure it must contain drug_concept_id, quantity,
+drug_exposure_start_date and drug_exposure_end_date as columns}
 
 \item{cdm}{cdm}
 
 \item{ingredientConceptId}{ingredientConceptId for which to filter the
 drugs of interest}
-
-\item{tablePrefix}{The stem for the permanent tables that will
-be created. If NULL, temporary tables will be used throughout.}
 }
 \value{
-table with added columns: days_exposed, daily_dose, unit
+same input table
 }
 \description{
 add daily dose information to a drug_exposure table

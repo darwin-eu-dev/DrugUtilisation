@@ -4,13 +4,17 @@
 \alias{addPattern}
 \title{add pattern info to a table containing drug_strength information}
 \usage{
-addPattern(table)
+addPattern(drugList, cdm, ingredientConceptId)
 }
 \arguments{
-\item{table}{table}
+\item{drugList}{Table in the cdm that has contain drug_concept_id}
+
+\item{cdm}{cdm_reference}
+
+\item{ingredientConceptId}{ingredientConceptId}
 }
 \value{
-table with a pattern_id and unit columns
+It adds pattern_id and unit to the current table
 }
 \description{
 add pattern info to a table containing drug_strength information

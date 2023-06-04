@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+library(dplyr)
+
 # add the mock vocabulary data
 mockDrugStrength <- readr::read_csv(
   here::here("data-raw", "drug_strength.csv"), show_col_types = FALSE
@@ -31,26 +33,27 @@ domainInformation <- readr::read_csv(
 )
 
 # add the current pattern file
-patternfile <- read_csv(
+patternfile <- readr::read_csv(
   here::here("data-raw", "pattern_drug_strength.csv"),
   col_types = list(
     pattern_id = "numeric",
-    amount = "character",
+    amount_numeric = "numeric",
     amount_unit = "character",
     amount_unit_concept_id = "numeric",
-    numerator = "character",
+    numerator_numeric = "numeric",
     numerator_unit = "character",
-    denominator = "character",
-    denominator_unit = "character",
     numerator_unit_concept_id = "numeric",
+    denominator_numeric = "numeric",
+    denominator_unit = "character",
     denominator_unit_concept_id = "numeric",
-    number_concepts = "numeric",
-    number_ingredients = "numeric",
     valid = "logical",
     pattern_name = "character",
     unit = "character"
   )
-)
+) %>%
+  dplyr::select(-c(
+    "valid", "pattern_name", "amount_unit", "numerator_unit", "denominator_unit"
+  ))
 
 usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,

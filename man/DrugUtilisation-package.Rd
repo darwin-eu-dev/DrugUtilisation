@@ -8,6 +8,13 @@
 \description{
 Summarise patient-level drug utilisation in data mapped to the OMOP Common Data Model.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://darwin-eu-dev.github.io/DrugUtilisation/}
+}
+
+}
 \author{
 \strong{Maintainer}: Marti Catala \email{marti.catalasabate@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0003-3308-9905}{ORCID})
 
