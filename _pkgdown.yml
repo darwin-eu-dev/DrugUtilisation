@@ -1,3 +1,24 @@
 url: https://darwin-eu-dev.github.io/DrugUtilisation/
 template:
   bootstrap: 5  
+
+reference:
+- subtitle: Generate a drug utilisation cohort set
+  desc: Generate a cohort of drug use
+- contents:
+  - matches("generateDrugUtilisationCohortSet")
+- subtitle: Indication functions
+- contents:
+  - matches("addIndication"|"indicationColumns"|"summariseIndication")
+- subtitle: Add daily dose
+- contents:
+  - matches("addDailyDose"|"addPattern"|"dailyDoseCoverage"|"patternTable"|"stratifyByConcept")
+- subtitle: Drug use functions
+- contents:
+  - matches("addDrugUse"|"drugUseColumns"|"summariseDrugUse")
+- subtitle: Charcterise a cohort
+- contents:
+  - matches("summariseTableOne"|"summariseLargeScaleCharacteristics")
+- subtitle: Complementary functions
+- contents:
+  - matches("readConceptList"|"mockDrugUtilisation"|"generateConceptCohortSet"|"computeCohortCount"|"computeCohortAttrition")
