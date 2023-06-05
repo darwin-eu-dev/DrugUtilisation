@@ -270,10 +270,13 @@ stratifyByConcept <- function(conceptSetList, cdm, ingredientConceptId) {
   })
 
   # rename
-  result <- unlist(lapply(names(x), function(nam) {
-    names(x[[nam]]) <- paste(nam, names(x[[nam]]), sep = " unit: ")
-    x[[nam]]
-  }), recursive = FALSE)
+  result <- unlist(
+    lapply(names(x), function(nam) {
+      names(x[[nam]]) <- paste(nam, names(x[[nam]]), sep = " unit: ")
+      x[[nam]]
+    }),
+    recursive = FALSE
+  )
 
   return(result)
 }
