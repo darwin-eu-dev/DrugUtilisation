@@ -164,6 +164,8 @@ addDrugUse <- function(cohort,
       tibble(drug_concept_id = unlist(conceptSetList)) %>% addPattern(cdm, ingredientConceptId)"
     )
   }
+  conceptSet <- conceptSet %>%
+    dplyr::select("cohort_definition_id", "concept_id" = "drug_concept_id")
 
   # consistency with cohortSet
   cs <- CDMConnector::cohortSet(cohort)
