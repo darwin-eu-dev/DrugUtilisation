@@ -592,7 +592,7 @@ checkDrugExposure <- function(drugExposure) {
 checkDrugList <- function(drugList) {
   errorMessage <- "drugList must be a table in the cdm with `drug_concept_id`
   as column"
-  if (!("tbl_sql" %in% class(drugList))) {
+  if (!("tbl" %in% class(drugList))) {
     cli::cli_abort(errorMessage)
   }
   if (!all("drug_concept_id" %in% colnames(drugList))) {

@@ -99,8 +99,8 @@
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 #' )
-#' #cdm$dus_cohort %>%
-#' #   addDrugUse(cdm, 1125315)
+#' cdm$dus_cohort %>%
+#'   addDrugUse(cdm, 1125315)
 #' }
 #'
 addDrugUse <- function(cohort,
@@ -124,6 +124,9 @@ addDrugUse <- function(cohort,
   # tables to be deleted
   firstTempTable <- getOption("dbplyr_table_name", 0) + 1
 
+  if (length(conceptSetList) > 1) {
+    cli::cli_abort("Only one concept set should be provided")
+  }
   if (is.null(conceptSetList)) {
     conceptSetList <- CodelistGenerator::getDrugIngredientCodes(
       cdm,
@@ -145,6 +148,25 @@ addDrugUse <- function(cohort,
     durationRange = durationRange, dailyDoseRange = dailyDoseRange
   )
 
+  # get conceptSet
+  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
+
+  # check unit
+  conceptSet <- conceptSet %>%
+    dplyr::rename("drug_concept_id" = "concept_id") %>%
+    addPattern(cdm, ingredientConceptId) %>%
+    dplyr::filter(!is.na(.data$unit))
+  unit <- conceptSet %>% dplyr::pull("unit") %>% unique()
+  if (length(unit) > 1) {
+    cli::cli_abort(
+      "More than one unit included in the conceptSetList, please stratify by
+      unit. You can check the unit of each with:
+      tibble(drug_concept_id = unlist(conceptSetList)) %>% addPattern(cdm, ingredientConceptId)"
+    )
+  }
+  conceptSet <- conceptSet %>%
+    dplyr::select("cohort_definition_id", "concept_id" = "drug_concept_id")
+
   # consistency with cohortSet
   cs <- CDMConnector::cohortSet(cohort)
   parameters <- checkConsistentCohortSet(
@@ -161,9 +183,6 @@ addDrugUse <- function(cohort,
   # save original reference
   originalCohort <- cohort
 
-  # get conceptSet
-  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
-
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
   cohort <- initialSubset(cdm, cohort, conceptSet)
@@ -177,7 +196,7 @@ addDrugUse <- function(cohort,
   # add daily dose
   cohort <- cohort %>%
     addDailyDose(cdm, ingredientConceptId) %>%
-    dplyr::select(-"quantity")
+    dplyr::select(-"quantity", -"unit")
 
   # impute daily dose
   cohort <- imputeVariable(
