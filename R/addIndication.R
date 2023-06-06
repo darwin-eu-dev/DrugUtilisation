@@ -213,30 +213,84 @@ mutateNoIndication <- function (x, column) {
 }
 
 
-#' Get indication for a target cohort
+#' Create new variables summarising the data of indication that can be used as
+#' stratification columns
 #'
-#' @param x Table in the cdm
-#' @param cdm A cdm reference created using CDMConnector
-#' @param indicationCohortName Name of indication cohort table
-#' @param indicationGap Gap between the event and the indication
-#' @param unknownIndicationTable Tables to search unknown indications
-#' @param indicationDate Date of the indication
+#' @param cohort A cohort in the cdm
+#' @param indicationVariables Indication variables that we want to join
+#' @param remove Whether to remove the prior indication variables
 #'
-#' @return
+#' @result The cohort with the new variable
+#'
 #' @export
 #'
 #' @examples
 #' \donttest{
-#' library(DrugUtilisation)
-#' library(dplyr)
 #'
-#' cdm <- mockDrugUtilisation()
-#' cdm$cohort1 %>%
-#'   addIndication(
-#'     cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 30)
-#'   ) %>%
-#'   collect()
 #' }
+#'
+indicationToStrata <- function(cohort,
+                               indicationVariables = indicationColumns(cohort),
+                               remove = TRUE){
+  # check inputs
+  checkInputs(
+    cohort = cohort, indicationVariables = indicationVariables, remove = remove
+  )
+
+  # organize indications
+  indications <- groupIndications(indicationVariables)
+
+  # combine each gap
+  for (k in seq_len(indications)) {
+    cohort <- cohort %>%
+      combineBinary(
+        binaryColumns = indications[[k]]$names,
+        newColumn = indications[[k]]$new_name, label = indications[[k]]$labels
+      )
+  }
+
+  # remove variables if needed
+  if (remove) {
+    cohort <- cohort %>%
+      dplyr::select(-dplyr::all_of(indicationVariables))
+  }
+
+  return(cohort)
+}
+
+#' @noRd
+groupIndications <- function(indicationVariables) {
+  gaps <- gsub("indication_gap_", "", indicationVariables) %>%
+    strsplit("_") %>%
+    lapply(function(x){x[1]}) %>%
+    unlist() %>%
+    unique()
+  indications <- list()
+  for (k in seq_len(gaps)) {
+    indications[[k]] <- list()
+    name <- paste0("indication_gap_", gap[k])
+    indications[[k]]$names <- indicationVariables[
+      grep(name, indicationVariables)
+    ]
+    indications[[k]]$new_name <- name
+    indications[[k]]$label <- gsub(
+      paste0(name, "_"), indications[[k]]$names
+    ) %>%
+      paste0(toupper(substr(., 1, 1)), substr(., 2, nchar(.))) %>%
+      gsub(pattern = "_", replacement = " ")
+  }
+  return(indications)
+}
+
+#' Get indication for a target cohort
+#'
+#' @param x Table in the cdm
+#' @param binaryColumns Binary columns to unite
+#' @param newColumn New column to be created from the binaryColumns
+#' @param label Label of each binary column
+#'
+#' @return Table x with a new column summarising the data from binaryColumns
+#' @noRd
 #'
 combineBinary <- function(x, binaryColumns, newColumn, label = binaryColumns) {
   # initial checks
@@ -244,7 +298,6 @@ combineBinary <- function(x, binaryColumns, newColumn, label = binaryColumns) {
     x = x, binaryColumns = binaryColumns, newColumn = newColumn, label = label
   )
 
-  # add
   toAdd <- x %>%
     dplyr::select(dplyr::all_of(binaryColumns)) %>%
     dplyr::distinct() %>%
@@ -255,24 +308,27 @@ combineBinary <- function(x, binaryColumns, newColumn, label = binaryColumns) {
         rowSums(na.rm = TRUE)
     )
 
-  #
   for (k in seq_len(binaryColumns)) {
     toAdd <- toAdd %>%
+      dplyr::mutate(
+        flag = .data$flag + .data[[binaryColumns[k]]]
+      ) %>%
       dplyr::mutate(
         !!newColumn := dplyr::case_when(
           .data[[binaryColumns[k]]] == 1 & .data$flag == 0 ~
             label[k],
-          .data[[binaryColumns[k]]] == 1 & .data$flag == 1 ~
+          .data[[binaryColumns[k]]] == 1 & .data$flag> 0  &
+            .data$flag == .data$flag_total ~
             paste(.data[[newColumn]], "and", label[k]),
-          .data[[binaryColumns[k]]] == 1 & .data$flag > 1 ~
-            paste(.data[[newColumn]], "and", label[k]),
+          .data[[binaryColumns[k]]] == 1 & .data$flag> 0  &
+            .data$flag != .data$flag_total ~
+            paste0(.data[[newColumn]], ", ", label[k]),
           .default = .data[[newColumn]]
-        ),
-        flag = .data$flag + .data[[binaryColumns[k]]]
+        )
       )
   }
 
-  #
+  # mantain the number of columns
   x <- x %>%
     dplyr::left_join(
       toAdd %>% dplyr::select(-"flag", -"flag_total"), by = binaryColumns
