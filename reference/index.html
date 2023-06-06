@@ -35,9 +35,52 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      
+      <h3 id="generate-a-drug-utilisation-cohort-set">Generate a drug utilisation cohort set<a class="anchor" aria-label="anchor" href="#generate-a-drug-utilisation-cohort-set"></a></h3>
+      <p class="section-desc"></p><p>Generate a cohort of drug use</p>
+
+      
+    </div><div id="" class="section level2">
       
       
+      
+
+      <dl><dt>
+          
+          <code><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code> 
+        </dt>
+        <dd>Generates a cohort of the drug use of a certain list of concepts.</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="indication-functions">Indication functions<a class="anchor" aria-label="anchor" href="#indication-functions"></a></h3>
+      <p class="section-desc"></p><p>Indication functions are used to summarise and obtain the indication information</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="addIndication.html">addIndication()</a></code> 
+        </dt>
+        <dd>Get indication for a target cohort</dd>
+      </dl><dl><dt>
+          
+          <code><a href="indicationColumns.html">indicationColumns()</a></code> 
+        </dt>
+        <dd>Obtain automatically the indication columns</dd>
+      </dl><dl><dt>
+          
+          <code><a href="summariseIndication.html">summariseIndication()</a></code> 
+        </dt>
+        <dd>This function is used to summarise the indication table over multiple
+cohorts.</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="add-daily-dose">Add daily dose<a class="anchor" aria-label="anchor" href="#add-daily-dose"></a></h3>
+      <p class="section-desc"></p><p>Tools to compute the daily dose, see when it can be computed</p>
 
       
     </div><div id="" class="section level2">
@@ -52,29 +95,9 @@
         <dd>add daily dose information to a drug_exposure table</dd>
       </dl><dl><dt>
           
-          <code><a href="addDrugUse.html">addDrugUse()</a></code> 
-        </dt>
-        <dd>Add new columns with dose related information to the cohort</dd>
-      </dl><dl><dt>
-          
-          <code><a href="addIndication.html">addIndication()</a></code> 
-        </dt>
-        <dd>Get indication for a target cohort</dd>
-      </dl><dl><dt>
-          
           <code><a href="addPattern.html">addPattern()</a></code> 
         </dt>
         <dd>add pattern info to a table containing drug_strength information</dd>
-      </dl><dl><dt>
-          
-          <code><a href="computeCohortAttrition.html">computeCohortAttrition()</a></code> 
-        </dt>
-        <dd>Add a line in the attrition table. If the table does not exist it is created</dd>
-      </dl><dl><dt>
-          
-          <code><a href="computeCohortCount.html">computeCohortCount()</a></code> 
-        </dt>
-        <dd>Computes the cohortCount attribute for a certain table</dd>
       </dl><dl><dt>
           
           <code><a href="dailyDoseCoverage.html">dailyDoseCoverage()</a></code> 
@@ -83,61 +106,52 @@
 concept sets and ingredient</dd>
       </dl><dl><dt>
           
-          <code><a href="drugUseColumns.html">drugUseColumns()</a></code> 
-        </dt>
-        <dd>Obtain automatically the drug use columns</dd>
-      </dl><dl><dt>
-          
-          <code><a href="generateConceptCohortSet.html">generateConceptCohortSet()</a></code> 
-        </dt>
-        <dd>Generates a cohort for a certain list of concepts.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code> 
-        </dt>
-        <dd>Generates a cohort of the drug use of a certain list of concepts.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="indicationColumns.html">indicationColumns()</a></code> 
-        </dt>
-        <dd>Obtain automatically the indication columns</dd>
-      </dl><dl><dt>
-          
-          <code><a href="mockDrugUtilisation.html">mockDrugUtilisation()</a></code> 
-        </dt>
-        <dd>It creates a mock database for testing drugutilisation package</dd>
-      </dl><dl><dt>
-          
           <code><a href="patternTable.html">patternTable()</a></code> 
         </dt>
         <dd>Function to create a tibble with the patterns from current drug strength table</dd>
       </dl><dl><dt>
           
-          <code><a href="readConceptList.html">readConceptList()</a></code> 
-        </dt>
-        <dd>Get concept ids from a provided path to json files</dd>
-      </dl><dl><dt>
-          
-          <code><a href="reportGenerator.html">reportGenerator</a></code> 
-        </dt>
-        <dd>Information that connects DrugUtilisation with ReportGenerator</dd>
-      </dl><dl><dt>
-          
           <code><a href="stratifyByConcept.html">stratifyByConcept()</a></code> 
         </dt>
         <dd>Function to stratify a conceptSetList by unit</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="drug-use-functions">Drug use functions<a class="anchor" aria-label="anchor" href="#drug-use-functions"></a></h3>
+      <p class="section-desc"></p><p>Drug use functions are used to summarise and obtain the drug use information</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="addDrugUse.html">addDrugUse()</a></code> 
+        </dt>
+        <dd>Add new columns with dose related information to the cohort</dd>
+      </dl><dl><dt>
+          
+          <code><a href="drugUseColumns.html">drugUseColumns()</a></code> 
+        </dt>
+        <dd>Obtain automatically the drug use columns</dd>
       </dl><dl><dt>
           
           <code><a href="summariseDrugUse.html">summariseDrugUse()</a></code> 
         </dt>
         <dd>This function is used to summarise the dose table over multiple cohorts.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="summariseIndication.html">summariseIndication()</a></code> 
-        </dt>
-        <dd>This function is used to summarise the indication table over multiple
-cohorts.</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      
+      <h3 id="charcterise-a-cohort">Charcterise a cohort<a class="anchor" aria-label="anchor" href="#charcterise-a-cohort"></a></h3>
+      <p class="section-desc"></p><p>Two functions to characterize the cohorts</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="summariseLargeScaleCharacteristics.html">summariseLargeScaleCharacteristics()</a></code> 
         </dt>
@@ -149,8 +163,50 @@ cohort table</dd>
         </dt>
         <dd>This function is used to summarise the dose and/or indication over multiple
 cohorts.</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="complementary-functions">Complementary functions<a class="anchor" aria-label="anchor" href="#complementary-functions"></a></h3>
+      <p class="section-desc"></p><p>Helpper functions, some of thay may be deprecated in the near future</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="computeCohortAttrition.html">computeCohortAttrition()</a></code> 
+        </dt>
+        <dd>Add a line in the attrition table. If the table does not exist it is created</dd>
+      </dl><dl><dt>
+          
+          <code><a href="computeCohortCount.html">computeCohortCount()</a></code> 
+        </dt>
+        <dd>Computes the cohortCount attribute for a certain table</dd>
+      </dl><dl><dt>
+          
+          <code><a href="generateConceptCohortSet.html">generateConceptCohortSet()</a></code> 
+        </dt>
+        <dd>Generates a cohort for a certain list of concepts.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="mockDrugUtilisation.html">mockDrugUtilisation()</a></code> 
+        </dt>
+        <dd>It creates a mock database for testing drugutilisation package</dd>
+      </dl><dl><dt>
+          
+          <code><a href="readConceptList.html">readConceptList()</a></code> 
+        </dt>
+        <dd>Get concept ids from a provided path to json files</dd>
+      </dl><dl><dt>
+          
+          <code><a href="reportGenerator.html">reportGenerator</a></code> 
+        </dt>
+        <dd>Information that connects DrugUtilisation with ReportGenerator</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
