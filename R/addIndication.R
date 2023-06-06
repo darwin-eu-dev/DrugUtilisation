@@ -226,7 +226,12 @@ mutateNoIndication <- function (x, column) {
 #'
 #' @examples
 #' \donttest{
+#' library(DrugUtilisation)
 #'
+#' cdm <- mockDrugUtilisation()
+#' cdm$cohort1 <- cdm$cohort1 %>%
+#'   addIndication(cdm, "cohort2") %>%
+#'   indicationToStrata()
 #' }
 #'
 indicationToStrata <- function(cohort,
