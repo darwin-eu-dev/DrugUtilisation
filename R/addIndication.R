@@ -211,3 +211,52 @@ mutateNoIndication <- function (x, column) {
       is.na(.data[[column]]), "no indication", .data[[column]]
     ))
 }
+
+
+#' Get indication for a target cohort
+#'
+#' @param x Table in the cdm
+#' @param cdm A cdm reference created using CDMConnector
+#' @param indicationCohortName Name of indication cohort table
+#' @param indicationGap Gap between the event and the indication
+#' @param unknownIndicationTable Tables to search unknown indications
+#' @param indicationDate Date of the indication
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(dplyr)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm$cohort1 %>%
+#'   addIndication(
+#'     cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 30)
+#'   ) %>%
+#'   collect()
+#' }
+#'
+combineBinary <- function(x, binaryColumns, newColumn) {
+  # initial checks
+  checkInputs(x = x, binaryColumns = binaryColumns, newColumn = newColumn)
+
+  x <- x %>%
+    dplyr::mutate(!!newColumn := as.character(NA))
+  for (binaryColumn in binaryColumns) {
+    x <- x %>%
+      dplyr::mutate(
+        !!newColumn := dplyr::case_when(
+          .data[[binaryColumn]] == 1 & is.na(.data[[newColumn]]) ~1
+        )
+      )
+  }
+}
+
+# x
+# cohort
+# table
+
+# indicationToStrata
+
