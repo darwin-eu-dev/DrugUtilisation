@@ -238,20 +238,48 @@ mutateNoIndication <- function (x, column) {
 #'   collect()
 #' }
 #'
-combineBinary <- function(x, binaryColumns, newColumn) {
+combineBinary <- function(x, binaryColumns, newColumn, label = binaryColumns) {
   # initial checks
-  checkInputs(x = x, binaryColumns = binaryColumns, newColumn = newColumn)
+  checkInputs(
+    x = x, binaryColumns = binaryColumns, newColumn = newColumn, label = label
+  )
 
-  x <- x %>%
-    dplyr::mutate(!!newColumn := as.character(NA))
-  for (binaryColumn in binaryColumns) {
-    x <- x %>%
+  # add
+  toAdd <- x %>%
+    dplyr::select(dplyr::all_of(binaryColumns)) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(
+      !!newColumn := "",
+      flag = 0,
+      flag_total = dplyr::select(., dplyr::all_of(binaryColumns)) %>%
+        rowSums(na.rm = TRUE)
+    )
+
+  #
+  for (k in seq_len(binaryColumns)) {
+    toAdd <- toAdd %>%
       dplyr::mutate(
         !!newColumn := dplyr::case_when(
-          .data[[binaryColumn]] == 1 & is.na(.data[[newColumn]]) ~1
-        )
+          .data[[binaryColumns[k]]] == 1 & .data$flag == 0 ~
+            label[k],
+          .data[[binaryColumns[k]]] == 1 & .data$flag == 1 ~
+            paste(.data[[newColumn]], "and", label[k]),
+          .data[[binaryColumns[k]]] == 1 & .data$flag > 1 ~
+            paste(.data[[newColumn]], "and", label[k]),
+          .default = .data[[newColumn]]
+        ),
+        flag = .data$flag + .data[[binaryColumns[k]]]
       )
   }
+
+  #
+  x <- x %>%
+    dplyr::left_join(
+      toAdd %>% dplyr::select(-"flag", -"flag_total"), by = binaryColumns
+    ) %>%
+    CDMConnector::computeQuery()
+
+  return(x)
 }
 
 # x
