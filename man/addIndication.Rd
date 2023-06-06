@@ -29,3 +29,17 @@ addIndication(
 \description{
 Get indication for a target cohort
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(dplyr)
+
+cdm <- mockDrugUtilisation()
+cdm$cohort1 \%>\%
+  addIndication(
+    cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 30)
+  ) \%>\%
+  collect()
+}
+
+}

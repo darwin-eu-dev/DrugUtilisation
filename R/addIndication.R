@@ -27,6 +27,18 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(dplyr)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm$cohort1 %>%
+#'   addIndication(
+#'     cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 30)
+#'   ) %>%
+#'   collect()
+#' }
+#'
 addIndication <- function(x,
                           cdm,
                           indicationCohortName,
