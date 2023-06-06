@@ -26,4 +26,4 @@ reference:
 - subtitle: Complementary functions
   desc: Helpper functions, some of thay may be deprecated in the near future
 - contents:
-  - matches("readConceptList|mockDrugUtilisation|generateConceptCohortSet|computeCohortCount|computeCohortAttrition")
+  - matches("reportGenerator|readConceptList|mockDrugUtilisation|generateConceptCohortSet|computeCohortCount|computeCohortAttrition")
