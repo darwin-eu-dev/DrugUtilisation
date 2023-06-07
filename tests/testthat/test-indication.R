@@ -56,9 +56,13 @@ test_that("test case single indication", {
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = 0,
       unknownIndicationTable = NULL
     )
-  expect_true(
-    setdiff(colnames(res0), colnames(cdm$cohort1)) == "indication_gap_0"
-  )
+  expect_true(length(setdiff(colnames(res0), colnames(cdm$cohort1))) == 3)
+  expect_true(all(
+    c("indication_gap_0_asthma", "indication_gap_0_covid",
+      "indication_gap_0_none") %in%
+      setdiff(colnames(res0), colnames(cdm$cohort1))
+  ))
+
   expect_true(
     res0 %>%
       dplyr::filter(.data$subject_id == 3) %>%

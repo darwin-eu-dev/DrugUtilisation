@@ -74,7 +74,7 @@ addIndication <- function(x,
       ind %>% dplyr::rename(!!indicationDate := "cohort_start_date"),
       by = c("subject_id", indicationDate)
     ) %>%
-    computeTable(cdm)
+    CDMConnector::computeQuery()
 
   result <- PatientProfiles::addAttributes(result, x)
 
@@ -97,14 +97,11 @@ indicationName <- function(gap, termination = "") {
 #' @noRd
 addCohortIndication <- function(ind, cdm, cohortName, gaps) {
   for (gap in gaps) {
-    xx <- PatientProfiles::addCohortIntersectFlag(
+    ind <- PatientProfiles::addCohortIntersectFlag(
       ind, cdm, cohortName, targetEndDate = NULL, window = c(-gap, 0),
       nameStyle = indicationName(gap, "{cohort_name}")
     ) %>%
-      dplyr::mutate(!!indicationName(gap, "none") := dplyr::if_else(
-        rowSums(dplyr::across(dplyr::starts_with(indicationName(gap)))) > 0,
-        0, 1
-      )) %>%
+      addNoneIndication(gap) %>%
       CDMConnector::computeQuery()
   }
   return(ind)
@@ -175,7 +172,16 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
   return(ind)
 }
 
-
+#' Sum columns
+#' @noRd
+addNoneIndication <- function(x, gap) {
+  columns <- colnames(x)
+  columns <- columns[grepl(indicationName(gap), columns)]
+  columns <- paste0(".data$", columns, collapse = " + ")
+  columns <- paste0("dplyr::if_else(", columns, " > 0, 0, 1)")
+  x %>%
+    dplyr::mutate(!!indicationName(gap, "none") := !!rlang::parse_expr(columns))
+}
 
 #' Create new variables summarising the data of indication that can be used as
 #' stratification columns

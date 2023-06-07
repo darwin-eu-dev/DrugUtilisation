@@ -27,6 +27,4 @@ for (k in seq_along(availableConnections)) {
   connectionDetails <- availableConnections[[k]]
   # test code in that dbms
   test_check("DrugUtilisation")
-  # delete tables that have been aded by the mock datas
-  # disconnectMock
 }
