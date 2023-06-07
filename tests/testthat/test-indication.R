@@ -63,6 +63,8 @@ test_that("test case single indication", {
       setdiff(colnames(res0), colnames(cdm$cohort1))
   ))
 
+  res0 <- res0 %>% indicationToStrata()
+
   expect_true(
     res0 %>%
       dplyr::filter(.data$subject_id == 3) %>%

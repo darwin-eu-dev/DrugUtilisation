@@ -81,9 +81,6 @@ summariseIndication <- function(cohort,
 #' @examples
 indicationColumns <- function(x) {
   names <- colnames(x)[substr(colnames(x), 1, 15) == "indication_gap_"]
-  names <- names[!is.na(suppressWarnings(
-    as.numeric(substr(names, 16, nchar(names)))
-  ))]
   return(names)
 }
 
