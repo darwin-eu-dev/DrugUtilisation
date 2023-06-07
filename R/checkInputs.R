@@ -615,6 +615,27 @@ checkRecordCount <- function(recordCount) {
   checkmate::assertLogical(recordCount, any.missing = FALSE, len = 1)
 }
 
+checkKeep <- function(keep) {
+  checkmate::assertLogical(keep, any.missing = FALSE, len = 1)
+}
+
+checkBinaryColumns <- function(binaryColumns, x) {
+  checkmate::assertCharacter(binaryColumns, any.missing = FALSE)
+  if (!all(binaryColumns %in% colnames(x))) {
+    cli::cli_abort("binaryColumns not found in x")
+  }
+}
+
+checkNewColumn <- function(newColumn) {
+  checkmate::assertCharacter(newColumn, any.missing = FALSE, len = 1)
+}
+
+checkLabel <- function(label, binaryColumns) {
+  checkmate::assertCharacter(
+    label, any.missing = FALSE, len = length(binaryColumns)
+  )
+}
+
 # other functions
 checkColumns <- function(x, columns) {
   if (!all(columns %in% colnames(x))) {
