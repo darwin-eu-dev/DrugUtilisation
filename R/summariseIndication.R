@@ -35,37 +35,26 @@ summariseIndication <- function(cohort,
                                 cdm,
                                 strata = list(),
                                 indicationVariables = indicationColumns(cohort),
-                                minimumCellCount = 5) {
+                                minCellCount = 1) {
   # initialChecks
   checkInputs(
-    cohort = cohort, cdm = cdm, strata = strata, indicationVariables = indicationVariables,
-    minimumCellCount = minimumCellCount
+    cohort = cohort, cdm = cdm, strata = strata,
+    indicationVariables = indicationVariables, minCellCount = minCellCount
   )
+
+  # update cohort_names
+  cohort <- cohort %>%
+    dplyr::inner_join(
+      CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
+    )
 
   # summarise indication columns
-  result <- summariseCohortIndication(
-    cohort, strata, indicationVariables, minimumCellCount
+  result <- PatientProfiles::summariseResult(
+    table = cohort, group = list("Cohort name" = "cohort_name"),
+    strata = strata, variables = list(binaryVariables = indicationVariables),
+    functions = list(binaryVariables = c("count", "%")),
+    minCellCount = minCellCount
   )
-
-  # get denominator counts
-  denominator <- getDenominatorCount(result)
-
-  # get indication counts
-  indication <- getIndicationCount(result)
-
-  # tidy final result
-  result <- indication %>%
-    dplyr::inner_join(
-      denominator, by = c("cohort_name", "strata_name", "strata_level")
-    ) %>%
-    dplyr::select(
-      "cohort_name", "strata_name", "strata_level", "indication_gap",
-      "indication_name", "count", "denominator", "%"
-    ) %>%
-    dplyr::mutate(
-      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = "DrugUtilisation_v0.2.0_summariseIndication"
-    )
 
   return(result)
 }

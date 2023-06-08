@@ -515,13 +515,17 @@ test_that("summariseIndication", {
   result <- summariseIndication(res, cdm)
 
   expect_true(all(c(
-    "cohort_name", "strata_name", "strata_level", "indication_gap",
-    "indication_name", "count", "denominator", "%", "cdm_name", "generated_by"
+    "group_name", "group_level", "strata_name", "strata_level", "variable",
+    "variable_level", "variable_type", "estimate_type", "estimate"
   ) %in% colnames(result)))
-  expect_true(ncol(result) == 10)
-  expect_true(all(sort(unique(result$indication_gap)) == c(0, 7, 30, Inf)))
+  expect_true(ncol(result) == 9)
 
-  result <- summariseIndication(res, cdm, indicationVariables = "indication_gap_inf")
+  result <- summariseIndication(
+    res, cdm, indicationVariables = c(
+      "indication_gap_inf_asthma", "indication_gap_inf_covid",
+      "indication_gap_inf_none", "indication_gap_inf_unknown"
+    )
+  )
 
   expect_true(all(c(
     "cohort_name", "strata_name", "strata_level", "indication_gap",
