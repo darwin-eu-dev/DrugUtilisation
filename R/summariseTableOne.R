@@ -115,7 +115,8 @@ summariseTableOne <- function(cohort,
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = paste0(
-        "DrugUtilisation_summariseTableOne_", packageVersion("DrugUtilisation")
+        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
+        "_summariseTableOne"
       )
     )
 

@@ -16,7 +16,7 @@ indicationToStrata(
 
 \item{indicationVariables}{Indication variables that we want to join}
 
-\item{remove}{Whether to remove the prior indication variables}
+\item{keep}{Whether to keep the prior indication variables or not}
 }
 \description{
 Create new variables summarising the data of indication that can be used as

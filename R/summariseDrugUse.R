@@ -57,8 +57,8 @@ summariseDrugUse<- function(cohort,
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = paste(
-        "DrugUtilisation", getFunctionName(), packageVersion("DrugUtilisation"),
-        sep = "_"
+        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
+        "_summariseDrugUse"
       )
     )
 
@@ -94,14 +94,4 @@ drugUseColumns <- function(cohort) {
     "number_eras"
   )]
   return(names)
-}
-
-#' get function name
-#'
-#' @export
-#'
-#' @return Name of the function that this function is called on
-#'
-getFunctionName <- function(){
-  as.character(as.list(sys.calls()[[1]])[[1]])
 }

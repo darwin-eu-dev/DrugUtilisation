@@ -26,6 +26,9 @@ addIndication(
 
 \item{indicationDate}{Date of the indication}
 }
+\value{
+Same cohort adding the indications
+}
 \description{
 Get indication for a target cohort
 }

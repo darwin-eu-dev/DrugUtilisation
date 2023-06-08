@@ -23,7 +23,8 @@
 #' @param unknownIndicationTable Tables to search unknown indications
 #' @param indicationDate Date of the indication
 #'
-#' @return
+#' @return Same cohort adding the indications
+#'
 #' @export
 #'
 #' @examples
@@ -197,7 +198,7 @@ addNoneIndication <- function(x, gap) {
 #'
 #' @param cohort A cohort in the cdm
 #' @param indicationVariables Indication variables that we want to join
-#' @param remove Whether to remove the prior indication variables
+#' @param keep Whether to keep the prior indication variables or not
 #'
 #' @result The cohort with the new variable
 #'

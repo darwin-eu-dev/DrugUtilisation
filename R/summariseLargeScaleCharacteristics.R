@@ -245,7 +245,10 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::mutate(
       strata_name = "overall", strata_level = as.character(NA),
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = "DrugUtilisation_v0.2.0_summariseLargeScaleCharacteristics"
+      generated_by = paste0(
+        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
+        "_summariseLargeScaleCharacteristics"
+      )
     ) %>%
     dplyr::select(
       "cohort_name", "strata_name", "strata_level", "table_name", "window_name",

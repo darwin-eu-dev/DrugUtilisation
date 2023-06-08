@@ -12,7 +12,7 @@ summariseTableOne(
   ageGroup = NULL,
   windowVisitOcurrence = NULL,
   covariates = list(),
-  minimumCellCount = 5
+  minCellCount = 5
 )
 }
 \arguments{
@@ -29,7 +29,7 @@ summariseTableOne(
 \item{covariates}{Named list of windows to check covariates. The name must
 point to a cohortTableName in the cdm.}
 
-\item{minimumCellCount}{minimum counts due to obscure}
+\item{minCellCount}{minimum counts due to obscure}
 }
 \value{
 A summary of the characteristics of the individuals

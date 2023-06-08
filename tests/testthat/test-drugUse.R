@@ -1018,5 +1018,5 @@ test_that("check all estimates", {
     drugUseEstimates = all_estimates
   )
 
-  expect_true(grepl("summariseDrugUse", unique(result$generated_by)))
+  expect_true(grepl("summariseDrugUse", unique(res$generated_by)))
 })

@@ -519,7 +519,7 @@ test_that("summariseIndication", {
     "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
     "generated_by"
   ) %in% colnames(result)))
-  expect_true(ncol(result) == 9)
+  expect_true(ncol(result) == 11)
   expect_true(any(grepl("indication_gap_0", result$variable)))
   expect_true(any(grepl("indication_gap_7", result$variable)))
   expect_true(any(grepl("indication_gap_30", result$variable)))
@@ -537,7 +537,7 @@ test_that("summariseIndication", {
     "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
     "generated_by"
   ) %in% colnames(result)))
-  expect_true(ncol(result) == 9)
+  expect_true(ncol(result) == 11)
   expect_true(!any(grepl("indication_gap_0", result$variable)))
   expect_true(!any(grepl("indication_gap_7", result$variable)))
   expect_true(!any(grepl("indication_gap_30", result$variable)))
@@ -564,7 +564,7 @@ test_that("summariseIndication", {
     "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
     "generated_by"
   ) %in% colnames(result)))
-  expect_true(ncol(result) == 9)
+  expect_true(ncol(result) == 11)
   x <- tidyr::expand_grid(
     group_level = c(
       "Overall", CDMConnector::cohortSet(res) %>% dplyr::pull("cohort_name")

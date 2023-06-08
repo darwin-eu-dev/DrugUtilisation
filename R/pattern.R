@@ -251,7 +251,7 @@ patternTable <- function(cdm, recordCount = FALSE) {
 #'
 #' }
 #'
-stratifyByConcept <- function(conceptSetList, cdm, ingredientConceptId) {
+stratifyByUnit <- function(conceptSetList, cdm, ingredientConceptId) {
   # check initial inputs
   checkInputs(
     conceptSetList = conceptSetList, cdm = cdm,
@@ -271,10 +271,11 @@ stratifyByConcept <- function(conceptSetList, cdm, ingredientConceptId) {
 
   # rename
   result <- unlist(
-    lapply(names(x), function(nam) {
+    lapply(names(x), function(nam, x) {
       names(x[[nam]]) <- paste(nam, names(x[[nam]]), sep = " unit: ")
       x[[nam]]
     }),
+    x,
     recursive = FALSE
   )
 

@@ -13,7 +13,7 @@ summariseLargeScaleCharacteristics(
   tablesToCharacterize = c("condition_occurrence", "drug_era", "procedure_occurrence",
     "measurement"),
   overlap = TRUE,
-  minimumCellCount = 5,
+  minCellCount = 5,
   bigMark = ","
 )
 }
@@ -43,7 +43,7 @@ and "specimen". By default: c("condition_occurrence", "drug_era",
 \item{overlap}{Whether you want to consider overlapping events (overlap =
 TRUE) or only incident ones (overlap = FALSE).}
 
-\item{minimumCellCount}{All counts lower than minimumCellCount will be
+\item{minCellCount}{All counts lower than minimumCellCount will be
 obscured changing its value by NA. 'obscured' column of characterization
 tibble is TRUE when a count has been obscured. Otherwise it is FALSE.}
 
