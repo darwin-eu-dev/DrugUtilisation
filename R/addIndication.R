@@ -230,7 +230,7 @@ indicationToStrata <- function(cohort,
   # combine each gap
   for (k in seq_along(indications)) {
     cohort <- cohort %>%
-      combineBinary(
+      addBinaryFromCategorical(
         binaryColumns = indications[[k]]$names,
         newColumn = indications[[k]]$new_name, label = indications[[k]]$label
       )
@@ -284,7 +284,7 @@ groupIndications <- function(indicationVariables) {
 #' @return Table x with a new column summarising the data from binaryColumns
 #' @noRd
 #'
-combineBinary <- function(x, binaryColumns, newColumn, label = binaryColumns) {
+addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binaryColumns) {
   # initial checks
   checkInputs(
     x = x, binaryColumns = binaryColumns, newColumn = newColumn, label = label

@@ -53,7 +53,14 @@ summariseDrugUse<- function(cohort,
     strata = strata, variables = list(numericVariables = drugUseVariables),
     functions = list(numericVariables = drugUseEstimates),
     minCellCount = minCellCount
-  )
+  ) %>%
+    dplyr::mutate(
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
+      generated_by = paste(
+        "DrugUtilisation", getFunctionName(), packageVersion("DrugUtilisation"),
+        sep = "_"
+      )
+    )
 
   return(result)
 }
@@ -87,4 +94,14 @@ drugUseColumns <- function(cohort) {
     "number_eras"
   )]
   return(names)
+}
+
+#' get function name
+#'
+#' @export
+#'
+#' @return Name of the function that this function is called on
+#'
+getFunctionName <- function(){
+  as.character(as.list(sys.calls()[[1]])[[1]])
 }

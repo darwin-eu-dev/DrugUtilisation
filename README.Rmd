@@ -155,20 +155,22 @@ cdm <- generateConceptCohortSet(cdm, "indications_cohort", indications)
 cohortCount(cdm$indications_cohort)
 ```
 
-Then we can add the indication using the function `addIndication`. That will add a new column for each indication gap. Indications are non exclusive so a person can have multiple indications. Multiple indications will be separated by the `&&` symbol:
+Then we can add the indication using the function `addIndication`. That will add a new column for each indication gap and indication. 
 
 ```{r}
 x <- cdm$dus_cohort %>%
-  addIndication(cdm, "indications_cohort", c(0, 30, 365), c("condition_occurrence"))
+  addIndication(
+    cdm = cdm, indicationCohortName = "indications_cohort", indicationGap = c(0, 30, 365), 
+    unknownIndicationTable = c("condition_occurrence")
+  )
 glimpse(x)
 ```
 
-```{r}
-table(x %>% pull("indication_gap_0"))
-```
+We can combine the indications in a single column using the `indicationToStrata()` function. This column can be used as stratification of the results if needed:
 
 ```{r}
-table(x %>% pull("indication_gap_30"))
+x <- x %>% indicationToStrata(keep = TRUE)
+glimpse(x)
 ```
 
 ```{r}

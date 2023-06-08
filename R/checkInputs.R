@@ -337,8 +337,10 @@ checkIndicationVariables <- function(indicationVariables, cohort) {
     dplyr::collect()
   variableType <- PatientProfiles::variableTypes(cohort)$variable_type %>%
     unique()
-  if (length(variableType) != 1 | !("binary" %in% variableType)) {
-    cli::cli_abort("indicationVariables should point to binary variables")
+  if (!all(variableType %in% c("binary", "categorical"))) {
+    cli::cli_abort(
+      "indicationVariables should point to binary or categorical variables"
+    )
   }
   if (!all(substr(indicationVariables, 1, 15) == "indication_gap_")) {
     cli::cli_abort("indicationVariables should start with indication_gap_")

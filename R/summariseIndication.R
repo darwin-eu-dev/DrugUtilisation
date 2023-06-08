@@ -54,7 +54,14 @@ summariseIndication <- function(cohort,
     strata = strata, variables = list(binaryVariables = indicationVariables),
     functions = list(binaryVariables = c("count", "%")),
     minCellCount = minCellCount
-  )
+  ) %>%
+    dplyr::mutate(
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
+      generated_by = paste(
+        "DrugUtilisation", getFunctionName(), packageVersion("DrugUtilisation"),
+        sep = "_"
+      )
+    )
 
   return(result)
 }

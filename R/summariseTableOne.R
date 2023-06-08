@@ -24,7 +24,7 @@
 #' @param windowVisitOcurrence Window to count visit occurrences.
 #' @param covariates Named list of windows to check covariates. The name must
 #' point to a cohortTableName in the cdm.
-#' @param minimumCellCount minimum counts due to obscure
+#' @param minCellCount minimum counts due to obscure
 #'
 #' @return A summary of the characteristics of the individuals
 #'
@@ -47,12 +47,12 @@ summariseTableOne <- function(cohort,
                               ageGroup = NULL,
                               windowVisitOcurrence = NULL,
                               covariates = list(),
-                              minimumCellCount = 5) {
+                              minCellCount = 5) {
   # check initial tables
   checkInputs(
     cohort = cohort, cdm = cdm, strata = strata, ageGroup = ageGroup,
     windowVisitOcurrence = windowVisitOcurrence, covariates = covariates,
-    minimumCellCount = minimumCellCount
+    minCellCount = minCellCount
   )
 
   # add characteristics
