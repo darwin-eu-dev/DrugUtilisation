@@ -963,8 +963,8 @@ test_that("check output format", {
     summariseDrugUse(cdm = cdm)
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
   expect_true(all(colnames(result) %in% c(
-    "cohort_name", "strata_name", "strata_level", "variable", "estimate",
-    "value", "cdm_name", "generated_by"
+    "group_name", "group_level", "strata_name", "strata_level", "variable",
+    "variable_level", "variable_type", "estimate_type", "estimate"
   )))
 })
 
@@ -1003,11 +1003,12 @@ test_that("check all estimates", {
       cdm = cdm,
       drugUseVariables = c("initial_dose", "cumulative_dose"),
       drugUseEstimates = all_estimates[k]
-    )
+    ) %>%
+      dplyr::filter(.data$group_name == "Cohort name")
     expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
-    expect_true(res$estimate[res$variable == c("initial_dose")] == all_estimates[k])
+    expect_true(res$estimate_type[res$variable == c("initial_dose")] == all_estimates[k])
     expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
-    expect_true(res$estimate[res$variable == c("cumulative_dose")] == all_estimates[k])
+    expect_true(res$estimate_type[res$variable == c("cumulative_dose")] == all_estimates[k])
   }
   res <- summariseDrugUse(
     cdm$dose_table,

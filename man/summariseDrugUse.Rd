@@ -10,7 +10,7 @@ summariseDrugUse(
   strata = list(),
   drugUseVariables = drugUseColumns(cohort),
   drugUseEstimates = c("mean", "q25", "q75"),
-  minimumCellCount = 5
+  minCellCount = 5
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ summariseDrugUse(
 
 \item{drugUseEstimates}{Estimates that we want for the columns}
 
-\item{minimumCellCount}{Below this number counts will be supressed}
+\item{minCellCount}{Below this number counts will be supressed}
 }
 \value{
 A summary of the drug use stratified by cohort_name and strata_name

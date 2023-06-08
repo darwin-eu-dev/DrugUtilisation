@@ -21,7 +21,7 @@
 #' @param strata Stratification list
 #' @param drugUseVariables Name of columns with drug use variables
 #' @param drugUseEstimates Estimates that we want for the columns
-#' @param minimumCellCount Below this number counts will be supressed
+#' @param minCellCount Below this number counts will be supressed
 #'
 #' @return A summary of the drug use stratified by cohort_name and strata_name
 #'
@@ -33,12 +33,12 @@ summariseDrugUse<- function(cohort,
                             strata = list(),
                             drugUseVariables = drugUseColumns(cohort),
                             drugUseEstimates = c("mean", "q25", "q75"),
-                            minimumCellCount = 5) {
+                            minCellCount = 5) {
   # check inputs
   checkInputs(
     cohort = cohort, cdm = cdm, strata = strata,
     drugUseVariables = drugUseVariables, drugUseEstimates = drugUseEstimates,
-    minimumCellCount = minimumCellCount
+    minCellCount = minCellCount
   )
 
   # update cohort_names

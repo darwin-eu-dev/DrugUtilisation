@@ -559,7 +559,7 @@ checkTablesToCharacterize <- function(tablesToCharacterize, cdm) {
 
 checkDrugUseEstimates <- function(drugUseEstimates) {
   choices <- PatientProfiles::availableFunctions() %>%
-    dplyr::filter(.data$variable_classification == "numeric") %>%
+    dplyr::filter(.data$variable_type == "numeric") %>%
     dplyr::pull("format_key")
   errorMessage <- paste0(
     "drugUseEstimates must be a subset of: ", paste0(choices, collapse = ", ")

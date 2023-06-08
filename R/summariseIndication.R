@@ -21,7 +21,7 @@
 #' @param cdm cdm_reference created by CDMConnector
 #' @param strata Stratification list
 #' @param indicationVariables Variables that point to an indication column
-#' @param minimumCellCount Minimum counts that a group can have. Cohorts with
+#' @param minCellCount Minimum counts that a group can have. Cohorts with
 #' less counts than this value are obscured. By default: 5.
 #'
 #' @return A Tibble with 4 columns: cohort_definition_id, variable, estimate and
