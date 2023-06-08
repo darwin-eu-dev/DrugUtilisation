@@ -43,7 +43,7 @@ summariseDrugUse<- function(cohort,
 
   # update cohort_names
   cohort <- cohort %>%
-    dplyr::inner_join(
+    dplyr::left_join(
       CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
     )
 

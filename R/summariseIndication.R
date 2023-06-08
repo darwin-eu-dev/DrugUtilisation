@@ -44,7 +44,7 @@ summariseIndication <- function(cohort,
 
   # update cohort_names
   cohort <- cohort %>%
-    dplyr::inner_join(
+    dplyr::left_join(
       CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
     )
 
@@ -57,9 +57,9 @@ summariseIndication <- function(cohort,
   ) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = paste(
-        "DrugUtilisation", getFunctionName(), packageVersion("DrugUtilisation"),
-        sep = "_"
+      generated_by = paste0(
+        "DrugUtilisation_summariseIndication_",
+        packageVersion("DrugUtilisation")
       )
     )
 

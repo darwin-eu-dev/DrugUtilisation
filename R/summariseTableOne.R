@@ -100,38 +100,24 @@ summariseTableOne <- function(cohort,
     functions$covariates <- c("count", "%")
   }
 
+  # update cohort_names
+  cohort <- cohort %>%
+    dplyr::left_join(
+      CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
+    )
+
   # summarise results
   results <- cohort %>%
-    summariseCohortTableOne(strata, variables, functions, minimumCellCount) %>%
+    PatientProfiles::summariseResult(
+      group = list("Cohort name" = "cohort_name"), strata = strata,
+      variables = variables, functions = functions, minCellCount = minCellCount
+    ) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = "DrugUtilisation_v0.2.0_summariseTableOne"
+      generated_by = paste0(
+        "DrugUtilisation_summariseTableOne_", packageVersion("DrugUtilisation")
+      )
     )
 
   return(results)
-}
-
-#' @noRd
-summariseCohortTableOne <- function(x,
-                                    strata,
-                                    variables,
-                                    functions,
-                                    minimumCellCount) {
-  cs <- CDMConnector::cohortSet(x)
-  cohortIds <- x %>%
-    dplyr::select("cohort_definition_id") %>%
-    dplyr::distinct() %>%
-    dplyr::pull()
-  result <- list()
-  for (cohortId in cohortIds) {
-    result[[cs$cohort_name[cs$cohort_definition_id == cohortId]]] <- x %>%
-      dplyr::filter(.data$cohort_definition_id == .env$cohortId) %>%
-      dplyr::collect() %>%
-      PatientProfiles::summariseCharacteristics(
-        strata = strata, variables = variables, functions = functions,
-        suppressCellCount = minimumCellCount
-      )
-  }
-  result <- dplyr::bind_rows(result, .id = "cohort_name")
-  return(result)
 }

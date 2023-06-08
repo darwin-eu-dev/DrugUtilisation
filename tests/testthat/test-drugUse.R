@@ -964,7 +964,8 @@ test_that("check output format", {
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
   expect_true(all(colnames(result) %in% c(
     "group_name", "group_level", "strata_name", "strata_level", "variable",
-    "variable_level", "variable_type", "estimate_type", "estimate"
+    "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
+    "generated_by"
   )))
 })
 
@@ -1016,4 +1017,6 @@ test_that("check all estimates", {
     drugUseVariables = c("initial_dose", "cumulative_dose"),
     drugUseEstimates = all_estimates
   )
+
+  expect_true(grepl("summariseDrugUse", unique(result$generated_by)))
 })

@@ -37,7 +37,7 @@
 #' "procedure_occurrence", "measurement").
 #' @param overlap Whether you want to consider overlapping events (overlap =
 #' TRUE) or only incident ones (overlap = FALSE).
-#' @param minimumCellCount All counts lower than minimumCellCount will be
+#' @param minCellCount All counts lower than minimumCellCount will be
 #' obscured changing its value by NA. 'obscured' column of characterization
 #' tibble is TRUE when a count has been obscured. Otherwise it is FALSE.
 #' @param bigMark Thousands separator
@@ -69,12 +69,12 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                  "measurement"
                                                ),
                                                overlap = TRUE,
-                                               minimumCellCount = 5,
+                                               minCellCount = 5,
                                                bigMark = ",") {
   checkInputs(
     cohort = cohort, cdm = cdm, window = window,
     tablesToCharacterize = tablesToCharacterize, overlap = overlap,
-    minimumCellCount = minimumCellCount, bigMark = bigMark
+    minCellCount = minCellCount, bigMark = bigMark
   )
 
   # correct overlap
@@ -226,13 +226,13 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::mutate(
       "%" = 100 * .data$count / .data$denominator_count,
       "count" = dplyr::if_else(
-        .data$count < minimumCellCount,
-        paste0("<", minimumCellCount),
+        .data$count < minCellCount,
+        paste0("<", minCellCount),
         base::format(.data$count, big.mark = bigMark)
       ),
       "denominator_count" = dplyr::if_else(
-        .data$denominator_count < minimumCellCount,
-        paste0("<", minimumCellCount),
+        .data$denominator_count < minCellCount,
+        paste0("<", minCellCount),
         base::format(.data$denominator_count, big.mark = bigMark)
       )
     ) %>%
