@@ -519,6 +519,10 @@ test_that("summariseIndication", {
     "variable_level", "variable_type", "estimate_type", "estimate"
   ) %in% colnames(result)))
   expect_true(ncol(result) == 9)
+  expect_true(any(grepl("indication_gap_0", result$variable)))
+  expect_true(any(grepl("indication_gap_7", result$variable)))
+  expect_true(any(grepl("indication_gap_30", result$variable)))
+  expect_true(any(grepl("indication_gap_inf", result$variable)))
 
   result <- summariseIndication(
     res, cdm, indicationVariables = c(
@@ -528,11 +532,14 @@ test_that("summariseIndication", {
   )
 
   expect_true(all(c(
-    "cohort_name", "strata_name", "strata_level", "indication_gap",
-    "indication_name", "count", "denominator", "%", "cdm_name", "generated_by"
+    "group_name", "group_level", "strata_name", "strata_level", "variable",
+    "variable_level", "variable_type", "estimate_type", "estimate"
   ) %in% colnames(result)))
-  expect_true(ncol(result) == 10)
-  expect_true(all(sort(unique(result$indication_gap)) == c(Inf)))
+  expect_true(ncol(result) == 9)
+  expect_true(!any(grepl("indication_gap_0", result$variable)))
+  expect_true(!any(grepl("indication_gap_7", result$variable)))
+  expect_true(!any(grepl("indication_gap_30", result$variable)))
+  expect_true(any(grepl("indication_gap_inf", result$variable)))
 
   expect_error(summariseIndication(
     res, cdm, indicationVariables = "indication_gap_15"
@@ -551,23 +558,25 @@ test_that("summariseIndication", {
   )
 
   expect_true(all(c(
-    "cohort_name", "strata_name", "strata_level", "indication_gap",
-    "indication_name", "count", "denominator", "%", "cdm_name", "generated_by"
+    "group_name", "group_level", "strata_name", "strata_level", "variable",
+    "variable_level", "variable_type", "estimate_type", "estimate"
   ) %in% colnames(result)))
-  expect_true(ncol(result) == 10)
+  expect_true(ncol(result) == 9)
   x <- tidyr::expand_grid(
-    cohort_name = CDMConnector::cohortSet(res) %>% dplyr::pull("cohort_name"),
-    strata_name = c("overall", "age", "sex", "age & sex")
+    group_level = c(
+      "Overall", CDMConnector::cohortSet(res) %>% dplyr::pull("cohort_name")
+    ),
+    strata_name = c("Overall", "age", "sex", "age & sex")
   ) %>%
     dplyr::inner_join(
       dplyr::tibble(
         strata_name = c(
           "age", "age", "sex", "sex", "age & sex", "age & sex", "age & sex",
-          "age & sex", "overall"
+          "age & sex", "Overall"
         ),
         strata_level = c(
-          "<40", ">=40", "Male", "Female", "<40 & Female", "<40 & Male",
-          ">=40 & Female", ">=40 & Male", NA
+          "<40", ">=40", "Male", "Female", "<40 and Female", "<40 and Male",
+          ">=40 and Female", ">=40 and Male", "Overall"
         )
       ),
       by = "strata_name", relationship = "many-to-many"
@@ -576,10 +585,13 @@ test_that("summariseIndication", {
     nrow(result),
     result %>%
       dplyr::inner_join(
-        x, by = c("cohort_name", "strata_name", "strata_level")
+        x, by = c("group_level", "strata_name", "strata_level")
       ) %>%
       nrow()
   )
-  expect_true(all(sort(unique(result$indication_gap)) == c(0, 7, 30, Inf)))
+  expect_true(any(grepl("indication_gap_0", result$variable)))
+  expect_true(any(grepl("indication_gap_7", result$variable)))
+  expect_true(any(grepl("indication_gap_30", result$variable)))
+  expect_true(any(grepl("indication_gap_inf", result$variable)))
 
 })

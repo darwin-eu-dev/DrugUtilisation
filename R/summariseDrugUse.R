@@ -41,17 +41,19 @@ summariseDrugUse<- function(cohort,
     minimumCellCount = minimumCellCount
   )
 
-  # summarise drug use columns
-  result <- summariseCohortDrugUse(
-    cohort, strata, drugUseVariables, drugUseEstimates, minimumCellCount
-  )
-
-  # tidy final result
-  result <- result %>%
-    dplyr::mutate(
-      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = "DrugUtilisation_v0.2.0_summariseDrugUse"
+  # update cohort_names
+  cohort <- cohort %>%
+    dplyr::inner_join(
+      CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
     )
+
+  # summarise drug use columns
+  result <- PatientProfiles::summariseResult(
+    table = cohort, group = list("Cohort name" = "cohort_name"),
+    strata = strata, variables = list(numericVariables = drugUseVariables),
+    functions = list(numericVariables = drugUseEstimates),
+    minCellCount = minCellCount
+  )
 
   return(result)
 }
@@ -85,35 +87,4 @@ drugUseColumns <- function(cohort) {
     "number_eras"
   )]
   return(names)
-}
-
-#' @noRd
-summariseCohortDrugUse <- function(x,
-                                   strata,
-                                   drugUseVariables,
-                                   drugUseEstimates,
-                                   minimumCellCount) {
-  cs <- CDMConnector::cohortSet(x)
-  cohortIds <- x %>%
-    dplyr::select("cohort_definition_id") %>%
-    dplyr::distinct() %>%
-    dplyr::pull()
-  result <- list()
-  for (cohortId in cohortIds) {
-    result[[cs$cohort_name[cs$cohort_definition_id == cohortId]]] <- x %>%
-      dplyr::filter(.data$cohort_definition_id == .env$cohortId) %>%
-      dplyr::collect() %>%
-      PatientProfiles::summariseCharacteristics(
-        strata = strata,
-        variables = list(drugUse = drugUseVariables),
-        functions = list(drugUse = drugUseEstimates),
-        suppressCellCount = minimumCellCount
-      ) %>%
-      dplyr::filter(
-        !(.data$variable %in% c("number subjects", "number records"))
-      ) %>%
-      dplyr::select(-"variable_classification")
-  }
-  result <- dplyr::bind_rows(result, .id = "cohort_name")
-  return(result)
 }
