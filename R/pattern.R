@@ -294,22 +294,21 @@ stratifyByUnit <- function(conceptSetList, cdm, ingredientConceptId) {
 
   # add the conceptSet to a tibble
   x <- lapply(conceptSetList, function(x){
-    dplyr::tibble(drug_concept_id = x) %>%
+    x <- dplyr::tibble(drug_concept_id = x) %>%
       addPattern(cdm, ingredientConceptId) %>%
       dplyr::filter(!is.na(.data$unit)) %>%
       dplyr::select("drug_concept_id", "unit") %>%
-      dplyr::collect() %>%
-      split(.$unit) %>%
+      dplyr::collect()
+    split(x, x$unit) %>%
       lapply(dplyr::pull, var = "drug_concept_id")
   })
 
   # rename
   result <- unlist(
-    lapply(names(x), function(nam, x) {
+    lapply(names(x), function(nam) {
       names(x[[nam]]) <- paste(nam, names(x[[nam]]), sep = " unit: ")
       x[[nam]]
     }),
-    x,
     recursive = FALSE
   )
 
