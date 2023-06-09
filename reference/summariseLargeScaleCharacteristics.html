@@ -56,8 +56,7 @@ cohort table</p>
 <span>  tablesToCharacterize <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span>, <span class="st">"drug_era"</span>, <span class="st">"procedure_occurrence"</span>,</span>
 <span>    <span class="st">"measurement"</span><span class="op">)</span>,</span>
 <span>  overlap <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  minimumCellCount <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  bigMark <span class="op">=</span> <span class="st">","</span></span>
+<span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -98,14 +97,10 @@ and "specimen". By default: c("condition_occurrence", "drug_era",
 TRUE) or only incident ones (overlap = FALSE).</p></dd>
 
 
-<dt>minimumCellCount</dt>
+<dt>minCellCount</dt>
 <dd><p>All counts lower than minimumCellCount will be
 obscured changing its value by NA. 'obscured' column of characterization
 tibble is TRUE when a count has been obscured. Otherwise it is FALSE.</p></dd>
-
-
-<dt>bigMark</dt>
-<dd><p>Thousands separator</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -121,6 +116,37 @@ characterized tables are the ones specified in 'tablesToChacaterize'. Second
 Finally "overlap" is also included in the list.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">summariseLargeScaleCharacteristics</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  cohort <span class="op">=</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>, cdm <span class="op">=</span> <span class="va">cdm</span>,</span></span>
+<span class="r-in"><span>  tablesToCharacterize<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drug_exposure"</span>, <span class="st">"condition_occurrence"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 131 × 12</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    cohort_name strata_name strata_level table_name        window_name concept_id</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           condition_occurr… -inf to -3…     <span style="text-decoration: underline;">317</span>009</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           condition_occurr… -90 to -1       <span style="text-decoration: underline;">378</span>253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           condition_occurr… -30 to -1       <span style="text-decoration: underline;">378</span>253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           condition_occurr… 1 to 30         <span style="text-decoration: underline;">378</span>253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           condition_occurr… 1 to 90         <span style="text-decoration: underline;">378</span>253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           condition_occurr… 31 to 365       <span style="text-decoration: underline;">378</span>253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           condition_occurr… 91 to 365       <span style="text-decoration: underline;">378</span>253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           condition_occurr… 366 to inf      <span style="text-decoration: underline;">317</span>009</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           drug_exposure     -inf to -3…    1<span style="text-decoration: underline;">125</span>360</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_1    overall     <span style="color: #BB0000;">NA</span>           drug_exposure     -365 to -91    1<span style="text-decoration: underline;">125</span>360</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 121 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: concept_name &lt;chr&gt;, count &lt;chr&gt;, denominator_count &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `%` &lt;dbl&gt;, cdm_name &lt;chr&gt;, generated_by &lt;chr&gt;</span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

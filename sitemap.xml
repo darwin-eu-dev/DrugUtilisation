@@ -52,6 +52,9 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/indicationColumns.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/indicationToStrata.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/mockDrugUtilisation.html</loc>
   </url>
   <url>
@@ -67,7 +70,7 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/reportGenerator.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/stratifyByConcept.html</loc>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/stratifyByUnit.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseDrugUse.html</loc>
