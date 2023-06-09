@@ -30,14 +30,17 @@
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(dplyr)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm$cohort1 %>%
-#'   addIndication(
-#'     cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 30)
-#'   ) %>%
-#'   collect()
+#'
+#' indications <- list("headache" = 378253, "asthma" = c(317009, 4214676))
+#' cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
+#'
+#' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
+#'
+#' cdm$drug_cohort %>%
+#'   addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
 #' }
 #'
 addIndication <- function(x,
@@ -200,7 +203,7 @@ addNoneIndication <- function(x, gap) {
 #' @param indicationVariables Indication variables that we want to join
 #' @param keep Whether to keep the prior indication variables or not
 #'
-#' @result The cohort with the new variable
+#' @return description The cohort with the new variable
 #'
 #' @export
 #'
@@ -283,6 +286,7 @@ groupIndications <- function(indicationVariables) {
 #' @param label Label of each binary column
 #'
 #' @return Table x with a new column summarising the data from binaryColumns
+#'
 #' @noRd
 #'
 addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binaryColumns) {

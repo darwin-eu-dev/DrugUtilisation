@@ -18,6 +18,9 @@ indicationToStrata(
 
 \item{keep}{Whether to keep the prior indication variables or not}
 }
+\value{
+description The cohort with the new variable
+}
 \description{
 Create new variables summarising the data of indication that can be used as
 stratification columns

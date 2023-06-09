@@ -40,7 +40,6 @@
 #' @param minCellCount All counts lower than minimumCellCount will be
 #' obscured changing its value by NA. 'obscured' column of characterization
 #' tibble is TRUE when a count has been obscured. Otherwise it is FALSE.
-#' @param bigMark Thousands separator
 #'
 #' @return The output of this function is a 3 elements list. First
 #' ("Characterization") is a reference to a temporal table in the database. It
@@ -53,6 +52,14 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' summariseLargeScaleCharacteristics(cdm$cohort1, cdm)
+#' }
+#'
 summariseLargeScaleCharacteristics <- function(cohort,
                                                cdm,
                                                window = list(
@@ -69,12 +76,11 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                  "measurement"
                                                ),
                                                overlap = TRUE,
-                                               minCellCount = 5,
-                                               bigMark = ",") {
+                                               minCellCount = 5) {
   checkInputs(
     cohort = cohort, cdm = cdm, window = window,
     tablesToCharacterize = tablesToCharacterize, overlap = overlap,
-    minCellCount = minCellCount, bigMark = bigMark
+    minCellCount = minCellCount
   )
 
   # correct overlap
@@ -228,12 +234,12 @@ summariseLargeScaleCharacteristics <- function(cohort,
       "count" = dplyr::if_else(
         .data$count < minCellCount,
         paste0("<", minCellCount),
-        base::format(.data$count, big.mark = bigMark)
+        as.character(.data$count)
       ),
       "denominator_count" = dplyr::if_else(
         .data$denominator_count < minCellCount,
         paste0("<", minCellCount),
-        base::format(.data$denominator_count, big.mark = bigMark)
+        as.character(denominator_count)
       )
     ) %>%
     dplyr::inner_join(

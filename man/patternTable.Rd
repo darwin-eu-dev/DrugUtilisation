@@ -19,3 +19,13 @@ the table, plus a column of potentially valid and invalid combinations.
 \description{
 Function to create a tibble with the patterns from current drug strength table
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+
+cdm <- mockDrugUtilisation()
+
+patternTable(cdm)
+}
+
+}

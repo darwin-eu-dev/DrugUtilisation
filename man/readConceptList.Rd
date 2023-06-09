@@ -17,3 +17,14 @@ list of concept_ids and respective concept_ids of interest
 \description{
 Get concept ids from a provided path to json files
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(here)
+
+cdm <- mockDrugUtilisation()
+
+codelist <- readConceptList(here("concepts"), cdm)
+}
+
+}

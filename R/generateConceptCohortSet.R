@@ -28,9 +28,34 @@
 #' @param cohortDateRange Range for cohort_start_date and cohort_end_date
 #'
 #' @return The function returns the 'cdm' object with the created cohort.
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CDMConnector)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' conditions <- list("headache" = 378253, "asthma" = c(317009, 4214676))
+#'
+#' cdm <- generateConceptCohortSet(
+#'   cdm = cdm,
+#'   name = "covariates",
+#'   conceptSetList = conditions,
+#'   daysPriorHistory = 365
+#' )
+#'
+#' cdm$covariates
+#'
+#' cohortSet(cdm$covariates)
+#'
+#' cohortCount(cdm$covariates)
+#'
+#' cohortAttrition(cdm$covariates)
+#' }
+#'
 generateConceptCohortSet <- function(cdm,
                                      name,
                                      conceptSetList,

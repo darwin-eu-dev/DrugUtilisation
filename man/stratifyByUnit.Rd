@@ -21,7 +21,16 @@ Function to stratify a conceptSetList by unit
 }
 \examples{
 \donttest{
+library(DrugUtilisation)
+library(CodelistGenerator)
 
+cdm <- mockDrugUtilisation()
+
+codelist <- getDrugIngredientCodes(cdm, "acetaminophen")
+
+codelistStratified <- stratifyByUnit(codelist, cdm, 1125315)
+
+codelistStratified
 }
 
 }

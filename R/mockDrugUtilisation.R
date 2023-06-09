@@ -36,9 +36,18 @@
 #' will be created if not provided
 #'
 #' @return A cdm reference with the mock tables
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' cdm
+#' }
+#'
 mockDrugUtilisation <- function(connectionDetails = list(
                                   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
                                   writeSchema = "main",

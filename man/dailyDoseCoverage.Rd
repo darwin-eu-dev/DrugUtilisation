@@ -36,3 +36,12 @@ for the selected ingredients and concept sets
 Check coverage of daily dose computation in a sample of the cdm for selected
 concept sets and ingredient
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+
+cdm <- mockDrugUtilisation()
+dailyDoseCoverage(cdm, 1125315)
+}
+
+}

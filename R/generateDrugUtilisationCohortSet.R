@@ -48,9 +48,35 @@
 #'
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' #' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#' library(CDMConnector)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' druglist <- getDrugIngredientCodes(cdm, c("acetaminophen", "metformin"))
+#'
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm,
+#'   name = "drug_cohorts",
+#'   conceptSetList = druglist,
+#'   daysPriorHistory = 365
+#' )
+#'
+#' cdm$drug_cohorts
+#'
+#' cohortSet(cdm$drug_cohorts)
+#'
+#' cohortCount(cdm$drug_cohorts)
+#'
+#' cohortAttrition(cdm$drug_cohorts)
+#' }
+#'
 generateDrugUtilisationCohortSet <- function(cdm,
                                              name,
                                              conceptSetList,

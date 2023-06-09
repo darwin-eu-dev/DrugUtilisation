@@ -34,3 +34,31 @@ combination.
 This function is used to summarise the indication table over multiple
 cohorts.
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(PatientProfiles)
+
+cdm <- mockDrugUtilisation()
+
+indications <- list("headache" = 378253, "asthma" = c(317009, 4214676))
+cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
+
+acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
+cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
+
+cdm$drug_cohort <- cdm$drug_cohort \%>\%
+  addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+
+summariseIndication(cdm$drug_cohort, cdm)
+
+cdm$drug_cohort <- cdm$drug_cohort \%>\%
+  addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) \%>\%
+  addSex(cdm)
+
+summariseIndication(cdm$drug_cohort, cdm, strata = list(
+  "Age" = "age_group", "Age & Sex" = c("age_group", "sex")
+))
+}
+
+}

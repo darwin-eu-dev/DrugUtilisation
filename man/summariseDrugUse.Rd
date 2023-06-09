@@ -32,3 +32,30 @@ A summary of the drug use stratified by cohort_name and strata_name
 \description{
 This function is used to summarise the dose table over multiple cohorts.
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(PatientProfiles)
+library(CodelistGenerator)
+
+cdm <- mockDrugUtilisation()
+cdm <- generateDrugUtilisationCohortSet(
+  cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+)
+cdm$dus_cohort <- cdm$dus_cohort \%>\%
+  addDrugUse(cdm, 1125315)
+result <- summariseDrugUse(cdm$dus_cohort, cdm)
+print(result)
+
+cdm$dus_cohort <- cdm$dus_cohort \%>\%
+  addSex(cdm) \%>\%
+  addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+result <- summariseDrugUse(
+  cdm$dus_cohort, cdm, strata = list(
+    "Age" = "age_group", "Sex" = "sex", "Age & sex" = c("age_group", "sex")
+  )
+)
+print(result)
+}
+
+}

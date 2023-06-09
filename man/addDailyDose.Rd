@@ -21,3 +21,16 @@ same input table
 \description{
 add daily dose information to a drug_exposure table
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(dplyr)
+
+cdm <- mockDrugUtilisation()
+
+cdm$drug_exposure \%>\%
+  filter(drug_concept_id == 2905077) \%>\%
+  addDailyDose(cdm, 1125315)
+}
+
+}

@@ -13,8 +13,7 @@ summariseLargeScaleCharacteristics(
   tablesToCharacterize = c("condition_occurrence", "drug_era", "procedure_occurrence",
     "measurement"),
   overlap = TRUE,
-  minCellCount = 5,
-  bigMark = ","
+  minCellCount = 5
 )
 }
 \arguments{
@@ -46,8 +45,6 @@ TRUE) or only incident ones (overlap = FALSE).}
 \item{minCellCount}{All counts lower than minimumCellCount will be
 obscured changing its value by NA. 'obscured' column of characterization
 tibble is TRUE when a count has been obscured. Otherwise it is FALSE.}
-
-\item{bigMark}{Thousands separator}
 }
 \value{
 The output of this function is a 3 elements list. First
@@ -61,4 +58,14 @@ Finally "overlap" is also included in the list.
 \description{
 This function is used to summarise the lasrge scale characteristics of a
 cohort table
+}
+\examples{
+\donttest{
+library(DrugUtilisation)
+
+cdm <- mockDrugUtilisation()
+
+summariseLargeScaleCharacteristics(cdm$cohort1, cdm)
+}
+
 }
