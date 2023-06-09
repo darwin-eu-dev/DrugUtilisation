@@ -1,6 +1,6 @@
 url: https://darwin-eu-dev.github.io/DrugUtilisation/
 template:
-  bootstrap: 5  
+  bootstrap: 5
 
 reference:
 - subtitle: Generate a drug utilisation cohort set
@@ -10,11 +10,11 @@ reference:
 - subtitle: Indication functions
   desc: Indication functions are used to summarise and obtain the indication information
 - contents:
-  - matches("addIndication|indicationColumns|summariseIndication")
+  - matches("addIndication|indicationToStrata|indicationColumns|summariseIndication")
 - subtitle: Add daily dose
   desc: Tools to compute the daily dose, see when it can be computed
 - contents:
-  - matches("addDailyDose|addPattern|dailyDoseCoverage|patternTable|stratifyByConcept")
+  - matches("addDailyDose|addPattern|dailyDoseCoverage|patternTable|stratifyByUnit")
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
