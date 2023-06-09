@@ -269,3 +269,77 @@ summariseLargeScaleCharacteristics <- function(cohort,
   return(result)
 }
 
+#' Summarise a cohort from multipl codelist and windows
+#'
+#' @param cohort Cohort to summarise
+#' @param cdm cdm_reference
+#' @param conceptSetList A list of concept sets
+#' @param strata Stratification list
+#' @param window Windows to characterize
+#' @param overlap Whether we consider episodes (overlap = TRUE) or incident
+#' (overlap = FALSE)
+#' @param minCellCount Minimum cell counts
+#'
+#' @return A SummarisedResults object that contains the characterization
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' atcCodes <- getATCCodes(cdm , "ATC 3rd")
+#' summariseCharacteristicsFromCodelist(
+#'   cdm$cohort1, cdm, atcCodes, window = list(c(-365, -1), c(0, 0), c(1, 365))
+#' )
+#' }
+#'
+summariseCharacteristicsFromCodelist <- function(cohort,
+                                                 cdm,
+                                                 conceptSetList,
+                                                 strata = list(),
+                                                 window = list(
+                                                   c(-Inf, -366), c(-365, -91),
+                                                   c(-365, -31), c(-90, -1),
+                                                   c(-30, -1), c(0, 0),
+                                                   c(1, 30), c(1, 90),
+                                                   c(31, 365), c(91, 365),
+                                                   c(366, Inf)
+                                                 ),
+                                                 overlap = TRUE,
+                                                 minCellCount = 5) {
+  # check initial inputs
+  checkInputs(
+    cohort = cohort, cdm = cdm, conceptSetList = conceptSetList,
+    strata = strata, window = window, overlap = overlap,
+    minCellCount = minCellCount
+  )
+
+  # create codelist
+  codelist <- codelistFromConceptSetList(conceptSetList)
+
+  # identify domains
+  codelist <- addDomain(codelist)
+
+  # create subset
+  cohort <- conceptsSubset(cohort, cdm, codelist)
+
+  # count for each window
+  results <- NULL
+  for (k in seq_along(window)) {
+    results <- results %>%
+      dplyr::union_all(countOccurrences(cohort, window, strata))
+  }
+
+  # format in summariseReuslts
+  results <- formatSummary(results)
+
+  # counts denominator
+  results <- results %>%
+    dplyr::union_all(countDenominator(cohort, window, strata))
+
+  return(results)
+}
