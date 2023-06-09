@@ -963,8 +963,9 @@ test_that("check output format", {
     summariseDrugUse(cdm = cdm)
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
   expect_true(all(colnames(result) %in% c(
-    "cohort_name", "strata_name", "strata_level", "variable", "estimate",
-    "value", "cdm_name", "generated_by"
+    "group_name", "group_level", "strata_name", "strata_level", "variable",
+    "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
+    "generated_by"
   )))
 })
 
@@ -1003,11 +1004,12 @@ test_that("check all estimates", {
       cdm = cdm,
       drugUseVariables = c("initial_dose", "cumulative_dose"),
       drugUseEstimates = all_estimates[k]
-    )
+    ) %>%
+      dplyr::filter(.data$group_name == "Cohort name")
     expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
-    expect_true(res$estimate[res$variable == c("initial_dose")] == all_estimates[k])
+    expect_true(res$estimate_type[res$variable == c("initial_dose")] == all_estimates[k])
     expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
-    expect_true(res$estimate[res$variable == c("cumulative_dose")] == all_estimates[k])
+    expect_true(res$estimate_type[res$variable == c("cumulative_dose")] == all_estimates[k])
   }
   res <- summariseDrugUse(
     cdm$dose_table,
@@ -1015,134 +1017,6 @@ test_that("check all estimates", {
     drugUseVariables = c("initial_dose", "cumulative_dose"),
     drugUseEstimates = all_estimates
   )
+
+  expect_true(grepl("summariseDrugUse", unique(res$generated_by)))
 })
-
-# currently we are not obscuring in PatientProfiles the mean, only the counts
-# WHAT should we do?
-
-# test_that("check obscure counts", {
-#   cdm <- mockDrugUtilisation(
-#     connectionDetails,
-#     extraTables = list(
-#       dose_table = dplyr::tibble(
-#         cohort_definition_id = c(1, 1, 1, 2),
-#         subject_id = c(1, 1, 2, 1),
-#         cohort_start_date = as.Date(c(
-#           "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-#         )),
-#         cohort_end_date = as.Date(c(
-#           "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-#         )),
-#         initial_dose = c(1, 2, 3, 6),
-#         cumulative_dose = c(5, 6, 9, 7),
-#         piscina = c(TRUE, FALSE, TRUE, FALSE),
-#         cara = c("a", "b", "b", "a")
-#       )
-#     )
-#   )
-#   attr(cdm$dose_table, "cohort_set") <- dplyr::tibble(
-#     cohort_definition_id = c(1, 2), cohort_name = c("cohort1", "cohort2")
-#   )
-#   class(cdm$dose_table) <- c("GeneratedCohortSet", class(cdm$dose_table))
-#
-#   # expect obscure for cohort_id = 1 when minimumCellCount >= 4
-#   expect_true(
-#     summariseDrugUse(
-#       cdm$dose_table,
-#       cdm = cdm,
-#       drugUseVariables = c("initial_dose", "cumulative_dose"),
-#       minimumCellCount = 3
-#     ) %>%
-#       dplyr::filter(is.na(.data$value)) %>%
-#       dplyr::tally() %>%
-#       dplyr::pull() == 0
-#   )
-#   expect_true(
-#     summariseDrugUse(
-#       cdm$dose_table,
-#       cdm = cdm,
-#       drugUseVariables = c("initial_dose", "cumulative_dose"),
-#       minimumCellCount = 4
-#     ) %>%
-#       dplyr::filter(is.na(.data$value)) %>%
-#       dplyr::tally() %>%
-#       dplyr::pull() == 20 # 20 because all variable should be obscured
-#   )
-#   # expect obscure for cohort_id = 2 when minimumCellCount >= 2
-#   expect_true(
-#     summariseDrugUse(
-#       cdm = cdm,
-#       strataCohortName = "strata",
-#       doseTableName = "dose_table",
-#       cohortId = 2,
-#       variable = c("initial_dose", "cumulative_dose"),
-#       minimumCellCount = 1
-#     ) %>%
-#       dplyr::filter(is.na(.data$value)) %>%
-#       dplyr::tally() %>%
-#       dplyr::pull() == 2 # 2 because std of a variable of length 1 is always NA
-#   )
-#   expect_true(
-#     summariseDrugUse(
-#       cdm = cdm,
-#       strataCohortName = "strata",
-#       doseTableName = "dose_table",
-#       cohortId = 2,
-#       variable = c("initial_dose", "cumulative_dose"),
-#       minimumCellCount = 2
-#     ) %>%
-#       dplyr::filter(is.na(.data$value)) %>%
-#       dplyr::tally() %>%
-#       dplyr::pull() == 20 # 20 because all variable should be obscured
-#   )
-#   # if minimumCellCount is 1 no obscure, if it is 2 or 3 only cohort 1 is
-#   # obscured. If it is 4 both cohorts are obscured
-#   expect_true(
-#     summariseDrugUse(
-#       cdm = cdm,
-#       strataCohortName = "strata",
-#       doseTableName = "dose_table",
-#       variable = c("initial_dose", "cumulative_dose"),
-#       minimumCellCount = 1
-#     ) %>%
-#       dplyr::filter(is.na(.data$value)) %>%
-#       dplyr::tally() %>%
-#       dplyr::pull() == 2 # 2 because std of a variable of length 1 is always NA
-#   )
-#   expect_true(
-#     summariseDrugUse(
-#       cdm = cdm,
-#       strataCohortName = "strata",
-#       doseTableName = "dose_table",
-#       variable = c("initial_dose", "cumulative_dose"),
-#       minimumCellCount = 2
-#     ) %>%
-#       dplyr::filter(is.na(.data$value)) %>%
-#       dplyr::tally() %>%
-#       dplyr::pull() == 20 # 20 because all variable in cohort 2 are obscured
-#   )
-#   expect_true(
-#     summariseDrugUse(
-#       cdm = cdm,
-#       strataCohortName = "strata",
-#       doseTableName = "dose_table",
-#       variable = c("initial_dose", "cumulative_dose"),
-#       minimumCellCount = 3
-#     ) %>%
-#       dplyr::filter(is.na(.data$value)) %>%
-#       dplyr::tally() %>%
-#       dplyr::pull() == 20 # 20 because all variable in cohort 2 are obscured
-#   )
-#   expect_true(
-#     summariseDrugUse(
-#       cdm = cdm,
-#       strataCohortName = "strata",
-#       doseTableName = "dose_table",
-#       variable = c("initial_dose", "cumulative_dose"),
-#       minimumCellCount = 4
-#     ) %>%
-#       dplyr::filter(is.na(.data$value)) %>%
-#       dplyr::tally() %>%
-#       dplyr::pull() == 40 # 40 because all variable are obscured
-#   )
-# })

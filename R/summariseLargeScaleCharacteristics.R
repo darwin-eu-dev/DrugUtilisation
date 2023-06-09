@@ -37,10 +37,9 @@
 #' "procedure_occurrence", "measurement").
 #' @param overlap Whether you want to consider overlapping events (overlap =
 #' TRUE) or only incident ones (overlap = FALSE).
-#' @param minimumCellCount All counts lower than minimumCellCount will be
+#' @param minCellCount All counts lower than minimumCellCount will be
 #' obscured changing its value by NA. 'obscured' column of characterization
 #' tibble is TRUE when a count has been obscured. Otherwise it is FALSE.
-#' @param bigMark Thousands separator
 #'
 #' @return The output of this function is a 3 elements list. First
 #' ("Characterization") is a reference to a temporal table in the database. It
@@ -53,6 +52,17 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' summariseLargeScaleCharacteristics(
+#'   cohort = cdm$cohort1, cdm = cdm,
+#'   tablesToCharacterize= c("drug_exposure", "condition_occurrence")
+#' )
+#' }
+#'
 summariseLargeScaleCharacteristics <- function(cohort,
                                                cdm,
                                                window = list(
@@ -69,12 +79,11 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                  "measurement"
                                                ),
                                                overlap = TRUE,
-                                               minimumCellCount = 5,
-                                               bigMark = ",") {
+                                               minCellCount = 5) {
   checkInputs(
     cohort = cohort, cdm = cdm, window = window,
     tablesToCharacterize = tablesToCharacterize, overlap = overlap,
-    minimumCellCount = minimumCellCount, bigMark = bigMark
+    minCellCount = minCellCount
   )
 
   # correct overlap
@@ -226,14 +235,14 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::mutate(
       "%" = 100 * .data$count / .data$denominator_count,
       "count" = dplyr::if_else(
-        .data$count < minimumCellCount,
-        paste0("<", minimumCellCount),
-        base::format(.data$count, big.mark = bigMark)
+        .data$count < minCellCount,
+        paste0("<", minCellCount),
+        as.character(.data$count)
       ),
       "denominator_count" = dplyr::if_else(
-        .data$denominator_count < minimumCellCount,
-        paste0("<", minimumCellCount),
-        base::format(.data$denominator_count, big.mark = bigMark)
+        .data$denominator_count < minCellCount,
+        paste0("<", minCellCount),
+        as.character(.data$denominator_count)
       )
     ) %>%
     dplyr::inner_join(
@@ -245,7 +254,10 @@ summariseLargeScaleCharacteristics <- function(cohort,
     dplyr::mutate(
       strata_name = "overall", strata_level = as.character(NA),
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = "DrugUtilisation_v0.2.0_summariseLargeScaleCharacteristics"
+      generated_by = paste0(
+        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
+        "_summariseLargeScaleCharacteristics"
+      )
     ) %>%
     dplyr::select(
       "cohort_name", "strata_name", "strata_level", "table_name", "window_name",

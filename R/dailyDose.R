@@ -26,6 +26,17 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(dplyr)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' cdm$drug_exposure %>%
+#'   filter(drug_concept_id == 2905077) %>%
+#'   addDailyDose(cdm, 1125315)
+#' }
+#'
 addDailyDose <- function(drugExposure,
                          cdm,
                          ingredientConceptId) {
@@ -91,6 +102,13 @@ addDailyDose <- function(drugExposure,
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#' dailyDoseCoverage(cdm, 1125315)
+#' }
+#'
 dailyDoseCoverage <- function(cdm,
                               ingredientConceptId,
                               sample = NULL,

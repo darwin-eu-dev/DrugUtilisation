@@ -10,7 +10,7 @@ summariseIndication(
   cdm,
   strata = list(),
   indicationVariables = indicationColumns(cohort),
-  minimumCellCount = 5
+  minCellCount = 1
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ summariseIndication(
 
 \item{indicationVariables}{Variables that point to an indication column}
 
-\item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
+\item{minCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}
 }
 \value{
@@ -33,4 +33,30 @@ combination.
 \description{
 This function is used to summarise the indication table over multiple
 cohorts.
+}
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(PatientProfiles)
+library(CodelistGenerator)
+
+cdm <- mockDrugUtilisation()
+indications <- list("headache" = 378253, "asthma" = 317009)
+cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
+acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
+cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
+cdm$drug_cohort <- cdm$drug_cohort \%>\%
+  addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+
+summariseIndication(cdm$drug_cohort, cdm)
+
+cdm$drug_cohort <- cdm$drug_cohort \%>\%
+  addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) \%>\%
+  addSex(cdm)
+
+summariseIndication(cdm$drug_cohort, cdm, strata = list(
+  "Age" = "age_group", "Age & Sex" = c("age_group", "sex")
+))
+}
+
 }

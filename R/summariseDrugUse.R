@@ -21,36 +21,70 @@
 #' @param strata Stratification list
 #' @param drugUseVariables Name of columns with drug use variables
 #' @param drugUseEstimates Estimates that we want for the columns
-#' @param minimumCellCount Below this number counts will be supressed
+#' @param minCellCount Below this number counts will be supressed
 #'
 #' @return A summary of the drug use stratified by cohort_name and strata_name
 #'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(PatientProfiles)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+#' )
+#' cdm$dus_cohort <- cdm$dus_cohort %>%
+#'   addDrugUse(cdm, 1125315)
+#' result <- summariseDrugUse(cdm$dus_cohort, cdm)
+#' print(result)
+#'
+#' cdm$dus_cohort <- cdm$dus_cohort %>%
+#'   addSex(cdm) %>%
+#'   addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+#' result <- summariseDrugUse(
+#'   cdm$dus_cohort, cdm, strata = list(
+#'     "Age" = "age_group", "Sex" = "sex", "Age & sex" = c("age_group", "sex")
+#'   )
+#' )
+#' print(result)
+#' }
+#'
 summariseDrugUse<- function(cohort,
                             cdm,
                             strata = list(),
                             drugUseVariables = drugUseColumns(cohort),
                             drugUseEstimates = c("mean", "q25", "q75"),
-                            minimumCellCount = 5) {
+                            minCellCount = 5) {
   # check inputs
   checkInputs(
     cohort = cohort, cdm = cdm, strata = strata,
     drugUseVariables = drugUseVariables, drugUseEstimates = drugUseEstimates,
-    minimumCellCount = minimumCellCount
+    minCellCount = minCellCount
   )
+
+  # update cohort_names
+  cohort <- cohort %>%
+    dplyr::left_join(
+      CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
+    )
 
   # summarise drug use columns
-  result <- summariseCohortDrugUse(
-    cohort, strata, drugUseVariables, drugUseEstimates, minimumCellCount
-  )
-
-  # tidy final result
-  result <- result %>%
+  result <- PatientProfiles::summariseResult(
+    table = cohort, group = list("Cohort name" = "cohort_name"),
+    strata = strata, variables = list(numericVariables = drugUseVariables),
+    functions = list(numericVariables = drugUseEstimates),
+    minCellCount = minCellCount
+  ) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = "DrugUtilisation_v0.2.0_summariseDrugUse"
+      generated_by = paste(
+        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
+        "_summariseDrugUse"
+      )
     )
 
   return(result)
@@ -85,35 +119,4 @@ drugUseColumns <- function(cohort) {
     "number_eras"
   )]
   return(names)
-}
-
-#' @noRd
-summariseCohortDrugUse <- function(x,
-                                   strata,
-                                   drugUseVariables,
-                                   drugUseEstimates,
-                                   minimumCellCount) {
-  cs <- CDMConnector::cohortSet(x)
-  cohortIds <- x %>%
-    dplyr::select("cohort_definition_id") %>%
-    dplyr::distinct() %>%
-    dplyr::pull()
-  result <- list()
-  for (cohortId in cohortIds) {
-    result[[cs$cohort_name[cs$cohort_definition_id == cohortId]]] <- x %>%
-      dplyr::filter(.data$cohort_definition_id == .env$cohortId) %>%
-      dplyr::collect() %>%
-      PatientProfiles::summariseCharacteristics(
-        strata = strata,
-        variables = list(drugUse = drugUseVariables),
-        functions = list(drugUse = drugUseEstimates),
-        suppressCellCount = minimumCellCount
-      ) %>%
-      dplyr::filter(
-        !(.data$variable %in% c("number subjects", "number records"))
-      ) %>%
-      dplyr::select(-"variable_classification")
-  }
-  result <- dplyr::bind_rows(result, .id = "cohort_name")
-  return(result)
 }

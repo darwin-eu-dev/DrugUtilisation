@@ -21,9 +21,25 @@
 #' @param ingredientConceptId ingredientConceptId
 #'
 #' @return It adds pattern_id and unit to the current table
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(dplyr)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' cdm$drug_exposure %>%
+#'   addPattern(cdm, 1125315)
+#'
+#' cdm$concept %>%
+#'   filter(domain_id == "Drug") %>%
+#'   select(drug_concept_id = concept_id) %>%
+#'   addPattern(cdm, 1125315)
+#' }
+#'
 addPattern <- function(drugList, cdm, ingredientConceptId) {
   # initial checks
   checkInputs(
@@ -94,9 +110,18 @@ addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
 #'
 #' @return The function creates a tibble with the different patterns found in
 #' the table, plus a column of potentially valid and invalid combinations.
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' patternTable(cdm)
+#' }
+#'
 patternTable <- function(cdm, recordCount = FALSE) {
   # Initial chekc on inputs
   checkInputs(cdm = cdm, recordCount = recordCount)
@@ -246,12 +271,23 @@ patternTable <- function(cdm, recordCount = FALSE) {
 #'
 #' @return The conceptSetList stratified by unit
 #'
+#' @export
+#'
 #' @examples
 #' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
 #'
+#' cdm <- mockDrugUtilisation()
+#'
+#' codelist <- getDrugIngredientCodes(cdm, "acetaminophen")
+#'
+#' codelistStratified <- stratifyByUnit(codelist, cdm, 1125315)
+#'
+#' codelistStratified
 #' }
 #'
-stratifyByConcept <- function(conceptSetList, cdm, ingredientConceptId) {
+stratifyByUnit <- function(conceptSetList, cdm, ingredientConceptId) {
   # check initial inputs
   checkInputs(
     conceptSetList = conceptSetList, cdm = cdm,
@@ -260,12 +296,12 @@ stratifyByConcept <- function(conceptSetList, cdm, ingredientConceptId) {
 
   # add the conceptSet to a tibble
   x <- lapply(conceptSetList, function(x){
-    dplyr::tibble(drug_concept_id = x) %>%
+    x <- dplyr::tibble(drug_concept_id = x) %>%
       addPattern(cdm, ingredientConceptId) %>%
       dplyr::filter(!is.na(.data$unit)) %>%
       dplyr::select("drug_concept_id", "unit") %>%
-      dplyr::collect() %>%
-      split(.$unit) %>%
+      dplyr::collect()
+    split(x, x$unit) %>%
       lapply(dplyr::pull, var = "drug_concept_id")
   })
 

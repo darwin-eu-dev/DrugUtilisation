@@ -335,10 +335,15 @@ checkIndicationVariables <- function(indicationVariables, cohort) {
     dplyr::select(dplyr::all_of(indicationVariables)) %>%
     utils::head(1) %>%
     dplyr::collect()
-  for (k in seq_along(cohort)) {
-    if (!is.character(cohort[[k]])) {
-      cli::cli_abort(errorMessage)
-    }
+  variableType <- PatientProfiles::variableTypes(cohort)$variable_type %>%
+    unique()
+  if (!all(variableType %in% c("binary", "categorical"))) {
+    cli::cli_abort(
+      "indicationVariables should point to binary or categorical variables"
+    )
+  }
+  if (!all(substr(indicationVariables, 1, 15) == "indication_gap_")) {
+    cli::cli_abort("indicationVariables should start with indication_gap_")
   }
 }
 
@@ -385,10 +390,8 @@ checkStrata <- function(strata, cohort) {
   }
 }
 
-checkMinimumCellCount <- function(minimumCellCount) {
-  checkmate::assertIntegerish(
-    minimumCellCount, lower = 0, any.missing = F, len = 1
-  )
+checkMinCellCount <- function(minCellCount) {
+  checkmate::assertIntegerish(minCellCount, lower = 0, any.missing = F, len = 1)
 }
 
 checkOffset <- function(offset) {
@@ -558,7 +561,7 @@ checkTablesToCharacterize <- function(tablesToCharacterize, cdm) {
 
 checkDrugUseEstimates <- function(drugUseEstimates) {
   choices <- PatientProfiles::availableFunctions() %>%
-    dplyr::filter(.data$variable_classification == "numeric") %>%
+    dplyr::filter(.data$variable_type == "numeric") %>%
     dplyr::pull("format_key")
   errorMessage <- paste0(
     "drugUseEstimates must be a subset of: ", paste0(choices, collapse = ", ")
@@ -610,6 +613,27 @@ checkSeed <- function(seed) {
 
 checkRecordCount <- function(recordCount) {
   checkmate::assertLogical(recordCount, any.missing = FALSE, len = 1)
+}
+
+checkKeep <- function(keep) {
+  checkmate::assertLogical(keep, any.missing = FALSE, len = 1)
+}
+
+checkBinaryColumns <- function(binaryColumns, x) {
+  checkmate::assertCharacter(binaryColumns, any.missing = FALSE)
+  if (!all(binaryColumns %in% colnames(x))) {
+    cli::cli_abort("binaryColumns not found in x")
+  }
+}
+
+checkNewColumn <- function(newColumn) {
+  checkmate::assertCharacter(newColumn, any.missing = FALSE, len = 1)
+}
+
+checkLabel <- function(label, binaryColumns) {
+  checkmate::assertCharacter(
+    label, any.missing = FALSE, len = length(binaryColumns)
+  )
 }
 
 # other functions

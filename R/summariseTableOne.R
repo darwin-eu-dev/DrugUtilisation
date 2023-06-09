@@ -24,7 +24,7 @@
 #' @param windowVisitOcurrence Window to count visit occurrences.
 #' @param covariates Named list of windows to check covariates. The name must
 #' point to a cohortTableName in the cdm.
-#' @param minimumCellCount minimum counts due to obscure
+#' @param minCellCount minimum counts due to obscure
 #'
 #' @return A summary of the characteristics of the individuals
 #'
@@ -47,12 +47,12 @@ summariseTableOne <- function(cohort,
                               ageGroup = NULL,
                               windowVisitOcurrence = NULL,
                               covariates = list(),
-                              minimumCellCount = 5) {
+                              minCellCount = 5) {
   # check initial tables
   checkInputs(
     cohort = cohort, cdm = cdm, strata = strata, ageGroup = ageGroup,
     windowVisitOcurrence = windowVisitOcurrence, covariates = covariates,
-    minimumCellCount = minimumCellCount
+    minCellCount = minCellCount
   )
 
   # add characteristics
@@ -100,38 +100,25 @@ summariseTableOne <- function(cohort,
     functions$covariates <- c("count", "%")
   }
 
+  # update cohort_names
+  cohort <- cohort %>%
+    dplyr::left_join(
+      CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
+    )
+
   # summarise results
   results <- cohort %>%
-    summariseCohortTableOne(strata, variables, functions, minimumCellCount) %>%
+    PatientProfiles::summariseResult(
+      group = list("Cohort name" = "cohort_name"), strata = strata,
+      variables = variables, functions = functions, minCellCount = minCellCount
+    ) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = "DrugUtilisation_v0.2.0_summariseTableOne"
+      generated_by = paste0(
+        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
+        "_summariseTableOne"
+      )
     )
 
   return(results)
-}
-
-#' @noRd
-summariseCohortTableOne <- function(x,
-                                    strata,
-                                    variables,
-                                    functions,
-                                    minimumCellCount) {
-  cs <- CDMConnector::cohortSet(x)
-  cohortIds <- x %>%
-    dplyr::select("cohort_definition_id") %>%
-    dplyr::distinct() %>%
-    dplyr::pull()
-  result <- list()
-  for (cohortId in cohortIds) {
-    result[[cs$cohort_name[cs$cohort_definition_id == cohortId]]] <- x %>%
-      dplyr::filter(.data$cohort_definition_id == .env$cohortId) %>%
-      dplyr::collect() %>%
-      PatientProfiles::summariseCharacteristics(
-        strata = strata, variables = variables, functions = functions,
-        suppressCellCount = minimumCellCount
-      )
-  }
-  result <- dplyr::bind_rows(result, .id = "cohort_name")
-  return(result)
 }

@@ -23,6 +23,15 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' codelist <- readConceptList(
+#'   path = system.file("concepts",package="DrugUtilisation"), cdm = cdm
+#' )
+#' }
 #'
 readConceptList <- function(path, cdm) {
   # initial checks

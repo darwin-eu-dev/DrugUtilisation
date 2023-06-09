@@ -19,3 +19,20 @@ It adds pattern_id and unit to the current table
 \description{
 add pattern info to a table containing drug_strength information
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(dplyr)
+
+cdm <- mockDrugUtilisation()
+
+cdm$drug_exposure \%>\%
+  addPattern(cdm, 1125315)
+
+cdm$concept \%>\%
+  filter(domain_id == "Drug") \%>\%
+  select(drug_concept_id = concept_id) \%>\%
+  addPattern(cdm, 1125315)
+}
+
+}

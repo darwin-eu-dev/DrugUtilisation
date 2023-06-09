@@ -59,3 +59,13 @@ A cdm reference with the mock tables
 \description{
 It creates a mock database for testing drugutilisation package
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+
+cdm <- mockDrugUtilisation()
+
+cdm
+}
+
+}
