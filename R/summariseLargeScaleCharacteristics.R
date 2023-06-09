@@ -343,3 +343,9 @@ summariseCharacteristicsFromCodelist <- function(cohort,
 
   return(results)
 }
+
+codelistFromConceptSetList <- function(conceptSetList) {
+  conceptSetList %>%
+    lapply(dplyr::as_tibble) %>%
+    dplyr::bind_rows(.id = "concept_set_name")
+}
