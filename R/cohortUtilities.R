@@ -136,7 +136,7 @@ addExcludedCounts <- function(attrition) {
 #' @export
 #'
 #' @examples
-#' #' \donttest{
+#' \donttest{
 #' library(DrugUtilisation)
 #' library(dplyr)
 #' library(PatientProfiles)
@@ -226,28 +226,32 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
     ))
   }
   for (domain in domains) {
-    concepts <- conceptSet %>%
-      dplyr::filter(.data$domain_id == .env$domain) %>%
-      dplyr::select(-"domain_id")
-    cohort <- cohort %>%
-      dplyr::union_all(
-        concepts %>%
-          dplyr::inner_join(
-            cdm[[getTableName(domain)]] %>%
-              dplyr::select(
-                "concept_id" = !!getConceptName(domain),
-                "subject_id" = "person_id",
-                "cohort_start_date" = !!getStartName(domain),
-                "cohort_end_date" = !!getEndName(domain)
-              ),
-            by = "concept_id"
-          ) %>%
-          dplyr::select(
-            "cohort_definition_id", "subject_id", "cohort_start_date",
-            "cohort_end_date"
-          )
-      ) %>%
-      computeTable(cdm)
+    if (getTableName(domain) %in% names(cdm)) {
+      concepts <- conceptSet %>%
+        dplyr::filter(.data$domain_id == .env$domain) %>%
+        dplyr::select(-"domain_id")
+      cohort <- cohort %>%
+        dplyr::union_all(
+          concepts %>%
+            dplyr::inner_join(
+              cdm[[getTableName(domain)]] %>%
+                dplyr::select(
+                  "concept_id" = !!getConceptName(domain),
+                  "subject_id" = "person_id",
+                  "cohort_start_date" = !!getStartName(domain),
+                  "cohort_end_date" = !!getEndName(domain)
+                ),
+              by = "concept_id"
+            ) %>%
+            dplyr::select(
+              "cohort_definition_id", "subject_id", "cohort_start_date",
+              "cohort_end_date"
+            )
+        ) %>%
+        computeTable(cdm)
+    } else {
+      cli::cli_warn("{getTableName(domain)} not found in the cdm object")
+    }
   }
   return(cohort)
 }

@@ -47,7 +47,7 @@ library(CDMConnector)
 
 cdm <- mockDrugUtilisation()
 
-conditions <- list("headache" = 378253, "asthma" = c(317009, 4214676))
+conditions <- list("headache" = 378253, "asthma" = 317009)
 
 cdm <- generateConceptCohortSet(
   cdm = cdm,

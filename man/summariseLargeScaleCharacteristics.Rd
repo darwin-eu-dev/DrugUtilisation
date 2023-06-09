@@ -65,7 +65,10 @@ library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 
-summariseLargeScaleCharacteristics(cdm$cohort1, cdm)
+summariseLargeScaleCharacteristics(
+  cohort = cdm$cohort1, cdm = cdm,
+  tablesToCharacterize= c("drug_exposure", "condition_occurrence")
+)
 }
 
 }

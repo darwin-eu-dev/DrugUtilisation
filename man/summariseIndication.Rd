@@ -38,15 +38,13 @@ cohorts.
 \donttest{
 library(DrugUtilisation)
 library(PatientProfiles)
+library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
-
-indications <- list("headache" = 378253, "asthma" = c(317009, 4214676))
+indications <- list("headache" = 378253, "asthma" = 317009)
 cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
-
 acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
-
 cdm$drug_cohort <- cdm$drug_cohort \%>\%
   addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
 

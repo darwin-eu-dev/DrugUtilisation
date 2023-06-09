@@ -19,7 +19,7 @@ A reference to a table in the database with the cohortCount
 Computes the cohortCount attribute for a certain table
 }
 \examples{
-#' \donttest{
+\donttest{
 library(DrugUtilisation)
 library(dplyr)
 library(PatientProfiles)

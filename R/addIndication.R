@@ -30,10 +30,11 @@
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
+#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' indications <- list("headache" = 378253, "asthma" = c(317009, 4214676))
+#' indications <- list("headache" = 378253, "asthma" = 317009)
 #' cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
 #'
 #' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")

@@ -57,7 +57,10 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' summariseLargeScaleCharacteristics(cdm$cohort1, cdm)
+#' summariseLargeScaleCharacteristics(
+#'   cohort = cdm$cohort1, cdm = cdm,
+#'   tablesToCharacterize= c("drug_exposure", "condition_occurrence")
+#' )
 #' }
 #'
 summariseLargeScaleCharacteristics <- function(cohort,
@@ -239,7 +242,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
       "denominator_count" = dplyr::if_else(
         .data$denominator_count < minCellCount,
         paste0("<", minCellCount),
-        as.character(denominator_count)
+        as.character(.data$denominator_count)
       )
     ) %>%
     dplyr::inner_join(

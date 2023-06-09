@@ -25,11 +25,12 @@
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(here)
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' codelist <- readConceptList(here("concepts"), cdm)
+#' codelist <- readConceptList(
+#'   path = system.file("concepts",package="DrugUtilisation"), cdm = cdm
+#' )
 #' }
 #'
 readConceptList <- function(path, cdm) {

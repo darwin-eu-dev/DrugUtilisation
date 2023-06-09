@@ -271,6 +271,8 @@ patternTable <- function(cdm, recordCount = FALSE) {
 #'
 #' @return The conceptSetList stratified by unit
 #'
+#' @export
+#'
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
