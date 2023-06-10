@@ -20,9 +20,9 @@ reference:
 - contents:
   - matches("addDrugUse|drugUseColumns|summariseDrugUse")
 - subtitle: Charcterise a cohort
-  desc: Two functions to characterize the cohorts
+  desc: Different functions to characterize cohort, these functions may be moved to more focused into characterization packages within DARWIN-EU framework
 - contents:
-  - matches("summariseTableOne|summariseLargeScaleCharacteristics")
+  - matches("summariseTableOne|summariseLargeScaleCharacteristics|summariseCharacteristicsFromCodelist")
 - subtitle: Complementary functions
   desc: Helpper functions, some of thay may be deprecated in the near future
 - contents:

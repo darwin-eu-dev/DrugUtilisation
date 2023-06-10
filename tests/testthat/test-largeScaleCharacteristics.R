@@ -72,3 +72,17 @@ test_that("basic functionality large scale characteristics", {
       )
   )
 })
+
+test_that("basic functionality summariseCodelist", {
+  cdm <- mockDrugUtilisation(connectionDetails)
+  conceptSetList <- list(
+    "acetaminophen" = c(1125315, 1125360, 2905077, 43135274),
+    "group A" = c(
+      3665501, 378253, 317009, 761948, 1539403, 1503327, 1516980, 4141052,
+      4313306
+    )
+  )
+  expect_no_error(
+    summariseCharacteristicsFromCodelist(cdm$cohort1, cdm, conceptSetList)
+  )
+})
