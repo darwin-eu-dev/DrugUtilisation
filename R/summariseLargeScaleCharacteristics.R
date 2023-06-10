@@ -318,6 +318,9 @@ summariseCharacteristicsFromCodelist <- function(cohort,
     minCellCount = minCellCount
   )
 
+  # add windoName
+  window <- windowName(window)
+
   # save cohortSet
   cohortSet <- CDMConnector::cohortSet(cohort)
 
@@ -334,22 +337,15 @@ summariseCharacteristicsFromCodelist <- function(cohort,
   result <- countOccurrences(cohort, window, strata) %>%
     dplyr::inner_join(cohortSet, by = "cohort_definition_id")
 
-  # counts denominator
-  result <- result %>%
-    dplyr::union_all(
-      countDenominator(cohort, window, strata) %>%
-        dplyr::inner_join(cohortSet, by = "cohort_definition_id")
-    )
-
   # format output
-  result %>%
+  result <- result %>%
     dplyr::rename(
-      "variable" = "concept_set_name", "group_name" = "cohort_name"
+      "variable" = "concept_set_name", "group_level" = "cohort_name"
     ) %>%
     dplyr::mutate(
       variable_type = "binary", variable_level = as.character(NA),
       estimate_type = "count", group_name = "Cohort name",
-      cdm_name = CDMConnector::cdmName(cdm),
+      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = paste0(
         "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
         "_summariseCharacteristicsFromCodelist"
@@ -382,25 +378,32 @@ addDomain <- function(codelist, cdm) {
 }
 
 conceptSubset <- function(cohort, cdm, codelist, overlap) {
-  domains <- unique(codelist$domain_id)
+  domains <- unique(codelist %>% dplyr::pull("domain_id"))
+  subsetResult <- NULL
   for (k in seq_along(domains)) {
     domain <- domains[k]
     tableName <- getDomainInfo(domain, "table_name")
-    conceptName <- getDomainInfo(domain, "concept_id_name")
-    startName <- getDomainInfo(domain, "start_name")
-    endName <- getDomainInfo(domain, "end_name")
-    codelist <- codelist %>%
-      dplyr::filter(.data$domain_id == .env$domain) %>%
-      dplyr::select("concept_set_name", !!conceptName := "concept_id")
-    x <- cdm[[tableName]] %>%
-      dplyr::select(
-        "subject_id" = "person_id",
-        "start_date" = dplyr::all_of(startName),
-        "end_date" = dplyr::all_of(ifelse(overlap, endName, startName)),
-        dplyr::all_of(conceptName)
-      ) %>%
-      dplyr::inner_join(cohort, by = "subject_id")
-    if (k == 1) {
+    if (!(tableName %in% names(cdm))) {
+      cli::cli_alert(paste0(tableName, " table not present in the cdm"))
+    } else {
+      conceptName <- getDomainInfo(domain, "concept_id_name")
+      startName <- getDomainInfo(domain, "start_name")
+      endName <- getDomainInfo(domain, "end_name")
+      codelistK <- codelist %>%
+        dplyr::filter(.data$domain_id == .env$domain) %>%
+        dplyr::select("concept_set_name", !!conceptName := "concept_id")
+      x <- cdm[[tableName]] %>%
+        dplyr::select(
+          "subject_id" = "person_id",
+          "start_date" = dplyr::all_of(startName),
+          "end_date" = dplyr::all_of(ifelse(overlap, endName, startName)),
+          dplyr::all_of(conceptName)
+        ) %>%
+        dplyr::inner_join(cohort, by = "subject_id") %>%
+        dplyr::inner_join(codelistK, by = conceptName) %>%
+        dplyr::select(-dplyr::all_of(conceptName))
+    }
+    if (is.null(subsetResult)) {
       subsetResult <- x
     } else {
       subsetResult <- dplyr::union_all(subsetResult, x)
@@ -436,11 +439,17 @@ countOccurrences <- function(cohort, window, strata) {
     cohortK <- cohort
     if (!is.infinite(windowStart)) {
       cohortK <- cohortK %>%
-        dplyr::filter(.data$end_date >= .data$cohort_start_date + !!windowStart)
+        dplyr::filter(
+          .data$end_date >=
+            CDMConnector::dateadd("cohort_start_date", windowStart)
+        )
     }
     if (!is.infinite(windowEnd)) {
       cohortK <- cohortK %>%
-        dplyr::filter(.data$start_date <= .data$cohort_start_date + !!windowEnd)
+        dplyr::filter(
+          .data$start_date <=
+            CDMConnector::dateadd("cohort_start_date", windowEnd)
+        )
     }
     cohortK <- cohortK %>%
       dplyr::select(
@@ -451,9 +460,9 @@ countOccurrences <- function(cohort, window, strata) {
       CDMConnector::computeQuery()
     resultK <- cohortK %>%
       dplyr::group_by(.data$cohort_definition_id, .data$concept_set_name) %>%
-      dplyr::summarise(estimate = dplyr::n()) %>%
+      dplyr::summarise(estimate = dplyr::n(), .groups = "drop") %>%
       dplyr::collect() %>%
-      dplyr::mutate(strata_group = "Overall", strata_level = "Overall")
+      dplyr::mutate(strata_name = "Overall", strata_level = "Overall")
     for (i in seq_along(strata)) {
       resultK <- resultK %>%
         dplyr::union_all(
@@ -467,7 +476,7 @@ countOccurrences <- function(cohort, window, strata) {
             ) %>%
             dplyr::summarise(estimate = dplyr::n()) %>%
             dplyr::collect() %>%
-            dplyr::mutate(strata_group = names(strata)[i])
+            dplyr::mutate(strata_name = names(strata)[i])
         )
     }
     resultK <- resultK %>%
@@ -475,7 +484,26 @@ countOccurrences <- function(cohort, window, strata) {
     if (k == 1) {
       result <- resultK
     } else {
-      result <- dplyr::union_all(result, resultk)
+      result <- dplyr::union_all(result, resultK)
     }
   }
+  return(result)
+}
+
+windowName <- function(window) {
+  if (is.null(names(window))) {
+    nam <- rep("", length(window))
+  } else {
+    nam <- names(window)
+  }
+  winName <- function(win) {
+    paste(win[1], "to", win[2])
+  }
+  for (k in seq_along(window)) {
+    if (nam[k] == "") {
+      nam[k] <- winName(window[[k]])
+    }
+  }
+  names(window) <- nam
+  return(window)
 }
