@@ -111,24 +111,8 @@
 <span class="r-in"><span>  <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>, <span class="va">cdm</span>, <span class="va">conceptSetList</span>,</span></span>
 <span class="r-in"><span>  window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">365</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → measurement table not present in the cdm</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → procedure_occurrence table not present in the cdm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 22 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level strata_name strata_level window_name variable     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Cohort name cohort_3    Overall     Overall      -365 to -1  group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Cohort name cohort_1    Overall     Overall      -365 to -1  group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Cohort name cohort_1    Overall     Overall      -365 to -1  acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Cohort name cohort_2    Overall     Overall      -365 to -1  acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Cohort name cohort_3    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Cohort name cohort_1    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Cohort name cohort_2    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Cohort name cohort_3    Overall     Overall      0 to 0      group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Cohort name cohort_1    Overall     Overall      0 to 0      group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Cohort name cohort_1    Overall     Overall      0 to 0      acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 12 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: variable_type &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate &lt;dbl&gt;, cdm_name &lt;chr&gt;, generated_by &lt;chr&gt;</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Not supported dommains: Condition, Measurement, Drug, Observation, Procedure</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in vec_c(x, y):</span> `..2` must be a vector, not a &lt;tbl_duckdb_connection/tbl_dbi/tbl_sql/tbl_lazy/tbl&gt; object.</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
