@@ -386,7 +386,7 @@ addDomain <- function(codelist, cdm) {
 
 conceptSubset <- function(cohort, cdm, codelist, overlap) {
   domains <- unique(codelist %>% dplyr::pull("domain_id"))
-  notSupported <- domains[!(domains %in% domainInformation$table_name)]
+  notSupported <- domains[!(domains %in% domainInformation$domain_id)]
   if (length(notSupported) > 0) {
     cli::cli_alert(paste0(
       "Not supported dommains: ", paste0(notSupported, collapse = ", ")
