@@ -392,7 +392,7 @@ conceptSubset <- function(cohort, cdm, codelist, overlap) {
       "Not supported dommains: ", paste0(notSupported, collapse = ", ")
     ))
   }
-  domains <- domains[domains %in% domainInformation$table_name]
+  domains <- domains[domains %in% domainInformation$domain_id]
   subsetResult <- NULL
   for (k in seq_along(domains)) {
     domain <- domains[k]
