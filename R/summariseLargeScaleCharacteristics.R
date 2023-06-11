@@ -416,11 +416,11 @@ conceptSubset <- function(cohort, cdm, codelist, overlap) {
         dplyr::inner_join(cohort, by = "subject_id") %>%
         dplyr::inner_join(codelistK, by = conceptName) %>%
         dplyr::select(-dplyr::all_of(conceptName))
-    }
-    if (is.null(subsetResult)) {
-      subsetResult <- x
-    } else {
-      subsetResult <- dplyr::union_all(subsetResult, x)
+      if (is.null(subsetResult)) {
+        subsetResult <- x
+      } else {
+        subsetResult <- dplyr::union_all(subsetResult, x)
+      }
     }
   }
   subsetResult <- subsetResult %>%
