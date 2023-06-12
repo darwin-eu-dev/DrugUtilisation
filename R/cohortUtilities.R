@@ -225,6 +225,7 @@ subsetTables <- function(cdm, conceptSet, domains = NULL) {
       "."
     ))
   }
+  domains <- domains[domains %in% domainInformation$domain_id]
   for (domain in domains) {
     if (getTableName(domain) %in% names(cdm)) {
       concepts <- conceptSet %>%
