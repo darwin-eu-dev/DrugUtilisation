@@ -150,16 +150,16 @@ mockDrugUtilisation <- function(connectionDetails = list(
 
   cdm <- CDMConnector::cdm_from_con(
     con,
-    cdm_schema = writeSchema,
-    write_schema = c("schema" = writeSchema, "prefix" = connectionDetails$writePrefix),
+    cdm_schema = c("schema" = writeSchema, "prefix" = writePrefix),
+    write_schema = c("schema" = writeSchema, "prefix" = writePrefix),
     cohort_tables = names(cohorts)
   )
 
   for (newTable in names(extraTables)) {
     writeTable(con, writeSchema, newTable, writePrefix, extraTables[[newTable]])
-    cdm[[newTable]] <- dplyr::tbl(con, CDMConnector::inSchema(
-      writeSchema, paste0(writePrefix, newTable), CDMConnector::dbms(con)
-    ))
+    cdm[[newTable]] <- dplyr::tbl(
+      con, DBI::Id(schema = writeSchema, name = paste0(writePrefix, newTable))
+    )
   }
 
   return(cdm)
@@ -170,9 +170,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
 writeTable <- function(con, writeSchema, name, writePrefix, x) {
   DBI::dbWriteTable(
     con,
-    CDMConnector::inSchema(
-      writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
-    ),
+    name = DBI::Id(schema = writeSchema,  table = paste0(writePrefix, name)),
     as.data.frame(x), overwrite = TRUE
   )
 }
