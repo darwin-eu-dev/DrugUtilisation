@@ -192,6 +192,7 @@ test_that("dates range", {
   cdm <- mockDrugUtilisation(connectionDetails)
   start <- as.Date("2010-01-01")
   end <- as.Date("2018-06-01")
+  acetaminophen <- list("acetaminophen" = c(1125315, 43135274, 2905077, 1125360))
   expect_no_error(
     cdm <- generateDrugUtilisationCohortSet(
       cdm, "dus", acetaminophen, gapEra = 0, cohortDateRange = c(start, end)
