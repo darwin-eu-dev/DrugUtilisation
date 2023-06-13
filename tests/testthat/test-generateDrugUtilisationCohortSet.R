@@ -4,7 +4,7 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohortSet(cdm = cdm))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", 1))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(1)))
-  expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
+  expect_no_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
   cdmNew <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
   expect_true(all(colnames(cdmNew$dus) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"

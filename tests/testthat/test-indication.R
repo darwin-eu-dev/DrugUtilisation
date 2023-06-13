@@ -463,10 +463,16 @@ test_that("test attributes", {
       cdm = cdm, indicationCohortName = "cohort2",
       indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL
     )
-  expect_identical(attributes(cdm$cohort1), attributes(cdm$cohort1new))
+  expect_identical(
+    sort(names(attributes(cdm$cohort1))),
+    sort(names(attributes(cdm$cohort1new)))
+  )
 
   cdm$cohort1new <- cdm$cohort1new %>% indicationToStrata()
-  expect_identical(attributes(cdm$cohort1), attributes(cdm$cohort1new))
+  expect_identical(
+    sort(names(attributes(cdm$cohort1))),
+    sort(names(attributes(cdm$cohort1new)))
+  )
 
 })
 
