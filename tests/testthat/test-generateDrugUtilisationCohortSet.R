@@ -187,3 +187,48 @@ test_that("basic functionality drug_conceptId", {
   )
   expect_true(x)
 })
+
+test_that("dates range", {
+  cdm <- mockDrugUtilisation(connectionDetails)
+  start <- as.Date("2010-01-01")
+  end <- as.Date("2018-06-01")
+  expect_no_error(
+    cdm <- generateDrugUtilisationCohortSet(
+      cdm, "dus", acetaminophen, gapEra = 0, cohortDateRange = c(start, end)
+    )
+  )
+  expect_true(
+    cdm$dus %>%
+      dplyr::filter(.data$cohort_start_date < start) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 0
+  )
+  expect_true(
+    cdm$dus %>%
+      dplyr::filter(.data$cohort_end_date > end) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 0
+  )
+  expect_true(
+    cdm$drug_exposure %>%
+      dplyr::filter(.data$drug_exposure_start_date <= .env$start) %>%
+      dplyr::filter(.data$drug_exposure_end_date >= .env$start) %>%
+      dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
+      dplyr::pull("n") ==
+      cdm$dus %>%
+      dplyr::filter(.data$cohort_start_date == .env$start) %>%
+      dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
+      dplyr::pull("n")
+  )
+  expect_true(
+    cdm$drug_exposure %>%
+      dplyr::filter(.data$drug_exposure_start_date <= .env$end) %>%
+      dplyr::filter(.data$drug_exposure_end_date >= .env$end) %>%
+      dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
+      dplyr::pull("n") ==
+      cdm$dus %>%
+      dplyr::filter(.data$cohort_end_date == .env$end) %>%
+      dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
+      dplyr::pull("n")
+  )
+})
