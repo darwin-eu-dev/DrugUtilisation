@@ -4,7 +4,7 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohortSet(cdm = cdm))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", 1))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(1)))
-  expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
+  expect_no_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
   cdmNew <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
   expect_true(all(colnames(cdmNew$dus) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"
@@ -186,4 +186,50 @@ test_that("basic functionality drug_conceptId", {
       dplyr::pull("dif") == 365
   )
   expect_true(x)
+})
+
+test_that("dates range", {
+  cdm <- mockDrugUtilisation(connectionDetails)
+  start <- as.Date("2010-01-01")
+  end <- as.Date("2018-06-01")
+  acetaminophen <- list("acetaminophen" = c(1125315, 43135274, 2905077, 1125360))
+  expect_no_error(
+    cdm <- generateDrugUtilisationCohortSet(
+      cdm, "dus", acetaminophen, gapEra = 0, cohortDateRange = c(start, end)
+    )
+  )
+  expect_true(
+    cdm$dus %>%
+      dplyr::filter(.data$cohort_start_date < start) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 0
+  )
+  expect_true(
+    cdm$dus %>%
+      dplyr::filter(.data$cohort_end_date > end) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 0
+  )
+  expect_true(
+    cdm$drug_exposure %>%
+      dplyr::filter(.data$drug_exposure_start_date <= .env$start) %>%
+      dplyr::filter(.data$drug_exposure_end_date >= .env$start) %>%
+      dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
+      dplyr::pull("n") ==
+      cdm$dus %>%
+      dplyr::filter(.data$cohort_start_date == .env$start) %>%
+      dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
+      dplyr::pull("n")
+  )
+  expect_true(
+    cdm$drug_exposure %>%
+      dplyr::filter(.data$drug_exposure_start_date <= .env$end) %>%
+      dplyr::filter(.data$drug_exposure_end_date >= .env$end) %>%
+      dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
+      dplyr::pull("n") ==
+      cdm$dus %>%
+      dplyr::filter(.data$cohort_end_date == .env$end) %>%
+      dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
+      dplyr::pull("n")
+  )
 })

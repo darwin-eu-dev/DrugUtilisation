@@ -338,8 +338,9 @@ requirePriorUseWashout <- function(cohort, cdm, washout) {
 trimStartDate <- function(cohort, cdm, startDate) {
   if (!is.na(startDate)) {
     cohort <- cohort %>%
-      dplyr::mutate(cohort_start_date = max(
-        .data$cohort_start_date, !!.env$startDate
+      dplyr::mutate(cohort_start_date = dplyr::if_else(
+        .data$cohort_start_date <= !!startDate,
+        !!startDate, .data$cohort_start_date
       )) %>%
       dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) %>%
       computeTable(cdm)
@@ -351,8 +352,9 @@ trimStartDate <- function(cohort, cdm, startDate) {
 trimEndDate <- function(cohort, cdm, endDate) {
   if (!is.na(endDate)) {
     cohort <- cohort %>%
-      dplyr::mutate(cohort_start_date = min(
-        .data$cohort_start_date, !!.env$endDate
+      dplyr::mutate(cohort_end_date = dplyr::if_else(
+        .data$cohort_end_date >= !!endDate,
+        !!endDate, .data$cohort_end_date
       )) %>%
       dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) %>%
       computeTable(cdm)

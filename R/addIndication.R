@@ -48,7 +48,7 @@ addIndication <- function(x,
                           cdm,
                           indicationCohortName,
                           indicationGap = 0,
-                          unknownIndicationTable = c("condition_occurrence", "observation"),
+                          unknownIndicationTable = NULL,
                           indicationDate = "cohort_start_date") {
   # check inputs
   checkInputs(

@@ -9,7 +9,7 @@ addIndication(
   cdm,
   indicationCohortName,
   indicationGap = 0,
-  unknownIndicationTable = c("condition_occurrence", "observation"),
+  unknownIndicationTable = NULL,
   indicationDate = "cohort_start_date"
 )
 }
