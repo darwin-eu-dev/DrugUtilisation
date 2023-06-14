@@ -191,6 +191,7 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
 addNoneIndication <- function(x, gap) {
   columns <- colnames(x)
   columns <- columns[grepl(indicationName(gap), columns)]
+  columns[grepl(".*\\s.*", columns)] <- paste0("`", columns[grepl(".*\\s.*", columns)],"`")
   columns <- paste0(".data$", columns, collapse = " + ")
   columns <- paste0("dplyr::if_else(", columns, " > 0, 0, 1)")
   x %>%
