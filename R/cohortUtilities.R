@@ -365,15 +365,14 @@ trimEndDate <- function(cohort, cdm, endDate) {
 #' @noRd
 insertTable <- function(x,
                         cdm,
-                        name = CDMConnector::uniqueTableName(),
-                        temporary = is.null(attr(cdm, "write_prefix"))) {
+                        name = CDMConnector::uniqueTableName()) {
   con <- attr(cdm, "dbcon")
   name <- CDMConnector::inSchema(
     attr(cdm, "write_schema"),
     paste0(attr(cdm, "write_prefix"), name),
     CDMConnector::dbms(con)
   )
-  DBI::dbWriteTable(con, name, x, temporary = temporary, overwrite = TRUE)
+  DBI::dbWriteTable(con, name, as.data.frame(x), overwrite = TRUE)
   dplyr::tbl(con, name)
 }
 

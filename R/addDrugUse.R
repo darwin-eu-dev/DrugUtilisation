@@ -121,9 +121,6 @@ addDrugUse <- function(cohort,
                        imputeDailyDose = "eliminate",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
-  # tables to be deleted
-  firstTempTable <- getOption("dbplyr_table_name", 0) + 1
-
   if (length(conceptSetList) > 1) {
     cli::cli_abort("Only one concept set should be provided")
   }
@@ -250,14 +247,6 @@ addDrugUse <- function(cohort,
 
   # add attributes back to the cohort
   dusCohortDose <- PatientProfiles::addAttributes(dusCohortDose, originalCohort)
-
-  # drop intermediary tables that were created in the process
-  lastTempTable <- getOption("dbplyr_table_name", 0)
-  if (!is.null(attr(cdm, "write_prefix")) & firstTempTable <= lastTempTable) {
-    CDMConnector::dropTable(
-      cdm, sprintf("dbplyr_%03i", firstTempTable:lastTempTable)
-    )
-  }
 
   return(dusCohortDose)
 }

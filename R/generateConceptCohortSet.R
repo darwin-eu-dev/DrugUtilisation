@@ -78,12 +78,12 @@ generateConceptCohortSet <- function(cdm,
   # create cohortSet
   cohortSet <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
-      days_prior_history = dplyr::coalesce(.env$daysPriorHistory, as.numeric(NA)),
-      gap = .env$gap,
-      washout = .env$washout,
-      offset = .env$offset,
-      cohort_date_range_start = .env$cohortDateRange[1],
-      cohort_date_range_end = .env$cohortDateRange[2]
+      days_prior_history = as.character(dplyr::coalesce(.env$daysPriorHistory, as.numeric(NA))),
+      gap = as.character(.env$gap),
+      washout = as.character(.env$washout),
+      offset = as.character(.env$offset),
+      cohort_date_range_start = as.character(.env$cohortDateRange[1]),
+      cohort_date_range_end = as.character(.env$cohortDateRange[2])
     )
 
   # subset tables
@@ -143,7 +143,7 @@ generateConceptCohortSet <- function(cdm,
       FALSE, attr(cdm, "write_schema"), TRUE
     )
   cohortSetRef <- cohortSet %>%
-    insertTable(cdm, paste0(name, "_set"), FALSE)
+    insertTable(cdm, paste0(name, "_set"))
   cohortAttritionRef <- cohortAttritionRef %>%
     CDMConnector::computeQuery(
       name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),

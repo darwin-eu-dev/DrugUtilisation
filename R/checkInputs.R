@@ -694,7 +694,7 @@ checkConsistentCohortSet<- function(cs,
       }
       gapEra <- unique(cs$gap_era)
     } else {
-      if (!all(cs$gap_era == gapEra)) {
+      if (!all(cs$gap_era == as.character(gapEra))) {
         cli::cli_warn(glue::glue_collapse(
           "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
         ))
@@ -708,7 +708,7 @@ checkConsistentCohortSet<- function(cs,
       }
       imputeDuration <- unique(cs$impute_duration)
     } else {
-      if (imputeDuration != cs$impute_duration) {
+      if (as.character(imputeDuration) != cs$impute_duration) {
         cli::cli_warn(glue::glue(
           "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
         ))
@@ -724,7 +724,10 @@ checkConsistentCohortSet<- function(cs,
         unique(cs$duration_range_min), unique(cs$duration_range_max)
       )
     } else {
-      if (!identical(durationRange, c(cs$duration_range_min, cs$duration_range_max))) {
+      if (!identical(
+        as.character(durationRange),
+        c(cs$duration_range_min, cs$duration_range_max)
+        )) {
         cli::cli_warn(glue::glue_collapse(
           "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
         ))
