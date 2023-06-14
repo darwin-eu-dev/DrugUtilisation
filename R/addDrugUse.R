@@ -128,12 +128,15 @@ addDrugUse <- function(cohort,
     cli::cli_abort("Only one concept set should be provided")
   }
   if (is.null(conceptSetList)) {
-    conceptSetList <- CodelistGenerator::getDrugIngredientCodes(
-      cdm,
-      cdm[["concept"]] %>%
-        dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-        dplyr::pull("concept_name")
+    checkInputs(ingredientConceptId = ingredientConceptId, cdm = cdm)
+    conceptSetList <- list(
+      cdm[["drug_strength"]] %>%
+        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
+        dplyr::pull("drug_concept_id")
     )
+    names(conceptSetList) <- cdm[["concept"]] %>%
+      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+      dplyr::pull("concept_name")
   }
 
   # initial checks

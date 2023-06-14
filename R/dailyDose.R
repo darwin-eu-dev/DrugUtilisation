@@ -118,12 +118,14 @@ dailyDoseCoverage <- function(cdm,
   # add conceptSetList if needed
   if (is.null(conceptSetList)) {
     checkInputs(ingredientConceptId = ingredientConceptId, cdm = cdm)
-    conceptSetList <- CodelistGenerator::getDrugIngredientCodes(
-      cdm,
-      cdm[["concept"]] %>%
-        dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-        dplyr::pull("concept_name")
+    conceptSetList <- list(
+      cdm[["drug_strength"]] %>%
+        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
+        dplyr::pull("drug_concept_id")
     )
+    names(conceptSetList) <- cdm[["concept"]] %>%
+      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+      dplyr::pull("concept_name")
   }
 
   # initial checks
