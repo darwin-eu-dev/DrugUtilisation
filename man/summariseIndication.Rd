@@ -6,27 +6,23 @@
 cohorts.}
 \usage{
 summariseIndication(
+  cohort,
   cdm,
-  cohortId = NULL,
-  indicationList = NULL,
-  minimumCellCount = 5
+  strata = list(),
+  indicationVariables = indicationColumns(cohort),
+  minCellCount = 1
 )
 }
 \arguments{
-\item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
-must contain the 'doseTableName' table and  also 'strataCohortName' and
-'indicationList' if specified. It is a compulsory input, no default
-value is provided.}
+\item{cohort}{Cohort with indications and strata}
 
-\item{cohortId}{cohort definition id of the cohorts in the strata cohort
-table that you want to summarise. By default cohortId = NULL, then all
-cohorts in strataCohort will be summarised.}
+\item{cdm}{cdm_reference created by CDMConnector}
 
-\item{indicationList}{is a list of tables that contains the indication
-information. You must use the getIndication function to obtain this list. No
-default value is provided.}
+\item{strata}{Stratification list}
 
-\item{minimumCellCount}{Minimum counts that a group can have. Cohorts with
+\item{indicationVariables}{Variables that point to an indication column}
+
+\item{minCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}
 }
 \value{
@@ -37,4 +33,30 @@ combination.
 \description{
 This function is used to summarise the indication table over multiple
 cohorts.
+}
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(PatientProfiles)
+library(CodelistGenerator)
+
+cdm <- mockDrugUtilisation()
+indications <- list("headache" = 378253, "asthma" = 317009)
+cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
+acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
+cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
+cdm$drug_cohort <- cdm$drug_cohort \%>\%
+  addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+
+summariseIndication(cdm$drug_cohort, cdm)
+
+cdm$drug_cohort <- cdm$drug_cohort \%>\%
+  addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) \%>\%
+  addSex(cdm)
+
+summariseIndication(cdm$drug_cohort, cdm, strata = list(
+  "Age" = "age_group", "Age & Sex" = c("age_group", "sex")
+))
+}
+
 }

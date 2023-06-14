@@ -14,17 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Explain function
+#' Add new columns with dose related information to the cohort
 #'
-#' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
-#' must contain at least 'drug_exposure', 'drug_strength' and
-#' observation_period' tables.
-#' @param targetCohortName Name of the cohort that we want to obtain the dose
-#' information.
-#' @param conceptSetList List of concepts to be included. If NULL all the descendants
-#' of ingredient concept id will be used. By default: NULL.
+#' @param cohort Cohort in the cdm
+#' @param cdm cdm_reference created with CDMConnector::cdmFromCon
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
+#' @param conceptSetList List of concepts to be included. If NULL all the descendants
+#' of ingredient concept id will be used. By default: NULL.
+#' @param initialDailyDose Whether initial dose should be displayed
+#' @param numberExposures Whether number exposures should be displayed
+#' @param duration Whether duration should be displayed
+#' @param cumulativeDose Whether cumulative dose should be displayed
+#' @param numberEras Whether the number of eras should be displayed
+#' @param supplementary Whether all supplementary variables should be displayed
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era. By default: 180.
 #' @param eraJoinMode How two different continuous exposures are joined in an
@@ -82,90 +85,110 @@
 #' imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
 #' NULL.
 #'
-#' TERMINOLOGY
-#' - exposure: we refer to exposure to a row in the drug_exposure table of the
-#' cdm object.
-#' - subexposure: period of time were the number of exposures that a person is
-#' exposed to does not change.
-#' - continuous exposure: period of time where the individual is exposed with no
-#' interruption. This period can be comprised by multiple subexposures and
-#' exposure.
-#' - exposed gap: period of time that the individual is not exposed (there are
-#' no exposures in the time period), but its length is smaller or equal than
-#' gapEra parameter value so the individual is considered to be exposed.
-#' - non exposed gap: period of time that the individual is not exposed (there are
-#' no exposures in the time period) and its length is larger than gapEra
-#' parameter value
-#' - era: period of time the individual is considered exposed. It is formed by
-#' continuous exposures and exposed gaps.
-#'
 #' @return The function returns the dose information for all the individuals of
 #' dusCohortName.
 #'
 #' @export
 #'
 #' @examples
-getDoseInformation <- function(cdm,
-                               targetCohortName,
-                               ingredientConceptId,
-                               conceptSetList = NULL,
-                               gapEra = 30,
-                               eraJoinMode = "Previous", # proposal "Zero"
-                               overlapMode = "Previous", # proposal "Sum"
-                               sameIndexMode = "Sum",
-                               imputeDuration = "eliminate",
-                               imputeDailyDose = "eliminate",
-                               durationRange = c(1, Inf),
-                               dailyDoseRange = c(0, Inf)) {
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+#' )
+#' cdm$dus_cohort %>%
+#'   addDrugUse(cdm, 1125315)
+#' }
+#'
+addDrugUse <- function(cohort,
+                       cdm,
+                       ingredientConceptId,
+                       conceptSetList = NULL,
+                       initialDailyDose = TRUE,
+                       numberExposures = TRUE,
+                       duration = TRUE,
+                       cumulativeDose = TRUE,
+                       numberEras = TRUE,
+                       supplementary = FALSE,
+                       gapEra = 30,
+                       eraJoinMode = "Zero",
+                       overlapMode = "Sum",
+                       sameIndexMode = "Sum",
+                       imputeDuration = "eliminate",
+                       imputeDailyDose = "eliminate",
+                       durationRange = c(1, Inf),
+                       dailyDoseRange = c(0, Inf)) {
   # tables to be deleted
   firstTempTable <- getOption("dbplyr_table_name", 0) + 1
 
+  if (length(conceptSetList) > 1) {
+    cli::cli_abort("Only one concept set should be provided")
+  }
+  if (is.null(conceptSetList)) {
+    checkInputs(ingredientConceptId = ingredientConceptId, cdm = cdm)
+    conceptSetList <- list(
+      cdm[["drug_strength"]] %>%
+        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
+        dplyr::pull("drug_concept_id")
+    )
+    names(conceptSetList) <- cdm[["concept"]] %>%
+      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+      dplyr::pull("concept_name")
+  }
+
   # initial checks
   checkInputs(
-    cdm = cdm, targetCohortName = targetCohortName,
-    ingredientConceptId = ingredientConceptId, gapEra = gapEra,
-    eraJoinMode = eraJoinMode, overlapMode = overlapMode,
-    sameIndexMode = sameIndexMode, imputeDuration = imputeDuration,
-    imputeDailyDose = imputeDailyDose, durationRange = durationRange,
-    dailyDoseRange = dailyDoseRange
+    cohort = cohort, cdm = cdm, ingredientConceptId = ingredientConceptId,
+    conceptSetList = conceptSetList, initialDailyDose = initialDailyDose,
+    numberExposures = numberExposures, duration = duration,
+    cumulativeDose = cumulativeDose, numberEras = numberEras,
+    supplementary = supplementary, gapEra = gapEra, eraJoinMode = eraJoinMode,
+    overlapMode = overlapMode, sameIndexMode = sameIndexMode,
+    imputeDuration = imputeDuration, imputeDailyDose = imputeDailyDose,
+    durationRange = durationRange, dailyDoseRange = dailyDoseRange
   )
-
-  if (is.null(conceptSetList)) {
-    conceptSetList <- CodelistGenerator::getDrugIngredientCodes(
-      cdm,
-      cdm[["concept"]] %>%
-        dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-        dplyr::pull("concept_name")
-    )
-  }
-
-  checkInputs(conceptSetList = conceptSetList)
-
-  # consistency with cohortSet
-  cs <- CDMConnector::cohortSet(cdm[[targetCohortName]])
-  if (checkDrugUtilisationCohortSet(cs)) {
-    parameters <- checkConsistentCohortSet(
-      cs, conceptSetList, gapEra, imputeDuration, durationRange,
-      missing(gapEra), missing(imputeDuration), missing(durationRange)
-    )
-    gapEra <- parameters$gapEra
-    imputeDuration <- parameters$imputeDuration
-    durationRange <- parameters$durationRange
-  } else {
-    cli::cli_alert_warning(
-      "The cohort was not generated by generateDrugUtilisationCohortSet()."
-    )
-  }
-  if (length(conceptSetList) > 1) {
-    cli::cli_abort("conceptSetList must have length 1")
-  }
 
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
+  # check unit
+  conceptSet <- conceptSet %>%
+    dplyr::rename("drug_concept_id" = "concept_id") %>%
+    addPattern(cdm, ingredientConceptId) %>%
+    dplyr::filter(!is.na(.data$unit))
+  unit <- conceptSet %>% dplyr::pull("unit") %>% unique()
+  if (length(unit) > 1) {
+    cli::cli_abort(
+      "More than one unit included in the conceptSetList, please stratify by
+      unit. You can check the unit of each with:
+      tibble(drug_concept_id = unlist(conceptSetList)) %>% addPattern(cdm, ingredientConceptId)"
+    )
+  }
+  conceptSet <- conceptSet %>%
+    dplyr::select("cohort_definition_id", "concept_id" = "drug_concept_id")
+
+  # consistency with cohortSet
+  cs <- CDMConnector::cohortSet(cohort)
+  parameters <- checkConsistentCohortSet(
+    cs, conceptSetList, gapEra, imputeDuration, durationRange,
+    missing(gapEra), missing(imputeDuration), missing(durationRange)
+  )
+  gapEra <- parameters$gapEra
+  imputeDuration <- parameters$imputeDuration
+  durationRange <- parameters$durationRange
+  if (length(conceptSetList) > 1) {
+    cli::cli_abort("Only one concept set is allowed")
+  }
+
+  # save original reference
+  originalCohort <- cohort
+
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
-  cohort <- initialSubset(cdm, targetCohortName, conceptSet)
+  cohort <- initialSubset(cdm, cohort, conceptSet)
 
   # correct duration
   cohort <- correctDuration(
@@ -176,7 +199,7 @@ getDoseInformation <- function(cdm,
   # add daily dose
   cohort <- cohort %>%
     addDailyDose(cdm, ingredientConceptId) %>%
-    dplyr::select(-"quantity")
+    dplyr::select(-"quantity", -"unit")
 
   # impute daily dose
   cohort <- imputeVariable(
@@ -211,12 +234,22 @@ getDoseInformation <- function(cdm,
   # summarise cohort to obtain the dose table
   doseTable <- summariseCohort(cohort, cdm)
 
-  # instantiate in the database
-  doseTableRef <- doseTable %>%
-    CDMConnector::computeQuery(
-      name = paste0(attr(cdm, "write_prefix"), targetCohortName, "_dose"),
-      FALSE, attr(cdm, "write_schema"), TRUE
-    )
+  # select variables of interest
+  doseTable <- doseTable %>%
+    dplyr::select(dplyr::all_of(getVariables(
+      initialDailyDose, numberExposures, duration, cumulativeDose, numberEras,
+      supplementary
+    )))
+
+  # add dose table to dusCohort
+  dusCohortDose <- originalCohort %>%
+    dplyr::left_join(
+      doseTable, by = c("subject_id", "cohort_start_date", "cohort_end_date")
+    ) %>%
+    CDMConnector::computeQuery()
+
+  # add attributes back to the cohort
+  dusCohortDose <- PatientProfiles::addAttributes(dusCohortDose, originalCohort)
 
   # drop intermediary tables that were created in the process
   lastTempTable <- getOption("dbplyr_table_name", 0)
@@ -226,11 +259,11 @@ getDoseInformation <- function(cdm,
     )
   }
 
-  return(doseTableRef)
+  return(dusCohortDose)
 }
 
 #' @noRd
-initialSubset <- function(cdm, targetCohortName, conceptSet) {
+initialSubset <- function(cdm, dusCohort, conceptSet) {
   cdm[["drug_exposure"]] %>%
     dplyr::select(
       "subject_id" = "person_id",
@@ -241,7 +274,7 @@ initialSubset <- function(cdm, targetCohortName, conceptSet) {
       "quantity"
     ) %>%
     dplyr::inner_join(
-      cdm[[targetCohortName]] %>%
+      dusCohort %>%
         dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
         dplyr::distinct(),
       by = "subject_id"
@@ -706,68 +739,6 @@ addGapDailyDose <- function(x, cdm, eraJoinMode) {
 }
 
 #' @noRd
-getConceptList <- function(conceptSetPath, ingredientConceptId, cdm) {
-  if (!is.null(conceptSetPath)) {
-    conceptSets <- dplyr::tibble(concept_set_path = .env$conceptSetPath) %>%
-      dplyr::mutate(
-        concept_set_name =
-          tools::file_path_sans_ext(basename(.data$concept_set_path))
-      ) %>%
-      dplyr::mutate(cohort_definition_id = 1)
-
-    tryCatch(
-      expr = conceptList <- readConceptSets(conceptSets),
-      error = function(e) {
-        stop("The json file is not a properly formated OMOP concept set.")
-      }
-    )
-
-    conceptList <- conceptList %>%
-      dplyr::filter(.data$include_descendants == FALSE) %>%
-      dplyr::union(
-        cdm[["concept_ancestor"]] %>%
-          dplyr::select(
-            "concept_id" = "ancestor_concept_id",
-            "descendant_concept_id"
-          ) %>%
-          dplyr::inner_join(
-            conceptList %>%
-              dplyr::filter(.data$include_descendants == TRUE),
-            copy = TRUE,
-            by = "concept_id"
-          ) %>%
-          dplyr::select(-"concept_id") %>%
-          dplyr::rename("concept_id" = "descendant_concept_id") %>%
-          dplyr::collect()
-      ) %>%
-      dplyr::select(-"include_descendants") %>%
-      dplyr::rename("drug_concept_id" = "concept_id")
-    # eliminate the ones that is_excluded = TRUE
-    conceptList <- conceptList %>%
-      dplyr::filter(.data$is_excluded == FALSE) %>%
-      dplyr::select("drug_concept_id") %>%
-      dplyr::anti_join(
-        conceptList %>%
-          dplyr::filter(.data$is_excluded == TRUE),
-        by = "drug_concept_id"
-      )
-    if (!is.null(ingredientConceptId)) {
-      conceptList <- cdm[["drug_strength"]] %>%
-        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-        dplyr::select("drug_concept_id") %>%
-        dplyr::collect() %>%
-        dplyr::inner_join(conceptList, by = "drug_concept_id")
-    }
-  } else {
-    conceptList <- cdm[["drug_strength"]] %>%
-      dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-      dplyr::select("drug_concept_id") %>%
-      dplyr::collect()
-  }
-  return(conceptList)
-}
-
-#' @noRd
 summariseCohort <- function(x, cdm) {
   x <- x %>%
     dplyr::mutate(exposed_dose = .data$daily_dose * .data$subexposed_days) %>%
@@ -935,12 +906,12 @@ summariseCohort <- function(x, cdm) {
       )
     ) %>%
     # end replace NA
-    dplyr::mutate(follow_up_days = !!CDMConnector::datediff(
+    dplyr::mutate(duration = !!CDMConnector::datediff(
       "cohort_start_date", "cohort_end_date"
     ) + 1) %>%
     dplyr::mutate(
       exposed_days =
-        .data$follow_up_days - .data$unexposed_days - .data$gap_days
+        .data$duration - .data$unexposed_days - .data$gap_days
     ) %>%
     dplyr::mutate(
       number_subexposures_no_overlap =
@@ -976,4 +947,36 @@ summariseCohort <- function(x, cdm) {
     computeTable(cdm)
 
   return(x)
+}
+
+#' @noRd
+getVariables <- function(initialDailyDose,
+                         numberExposures,
+                         duration,
+                         cumulativeDose,
+                         numberEras,
+                         supplementary) {
+  variables <- c(
+    "initial_daily_dose", "number_exposures", "duration",
+    "cumulative_dose", "number_eras"
+  )[c(
+    initialDailyDose, numberExposures, duration, cumulativeDose, numberEras
+  )]
+  if(supplementary) {
+    variables <- c(
+      variables, "gap_days", "unexposed_days", "not_considered_days",
+      "number_subexposures", "number_continuous_exposures", "number_gaps",
+      "number_unexposed_periods", "number_subexposures_overlap",
+      "number_eras_overlap", "number_continuous_exposure_overlap",
+      "cumulative_gap_dose", "cumulative_not_considered_dose",
+      "sum_all_exposed_dose", "sum_all_exposed_days", "exposed_days",
+      "number_subexposures_no_overlap", "number_eras_no_overlap",
+      "number_continuous_exposures_no_overlap", "proportion_gap_dose",
+      "proportion_not_considered_dose", "first_era_days"
+    )
+  }
+  variables <- c(
+    "subject_id", "cohort_start_date", "cohort_end_date", variables
+  )
+  return(variables)
 }

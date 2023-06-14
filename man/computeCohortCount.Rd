@@ -18,3 +18,28 @@ A reference to a table in the database with the cohortCount
 \description{
 Computes the cohortCount attribute for a certain table
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(dplyr)
+library(PatientProfiles)
+
+cdm <- mockDrugUtilisation()
+
+cdm$new_cohort <- cdm$observation_period \%>\%
+  mutate(cohort_definition_id = 1) \%>\%
+  addSex(cdm = cdm) \%>\%
+  filter(sex == "Female") \%>\%
+  select(
+    cohort_definition_id, subject_id = person_id,
+    cohort_start_date = observation_period_start_date,
+    cohort_end_date = observation_period_end_date
+  ) \%>\%
+  compute()
+
+cohortCountRef <- computeCohortCount(cdm$new_cohort, cdm)
+
+print(cohortCountRef)
+}
+
+}

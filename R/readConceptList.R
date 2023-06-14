@@ -23,17 +23,46 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' codelist <- readConceptList(
+#'   path = system.file("concepts",package="DrugUtilisation"), cdm = cdm
+#' )
+#' }
 #'
 readConceptList <- function(path, cdm) {
   # initial checks
-  conceptSets <- checkPath(path)
-  checkCdm(cdm)
+  checkInputs(path = path, cdm = cdm)
+
+  if (dir.exists(path)) {
+    conceptSets <- dplyr::tibble(concept_set_path = list.files(
+      path = path,
+      full.names = TRUE
+    ))
+  } else {
+    conceptSets <- dplyr::tibble(concept_set_path = .env$path)
+  }
+  conceptSets <- conceptSets %>%
+    dplyr::filter(tools::file_ext(.data$concept_set_path) == "json") %>%
+    dplyr::mutate(
+      concept_set_name =
+        tools::file_path_sans_ext(basename(.data$concept_set_path))
+    ) %>%
+    dplyr::mutate(cohort_definition_id = dplyr::row_number())
+  if (conceptSets %>% nrow() == 0) {
+    cli::cli_abort(glue::glue("No 'json' file found in {path}"))
+  }
 
   # first part: read jsons
   tryCatch(
     expr = conceptList <- readConceptSet(conceptSets),
     error = function(e) {
-      stop("The json file is not a properly formated OMOP concept set.")
+      cli::cli_abort(
+        "The json file is not a properly formated OMOP concept set."
+      )
     }
   )
 

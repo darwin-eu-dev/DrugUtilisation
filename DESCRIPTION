@@ -1,7 +1,7 @@
 Package: DrugUtilisation
 Title: Summarise patient-level drug utilisation in data mapped to the OMOP 
     Common Data Model 
-Version: 0.1.1
+Version: 0.2.0
 Authors@R: c(
     person(
         "Marti", "Catala", email = "marti.catalasabate@ndorms.ox.ac.uk", 
@@ -38,7 +38,7 @@ Suggests:
     duckdb
 Config/testthat/edition: 3
 Imports: 
-    CDMConnector (>= 0.6.0),
+    CDMConnector (>= 1.0.0),
     checkmate,
     DBI,
     dbplyr,
@@ -48,11 +48,14 @@ Imports:
     tidyr,
     rlang,
     RJSONIO,
-    stringr,
     cli,
     PatientProfiles,
     magrittr,
     purrr,
     CodelistGenerator
+Remotes: 
+    oxford-pharmacoepi/PatientProfiles
 Depends: 
     R (>= 2.10)
+LazyData: true
+URL: https://darwin-eu-dev.github.io/DrugUtilisation/

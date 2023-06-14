@@ -8,7 +8,7 @@ computeCohortAttrition(
   x,
   cdm,
   attrition = NULL,
-  reason = "Qualifying initial events"
+  reason = "Qualifying initial records"
 )
 }
 \arguments{
@@ -22,9 +22,41 @@ subject_id'}
 \item{reason}{A character with the name of the reason.}
 }
 \value{
-The function returns the 'cdm' object with the created tables as
-references of the object.
+Reference to a table with the cohort attrition
 }
 \description{
 Add a line in the attrition table. If the table does not exist it is created
+}
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(dplyr)
+library(PatientProfiles)
+
+cdm <- mockDrugUtilisation()
+
+cdm$new_cohort <- cdm$observation_period \%>\%
+  mutate(cohort_definition_id = 1) \%>\%
+  select(
+    cohort_definition_id, subject_id = person_id,
+    cohort_start_date = observation_period_start_date,
+    cohort_end_date = observation_period_end_date
+  ) \%>\%
+  compute()
+
+attrition <- computeCohortAttrition(cdm$new_cohort, cdm)
+
+cdm$new_cohort <- cdm$new_cohort \%>\%
+  addSex(cdm = cdm) \%>\%
+  filter(sex == "Female") \%>\%
+  select(-"sex") \%>\%
+  compute()
+
+attrition <- computeCohortAttrition(
+  cdm$new_cohort, cdm, attrition, "Exclude males"
+)
+
+print(attrition)
+}
+
 }
