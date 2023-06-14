@@ -95,7 +95,7 @@ summariseTableOne <- function(cohort,
 
   if (length(covariates) > 0) {
     variables$covariates <- colnames(cohort)[!c(colnames(cohort) %in% c(
-      "subject_id", "cohort_definition_id", unlist(variables)
+      "subject_id", "cohort_definition_id", unlist(variables), unlist(strata)
     ))]
     functions$covariates <- c("count", "%")
   }

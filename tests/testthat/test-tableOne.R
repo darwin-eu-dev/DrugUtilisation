@@ -140,10 +140,19 @@ test_that("test indicationDate", {
     0
   )
 
-  # expect_no_error(result <- summariseTableOne(
-  #   cdm$dus_cohort, cdm, windowVisitOcurrence = c(-365, 0), covariates = list(
-  #     "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
-  #   ), minCellCount = 1
-  # ))
+  expect_no_error(result <- summariseTableOne(
+    cdm$dus_cohort, cdm, windowVisitOcurrence = c(-365, 0), covariates = list(
+      "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
+    ), minCellCount = 1
+  ))
 
+  cdm$dus_cohort <- cdm$dus_cohort %>%
+    dplyr::mutate(window = dplyr::if_else(
+      .data$cohort_start_date <= as.Date("2000-01-01"), "before 2000", "after 2000"
+    ))
+  expect_no_error(result <- summariseTableOne(
+    cdm$dus_cohort, cdm, windowVisitOcurrence = c(-365, 0), covariates = list(
+      "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
+    ), minCellCount = 1, strata = list("year group" = "window")
+  ))
 })
