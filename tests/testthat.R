@@ -4,7 +4,7 @@ library(DrugUtilisation)
 availableConnections <- list(list(
   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
   writeSchema = "main",
-  writePrefix = NULL
+  mockPrefix = NULL
 ))
 
 if (Sys.getenv("CDM5_REDSHIFT_DBNAME") != "") {
@@ -17,8 +17,8 @@ if (Sys.getenv("CDM5_REDSHIFT_DBNAME") != "") {
         user = Sys.getenv("CDM5_REDSHIFT_USER"),
         password = Sys.getenv("CDM5_REDSHIFT_PASSWORD")
       ),
-      scratch_schema = Sys.getenv("CDM5_REDSHIFT_SCRATCH_SCHEMA"),
-      write_schema = Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA")
+      writeSchema = Sys.getenv("CDM5_REDSHIFT_SCRATCH_SCHEMA"),
+      mockPrefix = "test_dus_"
     )))
 }
 
