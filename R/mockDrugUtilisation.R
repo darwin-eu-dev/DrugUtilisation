@@ -51,7 +51,7 @@
 mockDrugUtilisation <- function(connectionDetails = list(
                                   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
                                   writeSchema = "main",
-                                  writePrefix = NULL
+                                  mockPrefix = NULL
                                 ),
                                 numberIndividuals = 10,
                                 seed = 1,
@@ -126,8 +126,8 @@ mockDrugUtilisation <- function(connectionDetails = list(
   )
 
   con <- connectionDetails$con
-  writeSchema <- connectionDetails$writeSchema
-  writePrefix <- connectionDetails$writePrefix
+  writeSchema <- strsplit(connectionDetails[["writeSchema"]], "\\.")[[1]]
+  writePrefix <- connectionDetails$mockPrefix
 
   for (newTable in names(listTables)) {
     writeTable(con, writeSchema, newTable, writePrefix, listTables[[newTable]])
@@ -148,10 +148,19 @@ mockDrugUtilisation <- function(connectionDetails = list(
     )
   }
 
+  if (length(writeSchema) > 1) {
+    dbSchema = DBI::Id(
+      "catalog" = writeSchema[1], "schema" = writeSchema[2],
+      "prefix" = writePrefix
+    )
+  } else {
+    dbSchema = DBI::Id("schema" = writeSchema, "prefix" = writePrefix)
+  }
+
   cdm <- CDMConnector::cdm_from_con(
     con,
-    cdm_schema = c("schema" = writeSchema, "prefix" = writePrefix),
-    write_schema = c("schema" = writeSchema, "prefix" = writePrefix),
+    cdm_schema = dbSchema,
+    write_schema = dbSchema,
     cohort_tables = names(cohorts)
   )
 
@@ -168,11 +177,17 @@ mockDrugUtilisation <- function(connectionDetails = list(
 #' To write a table in the mock database
 #' @noRd
 writeTable <- function(con, writeSchema, name, writePrefix, x) {
-  DBI::dbWriteTable(
-    con,
-    name = DBI::Id(schema = writeSchema,  table = paste0(writePrefix, name)),
-    as.data.frame(x), overwrite = TRUE
-  )
+  if (length(writeSchema) > 1) {
+    name = DBI::Id(
+      "catalog" = writeSchema[1], "schema" = writeSchema[2],
+      "table" = paste0(writePrefix, name)
+    )
+  } else {
+    name = DBI::Id(
+      "schema" = writeSchema, "table" = paste0(writePrefix, name)
+    )
+  }
+  DBI::dbWriteTable(conn = con, name = name, as.data.frame(x), overwrite = TRUE)
 }
 
 #' To create the vocabulary tables
