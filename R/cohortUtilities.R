@@ -286,9 +286,6 @@ emptyCohort <- function(cdm, name = CDMConnector::uniqueTableName()) {
     name <- CDMConnector::inSchema(
       writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
     )
-    temporary <- FALSE
-  } else {
-    temporary <- TRUE
   }
   DBI::dbCreateTable(
     con,
@@ -298,8 +295,7 @@ emptyCohort <- function(cdm, name = CDMConnector::uniqueTableName()) {
       subject_id = "BIGINT",
       cohort_start_date = "DATE",
       cohort_end_date = "DATE"
-    ),
-    temporary = temporary
+    )
   )
   dplyr::tbl(con, name)
 }
