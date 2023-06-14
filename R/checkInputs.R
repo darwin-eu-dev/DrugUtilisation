@@ -692,9 +692,9 @@ checkConsistentCohortSet<- function(cs,
           "More than one gapEra found in cohortSet, please specify gapEra"
         )
       }
-      gapEra <- unique(cs$gap_era)
+      gapEra <- as.numeric(unique(cs$gap_era))
     } else {
-      if (!all(cs$gap_era == gapEra)) {
+      if (!all(cs$gap_era == as.character(gapEra))) {
         cli::cli_warn(glue::glue_collapse(
           "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
         ))
@@ -703,12 +703,12 @@ checkConsistentCohortSet<- function(cs,
     if (missingImputeDuration == TRUE) {
       if (length(unique(cs$impute_duration)) > 1) {
         cli::cli_abort(
-          "More than one imputeDuration found in cohortSet, please specify imputeDuration"
+          "More than one impueDuration found in cohortSet, please specify imputeDuration"
         )
       }
-      imputeDuration <- unique(cs$impute_duration)
+      imputeDuration <- as.numeric(unique(cs$impute_duration))
     } else {
-      if (imputeDuration != cs$impute_duration) {
+      if (as.character(imputeDuration) != cs$impute_duration) {
         cli::cli_warn(glue::glue(
           "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
         ))
@@ -720,11 +720,14 @@ checkConsistentCohortSet<- function(cs,
           "More than one durationRange found in cohortSet, please specify durationRange"
         )
       }
-      durationRange <- c(
+      durationRange <- as.numeric(c(
         unique(cs$duration_range_min), unique(cs$duration_range_max)
-      )
+      ))
     } else {
-      if (!identical(durationRange, c(cs$duration_range_min, cs$duration_range_max))) {
+      if (!identical(
+        as.character(durationRange),
+        c(cs$duration_range_min, cs$duration_range_max)
+        )) {
         cli::cli_warn(glue::glue_collapse(
           "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
         ))

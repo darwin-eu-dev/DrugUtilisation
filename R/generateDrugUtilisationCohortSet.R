@@ -96,9 +96,6 @@ generateDrugUtilisationCohortSet <- function(cdm,
     imputeDuration = imputeDuration, durationRange = durationRange
   )
 
-  # tables to be deleted
-  firstTempTable <- getOption("dbplyr_table_name", 0) + 1
-
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
@@ -106,15 +103,15 @@ generateDrugUtilisationCohortSet <- function(cdm,
   cohortSet <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
       summarise_mode = .env$summariseMode,
-      fixed_time = dplyr::coalesce(.env$fixedTime, as.numeric(NA)),
-      days_prior_history = dplyr::coalesce(.env$daysPriorHistory, as.numeric(NA)),
-      gap_era = .env$gapEra,
-      prior_use_washout = .env$priorUseWashout,
-      cohort_date_range_start = .env$cohortDateRange[1],
-      cohort_date_range_end = .env$cohortDateRange[2],
-      impute_duration = .env$imputeDuration,
-      duration_range_min = .env$durationRange[1],
-      duration_range_max = .env$durationRange[2]
+      fixed_time = as.character(dplyr::coalesce(.env$fixedTime, as.numeric(NA))),
+      days_prior_history = as.character(dplyr::coalesce(.env$daysPriorHistory, as.numeric(NA))),
+      gap_era = as.character(.env$gapEra),
+      prior_use_washout = as.character(.env$priorUseWashout),
+      cohort_date_range_start = as.character(.env$cohortDateRange[1]),
+      cohort_date_range_end = as.character(.env$cohortDateRange[2]),
+      impute_duration = as.character(.env$imputeDuration),
+      duration_range_min = as.character(.env$durationRange[1]),
+      duration_range_max = as.character(.env$durationRange[2])
     )
 
   # subset drug_exposure and only get the drug concept ids that we are
@@ -178,7 +175,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
       FALSE, attr(cdm, "write_schema"), TRUE
     )
   cohortSetRef <- cohortSet %>%
-    insertTable(cdm, paste0(name, "_set"), FALSE)
+    insertTable(cdm, paste0(name, "_set"))
   cohortAttritionRef <- attrition %>%
     CDMConnector::computeQuery(
       name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),
@@ -197,14 +194,6 @@ generateDrugUtilisationCohortSet <- function(cdm,
     cohortAttritionRef = cohortAttritionRef,
     cohortCountRef = cohortCountRef
   )
-
-  # drop intermediary tables that were created in the process
-  lastTempTable <- getOption("dbplyr_table_name", 0)
-  if (!is.null(attr(cdm, "write_prefix")) & firstTempTable <= lastTempTable) {
-    CDMConnector::dropTable(
-      cdm, sprintf("dbplyr_%03i", firstTempTable:lastTempTable)
-    )
-  }
 
   return(cdm)
 }
