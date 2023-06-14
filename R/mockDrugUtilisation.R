@@ -150,7 +150,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
 
   if (length(writeSchema) > 1) {
     dbSchema = DBI::Id(
-      "catalogue" = writeSchema[1], "schema" = writeSchema[2],
+      "catalog" = writeSchema[1], "schema" = writeSchema[2],
       "prefix" = writePrefix
     )
   } else {
@@ -179,7 +179,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
 writeTable <- function(con, writeSchema, name, writePrefix, x) {
   if (length(writeSchema) > 1) {
     name = DBI::Id(
-      "catalogue" = writeSchema[1], "schema" = writeSchema[2],
+      "catalog" = writeSchema[1], "schema" = writeSchema[2],
       "table" = paste0(writePrefix, name)
     )
   } else {
@@ -187,9 +187,7 @@ writeTable <- function(con, writeSchema, name, writePrefix, x) {
       "schema" = writeSchema, "table" = paste0(writePrefix, name)
     )
   }
-  DBI::dbWriteTable(
-    conn = con, name = name, as.data.frame(x), overwrite = TRUE
-  )
+  DBI::dbWriteTable(conn = con, name = name, as.data.frame(x), overwrite = TRUE)
 }
 
 #' To create the vocabulary tables
