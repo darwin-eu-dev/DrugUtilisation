@@ -143,8 +143,12 @@ summariseLargeScaleCharacteristics <- function(cohort,
         is.na(.data$end_date), .data$start_date, .data$end_date
       )) %>%
       dplyr::mutate(
-        start_date = pmin(.data$start_date, .data$obs_end, na.rm = T),
-        end_date = pmax(.data$end_date, .data$obs_start, na.rm = T)
+        start_date = dplyr::if_else(
+          .data$start_date >= .data$obs_start, .data$start_date, .data$obs_start
+        ),
+        end_date = dplyr::if_else(
+          .data$end_date <= .data$obs_end, .data$end_date, .data$obs_end
+        )
       ) %>%
       dplyr::filter(.data$start_date <= .data$end_date) %>%
       dplyr::mutate(
