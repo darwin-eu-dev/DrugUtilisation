@@ -59,7 +59,7 @@ summariseTableOne <- function(cohort,
   cohort <- cohort %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date"
+      "cohort_end_date", dplyr::all_of(unique(unlist(strata)))
     ) %>%
     PatientProfiles::addDemographics(cdm, ageGroup = ageGroup)
   if (!is.null(windowVisitOcurrence)) {
