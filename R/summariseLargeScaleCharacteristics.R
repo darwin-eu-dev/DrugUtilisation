@@ -485,8 +485,8 @@ countOccurrences <- function(cohort, window, strata) {
       resultK <- resultK %>%
         dplyr::union_all(
           cohortK %>%
-            tidyr::unite(
-              "strata_level", dplyr::all_of(strata[[i]]), sep = " and "
+            dplyr::mutate(
+              strata_level = !!rlang::parse_expr(sqlunite(strata[[i]]))
             ) %>%
             dplyr::group_by(
               .data$cohort_definition_id, .data$concept_set_name,
@@ -524,4 +524,19 @@ windowName <- function(window) {
   }
   names(window) <- nam
   return(window)
+}
+
+sqlunite <- function(colnames, sep = " and ") {
+  if (length(colnames) == 1) {
+    out <- paste0("as.character(.data[['", colnames[1], "']])")
+  } else {
+    out <- paste0("paste0(as.character(.data[['", colnames[1], "']])")
+    for (k in 2:length(colnames)) {
+      out <- paste0(
+        out, ", ' and ', as.character(.data[['", colnames[k], "']])"
+      )
+    }
+    out <- paste0(out, ")")
+  }
+  return(out)
 }
