@@ -4,13 +4,13 @@
 # DrugUtilisation <img src='man/figures/hex-HELPWANTED.png' align="right" height="139"/>
 
 [![CRANstatus](https://www.r-pkg.org/badges/version/DrugUtilisation)](https://CRAN.R-project.org/package=DrugUtilisation)
-[![codecov.io](https://codecov.io/github/darwin-eu-dev/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu-dev/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu-dev/DrugUtilisation/actions)
+[![codecov.io](https://codecov.io/github/darwin-eu/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
+[![R-CMD-check](https://github.com/darwin-eu/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/DrugUtilisation/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://lifecycle.r-lib.org/articles/stages.html)
 
 ## WARNING: This package is under development.
 
-- [addDailyDose](https://github.com/darwin-eu-dev/DrugUtilisation/R/addDailyDose.R)
+- [addDailyDose](https://github.com/darwin-eu/DrugUtilisation/R/addDailyDose.R)
   function works for the following patterns in the drug_strength table:
 
 | pattern_id |    amount_unit     | numerator_unit | denominator_unit |
@@ -51,32 +51,13 @@ Main functionalities are:
 
 - Summarise the patients large scale characterics in a certain cohort
 
-## Package installation
-
-You can install the this version of DrugUtilisation using the following
-command:
-
-``` r
-install.packages("remotes")
-remotes::install_github("darwin-eu-dev/DrugUtilisation")
-```
-
-When working with DrugUtilisation, you will use CDMConnector to manage
-your connection to the database. If you don´t already have this
-installed you can install it from
-[CRAN](https://CRAN.R-project.org/package=CDMConnector).
-
-``` r
-install.packages("CDMConnector")
-```
-
 ## Example
 
 First, we need to create a cdm reference for the data we´ll be using.
 Here we´ll generate an example with simulated data, but to see how you
 would set this up for your database please consult the CDMConnector
 package [connection
-examples](https://darwin-eu.github.io/CDMConnector/articles/DBI_connection_examples.html).
+examples](https://odyosg.github.io/CDMConnector/articles/DBI_connection_examples.html).
 
 The package also provides a functionality to generate a
 mockDrugUtilisation cdm reference:
@@ -155,15 +136,15 @@ cohortSet(cdm$dus_cohort) %>% glimpse()
 #> $ cohort_definition_id    <int> 1
 #> $ cohort_name             <chr> "Ingredient: acetaminophen (1125315)"
 #> $ summarise_mode          <chr> "FirstEra"
-#> $ fixed_time              <dbl> NA
-#> $ days_prior_history      <dbl> 365
-#> $ gap_era                 <dbl> 30
-#> $ prior_use_washout       <dbl> 0
-#> $ cohort_date_range_start <date> NA
-#> $ cohort_date_range_end   <date> NA
+#> $ fixed_time              <chr> NA
+#> $ days_prior_history      <chr> "365"
+#> $ gap_era                 <chr> "30"
+#> $ prior_use_washout       <chr> "0"
+#> $ cohort_date_range_start <chr> NA
+#> $ cohort_date_range_end   <chr> NA
 #> $ impute_duration         <chr> "eliminate"
-#> $ duration_range_min      <dbl> 0
-#> $ duration_range_max      <dbl> Inf
+#> $ duration_range_min      <chr> "0"
+#> $ duration_range_max      <chr> "Inf"
 ```
 
 Cohort count:
@@ -208,47 +189,74 @@ cohortCount(cdm$indications_cohort)
 ```
 
 Then we can add the indication using the function `addIndication`. That
-will add a new column for each indication gap. Indications are non
-exclusive so a person can have multiple indications. Multiple
-indications will be separated by the `&&` symbol:
+will add a new column for each indication gap and indication.
 
 ``` r
 x <- cdm$dus_cohort %>%
-  addIndication(cdm, "indications_cohort", c(0, 30, 365), c("condition_occurrence"))
+  addIndication(
+    cdm = cdm, indicationCohortName = "indications_cohort", indicationGap = c(0, 30, 365), 
+    unknownIndicationTable = c("condition_occurrence")
+  )
 glimpse(x)
 #> Rows: ??
-#> Columns: 7
+#> Columns: 16
 #> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
-#> $ cohort_definition_id <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
-#> $ subject_id           <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 93, 46, 6…
-#> $ cohort_start_date    <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011-03-13, …
-#> $ cohort_end_date      <date> 2005-04-15, 2019-03-27, 1997-11-17, 2013-04-26, …
-#> $ indication_gap_0     <chr> "no indication", "no indication", "no indication"…
-#> $ indication_gap_30    <chr> "no indication", "no indication", "no indication"…
-#> $ indication_gap_365   <chr> "no indication", "no indication", "no indication"…
+#> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ subject_id                   <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…
+#> $ cohort_start_date            <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011…
+#> $ cohort_end_date              <date> 2005-04-15, 2019-03-27, 1997-11-17, 2013…
+#> $ indication_gap_0_influenza   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_0_headache    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_0_none        <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_headache   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_none       <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_365_influenza <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_none      <dbl> 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1,…
+#> $ indication_gap_0_unknown     <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0,…
 ```
 
-``` r
-table(x %>% pull("indication_gap_0"))
-#> 
-#> no indication 
-#>            46
-```
+We can combine the indications in a single column using the
+`indicationToStrata()` function. This column can be used as
+stratification of the results if needed:
 
 ``` r
-table(x %>% pull("indication_gap_30"))
-#> 
-#> no indication 
-#>            46
+x <- x %>% indicationToStrata(keep = TRUE)
+glimpse(x)
+#> Rows: ??
+#> Columns: 19
+#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ subject_id                   <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…
+#> $ cohort_start_date            <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011…
+#> $ cohort_end_date              <date> 2005-04-15, 2019-03-27, 1997-11-17, 2013…
+#> $ indication_gap_0_influenza   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_0_headache    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_0_none        <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_headache   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_none       <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_365_influenza <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_none      <dbl> 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1,…
+#> $ indication_gap_0_unknown     <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0,…
+#> $ indication_gap_0             <chr> "None", "None", "None", "None", "None", "…
+#> $ indication_gap_30            <chr> "None", "None", "None", "None", "None", "…
+#> $ indication_gap_365           <chr> "None", "None", "None", "None", "Unknown"…
 ```
 
 ``` r
 table(x %>% pull("indication_gap_365"))
 #> 
-#>            headache           influenza influenza&&headache       no indication 
-#>                   1                   4                   1                  35 
-#>  unknown indication 
-#>                   5
+#>               Headache              Influenza Influenza and Headache 
+#>                      1                      4                      1 
+#>                   None                Unknown 
+#>                     35                      5
 ```
 
 ### Summarise the indication
@@ -258,33 +266,39 @@ function:
 
 ``` r
 summariseIndication(x, cdm)
-#> # A tibble: 6 × 10
-#>   cohort_name      strata_name strata_level indication_gap indication_name count
-#>   <chr>            <chr>       <chr>                 <dbl> <chr>           <chr>
-#> 1 Ingredient: ace… overall     <NA>                      0 no indication   "46" 
-#> 2 Ingredient: ace… overall     <NA>                     30 no indication   "46" 
-#> 3 Ingredient: ace… overall     <NA>                    365 headache        "<5" 
-#> 4 Ingredient: ace… overall     <NA>                    365 influenza       " 5" 
-#> 5 Ingredient: ace… overall     <NA>                    365 no indication   "35" 
-#> 6 Ingredient: ace… overall     <NA>                    365 unknown indica… " 5" 
-#> # ℹ 4 more variables: denominator <chr>, `%` <chr>, cdm_name <chr>,
-#> #   generated_by <chr>
+#> # A tibble: 40 × 11
+#>    group_name  group_level      strata_name strata_level variable variable_level
+#>    <chr>       <chr>            <chr>       <chr>        <chr>    <chr>         
+#>  1 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  2 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  3 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  4 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  5 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  6 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  7 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  8 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  9 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#> 10 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#> # ℹ 30 more rows
+#> # ℹ 5 more variables: variable_type <chr>, estimate_type <chr>, estimate <chr>,
+#> #   cdm_name <chr>, generated_by <chr>
 ```
 
 ``` r
 summariseIndication(x, cdm) %>% glimpse()
-#> Rows: 6
-#> Columns: 10
-#> $ cohort_name     <chr> "Ingredient: acetaminophen (1125315)", "Ingredient: ac…
-#> $ strata_name     <chr> "overall", "overall", "overall", "overall", "overall",…
-#> $ strata_level    <chr> NA, NA, NA, NA, NA, NA
-#> $ indication_gap  <dbl> 0, 30, 365, 365, 365, 365
-#> $ indication_name <chr> "no indication", "no indication", "headache", "influen…
-#> $ count           <chr> "46", "46", "<5", " 5", "35", " 5"
-#> $ denominator     <chr> "46", "46", "46", "46", "46", "46"
-#> $ `%`             <chr> "100%", "100%", " 4.35%", "10.87%", "76.09%", "10.87%"
-#> $ cdm_name        <chr> NA, NA, NA, NA, NA, NA
-#> $ generated_by    <chr> "DrugUtilisation_v0.2.0_summariseIndication", "DrugUti…
+#> Rows: 40
+#> Columns: 11
+#> $ group_name     <chr> "Cohort name", "Cohort name", "Cohort name", "Cohort na…
+#> $ group_level    <chr> "Ingredient: acetaminophen (1125315)", "Ingredient: ace…
+#> $ strata_name    <chr> "Overall", "Overall", "Overall", "Overall", "Overall", …
+#> $ strata_level   <chr> "Overall", "Overall", "Overall", "Overall", "Overall", …
+#> $ variable       <chr> "number subjects", "number records", "indication_gap_0_…
+#> $ variable_level <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+#> $ variable_type  <chr> NA, NA, "binary", "binary", "binary", "binary", "binary…
+#> $ estimate_type  <chr> "count", "count", "count", "%", "count", "%", "count", …
+#> $ estimate       <chr> "46", "46", "0", "0", "0", "0", "46", "100", "0", "0", …
+#> $ cdm_name       <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+#> $ generated_by   <chr> "DrugUtilisation_0.2.0_summariseIndication", "DrugUtili…
 ```
 
 ### Add strata
@@ -300,38 +314,39 @@ x <- x %>%
   addAge(cdm, ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
   addSex(cdm)
 summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")))
-#> # A tibble: 84 × 10
-#>    cohort_name     strata_name strata_level indication_gap indication_name count
-#>    <chr>           <chr>       <chr>                 <dbl> <chr>           <chr>
-#>  1 Ingredient: ac… age         0 to 19                   0 no indication   <NA> 
-#>  2 Ingredient: ac… age         0 to 19                  30 no indication   <NA> 
-#>  3 Ingredient: ac… age         0 to 19                 365 influenza       <NA> 
-#>  4 Ingredient: ac… age         0 to 19                 365 no indication   <NA> 
-#>  5 Ingredient: ac… age         0 to 19                 365 unknown indica… <NA> 
-#>  6 Ingredient: ac… age         0 to 19                 365 headache        <NA> 
-#>  7 Ingredient: ac… age         20 to 39                  0 no indication   <NA> 
-#>  8 Ingredient: ac… age         20 to 39                 30 no indication   <NA> 
-#>  9 Ingredient: ac… age         20 to 39                365 headache        <NA> 
-#> 10 Ingredient: ac… age         20 to 39                365 influenza       <NA> 
-#> # ℹ 74 more rows
-#> # ℹ 4 more variables: denominator <chr>, `%` <chr>, cdm_name <chr>,
-#> #   generated_by <chr>
+#> # A tibble: 560 × 11
+#>    group_name  group_level      strata_name strata_level variable variable_level
+#>    <chr>       <chr>            <chr>       <chr>        <chr>    <chr>         
+#>  1 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  2 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  3 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  4 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  5 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  6 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  7 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  8 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  9 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#> 10 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#> # ℹ 550 more rows
+#> # ℹ 5 more variables: variable_type <chr>, estimate_type <chr>, estimate <chr>,
+#> #   cdm_name <chr>, generated_by <chr>
 ```
 
 ``` r
 summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex"))) %>% glimpse()
-#> Rows: 84
-#> Columns: 10
-#> $ cohort_name     <chr> "Ingredient: acetaminophen (1125315)", "Ingredient: ac…
-#> $ strata_name     <chr> "age", "age", "age", "age", "age", "age", "age", "age"…
-#> $ strata_level    <chr> "0 to 19", "0 to 19", "0 to 19", "0 to 19", "0 to 19",…
-#> $ indication_gap  <dbl> 0, 30, 365, 365, 365, 365, 0, 30, 365, 365, 365, 365, …
-#> $ indication_name <chr> "no indication", "no indication", "influenza", "no ind…
-#> $ count           <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "<5", …
-#> $ denominator     <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "<5", …
-#> $ `%`             <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "100%"…
-#> $ cdm_name        <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-#> $ generated_by    <chr> "DrugUtilisation_v0.2.0_summariseIndication", "DrugUti…
+#> Rows: 560
+#> Columns: 11
+#> $ group_name     <chr> "Cohort name", "Cohort name", "Cohort name", "Cohort na…
+#> $ group_level    <chr> "Ingredient: acetaminophen (1125315)", "Ingredient: ace…
+#> $ strata_name    <chr> "Overall", "Overall", "Overall", "Overall", "Overall", …
+#> $ strata_level   <chr> "Overall", "Overall", "Overall", "Overall", "Overall", …
+#> $ variable       <chr> "number subjects", "number records", "indication_gap_0_…
+#> $ variable_level <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+#> $ variable_type  <chr> NA, NA, "binary", "binary", "binary", "binary", "binary…
+#> $ estimate_type  <chr> "count", "count", "count", "%", "count", "%", "count", …
+#> $ estimate       <chr> "46", "46", "0", "0", "0", "0", "46", "100", "0", "0", …
+#> $ cdm_name       <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+#> $ generated_by   <chr> "DrugUtilisation_0.2.0_summariseIndication", "DrugUtili…
 ```
 
 ### Daily dose
@@ -393,22 +408,22 @@ summariseTableOne(
   windowVisitOcurrence = c(-365, 0),
   covariates = list("indications_cohort" = c(-365, 0))
 )
-#> # A tibble: 34 × 9
-#>    cohort_name strata_name strata_level variable variable_classificat…¹ estimate
-#>    <chr>       <chr>       <chr>        <chr>    <chr>                  <chr>   
-#>  1 Ingredient… overall     <NA>         number … <NA>                   count   
-#>  2 Ingredient… overall     <NA>         number … <NA>                   count   
-#>  3 Ingredient… overall     <NA>         age      numeric                median  
-#>  4 Ingredient… overall     <NA>         age      numeric                q25     
-#>  5 Ingredient… overall     <NA>         age      numeric                q75     
-#>  6 Ingredient… overall     <NA>         future_… numeric                median  
-#>  7 Ingredient… overall     <NA>         future_… numeric                q25     
-#>  8 Ingredient… overall     <NA>         future_… numeric                q75     
-#>  9 Ingredient… overall     <NA>         prior_h… numeric                median  
-#> 10 Ingredient… overall     <NA>         prior_h… numeric                q25     
+#> # A tibble: 34 × 11
+#>    group_name  group_level      strata_name strata_level variable variable_level
+#>    <chr>       <chr>            <chr>       <chr>        <chr>    <chr>         
+#>  1 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  2 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  3 Cohort name Ingredient: ace… Overall     Overall      age      <NA>          
+#>  4 Cohort name Ingredient: ace… Overall     Overall      age      <NA>          
+#>  5 Cohort name Ingredient: ace… Overall     Overall      age      <NA>          
+#>  6 Cohort name Ingredient: ace… Overall     Overall      future_… <NA>          
+#>  7 Cohort name Ingredient: ace… Overall     Overall      future_… <NA>          
+#>  8 Cohort name Ingredient: ace… Overall     Overall      future_… <NA>          
+#>  9 Cohort name Ingredient: ace… Overall     Overall      prior_h… <NA>          
+#> 10 Cohort name Ingredient: ace… Overall     Overall      prior_h… <NA>          
 #> # ℹ 24 more rows
-#> # ℹ abbreviated name: ¹​variable_classification
-#> # ℹ 3 more variables: value <chr>, cdm_name <chr>, generated_by <chr>
+#> # ℹ 5 more variables: variable_type <chr>, estimate_type <chr>, estimate <chr>,
+#> #   cdm_name <chr>, generated_by <chr>
 ```
 
 ### Summarise patients large scale characteristics

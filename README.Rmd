@@ -16,13 +16,13 @@ knitr::opts_chunk$set(
 # DrugUtilisation <img src='man/figures/hex-HELPWANTED.png' align="right" height="139"/>
 
 [![CRANstatus](https://www.r-pkg.org/badges/version/DrugUtilisation)](https://CRAN.R-project.org/package=DrugUtilisation) 
-[![codecov.io](https://codecov.io/github/darwin-eu-dev/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu-dev/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu-dev/DrugUtilisation/actions)
+[![codecov.io](https://codecov.io/github/darwin-eu/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
+[![R-CMD-check](https://github.com/darwin-eu/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/DrugUtilisation/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://lifecycle.r-lib.org/articles/stages.html)
 
 ## WARNING: This package is under development.
 
-* [addDailyDose](https://github.com/darwin-eu-dev/DrugUtilisation/R/addDailyDose.R) function works for the following patterns in the drug_strength table:
+* [addDailyDose](https://github.com/darwin-eu/DrugUtilisation/R/addDailyDose.R) function works for the following patterns in the drug_strength table:
 
 | pattern_id | amount_unit | numerator_unit | denominator_unit |
 |:----------:|:------------------:|:--------------:|:----------------:|
@@ -60,23 +60,9 @@ DrugUtilisation contains functions to instantiate and characterize the cohorts u
 
 - Summarise the patients large scale characterics in a certain cohort
 
-## Package installation
-
-You can install the this version of DrugUtilisation using the following command:
-
-```{r, eval=FALSE}
-install.packages("remotes")
-remotes::install_github("darwin-eu-dev/DrugUtilisation")
-```
-
-When working with DrugUtilisation, you will use CDMConnector to manage your connection to the database. If you don´t already have this installed you can install it from [CRAN](https://CRAN.R-project.org/package=CDMConnector).
-```{r, eval=FALSE}
-install.packages("CDMConnector")
-```
-
 ## Example
 
-First, we need to create a cdm reference for the data we´ll be using. Here we´ll generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package [connection examples](https://darwin-eu.github.io/CDMConnector/articles/DBI_connection_examples.html).
+First, we need to create a cdm reference for the data we´ll be using. Here we´ll generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package [connection examples](https://odyosg.github.io/CDMConnector/articles/DBI_connection_examples.html).
 
 The package also provides a functionality to generate a mockDrugUtilisation cdm reference:
 
