@@ -291,7 +291,7 @@ emptyCohort <- function(cdm) {
     ),
     temporary = TRUE
   )
-  ref <- dplyr::tbl(con, name)
+  ref <- dplyr::tbl(attr(cdm, "dbcon"), name)
   return(ref)
 }
 
