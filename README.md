@@ -456,7 +456,7 @@ summariseLargeScaleCharacteristics(
 ## ReportGenerator
 
 This package is included in the `ReportGenerator` environment. See
-exortable elements:
+exportable elements:
 
 ``` r
 DrugUtilisation::ReportGenerator
