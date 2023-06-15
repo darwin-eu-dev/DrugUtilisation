@@ -281,7 +281,7 @@ getEndName <- function(domain) {
 emptyCohort <- function(cdm) {
   name = CDMConnector::uniqueTableName()
   DBI::dbCreateTable(
-    con,
+    attr(cdm, "dbcon"),
     name,
     fields = c(
       cohort_definition_id = "INT",
