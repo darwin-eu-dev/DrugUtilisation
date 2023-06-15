@@ -258,7 +258,7 @@ summariseLargeScaleCharacteristics(
 
 ## ReportGenerator
 
-This package is included in the `ReportGenerator` environment. See exortable elements:
+This package is included in the `ReportGenerator` environment. See exportable elements:
 
 ```{r, eval = FALSE}
 DrugUtilisation::ReportGenerator
