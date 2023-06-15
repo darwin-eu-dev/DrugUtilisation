@@ -53,8 +53,6 @@ Imports:
     PatientProfiles,
     magrittr,
     purrr
-Remotes: 
-    oxford-pharmacoepi/PatientProfiles
 Depends: 
     R (>= 2.10)
 LazyData: true
