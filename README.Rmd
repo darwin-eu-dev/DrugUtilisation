@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 ## WARNING: This package is under development.
 
-* [addDailyDose](https://github.com/darwin-eu/DrugUtilisation/R/addDailyDose.R) function works for the following patterns in the drug_strength table:
+* **addDailyDose** function works for the following patterns in the drug_strength table:
 
 | pattern_id | amount_unit | numerator_unit | denominator_unit |
 |:----------:|:------------------:|:--------------:|:----------------:|
@@ -62,7 +62,7 @@ DrugUtilisation contains functions to instantiate and characterize the cohorts u
 
 ## Example
 
-First, we need to create a cdm reference for the data we´ll be using. Here we´ll generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package [connection examples](https://odyosg.github.io/CDMConnector/articles/DBI_connection_examples.html).
+First, we need to create a cdm reference for the data we´ll be using. Here we´ll generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package [connection examples](https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html).
 
 The package also provides a functionality to generate a mockDrugUtilisation cdm reference:
 
