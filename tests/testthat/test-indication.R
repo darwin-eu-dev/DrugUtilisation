@@ -150,6 +150,7 @@ test_that("test case single indication", {
 })
 
 test_that("test case single indication with unknown indication table", {
+  skip_on_cran()
   targetCohortName <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),
@@ -289,6 +290,7 @@ test_that("test case single indication with unknown indication table", {
 })
 
 test_that("test indicationDate", {
+  skip_on_cran()
   targetCohortName <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),
@@ -408,6 +410,7 @@ test_that("test indicationDate", {
 })
 
 test_that("test attributes", {
+  skip_on_cran()
   targetCohortName <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),

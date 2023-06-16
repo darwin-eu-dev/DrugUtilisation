@@ -48,6 +48,7 @@ test_that("test inputs", {
 })
 
 test_that("basic functionality drug_conceptId", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -184,6 +185,7 @@ test_that("basic functionality drug_conceptId", {
 })
 
 test_that("dates range", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(connectionDetails)
   start <- as.Date("2010-01-01")
   end <- as.Date("2018-06-01")

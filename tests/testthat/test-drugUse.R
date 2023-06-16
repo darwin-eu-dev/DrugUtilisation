@@ -232,6 +232,7 @@ test_that("test overlapMode", {
 })
 
 test_that("test gapEra and eraJoinMode", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -450,6 +451,7 @@ test_that("test gapEra and eraJoinMode", {
 })
 
 test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -604,6 +606,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
 })
 
 test_that("test splitSubexposures", {
+  skip_on_cran()
   x <- dplyr::tibble(
     subject_id = as.integer(c(
       1,
@@ -854,6 +857,7 @@ test_that("test splitSubexposures", {
 })
 
 test_that("test empty targetCohortName", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -903,6 +907,7 @@ test_that("test empty targetCohortName", {
 })
 
 test_that("expected errors on inputs", {
+  skip_on_cran()
   # condition_occurrence is going to be the strataCohortTable, person the
   # doseTable
   cdm <- mockDrugUtilisation(
@@ -942,6 +947,7 @@ test_that("expected errors on inputs", {
 })
 
 test_that("check output format", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     cohort = dplyr::tibble(

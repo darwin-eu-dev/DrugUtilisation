@@ -1,5 +1,6 @@
 
 test_that("basic functionality large scale characteristics", {
+
   person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = c(8507, 8532),
