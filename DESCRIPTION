@@ -1,5 +1,5 @@
 Package: DrugUtilisation
-Title: Summarise patient-level drug utilisation in data mapped to the OMOP 
+Title: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP 
     Common Data Model 
 Version: 0.2.0
 Authors@R: c(
