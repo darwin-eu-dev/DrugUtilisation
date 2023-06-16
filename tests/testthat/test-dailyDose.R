@@ -1,4 +1,5 @@
 test_that("functionality of addDailyDose function",{
+  skip_on_cran()
   drug_strength <- dplyr::tibble(
     drug_concept_id = c(
       2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,

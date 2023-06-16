@@ -1,5 +1,6 @@
 
 test_that("test input parameters errors", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_strength = dplyr::tibble(
@@ -25,6 +26,7 @@ test_that("test input parameters errors", {
 })
 
 test_that("test overlapMode", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
