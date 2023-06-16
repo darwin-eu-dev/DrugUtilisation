@@ -19,10 +19,10 @@
 reportGenerator <- list(
   "indication" = list(
     columnNames  = c(
-      "cohort_name", "strata_name", "strata_level", "indication_gap",
-      "indication_name", "count", "denominator", "cdm_name", "generated_by"
+      "group_name", "group_level", "strata_name", "strata_level", "variable",
+      "variable_type", "variable_level", "estimate_type", "estimate",
+      "cdm_name", "generated_by"
     ),
-    columnType = c("chr", "chr", "chr", "dbl", "chr", "chr", "chr", "chr", "chr"),
     functions = "DrugUtilisation::displayIndication"
   )
 )

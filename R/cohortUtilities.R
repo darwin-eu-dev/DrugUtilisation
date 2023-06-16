@@ -278,26 +278,21 @@ getEndName <- function(domain) {
 }
 
 #' @noRd
-emptyCohort <- function(cdm, name = CDMConnector::uniqueTableName()) {
-  writePrefix <- attr(cdm, "write_prefix")
-  writeSchema <- attr(cdm, "write_schema")
-  con <- attr(cdm, "dbcon")
-  if (!is.null(writePrefix)) {
-    name <- CDMConnector::inSchema(
-      writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
-    )
-  }
+emptyCohort <- function(cdm) {
+  name = CDMConnector::uniqueTableName()
   DBI::dbCreateTable(
-    con,
+    attr(cdm, "dbcon"),
     name,
     fields = c(
       cohort_definition_id = "INT",
       subject_id = "BIGINT",
       cohort_start_date = "DATE",
       cohort_end_date = "DATE"
-    )
+    ),
+    temporary = TRUE
   )
-  dplyr::tbl(con, name)
+  ref <- dplyr::tbl(attr(cdm, "dbcon"), name)
+  return(ref)
 }
 
 #' @noRd
