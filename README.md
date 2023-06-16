@@ -10,8 +10,8 @@
 
 ## WARNING: This package is under development.
 
-- [addDailyDose](https://github.com/darwin-eu/DrugUtilisation/R/addDailyDose.R)
-  function works for the following patterns in the drug_strength table:
+- **addDailyDose** function works for the following patterns in the
+  drug_strength table:
 
 | pattern_id |    amount_unit     | numerator_unit | denominator_unit |
 |:----------:|:------------------:|:--------------:|:----------------:|
@@ -57,7 +57,7 @@ First, we need to create a cdm reference for the data we´ll be using.
 Here we´ll generate an example with simulated data, but to see how you
 would set this up for your database please consult the CDMConnector
 package [connection
-examples](https://odyosg.github.io/CDMConnector/articles/DBI_connection_examples.html).
+examples](https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html).
 
 The package also provides a functionality to generate a
 mockDrugUtilisation cdm reference:
@@ -81,7 +81,6 @@ Or we can build our own list using other packages
 
 ``` r
 library(CodelistGenerator)
-#> Warning: package 'CodelistGenerator' was built under R version 4.2.3
 conceptList <- getDrugIngredientCodes(cdm, "acetaminophen")
 conceptList
 #> $`Ingredient: acetaminophen (1125315)`
@@ -121,7 +120,6 @@ Cohort set:
 ``` r
 library(CDMConnector)
 library(dplyr)
-#> Warning: package 'dplyr' was built under R version 4.2.3
 #> 
 #> Attaching package: 'dplyr'
 #> The following objects are masked from 'package:stats':
@@ -200,7 +198,7 @@ x <- cdm$dus_cohort %>%
 glimpse(x)
 #> Rows: ??
 #> Columns: 16
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.3/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ subject_id                   <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…
 #> $ cohort_start_date            <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011…
@@ -228,7 +226,7 @@ x <- x %>% indicationToStrata(keep = TRUE)
 glimpse(x)
 #> Rows: ??
 #> Columns: 19
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.3/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ subject_id                   <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…
 #> $ cohort_start_date            <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011…
