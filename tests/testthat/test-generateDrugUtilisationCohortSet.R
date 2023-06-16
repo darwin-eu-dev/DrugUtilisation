@@ -6,6 +6,7 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(1)))
   expect_no_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
   cdmNew <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
+  expect_true("GeneratedCohortSet" %in% class(cdm$dus))
   expect_true(all(colnames(cdmNew$dus) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"
   )))
@@ -44,12 +45,6 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = 1125360), durationRange = -7
   ))
-})
-
-test_that("class", {
-  cdm <- mockDrugUtilisation(connectionDetails)
-  cdm <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
-  expect_true("GeneratedCohortSet" %in% class(cdm$dus))
 })
 
 test_that("basic functionality drug_conceptId", {
