@@ -69,12 +69,12 @@
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">cdm</span>, <span class="st">"dus"</span>, <span class="va">acetaminophen</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> 'addAttributes' is not an exported object from 'namespace:PatientProfiles'</span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">dus</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">dus</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="addDrugUse.html">addDrugUse</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="fl">1125315</span>, <span class="va">acetaminophen</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in checkCohort(inputs[["cohort"]]):</span> cohort must be a GeneratedCohortSet</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NAs introduced by coercion</span>
 <span class="r-in"><span><span class="fu">drugUseColumns</span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in checkCohort(inputs[["cohort"]]):</span> cohort must be a GeneratedCohortSet</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "initial_daily_dose" "number_exposures"   "duration"          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "cumulative_dose"    "number_eras"       </span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

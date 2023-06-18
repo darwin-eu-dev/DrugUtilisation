@@ -68,16 +68,17 @@
 <span class="r-in"><span><span class="va">indications</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"headache"</span> <span class="op">=</span> <span class="fl">378253</span>, <span class="st">"asthma"</span> <span class="op">=</span> <span class="fl">4214676</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="generateConceptCohortSet.html">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"indication_cohorts"</span>, <span class="va">indications</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>procedure_occurrence not found in the cdm object</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> 'addAttributes' is not an exported object from 'namespace:PatientProfiles'</span>
 <span class="r-in"><span><span class="va">acetaminophen</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"acetaminophen"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"drug_cohort"</span>, <span class="va">acetaminophen</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> 'addAttributes' is not an exported object from 'namespace:PatientProfiles'</span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohort</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohort</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="addIndication.html">addIndication</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"indication_cohorts"</span>, indicationGap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, <span class="fl">365</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in checkX(inputs[["x"]]):</span> x must be a table in the database</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">indicationColumns</span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohort</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "indication_gap_0_headache"   "indication_gap_0_asthma"    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "indication_gap_0_none"       "indication_gap_30_headache" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5] "indication_gap_30_asthma"    "indication_gap_30_none"     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [7] "indication_gap_365_headache" "indication_gap_365_asthma"  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [9] "indication_gap_365_none"    </span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
