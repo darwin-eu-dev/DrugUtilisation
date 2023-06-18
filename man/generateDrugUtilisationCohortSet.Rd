@@ -11,7 +11,7 @@ generateDrugUtilisationCohortSet(
   summariseMode = "AllEras",
   fixedTime = NULL,
   daysPriorHistory = 0,
-  gapEra = 30,
+  gapEra = 0,
   priorUseWashout = 0,
   cohortDateRange = as.Date(c(NA, NA)),
   imputeDuration = "eliminate",
