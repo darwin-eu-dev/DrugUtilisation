@@ -11,7 +11,7 @@ generateDrugUtilisationCohortSet(
   summariseMode = "AllEras",
   fixedTime = NULL,
   daysPriorHistory = 0,
-  gapEra = 30,
+  gapEra = 0,
   priorUseWashout = 0,
   cohortDateRange = as.Date(c(NA, NA)),
   imputeDuration = "eliminate",
@@ -45,7 +45,7 @@ default: 0, meaning it has to be in observation_period table.
 When Null, we do not check if in observation_period table.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era. By default: 180.}
+considered in the same era. By default: 0.}
 
 \item{priorUseWashout}{Prior days without exposure. By default: NULL.}
 

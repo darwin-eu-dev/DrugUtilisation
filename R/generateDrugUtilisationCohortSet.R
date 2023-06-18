@@ -36,7 +36,7 @@
 #' default: 0, meaning it has to be in observation_period table.
 #' When Null, we do not check if in observation_period table.
 #' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era. By default: 180.
+#' considered in the same era. By default: 0.
 #' @param priorUseWashout Prior days without exposure. By default: NULL.
 #' @param cohortDateRange Range for cohort_start_date and cohort_end_date
 #' @param imputeDuration Whether/how the duration should be imputed
@@ -83,7 +83,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              summariseMode = "AllEras",
                                              fixedTime = NULL,
                                              daysPriorHistory = 0,
-                                             gapEra = 30,
+                                             gapEra = 0,
                                              priorUseWashout = 0,
                                              cohortDateRange = as.Date(c(NA, NA)),
                                              imputeDuration = "eliminate",
@@ -135,25 +135,33 @@ generateDrugUtilisationCohortSet <- function(cdm,
     # require daysPriorHistory
     cohort <- requireDaysPriorHistory(cohort, cdm, daysPriorHistory)
     attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, "daysPriorHistory applied"
+      cohort, cdm, attrition, paste0(
+        "at least ", daysPriorHistory, " prior history"
+      )
     )
 
     # require priorUseWashout
     cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
     attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, "priorUseWashout applied"
+      cohort, cdm, attrition, paste0(
+        "prior use wahout of ", priorUseWashout, " days"
+      )
     )
 
     # trim start date
     cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
     attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, "cohort_start_date >= cohort_date_range_start"
+      cohort, cdm, attrition, paste0(
+        "cohort_start_date >= ", cohortDateRange[1]
+      )
     )
 
     # trim end date
     cohort <- trimEndDate(cohort, cdm, cohortDateRange[2])
     attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, "cohort_end_date <= cohort_date_range_end"
+      cohort, cdm, attrition, paste0(
+        "cohort_end_date <= ", cohortDateRange[2]
+      )
     )
 
     # apply summariseMode
