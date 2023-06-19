@@ -49,7 +49,7 @@ addPattern <- function(drugList, cdm, ingredientConceptId) {
   # insert as temporal if it is a local tbl
   if (!("tbl_sql" %in% class(drugList))) {
     name <- CDMConnector::uniqueTableName()
-    DBI::dbWriteTable(attr(cdm, "dbcon"), name, as.data.frame(drugList))
+    DBI::dbWriteTable(attr(cdm, "dbcon"), name, as.data.frame(drugList), temporary = TRUE)
     drugList <- dplyr::tbl(attr(cdm, "dbcon"), name)
   }
 
