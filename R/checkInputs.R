@@ -108,9 +108,11 @@ checkGap <- function(gap) {
 }
 
 checkPriorUseWashout <- function(priorUseWashout) {
-  checkmate::assertIntegerish(
-    priorUseWashout, lower = 0, any.missing = F, len = 1
-  )
+  if (!(is.numeric(priorUseWashout) & length(priorUseWashout) == 1 & is.infinite(priorUseWashout))) {
+    checkmate::assertIntegerish(
+      priorUseWashout, lower = 0, any.missing = F, len = 1
+    ) 
+  }
 }
 
 checkCohortDateRange <- function(cohortDateRange) {
