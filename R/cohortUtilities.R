@@ -314,10 +314,17 @@ requirePriorUseWashout <- function(cohort, cdm, washout) {
     ) %>%
     dplyr::mutate(
       prior_time = !!CDMConnector::datediff("prior_date", "cohort_start_date")
-    ) %>%
-    dplyr::filter(
-      is.na(.data$prior_date) | .data$prior_time >= .env$washout
-    ) %>%
+    )
+  if (is.infinite(washout)) {
+    cohort <- cohort %>%
+      dplyr::filter(is.na(.data$prior_date))
+  } else {
+    cohort <- cohort %>%
+      dplyr::filter(
+        is.na(.data$prior_date) | .data$prior_time >= .env$washout
+      )
+  }
+  cohort <- cohort %>%
     dplyr::select(-c("id", "prior_date", "prior_time")) %>%
     dbplyr::window_order() %>%
     dplyr::ungroup() %>%
