@@ -55,6 +55,8 @@ Imports:
     PatientProfiles (>= 0.2.0),
     magrittr,
     purrr
+Remotes:
+    darwin-eu-dev/PatientProfiles
 Depends: 
     R (>= 2.10)
 LazyData: true

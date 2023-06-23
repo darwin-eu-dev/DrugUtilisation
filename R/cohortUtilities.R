@@ -387,12 +387,12 @@ computeTable <- function(x,
 }
 
 #' @noRd
-requireDaysPriorHistory <- function(x, cdm, daysPriorHistory) {
-  if (!is.null(daysPriorHistory)) {
+requireDaysPriorObservation <- function(x, cdm, daysPriorObservation) {
+  if (!is.null(daysPriorObservation)) {
     xNew <- x %>%
-      PatientProfiles::addPriorHistory(cdm) %>%
-      dplyr::filter(.data$prior_history >= .env$daysPriorHistory) %>%
-      dplyr::select(-"prior_history") %>%
+      PatientProfiles::addPriorObservation(cdm) %>%
+      dplyr::filter(.data$prior_observation >= .env$daysPriorObservation) %>%
+      dplyr::select(-"prior_observation") %>%
       computeTable(cdm)
     xNew <- PatientProfiles::addAttributes(xNew, x)
     return(xNew)

@@ -93,9 +93,9 @@ checkFixedTime <- function(fixedTime, summariseMode) {
   }
 }
 
-checkDaysPriorHistory <- function(daysPriorHistory) {
+checkDaysPriorObservation <- function(daysPriorObservatio) {
   checkmate::assertIntegerish(
-    daysPriorHistory, lower = 0, any.missing = F, len = 1, null.ok = T
+    daysPriorObservatio, lower = 0, any.missing = F, len = 1, null.ok = T
   )
 }
 
@@ -111,7 +111,7 @@ checkPriorUseWashout <- function(priorUseWashout) {
   if (!(is.numeric(priorUseWashout) & length(priorUseWashout) == 1 & is.infinite(priorUseWashout))) {
     checkmate::assertIntegerish(
       priorUseWashout, lower = 0, any.missing = F, len = 1
-    ) 
+    )
   }
 }
 
@@ -671,7 +671,7 @@ checkConsistentCohortSet<- function(cs,
                                     missingDurationRange) {
   expectedColnames <- c(
     "cohort_definition_id", "cohort_name", "summarise_mode", "fixed_time",
-    "days_prior_history", "gap_era", "prior_use_washout",
+    "days_prior_observation", "gap_era", "prior_use_washout",
     "cohort_date_range_start", "cohort_date_range_end", "impute_duration",
     "duration_range_min", "duration_range_max"
   )
