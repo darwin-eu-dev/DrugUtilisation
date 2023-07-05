@@ -36,13 +36,22 @@
 #' will be created if not provided
 #'
 #' @return A cdm reference with the mock tables
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' cdm
+#' }
+#'
 mockDrugUtilisation <- function(connectionDetails = list(
                                   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
                                   writeSchema = "main",
-                                  writePrefix = NULL
+                                  mockPrefix = NULL
                                 ),
                                 numberIndividuals = 10,
                                 seed = 1,
@@ -117,8 +126,8 @@ mockDrugUtilisation <- function(connectionDetails = list(
   )
 
   con <- connectionDetails$con
-  writeSchema <- connectionDetails$writeSchema
-  writePrefix <- connectionDetails$writePrefix
+  writeSchema <- strsplit(connectionDetails[["writeSchema"]], "\\.")[[1]]
+  writePrefix <- connectionDetails$mockPrefix
 
   for (newTable in names(listTables)) {
     writeTable(con, writeSchema, newTable, writePrefix, listTables[[newTable]])
@@ -138,23 +147,28 @@ mockDrugUtilisation <- function(connectionDetails = list(
       attr(cohorts[[nam]], "cohort_count")
     )
   }
-  for (newTable in names(extraTables)) {
-    writeTable(con, writeSchema, newTable, writePrefix, extraTables[[newTable]])
+
+  if (length(writeSchema) > 1) {
+    dbSchema = DBI::Id(
+      "catalog" = writeSchema[1], "schema" = writeSchema[2],
+      "prefix" = writePrefix
+    )
+  } else {
+    dbSchema = DBI::Id("schema" = writeSchema, "prefix" = writePrefix)
   }
 
   cdm <- CDMConnector::cdm_from_con(
     con,
-    cdm_schema = writeSchema,
-    cdm_tables = names(listTables),
-    write_schema = writeSchema,
-    cohort_tables = names(cohorts),
-    write_prefix = connectionDetails$writePrefix
+    cdm_schema = dbSchema,
+    write_schema = dbSchema,
+    cohort_tables = names(cohorts)
   )
 
   for (newTable in names(extraTables)) {
-    cdm[[newTable]] <- dplyr::tbl(con, CDMConnector::inSchema(
-      writeSchema, paste0(writePrefix, newTable), CDMConnector::dbms(con)
-    ))
+    writeTable(con, writeSchema, newTable, writePrefix, extraTables[[newTable]])
+    cdm[[newTable]] <- dplyr::tbl(
+      con, DBI::Id(schema = writeSchema, name = paste0(writePrefix, newTable))
+    )
   }
 
   return(cdm)
@@ -163,13 +177,17 @@ mockDrugUtilisation <- function(connectionDetails = list(
 #' To write a table in the mock database
 #' @noRd
 writeTable <- function(con, writeSchema, name, writePrefix, x) {
-  DBI::dbWriteTable(
-    con,
-    CDMConnector::inSchema(
-      writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
-    ),
-    as.data.frame(x), overwrite = TRUE
-  )
+  if (length(writeSchema) > 1) {
+    name = DBI::Id(
+      "catalog" = writeSchema[1], "schema" = writeSchema[2],
+      "table" = paste0(writePrefix, name)
+    )
+  } else {
+    name = DBI::Id(
+      "schema" = writeSchema, "table" = paste0(writePrefix, name)
+    )
+  }
+  DBI::dbWriteTable(conn = con, name = name, as.data.frame(x), overwrite = TRUE)
 }
 
 #' To create the vocabulary tables
@@ -358,7 +376,7 @@ createDrugExposure <- function(observation_period, concept) {
     dplyr::pull("concept_id")
   if (length(concepts) > 0) {
     drug_exposure <- observation_period %>%
-      dplyr::mutate(number_records = rpois(dplyr::n(), 3)) %>%
+      dplyr::mutate(number_records = stats::rpois(dplyr::n(), 3)) %>%
       tidyr::uncount(.data$number_records) %>%
       createDate(
         "drug_exposure_start_date", "observation_period_start_date",
@@ -405,7 +423,7 @@ createConditionOccurrence <- function(observation_period, concept) {
     dplyr::pull("concept_id")
   if (length(concepts) > 0) {
     condition_occurrence <- observation_period %>%
-      dplyr::mutate(number_records = rpois(dplyr::n(), 2)) %>%
+      dplyr::mutate(number_records = stats::rpois(dplyr::n(), 2)) %>%
       tidyr::uncount(.data$number_records) %>%
       createDate(
         "condition_start_date", "observation_period_start_date",
@@ -473,7 +491,7 @@ createObservation <- function(observation_period, concept) {
     dplyr::pull("concept_id")
   if (length(concepts) > 0) {
     observation <- observation_period %>%
-      dplyr::mutate(number_records = rpois(dplyr::n(), 2)) %>%
+      dplyr::mutate(number_records = stats::rpois(dplyr::n(), 2)) %>%
       tidyr::uncount(.data$number_records) %>%
       createDate(
         "observation_date", "observation_period_start_date",

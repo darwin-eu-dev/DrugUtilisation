@@ -9,9 +9,9 @@ generateDrugUtilisationCohortSet(
   name,
   conceptSetList,
   summariseMode = "AllEras",
-  fixedTime = 365,
+  fixedTime = NULL,
   daysPriorHistory = 0,
-  gapEra = 30,
+  gapEra = 0,
   priorUseWashout = 0,
   cohortDateRange = as.Date(c(NA, NA)),
   imputeDuration = "eliminate",
@@ -45,7 +45,7 @@ default: 0, meaning it has to be in observation_period table.
 When Null, we do not check if in observation_period table.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era. By default: 180.}
+considered in the same era. By default: 0.}
 
 \item{priorUseWashout}{Prior days without exposure. By default: NULL.}
 
@@ -65,4 +65,31 @@ references of the object.
 }
 \description{
 Generates a cohort of the drug use of a certain list of concepts.
+}
+\examples{
+\donttest{
+#' library(DrugUtilisation)
+library(CodelistGenerator)
+library(CDMConnector)
+
+cdm <- mockDrugUtilisation()
+
+druglist <- getDrugIngredientCodes(cdm, c("acetaminophen", "metformin"))
+
+cdm <- generateDrugUtilisationCohortSet(
+  cdm = cdm,
+  name = "drug_cohorts",
+  conceptSetList = druglist,
+  daysPriorHistory = 365
+)
+
+cdm$drug_cohorts
+
+cohortSet(cdm$drug_cohorts)
+
+cohortCount(cdm$drug_cohorts)
+
+cohortAttrition(cdm$drug_cohorts)
+}
+
 }

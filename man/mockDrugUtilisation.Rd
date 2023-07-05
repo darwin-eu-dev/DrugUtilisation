@@ -6,7 +6,7 @@
 \usage{
 mockDrugUtilisation(
   connectionDetails = list(con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-    writeSchema = "main", writePrefix = NULL),
+    writeSchema = "main", mockPrefix = NULL),
   numberIndividuals = 10,
   seed = 1,
   concept = NULL,
@@ -58,4 +58,14 @@ A cdm reference with the mock tables
 }
 \description{
 It creates a mock database for testing drugutilisation package
+}
+\examples{
+\donttest{
+library(DrugUtilisation)
+
+cdm <- mockDrugUtilisation()
+
+cdm
+}
+
 }

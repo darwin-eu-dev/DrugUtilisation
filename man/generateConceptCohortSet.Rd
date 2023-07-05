@@ -40,3 +40,29 @@ The function returns the 'cdm' object with the created cohort.
 \description{
 Generates a cohort for a certain list of concepts.
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(CDMConnector)
+
+cdm <- mockDrugUtilisation()
+
+conditions <- list("headache" = 378253, "asthma" = 317009)
+
+cdm <- generateConceptCohortSet(
+  cdm = cdm,
+  name = "covariates",
+  conceptSetList = conditions,
+  daysPriorHistory = 365
+)
+
+cdm$covariates
+
+cohortSet(cdm$covariates)
+
+cohortCount(cdm$covariates)
+
+cohortAttrition(cdm$covariates)
+}
+
+}

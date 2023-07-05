@@ -9,7 +9,7 @@ addIndication(
   cdm,
   indicationCohortName,
   indicationGap = 0,
-  unknownIndicationTable = c("condition_occurrence", "observation"),
+  unknownIndicationTable = NULL,
   indicationDate = "cohort_start_date"
 )
 }
@@ -26,6 +26,27 @@ addIndication(
 
 \item{indicationDate}{Date of the indication}
 }
+\value{
+Same cohort adding the indications
+}
 \description{
 Get indication for a target cohort
+}
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(CodelistGenerator)
+
+cdm <- mockDrugUtilisation()
+
+indications <- list("headache" = 378253, "asthma" = 317009)
+cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
+
+acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
+cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
+
+cdm$drug_cohort \%>\%
+  addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+}
+
 }

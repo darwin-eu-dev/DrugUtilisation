@@ -36,7 +36,7 @@
 #' default: 0, meaning it has to be in observation_period table.
 #' When Null, we do not check if in observation_period table.
 #' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era. By default: 180.
+#' considered in the same era. By default: 0.
 #' @param priorUseWashout Prior days without exposure. By default: NULL.
 #' @param cohortDateRange Range for cohort_start_date and cohort_end_date
 #' @param imputeDuration Whether/how the duration should be imputed
@@ -48,16 +48,42 @@
 #'
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' #' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#' library(CDMConnector)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' druglist <- getDrugIngredientCodes(cdm, c("acetaminophen", "metformin"))
+#'
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm,
+#'   name = "drug_cohorts",
+#'   conceptSetList = druglist,
+#'   daysPriorHistory = 365
+#' )
+#'
+#' cdm$drug_cohorts
+#'
+#' cohortSet(cdm$drug_cohorts)
+#'
+#' cohortCount(cdm$drug_cohorts)
+#'
+#' cohortAttrition(cdm$drug_cohorts)
+#' }
+#'
 generateDrugUtilisationCohortSet <- function(cdm,
                                              name,
                                              conceptSetList,
                                              summariseMode = "AllEras",
-                                             fixedTime = 365,
+                                             fixedTime = NULL,
                                              daysPriorHistory = 0,
-                                             gapEra = 30,
+                                             gapEra = 0,
                                              priorUseWashout = 0,
                                              cohortDateRange = as.Date(c(NA, NA)),
                                              imputeDuration = "eliminate",
@@ -70,9 +96,6 @@ generateDrugUtilisationCohortSet <- function(cdm,
     imputeDuration = imputeDuration, durationRange = durationRange
   )
 
-  # tables to be deleted
-  firstTempTable <- getOption("dbplyr_table_name", 0) + 1
-
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
@@ -80,55 +103,74 @@ generateDrugUtilisationCohortSet <- function(cdm,
   cohortSet <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
       summarise_mode = .env$summariseMode,
-      fixed_time = .env$fixedTime,
-      days_prior_history = .env$daysPriorHistory,
-      gap_era = .env$gapEra,
-      prior_use_washout = .env$priorUseWashout,
-      cohort_dates_range_start = .env$cohortDateRange[1],
-      cohort_dates_range_end = .env$cohortDateRange[2],
-      impute_duration = .env$imputeDuration,
-      duration_range_min = .env$durationRange[1],
-      duration_range_max = .env$durationRange[2]
+      fixed_time = as.character(dplyr::coalesce(.env$fixedTime, as.numeric(NA))),
+      days_prior_history = as.character(dplyr::coalesce(.env$daysPriorHistory, as.numeric(NA))),
+      gap_era = as.character(.env$gapEra),
+      prior_use_washout = as.character(.env$priorUseWashout),
+      cohort_date_range_start = as.character(.env$cohortDateRange[1]),
+      cohort_date_range_end = as.character(.env$cohortDateRange[2]),
+      impute_duration = as.character(.env$imputeDuration),
+      duration_range_min = as.character(.env$durationRange[1]),
+      duration_range_max = as.character(.env$durationRange[2])
     )
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
   cohort <- subsetTables(cdm, conceptSet, "Drug")
-  if (cohort %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
-    cli::cli_abort("No record found with the current specifications in
-    drug_exposure table")
-  }
   attrition <- computeCohortAttrition(cohort, cdm)
 
-  # correct duration
-  cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
-  reason <- paste(
-    "Duration imputation; affected rows:", attr(cohort, "numberImputations")
-  )
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, reason)
+  if (cohort %>% dplyr::tally() %>% dplyr::pull("n") > 0) {
 
-  # eliminate overlap
-  cohort <- unionCohort(cohort, gapEra, cdm)
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, "Join eras")
+    # correct duration
+    cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
+    reason <- paste(
+      "Duration imputation; affected rows:", attr(cohort, "numberImputations")
+    )
+    attrition <- computeCohortAttrition(cohort, cdm, attrition, reason)
 
-  # require daysPriorHistory
-  cohort <- requireDaysPriorHistory(cohort, cdm, daysPriorHistory)
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, "daysPriorHistory applied")
+    # eliminate overlap
+    cohort <- unionCohort(cohort, gapEra, cdm)
+    attrition <- computeCohortAttrition(cohort, cdm, attrition, "Join eras")
 
-  # require priorUseWashout
-  cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, "priorUseWashout applied")
+    # require daysPriorHistory
+    cohort <- requireDaysPriorHistory(cohort, cdm, daysPriorHistory)
+    attrition <- computeCohortAttrition(
+      cohort, cdm, attrition, paste0(
+        "at least ", daysPriorHistory, " prior history"
+      )
+    )
 
-  # require cohortDateRange
-  cohort <- trimCohortDateRange(cohort, cdm, cohortDateRange)
-  attrition <- computeCohortAttrition(cohort, cdm, attrition, "cohortDateRange applied")
+    # require priorUseWashout
+    cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
+    attrition <- computeCohortAttrition(
+      cohort, cdm, attrition, paste0(
+        "prior use wahout of ", priorUseWashout, " days"
+      )
+    )
 
-  # apply summariseMode
-  cohort <- applySummariseMode(cohort, cdm, summariseMode, fixedTime)
-  attrition <- computeCohortAttrition(
-    cohort, cdm, attrition,
-    paste("summariseMode:", summariseMode, "applied")
-  )
+    # trim start date
+    cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
+    attrition <- computeCohortAttrition(
+      cohort, cdm, attrition, paste0(
+        "cohort_start_date >= ", cohortDateRange[1]
+      )
+    )
+
+    # trim end date
+    cohort <- trimEndDate(cohort, cdm, cohortDateRange[2])
+    attrition <- computeCohortAttrition(
+      cohort, cdm, attrition, paste0(
+        "cohort_end_date <= ", cohortDateRange[2]
+      )
+    )
+
+    # apply summariseMode
+    cohort <- applySummariseMode(cohort, cdm, summariseMode, fixedTime)
+    attrition <- computeCohortAttrition(
+      cohort, cdm, attrition, paste("summariseMode:", summariseMode, "applied")
+    )
+
+  }
 
   # create the cohort references
   cohortRef <- cohort %>%
@@ -141,7 +183,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
       FALSE, attr(cdm, "write_schema"), TRUE
     )
   cohortSetRef <- cohortSet %>%
-    insertTable(cdm, paste0(name, "_set"), FALSE)
+    insertTable(cdm, paste0(name, "_set"))
   cohortAttritionRef <- attrition %>%
     CDMConnector::computeQuery(
       name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),
@@ -160,14 +202,6 @@ generateDrugUtilisationCohortSet <- function(cdm,
     cohortAttritionRef = cohortAttritionRef,
     cohortCountRef = cohortCountRef
   )
-
-  # drop intermediary tables that were created in the process
-  lastTempTable <- getOption("dbplyr_table_name", 0)
-  if (!is.null(attr(cdm, "write_prefix")) & firstTempTable <= lastTempTable) {
-    CDMConnector::dropTable(
-      cdm, sprintf("dbplyr_%03i", firstTempTable:lastTempTable)
-    )
-  }
 
   return(cdm)
 }

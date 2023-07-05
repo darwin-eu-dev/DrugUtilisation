@@ -1,0 +1,127 @@
+pattern_id,amount_numeric,amount_unit,amount_unit_concept_id,numerator_numeric,numerator_unit,numerator_unit_concept_id,denominator_numeric,denominator_unit,denominator_unit_concept_id,valid,pattern_name,unit
+NA,1,50% cell culture infectious dose,9276,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,50% tissue culture infectious dose,9414,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,Actuation,45744809,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,bacteria,45744815,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,bioequivalent allergenic unit,45744810,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,cells,45744812,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,colony forming unit,9278,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,homeopathic potency of centesimal series,9324,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,homeopathic potency of decimal series,9325,0,NA,NA,0,milligram,8576,FALSE,NA,NA
+NA,1,homeopathic potency of decimal series,9325,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,index of reactivity,9693,0,NA,NA,0,NA,NA,FALSE,NA,NA
+1,1,international unit,8718,0,NA,NA,0,NA,NA,TRUE,international_unit,international unit
+NA,1,limit of flocculation unit,45744814,0,NA,NA,0,NA,NA,FALSE,NA,NA
+2,1,microgram,9655,0,NA,NA,0,NA,NA,TRUE,milligram,milligram
+NA,1,microkatal,44777647,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,millicurie,44819154,0,NA,NA,0,NA,NA,FALSE,NA,NA
+3,1,milliequivalent,9551,0,NA,NA,0,NA,NA,TRUE,milliequivalent,milliequivalent
+NA,1,milligram,8576,0,NA,NA,0,Actuation,45744809,FALSE,NA,NA
+NA,1,milligram,8576,0,NA,NA,0,milligram,8576,FALSE,NA,NA
+4,1,milligram,8576,0,NA,NA,0,NA,NA,TRUE,milligram,milligram
+NA,1,milliliter,8587,1,percent,8554,0,NA,NA,FALSE,NA,NA
+5,1,milliliter,8587,0,NA,NA,0,NA,NA,TRUE,milliliter,milliliter
+NA,1,millimole,9573,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,minim (US),9367,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,plaque forming unit,9379,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,standardized quality unit,32407,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,1,unit,8510,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,50% cell culture infectious dose,9276,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,allergenic unit,45744811,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,bacteria,45744815,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,bioequivalent allergenic unit,45744810,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,cells,45744812,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,colony forming unit,9278,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,focus forming unit,9302,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,homeopathic potency of centesimal series,9324,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,homeopathic potency of decimal series,9325,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,index of reactivity,9693,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,international unit,8718,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,millicurie,44819154,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,milligram,8576,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,milliliter,8587,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,millimole,9573,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,percent,8554,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,plaque forming unit,9379,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,unit,8510,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,Vector-genome,32018,0,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,NA,NA,1,50% cell culture infectious dose,9276,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,50% cell culture infectious dose,9276,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,50% tissue culture infectious dose,9414,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,50% tissue culture infectious dose,9414,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,allergenic unit,45744811,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,bacteria,45744815,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,bacteria,45744815,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,bioequivalent allergenic unit,45744810,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,bioequivalent allergenic unit,45744810,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,cells,45744812,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,cells,45744812,1,square centimeter,9483,FALSE,NA,NA
+NA,0,NA,NA,1,cells,45744812,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,cells,45744812,0,square centimeter,9483,FALSE,NA,NA
+NA,0,NA,NA,1,clinical unit,45744813,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,colony forming unit,9278,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,colony forming unit,9278,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,focus forming unit,9302,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,focus forming unit,9302,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,homeopathic potency of centesimal series,9324,1,NA,NA,FALSE,NA,NA
+NA,0,NA,NA,1,homeopathic potency of centesimal series,9324,0,NA,NA,FALSE,NA,NA
+NA,0,NA,NA,1,homeopathic potency of decimal series,9325,1,NA,NA,FALSE,NA,NA
+NA,0,NA,NA,1,homeopathic potency of decimal series,9325,0,NA,NA,FALSE,NA,NA
+NA,0,NA,NA,1,index of reactivity,9693,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,index of reactivity,9693,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,international unit,8718,1,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,international unit,8718,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,international unit,8718,0,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,international unit,8718,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,limit of flocculation unit,45744814,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,limit of flocculation unit,45744814,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,mega-international unit,9439,0,milliliter,8587,FALSE,NA,NA
+6,0,NA,NA,1,microgram,9655,1,hour,8505,TRUE,milligram_per_hour,milligram
+8,0,NA,NA,1,microgram,9655,0,hour,8505,TRUE,milligram_per_missing_hour,milligram
+NA,0,NA,NA,1,millicurie,44819154,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,millicurie,44819154,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,milliequivalent,9551,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,milliequivalent,9551,0,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,milliequivalent,9551,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,1,Actuation,45744809,FALSE,NA,NA
+7,0,NA,NA,1,milligram,8576,1,hour,8505,TRUE,milligram_per_hour,milligram
+NA,0,NA,NA,1,milligram,8576,1,liter,8519,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,1,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,1,square centimeter,9483,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,1,unit,8510,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,0,Actuation,45744809,FALSE,NA,NA
+9,0,NA,NA,1,milligram,8576,0,hour,8505,TRUE,milligram_per_missing_hour,milligram
+NA,0,NA,NA,1,milligram,8576,0,liter,8519,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,0,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,0,square centimeter,9483,FALSE,NA,NA
+NA,0,NA,NA,1,milligram,8576,0,unit,8510,FALSE,NA,NA
+NA,0,NA,NA,1,milliliter,8587,1,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,milliliter,8587,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,milliliter,8587,0,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,milliliter,8587,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,millimole,9573,1,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,millimole,9573,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,millimole,9573,0,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,millimole,9573,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,percent,8554,1,NA,NA,FALSE,NA,NA
+NA,0,NA,NA,1,percent,8554,0,NA,NA,FALSE,NA,NA
+NA,0,NA,NA,1,plaque forming unit,9379,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,plaque forming unit,9379,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,protein nitrogen unit,45744816,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,1,Actuation,45744809,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,1,hour,8505,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,1,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,1,square centimeter,9483,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,1,unit,8510,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,0,Actuation,45744809,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,0,milligram,8576,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,0,square centimeter,9483,FALSE,NA,NA
+NA,0,NA,NA,1,unit,8510,0,unit,8510,FALSE,NA,NA
+NA,0,NA,NA,1,Vector-genome,32018,1,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,Vector-genome,32018,0,milliliter,8587,FALSE,NA,NA
+NA,0,NA,NA,1,NA,NA,0,NA,NA,FALSE,NA,NA
+NA,0,NA,NA,0,NA,NA,0,NA,NA,FALSE,NA,NA

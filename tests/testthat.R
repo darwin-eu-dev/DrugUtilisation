@@ -1,88 +1,48 @@
 library(testthat)
 library(DrugUtilisation)
 
-equalTibble <- function(x, y) {
-  colnamesX <- colnames(x)
-  colnamesY <- colnames(y)
-  if (!all(colnamesX %in% colnamesY)) {
-    return(FALSE)
-  }
-  if (!all(colnamesY %in% colnamesX)) {
-    return(FALSE)
-  }
-  y <- y %>%
-    dplyr::select(dplyr::all_of(colnamesX))
-  if (nrow(x) != nrow(y)) {
-    return(FALSE)
-  }
-  x <- x %>%
-    dplyr::arrange(!!!rlang::parse_exprs(colnamesX))
-  y <- y %>%
-    dplyr::arrange(!!!rlang::parse_exprs(colnamesX))
-  for (colname in colnames(x)) {
-    xx <- x[[colname]]
-    yy <- y[[colname]]
-    if (!all(is.na(xx) == is.na(yy))) {
-      return(FALSE)
-    }
-    xx <- xx[!is.na(xx)]
-    yy <- yy[!is.na(yy)]
-    if (!all(xx == yy)) {
-      return(FALSE)
-    }
-  }
-  return(TRUE)
-}
-
-connectionDetails <- list(
+availableConnections <- list(list(
   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
   writeSchema = "main",
-  writePrefix = NULL
-)
+  mockPrefix = NULL
+))
 
-# connectionDetails <- list(
-#   con = DBI::dbConnect(
-#     RPostgres::Postgres(),
-#     dbname = "cdm_gold_202201",
-#     port = Sys.getenv("DB_PORT"),
-#     host = Sys.getenv("DB_HOST"),
-#     user = Sys.getenv("DB_USER"),
-#     password = Sys.getenv("DB_PASSWORD")
-#   ),
-#   writeSchema = "results",
-#   writePrefix = NULL
-# )
+# if (Sys.getenv("CDM5_SQL_SERVER_USER") != "") {
+#   availableConnections <- availableConnections %>%
+#     append(value = list(list(
+#       con = DBI::dbConnect(
+#         odbc::odbc(),
+#         Driver   = "ODBC Driver 18 for SQL Server",
+#         Server   = Sys.getenv("CDM5_SQL_SERVER_SERVER"),
+#         Database = Sys.getenv("CDM5_SQL_SERVER_CDM_DATABASE"),
+#         UID      = Sys.getenv("CDM5_SQL_SERVER_USER"),
+#         PWD      = Sys.getenv("CDM5_SQL_SERVER_PASSWORD"),
+#         TrustServerCertificate = "yes",
+#         Port     = 1433
+#       ),
+#       writeSchema = Sys.getenv("CDM5_SQL_SERVER_OHDSI_SCHEMA"),
+#       mockPrefix = "test_dus_"
+#     )))
+# }
 
-# connectionDetails <- list(
-#   con = DBI::dbConnect(
-#     RPostgres::Redshift(),
-#     dbname = Sys.getenv("CDM5_REDSHIFT_DBNAME"),
-#     port = Sys.getenv("CDM5_REDSHIFT_PORT"),
-#     host = Sys.getenv("CDM5_REDSHIFT_HOST"),
-#     user = Sys.getenv("CDM5_REDSHIFT_USER"),
-#     password = Sys.getenv("CDM5_REDSHIFT_PASSWORD")
-#   ),
-#   writeSchema = Sys.getenv("CDM5_REDSHIFT_OHDSI_SCHEMA"),
-#   writePrefix = NULL
-# )
+# if (Sys.getenv("CDM5_REDSHIFT_DBNAME") != "") {
+#   availableConnections <- availableConnections %>%
+#     append(value = list(list(
+#       con = DBI::dbConnect(
+#         RPostgres::Redshift(), dbname = Sys.getenv("CDM5_REDSHIFT_DBNAME"),
+#         port = Sys.getenv("CDM5_REDSHIFT_PORT"),
+#         host = Sys.getenv("CDM5_REDSHIFT_HOST"),
+#         user = Sys.getenv("CDM5_REDSHIFT_USER"),
+#         password = Sys.getenv("CDM5_REDSHIFT_PASSWORD")
+#       ),
+#       writeSchema = Sys.getenv("CDM5_REDSHIFT_SCRATCH_SCHEMA"),
+#       mockPrefix = "test_dus_"
+#     )))
+# }
 
-# list initial tables
-initialTables <- CDMConnector::listTables(
-  connectionDetails$con, connectionDetails$writeSchema
-)
-# test code in that dbms
-test_check("DrugUtilisation")
-# get final tables
-finalTables <- CDMConnector::listTables(
-  connectionDetails$con, connectionDetails$writeSchema
-)
-# to eliminate
-tablesToEliminate <- finalTables[!(finalTables %in% initialTables)]
-# eliminate new created tables
-for (tableToEliminate in tablesToEliminate) {
-  DBI::dbRemoveTable(
-    connectionDetails$con,
-    CDMConnector::inSchema(connectionDetails$writeSchema, tableToEliminate)
-  )
+for (k in seq_along(availableConnections)) {
+  # connection details
+  connectionDetails <- availableConnections[[k]]
+  # test code in that dbms
+  test_check("DrugUtilisation")
 }
-DBI::dbDisconnect(connectionDetails$con)
