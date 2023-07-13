@@ -362,6 +362,14 @@ summariseCharacteristicsFromCodelist <- function(cohort,
         "_summariseCharacteristicsFromCodelist"
       )
     ) %>%
+    dplyr::mutate(
+      "estimate" = dplyr::if_else(
+        .data$estimate_type %in% c("count","denominator_count") &
+          .data$estimate < minCellCount,
+        paste0("<", minCellCount),
+        as.character(.data$estimate)
+      )
+    ) %>%
     dplyr::select(
       "group_name", "group_level", "strata_name", "strata_level", "window_name",
       "variable", "variable_type", "variable_level", "estimate_type",
