@@ -31,10 +31,9 @@
 #' @param fixedTime Time period after first exposure where we summarize the
 #' ingredient of interest. Argument only considered if 'summariseMode' =
 #' "FixedTime". No default value is provided.
-#' @param daysPriorHistory Minimum number of days of prior history
-#' (observation time) required for the incident eras to be considered. By
-#' default: 0, meaning it has to be in observation_period table.
-#' When Null, we do not check if in observation_period table.
+#' @param daysPriorObservation Minimum number of days of prior observation
+#' required for the incident eras to be considered. If NULL its is not required
+#' to be within observation_period.
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era. By default: 0.
 #' @param priorUseWashout Prior days without exposure. By default: NULL.
@@ -65,7 +64,7 @@
 #'   cdm = cdm,
 #'   name = "drug_cohorts",
 #'   conceptSetList = druglist,
-#'   daysPriorHistory = 365
+#'   daysPriorObservation = 365
 #' )
 #'
 #' cdm$drug_cohorts
@@ -82,7 +81,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              conceptSetList,
                                              summariseMode = "AllEras",
                                              fixedTime = NULL,
-                                             daysPriorHistory = 0,
+                                             daysPriorObservation = 0,
                                              gapEra = 0,
                                              priorUseWashout = 0,
                                              cohortDateRange = as.Date(c(NA, NA)),
@@ -91,7 +90,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   checkInputs(
     cdm = cdm,  name = name, conceptSetList = conceptSetList,
     summariseMode = summariseMode, fixedTime = fixedTime,
-    daysPriorHistory = daysPriorHistory, gapEra = gapEra,
+    daysPriorObservation = daysPriorObservation, gapEra = gapEra,
     priorUseWashout = priorUseWashout, cohortDateRange = cohortDateRange,
     imputeDuration = imputeDuration, durationRange = durationRange
   )
@@ -104,7 +103,9 @@ generateDrugUtilisationCohortSet <- function(cdm,
     dplyr::mutate(
       summarise_mode = .env$summariseMode,
       fixed_time = as.character(dplyr::coalesce(.env$fixedTime, as.numeric(NA))),
-      days_prior_history = as.character(dplyr::coalesce(.env$daysPriorHistory, as.numeric(NA))),
+      days_prior_observation = as.character(dplyr::coalesce(
+        .env$daysPriorObservation, as.numeric(NA)
+      )),
       gap_era = as.character(.env$gapEra),
       prior_use_washout = as.character(.env$priorUseWashout),
       cohort_date_range_start = as.character(.env$cohortDateRange[1]),
@@ -132,13 +133,15 @@ generateDrugUtilisationCohortSet <- function(cdm,
     cohort <- unionCohort(cohort, gapEra, cdm)
     attrition <- computeCohortAttrition(cohort, cdm, attrition, "Join eras")
 
-    # require daysPriorHistory
-    cohort <- requireDaysPriorHistory(cohort, cdm, daysPriorHistory)
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste0(
-        "at least ", daysPriorHistory, " prior history"
+    # require daysPriorObservation
+    if (!is.null(daysPriorObservation)) {
+      cohort <- requireDaysPriorObservation(cohort, cdm, daysPriorObservation)
+      attrition <- computeCohortAttrition(
+        cohort, cdm, attrition, paste0(
+          "at least ", daysPriorObservation, " prior observation"
+        )
       )
-    )
+    }
 
     # require priorUseWashout
     cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)

@@ -95,7 +95,7 @@ cdm <- generateDrugUtilisationCohortSet(
   name = "dus_cohort",
   conceptSetList = conceptList,
   summariseMode = "FirstEra", 
-  daysPriorHistory = 365,
+  daysPriorObservation = 365,
   gapEra = 30,
   priorUseWashout = 0,
   imputeDuration = "eliminate", 

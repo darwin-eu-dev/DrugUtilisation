@@ -52,7 +52,7 @@ Imports:
     rlang,
     RJSONIO,
     cli,
-    PatientProfiles (>= 0.2.0),
+    PatientProfiles (>= 0.3.0),
     magrittr,
     purrr
 Remotes:

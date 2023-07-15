@@ -31,7 +31,7 @@ test_that("test inputs", {
     fixedTime = "1"
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm, "dus", list(acetaminophen = 1125360), daysPriorHistory = "7"
+    cdm, "dus", list(acetaminophen = 1125360), daysPriorObservation = "7"
   ))
   expect_error(generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = 1125360), gapEra = "7"
