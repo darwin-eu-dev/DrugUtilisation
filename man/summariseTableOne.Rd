@@ -2,32 +2,34 @@
 % Please edit documentation in R/summariseTableOne.R
 \name{summariseTableOne}
 \alias{summariseTableOne}
-\title{This function is used to summarise the dose and/or indication over multiple
-cohorts.}
+\title{Summarise characteristics of individuals
+It is an alias of \code{\link[PatientProfiles:summariseCharacteristics]{PatientProfiles::summariseCharacteristics()}}}
 \usage{
 summariseTableOne(
   cohort,
-  cdm,
+  cdm = attr(cohort, "cdm_reference"),
   strata = list(),
   ageGroup = NULL,
-  windowVisitOcurrence = NULL,
-  covariates = list(),
+  tableIntersect = list(Visit = list(tableName = "visit_occurrence", value = "count",
+    window = c(-365, 0))),
+  cohortIntersect = list(),
   minCellCount = 5
 )
 }
 \arguments{
 \item{cohort}{A cohort in the cdm}
 
-\item{cdm}{A cdm_reference created by CDMConnector}
+\item{cdm}{A cdm reference.}
 
 \item{strata}{Stratification list}
 
 \item{ageGroup}{A list of age groups.}
 
-\item{windowVisitOcurrence}{Window to count visit occurrences.}
+\item{tableIntersect}{A list of arguments that uses addTableIntersect
+function to add covariates and comorbidities.}
 
-\item{covariates}{Named list of windows to check covariates. The name must
-point to a cohortTableName in the cdm.}
+\item{cohortIntersect}{A list of arguments that uses addCohortIntersect
+function to add covariates and comorbidities.}
 
 \item{minCellCount}{minimum counts due to obscure}
 }
@@ -35,18 +37,28 @@ point to a cohortTableName in the cdm.}
 A summary of the characteristics of the individuals
 }
 \description{
-This function is used to summarise the dose and/or indication over multiple
-cohorts.
+Summarise characteristics of individuals
+It is an alias of \code{\link[PatientProfiles:summariseCharacteristics]{PatientProfiles::summariseCharacteristics()}}
 }
 \examples{
 \donttest{
-library(DrugUtilisation)
-cdm <- mockDrugUtilisation(numberIndividuals = 100)
+library(DrugUtlisation)
+
+cdm <- mockDrugUtilisation()
+
 summariseTableOne(
-  cdm$cohort1,
-  cdm,
+  cohort = cdm$cohort1,
   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
-  windowVisitOcurrence = c(-180, 0)
+  tableIntersect = list(
+    "Visits" = list(
+      tableName = "visit_occurrence", value = "count", window = c(-365, 0)
+     )
+  ),
+  cohortIntersect = list(
+    "Medications" = list(
+      targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
+    )
+  )
 )
 }
 }

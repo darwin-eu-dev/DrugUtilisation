@@ -14,16 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' This function is used to summarise the dose and/or indication over multiple
-#' cohorts.
+#' Summarise characteristics of individuals
+#' It is an alias of [PatientProfiles::summariseCharacteristics()]
 #'
 #' @param cohort A cohort in the cdm
-#' @param cdm A cdm_reference created by CDMConnector
+#' @param cdm A cdm reference.
 #' @param strata Stratification list
 #' @param ageGroup A list of age groups.
-#' @param windowVisitOcurrence Window to count visit occurrences.
-#' @param covariates Named list of windows to check covariates. The name must
-#' point to a cohortTableName in the cdm.
+#' @param tableIntersect A list of arguments that uses addTableIntersect
+#' function to add covariates and comorbidities.
+#' @param cohortIntersect A list of arguments that uses addCohortIntersect
+#' function to add covariates and comorbidities.
 #' @param minCellCount minimum counts due to obscure
 #'
 #' @return A summary of the characteristics of the individuals
@@ -32,93 +33,40 @@
 #'
 #' @examples
 #' \donttest{
-#' library(DrugUtilisation)
-#' cdm <- mockDrugUtilisation(numberIndividuals = 100)
+#' library(DrugUtlisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
 #' summariseTableOne(
-#'   cdm$cohort1,
-#'   cdm,
+#'   cohort = cdm$cohort1,
 #'   ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)),
-#'   windowVisitOcurrence = c(-180, 0)
+#'   tableIntersect = list(
+#'     "Visits" = list(
+#'       tableName = "visit_occurrence", value = "count", window = c(-365, 0)
+#'      )
+#'   ),
+#'   cohortIntersect = list(
+#'     "Medications" = list(
+#'       targetCohortTable = "cohort2", value = "flag", window = c(-365, 0)
+#'     )
+#'   )
 #' )
 #' }
 summariseTableOne <- function(cohort,
-                              cdm,
+                              cdm = attr(cohort, "cdm_reference"),
                               strata = list(),
                               ageGroup = NULL,
-                              windowVisitOcurrence = NULL,
-                              covariates = list(),
+                              tableIntersect = list(
+                                "Visit" = list(
+                                  tableName = "visit_occurrence",
+                                  value = "count", window = c(-365, 0)
+                                )
+                              ),
+                              cohortIntersect = list(),
                               minCellCount = 5) {
-  # check initial tables
-  checkInputs(
+  PatientProfiles::summariseCharacteristics(
     cohort = cohort, cdm = cdm, strata = strata, ageGroup = ageGroup,
-    windowVisitOcurrence = windowVisitOcurrence, covariates = covariates,
+    tableIntersect = tableIntersect, cohortIntersect = cohortIntersect,
     minCellCount = minCellCount
   )
-
-  # add characteristics
-  cohort <- cohort %>%
-    dplyr::select(
-      "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", dplyr::all_of(unique(unlist(strata)))
-    ) %>%
-    PatientProfiles::addDemographics(cdm, ageGroup = ageGroup)
-  if (!is.null(windowVisitOcurrence)) {
-    cohort <- cohort %>%
-      PatientProfiles::addIntersect(
-        cdm, "visit_occurrence", "flag", window = windowVisitOcurrence,
-        targetEndDate = NULL, nameStyle = "number_visits"
-      )
-  }
-  for (k in seq_along(covariates)) {
-    cohort <- cohort %>%
-      PatientProfiles::addCohortIntersectFlag(
-        cdm, names(covariates)[k], window = covariates[[k]]
-      )
-  }
-
-  # get variables
-  variables <- list(
-    dates = c("cohort_start_date", "cohort_end_date"),
-    numeric = c(
-      "age", "number_visits"[!is.null(windowVisitOcurrence)], "prior_history",
-      "future_observation"
-    ),
-    categorical = c("sex", "age_group"[!is.null(ageGroup)])
-  )
-
-  # set functions
-  functions <- list(
-    dates = c("median", "q25", "q75"),
-    numeric = c("median", "q25", "q75"),
-    categorical = c("count", "%")
-  )
-
-  if (length(covariates) > 0) {
-    variables$covariates <- colnames(cohort)[!c(colnames(cohort) %in% c(
-      "subject_id", "cohort_definition_id", unlist(variables), unlist(strata)
-    ))]
-    functions$covariates <- c("count", "%")
-  }
-
-  # update cohort_names
-  cohort <- cohort %>%
-    dplyr::left_join(
-      CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
-    )
-
-  # summarise results
-  results <- cohort %>%
-    PatientProfiles::summariseResult(
-      group = list("Cohort name" = "cohort_name"), strata = strata,
-      variables = variables, functions = functions, minCellCount = minCellCount
-    ) %>%
-    dplyr::mutate(
-      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = paste0(
-        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
-        "_summariseTableOne"
-      )
-    )
-
-  return(results)
 }
