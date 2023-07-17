@@ -42,7 +42,7 @@ It is an alias of \code{\link[PatientProfiles:summariseCharacteristics]{PatientP
 }
 \examples{
 \donttest{
-library(DrugUtlisation)
+library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 
