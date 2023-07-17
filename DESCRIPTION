@@ -16,6 +16,10 @@ Authors@R: c(
         comment = c(ORCID = "0000-0002-0847-4855")
     ),
     person(
+        "Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut"),
+        comment = c(ORCID = "0000-0002-8462-8668")
+    ),
+    person(
         "Edward", "Burn", email = "edward.burn@ndorms.ox.ac.uk", 
         role = c("ctb"), comment = c(ORCID = "0000-0002-9286-1128")
     ), 
