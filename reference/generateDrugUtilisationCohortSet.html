@@ -48,7 +48,7 @@
 <span>  <span class="va">conceptSetList</span>,</span>
 <span>  summariseMode <span class="op">=</span> <span class="st">"AllEras"</span>,</span>
 <span>  fixedTime <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  daysPriorHistory <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  daysPriorObservation <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  priorUseWashout <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  cohortDateRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -89,11 +89,10 @@ ingredient of interest. Argument only considered if 'summariseMode' =
 "FixedTime". No default value is provided.</p></dd>
 
 
-<dt>daysPriorHistory</dt>
-<dd><p>Minimum number of days of prior history
-(observation time) required for the incident eras to be considered. By
-default: 0, meaning it has to be in observation_period table.
-When Null, we do not check if in observation_period table.</p></dd>
+<dt>daysPriorObservation</dt>
+<dd><p>Minimum number of days of prior observation
+required for the incident eras to be considered. If NULL its is not required
+to be within observation_period.</p></dd>
 
 
 <dt>gapEra</dt>
@@ -144,7 +143,7 @@ references of the object.</p>
 <span class="r-in"><span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"drug_cohorts"</span>,</span></span>
 <span class="r-in"><span>  conceptSetList <span class="op">=</span> <span class="va">druglist</span>,</span></span>
-<span class="r-in"><span>  daysPriorHistory <span class="op">=</span> <span class="fl">365</span></span></span>
+<span class="r-in"><span>  daysPriorObservation <span class="op">=</span> <span class="fl">365</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span></span></span>
@@ -164,13 +163,14 @@ references of the object.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cohortSet.html" class="external-link">cohortSet</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name  summarise_mode fixed_time days_prior_history</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1 Ingredient:… AllEras        <span style="color: #BB0000;">NA</span>         365               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2 Ingredient:… AllEras        <span style="color: #BB0000;">NA</span>         365               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: gap_era &lt;chr&gt;, prior_use_washout &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cohort_date_range_start &lt;chr&gt;, cohort_date_range_end &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   impute_duration &lt;chr&gt;, duration_range_min &lt;chr&gt;, duration_range_max &lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name                     summarise_mode fixed_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1 Ingredient: acetaminophen (112… AllEras        <span style="color: #BB0000;">NA</span>        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2 Ingredient: metformin (1503297) AllEras        <span style="color: #BB0000;">NA</span>        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: days_prior_observation &lt;chr&gt;, gap_era &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   prior_use_washout &lt;chr&gt;, cohort_date_range_start &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cohort_date_range_end &lt;chr&gt;, impute_duration &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   duration_range_min &lt;chr&gt;, duration_range_max &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 3</span></span>
@@ -209,7 +209,7 @@ references of the object.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Marti Catala, Mike Du, Yuchen Guo.</p>
+  <p></p><p>Developed by Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -46,7 +46,7 @@
 <span>  <span class="va">cdm</span>,</span>
 <span>  <span class="va">name</span>,</span>
 <span>  <span class="va">conceptSetList</span>,</span>
-<span>  daysPriorHistory <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  daysPriorObservation <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  gap <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  washout <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  offset <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -68,10 +68,10 @@
 <dd><p>Named list of concept sets.</p></dd>
 
 
-<dt>daysPriorHistory</dt>
-<dd><p>Minimum number of days of prior history required for
-the incident events. If NULL, it is not required that the veent is within the
-observation period.</p></dd>
+<dt>daysPriorObservation</dt>
+<dd><p>Minimum number of days of prior observation
+required for the incident events. If NULL, it is not required that the event
+is within the observation period.</p></dd>
 
 
 <dt>gap</dt>
@@ -111,7 +111,7 @@ observation period.</p></dd>
 <span class="r-in"><span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"covariates"</span>,</span></span>
 <span class="r-in"><span>  conceptSetList <span class="op">=</span> <span class="va">conditions</span>,</span></span>
-<span class="r-in"><span>  daysPriorHistory <span class="op">=</span> <span class="fl">365</span></span></span>
+<span class="r-in"><span>  daysPriorObservation <span class="op">=</span> <span class="fl">365</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">covariates</span></span></span>
@@ -125,10 +125,10 @@ observation period.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cohortSet.html" class="external-link">cohortSet</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">covariates</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name days_prior_history gap   washout offset</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1 headache    365                0     0       0     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2 asthma      365                0     0       0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name days_prior_observation gap   washout offset</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1 headache    365                    0     0       0     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2 asthma      365                    0     0       0     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: cohort_date_range_start &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cohort_date_range_end &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
@@ -143,8 +143,8 @@ observation period.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id number_records number_subjects reason_id reason          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    2              7               5         1 Qualifying init…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2              3               3         2 Satisfy daysPri…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>                    2              3               3         3 Join records wi…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2              3               3         2 At least 365 da…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>                    2              3               3         3 Collapse record…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>                    2              3               3         4 Washout applied </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>                    2              3               3         5 cohort_start_da…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>                    2              3               3         6 cohort_end_date…</span>
@@ -159,7 +159,7 @@ observation period.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Marti Catala, Mike Du, Yuchen Guo.</p>
+  <p></p><p>Developed by Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell.</p>
 </div>
 
 <div class="pkgdown-footer-right">
