@@ -45,14 +45,18 @@ test_that("test indicationDate", {
   )
 
   expect_no_error(result <- summariseTableOne(
-    cdm$dus_cohort, cdm, covariates = list(
-      "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
+    cdm$dus_cohort, cdm, cohortIntersect = list(
+      "Medication" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      ), "Comorbidities" = list(
+        targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+      )
     ), minCellCount = 1
   ))
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "covid_minf_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Covid") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -60,8 +64,8 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "headache_minf_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Headache") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -69,8 +73,8 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "acetaminophen_m365_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Acetaminophen") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -78,8 +82,8 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "ibuprophen_m365_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Ibuprophen") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -87,8 +91,8 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "exposed") %>%
-      dplyr::filter(variable == "naloxone_m365_to_0") %>%
+      dplyr::filter(group_level == "Exposed") %>%
+      dplyr::filter(variable_level == "Naloxone") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -96,8 +100,8 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "covid_minf_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Covid") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -105,8 +109,8 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "headache_minf_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Headache") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -114,8 +118,8 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "acetaminophen_m365_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Acetaminophen") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -123,8 +127,8 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "ibuprophen_m365_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Ibuprophen") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
@@ -132,19 +136,13 @@ test_that("test indicationDate", {
   )
   expect_identical(
     result %>%
-      dplyr::filter(group_level == "unexposed") %>%
-      dplyr::filter(variable == "naloxone_m365_to_0") %>%
+      dplyr::filter(group_level == "Unexposed") %>%
+      dplyr::filter(variable_level == "Naloxone") %>%
       dplyr::filter(estimate_type == "count") %>%
       dplyr::pull("estimate") %>%
       as.numeric(),
     0
   )
-
-  expect_no_error(result <- summariseTableOne(
-    cdm$dus_cohort, cdm, windowVisitOcurrence = c(-365, 0), covariates = list(
-      "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
-    ), minCellCount = 1
-  ))
 
   cdm$dus_cohort <- cdm$dus_cohort %>%
     dplyr::mutate(window = dplyr::if_else(
@@ -154,13 +152,21 @@ test_that("test indicationDate", {
       .data$cohort_start_date <= as.Date("2001-01-01"), "before 2001", "after 2001"
     ))
   expect_no_error(result <- summariseTableOne(
-    cdm$dus_cohort, cdm, windowVisitOcurrence = c(-365, 0), covariates = list(
-      "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
+    cdm$dus_cohort, cdm, cohortIntersect = list(
+      "Medication" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      ), "Comorbidities" = list(
+        targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+      )
     ), minCellCount = 1, strata = list("year group" = "window")
   ))
   expect_no_error(result <- summariseTableOne(
-    cdm$dus_cohort, cdm, windowVisitOcurrence = c(-365, 0), covariates = list(
-      "medication" = c(-365, 0), "comorbidities" = c(-Inf, 0)
+    cdm$dus_cohort, cdm, cohortIntersect = list(
+      "Medication" = list(
+        targetCohortTable = "medication", value = "flag", window = c(-365, 0)
+      ), "Comorbidities" = list(
+        targetCohortTable = "comorbidities", value = "flag", window = c(-Inf, 0)
+      )
     ), minCellCount = 1, strata = list(
       "year group" = "window", "year combined" = c("window", "window2")
     )
