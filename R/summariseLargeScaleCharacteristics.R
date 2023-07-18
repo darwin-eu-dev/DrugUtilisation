@@ -21,6 +21,7 @@
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
 #' must contain the 'targetCohort' table and all the tables that we want to
 #' characterize. It is a compulsory input, no default value is provided.
+#' @param strata Stratification list
 #' @param window Temporal windows that we want to characterize. It must
 #' be a list of numeric vectors of length two. The tables will be characterized
 #' between the first element and the second element respect to the
@@ -58,13 +59,14 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' summariseLargeScaleCharacteristics(
-#'   cohort = cdm$cohort1, cdm = cdm,
+#'   cohort = cdm$cohort1,
 #'   tablesToCharacterize= c("drug_exposure", "condition_occurrence")
 #' )
 #' }
 #'
 summariseLargeScaleCharacteristics <- function(cohort,
-                                               cdm,
+                                               cdm = attr(cohort, "cdm_reference"),
+                                               strata = list(),
                                                window = list(
                                                  c(-Inf, -366), c(-365, -91),
                                                  c(-365, -31), c(-90, -1),
@@ -81,7 +83,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                overlap = TRUE,
                                                minCellCount = 5) {
   checkInputs(
-    cohort = cohort, cdm = cdm, window = window,
+    cohort = cohort, cdm = cdm, strata = strata, window = window,
     tablesToCharacterize = tablesToCharacterize, overlap = overlap,
     minCellCount = minCellCount
   )
@@ -102,7 +104,10 @@ summariseLargeScaleCharacteristics <- function(cohort,
 
   # compute denominator
   den <- cohort %>%
-    dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date") %>%
+    dplyr::select(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      dplyr::all_of(unique(unlist(strata)))
+    ) %>%
     dplyr::distinct() %>%
     dplyr::inner_join(
       cdm[["observation_period"]] %>%
@@ -157,7 +162,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
       ) %>%
       dplyr::select(
         "cohort_definition_id", "subject_id", "cohort_start_date", "concept_id",
-        "start_dif", "end_dif"
+        "start_dif", "end_dif", dplyr::all_of(unique(unlist(strata)))
       ) %>%
       CDMConnector::computeQuery()
     for (i in 1:nrow(window)) {
@@ -170,14 +175,16 @@ summariseLargeScaleCharacteristics <- function(cohort,
         resultKI <- resultKI %>%
           dplyr::filter(.data$end_dif >= !!window$lower_bound[i])
       }
+      resultKI <- resultKI %>%
+        dplyr::select(
+          "cohort_definition_id", "subject_id", "cohort_start_date",
+          "concept_id", dplyr::all_of(unique(unlist(strata)))
+        ) %>%
+        dplyr::distinct() %>%
+        CDMConnector::computeQuery()
       result <- result %>%
         dplyr::union_all(
           resultKI %>%
-            dplyr::select(
-              "cohort_definition_id", "subject_id", "cohort_start_date",
-              "concept_id"
-            ) %>%
-            dplyr::distinct() %>%
             dplyr::group_by(.data$cohort_definition_id, .data$concept_id) %>%
             dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
             dplyr::inner_join(
@@ -187,10 +194,35 @@ summariseLargeScaleCharacteristics <- function(cohort,
             ) %>%
             dplyr::collect() %>%
             dplyr::mutate(
+              strata_name = "Overall", strata_level = "Overall",
               table_name = tablesToCharacterize[k],
               window_name = window$window_name[i]
             )
         )
+      for (j in seq_along(strata)) {
+        result <- result %>%
+          dplyr::union_all(
+            resultKI %>%
+              dplyr::mutate(
+                strata_level = !!rlang::parse_expr(sqlunite(strata[[j]]))
+              ) %>%
+              dplyr::group_by(
+                .data$cohort_definition_id, .data$concept_id, .data$strata_level
+              ) %>%
+              dplyr::summarise(count = dplyr::n(), .groups = "drop") %>%
+              dplyr::inner_join(
+                cdm[["concept"]] %>%
+                  dplyr::select("concept_id", "concept_name"),
+                by = "concept_id"
+              ) %>%
+              dplyr::collect() %>%
+              dplyr::mutate(
+                strata_group = names(strata)[j],
+                table_name = tablesToCharacterize[k],
+                window_name = window$window_name[i]
+              )
+          )
+      }
     }
   }
 
@@ -203,7 +235,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
     ) %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date", "start_dif",
-      "end_dif"
+      "end_dif", dplyr::all_of(unique(unlist(strata)))
     ) %>%
     CDMConnector::computeQuery()
   for (i in 1:nrow(window)) {
@@ -226,15 +258,36 @@ summariseLargeScaleCharacteristics <- function(cohort,
           dplyr::group_by(.data$cohort_definition_id) %>%
           dplyr::summarise(denominator_count = dplyr::n(), .groups = "drop") %>%
           dplyr::collect() %>%
-          dplyr::mutate(window_name = window$window_name[i], window_id = i)
+          dplyr::mutate(
+            strata_level = "Overall", strata_name = "Overall",
+            window_name = window$window_name[i], window_id = i
+          )
       )
+    for (j in seq_along(strata)) {
+      denominatorCount <- denominatorCount %>%
+        dplyr::union_all(
+          denI %>%
+            dplyr::mutate(
+              strata_level = !!rlang::parse_expr(sqlunite(strata[[j]]))
+            ) %>%
+            dplyr::group_by(
+              .data$cohort_definition_id, .data$strata_level
+            ) %>%
+            dplyr::summarise(denominator_count = dplyr::n(), .groups = "drop") %>%
+            dplyr::collect() %>%
+            dplyr::mutate(
+              strata_group = names(strata)[j],
+              window_name = window$window_name[i]
+            )
+        )
+    }
   }
 
   # join all together
   result <- result %>%
     dplyr::inner_join(
       denominatorCount,
-      by = c("cohort_definition_id", "window_name")
+      by = c("cohort_definition_id", "window_name", "strata_level", "strata_name")
     ) %>%
     dplyr::mutate(
       "%" = 100 * .data$count / .data$denominator_count,
@@ -256,7 +309,6 @@ summariseLargeScaleCharacteristics <- function(cohort,
       .data$cohort_name, .data$table_name, .data$window_id, .data$concept_id
     ) %>%
     dplyr::mutate(
-      strata_name = "overall", strata_level = as.character(NA),
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       generated_by = paste0(
         "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
