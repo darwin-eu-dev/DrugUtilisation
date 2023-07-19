@@ -296,22 +296,22 @@ test_that("test gapEra and eraJoinMode", {
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  values <- c(
+  value_cohort_1 <- c(
     35, 25, 0, 15, 2, 3, 2,
     2, 0, 1,
     0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     0, 3, 2, 2,
     15 * 30 + 20 * 20, 0, 0
   )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(value_cohort_1, 15, 35)
 
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
       subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
     )
-  for (k in 1:length(values)) {
-    expect_true(xx[[variables[k]]] == values[k])
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
 
   # gapEra = 24
@@ -328,21 +328,21 @@ test_that("test gapEra and eraJoinMode", {
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  values <- c(
+  value_cohort_1 <- c(
     35, 25, 0, 15, 2, 3, 2,
     2, 0, 1,
     0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     0, 3, 2, 2,
     15 * 30 + 20 * 20, 0, 0
   )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(value_cohort_1, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
       subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
     )
-  for (k in 1:length(values)) {
-    expect_true(xx[[variables[k]]] == values[k])
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
 
   # gapEra = 25 & joinMode = Zero
@@ -359,21 +359,21 @@ test_that("test gapEra and eraJoinMode", {
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  values <- c(
+  value_cohort_1 <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
     0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     25, 3, 1, 2,
     15 * 30 + 20 * 20, 0, 0
   )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(value_cohort_1, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
       subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
     )
-  for (k in 1:length(values)) {
-    expect_true(xx[[variables[k]]] == values[k])
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
 
   # gapEra = 25 & joinMode = Previous
@@ -390,21 +390,21 @@ test_that("test gapEra and eraJoinMode", {
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  values <- c(
+  value_cohort_1 <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
     0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     25, 3, 1, 2,
     15 * 30 + 20 * 20 + 25 * 30, 25 * 30, 0
   )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(value_cohort_1, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
       subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
     )
-  for (k in 1:length(values)) {
-    expect_true(xx[[variables[k]]] == values[k])
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
 
   # gapEra = 25 & joinMode = Subsequent
@@ -421,21 +421,21 @@ test_that("test gapEra and eraJoinMode", {
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  values <- c(
+  value_cohort_1 <- c(
     35, 0, 0, 60, 2, 3, 2,
     1, 1, 0,
     0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
     25, 3, 1, 2,
     15 * 30 + 20 * 20 + 25 * 20, 25 * 20, 0
   )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(value_cohort_1, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
       subject_id == 1 & cohort_start_date == as.Date("2001-01-01")
     )
-  for (k in 1:length(values)) {
-    expect_true(xx[[variables[k]]] == values[k])
+  for (k in 1:length(value_cohort_1)) {
+    expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
 })
 
