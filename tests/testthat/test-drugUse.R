@@ -962,7 +962,7 @@ test_that("check output format", {
   expect_true(all(colnames(result) %in% c(
     "group_name", "group_level", "strata_name", "strata_level", "variable",
     "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
-    "generated_by"
+    "result_type"
   )))
 })
 
@@ -1015,5 +1015,5 @@ test_that("check all estimates", {
     drugUseEstimates = all_estimates
   )
 
-  expect_true(grepl("summariseDrugUse", unique(res$generated_by)))
+  expect_true(grepl("Summary drug use", unique(res$result_type)))
 })

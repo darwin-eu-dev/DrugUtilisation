@@ -72,6 +72,17 @@ test_that("basic functionality large scale characteristics", {
         minCellCount = 1
       )
   )
+
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      PatientProfiles::addDemographics(ageGroup = list(c(0, 24), c(25, 150))) %>%
+      summariseLargeScaleCharacteristics(
+        cdm = cdm,
+        strata = list("age" = "age_group", "age & sex" = c("age_group", "sex")),
+        tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
+        minCellCount = 1
+      )
+  )
 })
 
 test_that("basic functionality summariseCodelist", {

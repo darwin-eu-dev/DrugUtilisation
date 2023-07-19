@@ -96,7 +96,7 @@ cdm <- generateDrugUtilisationCohortSet(
   name = "dus_cohort",
   conceptSetList = conceptList,
   summariseMode = "FirstEra", 
-  daysPriorHistory = 365,
+  daysPriorObservation = 365,
   gapEra = 30,
   priorUseWashout = 0,
   imputeDuration = "eliminate", 
@@ -119,7 +119,9 @@ Cohort set:
 
 ``` r
 library(CDMConnector)
+#> Warning: package 'CDMConnector' was built under R version 4.2.3
 library(dplyr)
+#> Warning: package 'dplyr' was built under R version 4.2.3
 #> 
 #> Attaching package: 'dplyr'
 #> The following objects are masked from 'package:stats':
@@ -135,7 +137,7 @@ cohortSet(cdm$dus_cohort) %>% glimpse()
 #> $ cohort_name             <chr> "Ingredient: acetaminophen (1125315)"
 #> $ summarise_mode          <chr> "FirstEra"
 #> $ fixed_time              <chr> NA
-#> $ days_prior_history      <chr> "365"
+#> $ days_prior_observation  <chr> "365"
 #> $ gap_era                 <chr> "30"
 #> $ prior_use_washout       <chr> "0"
 #> $ cohort_date_range_start <chr> NA
@@ -198,7 +200,7 @@ x <- cdm$dus_cohort %>%
 glimpse(x)
 #> Rows: ??
 #> Columns: 16
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.3/:memory:]
+#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ subject_id                   <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…
 #> $ cohort_start_date            <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011…
@@ -226,7 +228,7 @@ x <- x %>% indicationToStrata(keep = TRUE)
 glimpse(x)
 #> Rows: ??
 #> Columns: 19
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.3/:memory:]
+#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ subject_id                   <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…
 #> $ cohort_start_date            <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011…
@@ -279,7 +281,7 @@ summariseIndication(x, cdm)
 #> 10 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
 #> # ℹ 30 more rows
 #> # ℹ 5 more variables: variable_type <chr>, estimate_type <chr>, estimate <chr>,
-#> #   cdm_name <chr>, generated_by <chr>
+#> #   cdm_name <chr>, result_type <chr>
 ```
 
 ``` r
@@ -296,7 +298,7 @@ summariseIndication(x, cdm) %>% glimpse()
 #> $ estimate_type  <chr> "count", "count", "count", "%", "count", "%", "count", …
 #> $ estimate       <chr> "46", "46", "0", "0", "0", "0", "46", "100", "0", "0", …
 #> $ cdm_name       <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-#> $ generated_by   <chr> "DrugUtilisation_0.2.0_summariseIndication", "DrugUtili…
+#> $ result_type    <chr> "Summary indication", "Summary indication", "Summary in…
 ```
 
 ### Add strata
@@ -327,7 +329,7 @@ summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "a
 #> 10 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
 #> # ℹ 550 more rows
 #> # ℹ 5 more variables: variable_type <chr>, estimate_type <chr>, estimate <chr>,
-#> #   cdm_name <chr>, generated_by <chr>
+#> #   cdm_name <chr>, result_type <chr>
 ```
 
 ``` r
@@ -344,7 +346,7 @@ summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "a
 #> $ estimate_type  <chr> "count", "count", "count", "%", "count", "%", "count", …
 #> $ estimate       <chr> "46", "46", "0", "0", "0", "0", "46", "100", "0", "0", …
 #> $ cdm_name       <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
-#> $ generated_by   <chr> "DrugUtilisation_0.2.0_summariseIndication", "DrugUtili…
+#> $ result_type    <chr> "Summary indication", "Summary indication", "Summary in…
 ```
 
 ### Daily dose
@@ -397,37 +399,46 @@ You can summarise the drug use using `summariseDrugUse` function
 
 ### Summarise patient characteristics
 
-You can summarise the patient characteristics with `summariseTableOne`
-function:
+You can summarise the patient characteristics with
+`summariseCharacteristics` function:
 
 ``` r
-summariseTableOne(
+summariseCharacteristics(
   x, cdm, ageGroup = list(c(0, 24), c(25, 49), c(50, 74), c(75, 150)),
-  windowVisitOcurrence = c(-365, 0),
-  covariates = list("indications_cohort" = c(-365, 0))
+  tableIntersect = list(
+    "Visits" = list(
+      tableName = "visit_occurrence", value = "count", window = c(-365, 0)
+    )
+  ),
+  cohortIntersect = list(
+    "Indications" = list(
+      targetCohortTable  = "indications_cohort", value = "flag", 
+      window = c(-365, 0)
+    )
+  )
 )
-#> # A tibble: 34 × 11
-#>    group_name  group_level      strata_name strata_level variable variable_level
-#>    <chr>       <chr>            <chr>       <chr>        <chr>    <chr>         
-#>  1 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
-#>  2 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
-#>  3 Cohort name Ingredient: ace… Overall     Overall      age      <NA>          
-#>  4 Cohort name Ingredient: ace… Overall     Overall      age      <NA>          
-#>  5 Cohort name Ingredient: ace… Overall     Overall      age      <NA>          
-#>  6 Cohort name Ingredient: ace… Overall     Overall      future_… <NA>          
-#>  7 Cohort name Ingredient: ace… Overall     Overall      future_… <NA>          
-#>  8 Cohort name Ingredient: ace… Overall     Overall      future_… <NA>          
-#>  9 Cohort name Ingredient: ace… Overall     Overall      prior_h… <NA>          
-#> 10 Cohort name Ingredient: ace… Overall     Overall      prior_h… <NA>          
-#> # ℹ 24 more rows
-#> # ℹ 5 more variables: variable_type <chr>, estimate_type <chr>, estimate <chr>,
-#> #   cdm_name <chr>, generated_by <chr>
+#> # A tibble: 46 × 11
+#>    cdm_name result_type group_name group_level strata_name strata_level variable
+#>    <chr>    <chr>       <chr>      <chr>       <chr>       <chr>        <chr>   
+#>  1 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Number …
+#>  2 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Number …
+#>  3 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  4 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  5 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  6 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  7 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  8 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
+#>  9 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
+#> 10 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
+#> # ℹ 36 more rows
+#> # ℹ 4 more variables: variable_level <chr>, variable_type <chr>,
+#> #   estimate_type <chr>, estimate <chr>
 ```
 
 ### Summarise patients large scale characteristics
 
-You can summarise the patient characteristics with `summariseTableOne`
-function:
+You can summarise the patient characteristics with
+`summariseLargeScaleCharacteristics` function:
 
 ``` r
 summariseLargeScaleCharacteristics(
@@ -436,19 +447,19 @@ summariseLargeScaleCharacteristics(
 #> # A tibble: 124 × 12
 #>    cohort_name        strata_name strata_level table_name window_name concept_id
 #>    <chr>              <chr>       <chr>        <chr>      <chr>            <dbl>
-#>  1 Ingredient: aceta… overall     <NA>         condition… -inf to -3…     317009
-#>  2 Ingredient: aceta… overall     <NA>         condition… -inf to -3…     378253
-#>  3 Ingredient: aceta… overall     <NA>         condition… -inf to -3…    4266367
-#>  4 Ingredient: aceta… overall     <NA>         condition… -365 to -91     317009
-#>  5 Ingredient: aceta… overall     <NA>         condition… -365 to -91     378253
-#>  6 Ingredient: aceta… overall     <NA>         condition… -365 to -91    4266367
-#>  7 Ingredient: aceta… overall     <NA>         condition… -365 to -31     317009
-#>  8 Ingredient: aceta… overall     <NA>         condition… -365 to -31     378253
-#>  9 Ingredient: aceta… overall     <NA>         condition… -365 to -31    4266367
-#> 10 Ingredient: aceta… overall     <NA>         condition… -90 to -1       317009
+#>  1 Ingredient: aceta… Overall     Overall      condition… -inf to -3…     317009
+#>  2 Ingredient: aceta… Overall     Overall      condition… -inf to -3…     378253
+#>  3 Ingredient: aceta… Overall     Overall      condition… -inf to -3…    4266367
+#>  4 Ingredient: aceta… Overall     Overall      condition… -365 to -91     317009
+#>  5 Ingredient: aceta… Overall     Overall      condition… -365 to -91     378253
+#>  6 Ingredient: aceta… Overall     Overall      condition… -365 to -91    4266367
+#>  7 Ingredient: aceta… Overall     Overall      condition… -365 to -31     317009
+#>  8 Ingredient: aceta… Overall     Overall      condition… -365 to -31     378253
+#>  9 Ingredient: aceta… Overall     Overall      condition… -365 to -31    4266367
+#> 10 Ingredient: aceta… Overall     Overall      condition… -90 to -1       317009
 #> # ℹ 114 more rows
 #> # ℹ 6 more variables: concept_name <chr>, count <chr>, denominator_count <chr>,
-#> #   `%` <dbl>, cdm_name <chr>, generated_by <chr>
+#> #   `%` <dbl>, cdm_name <chr>, result_type <chr>
 ```
 
 ## ReportGenerator

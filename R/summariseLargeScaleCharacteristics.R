@@ -217,7 +217,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
               ) %>%
               dplyr::collect() %>%
               dplyr::mutate(
-                strata_group = names(strata)[j],
+                strata_name = names(strata)[j],
                 table_name = tablesToCharacterize[k],
                 window_name = window$window_name[i]
               )
@@ -276,8 +276,8 @@ summariseLargeScaleCharacteristics <- function(cohort,
             dplyr::summarise(denominator_count = dplyr::n(), .groups = "drop") %>%
             dplyr::collect() %>%
             dplyr::mutate(
-              strata_group = names(strata)[j],
-              window_name = window$window_name[i]
+              strata_name = names(strata)[j],
+              window_name = window$window_name[i], window_id = i
             )
         )
     }
@@ -310,15 +310,12 @@ summariseLargeScaleCharacteristics <- function(cohort,
     ) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = paste0(
-        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
-        "_summariseLargeScaleCharacteristics"
-      )
+      result_type = "Summary large scale characteristics"
     ) %>%
     dplyr::select(
       "cohort_name", "strata_name", "strata_level", "table_name", "window_name",
       "concept_id", "concept_name", "count", "denominator_count", "%",
-      "cdm_name", "generated_by"
+      "cdm_name", "result_type"
     )
 
 
@@ -409,10 +406,7 @@ summariseCharacteristicsFromCodelist <- function(cohort,
       variable_type = "binary", variable_level = as.character(NA),
       estimate_type = "count", group_name = "Cohort name",
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = paste0(
-        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
-        "_summariseCharacteristicsFromCodelist"
-      )
+      result_type = "Summary characteristics from codelist"
     ) %>%
     dplyr::mutate(
       "estimate" = dplyr::if_else(
@@ -425,7 +419,7 @@ summariseCharacteristicsFromCodelist <- function(cohort,
     dplyr::select(
       "group_name", "group_level", "strata_name", "strata_level", "window_name",
       "variable", "variable_type", "variable_level", "estimate_type",
-      "estimate", "cdm_name", "generated_by"
+      "estimate", "cdm_name", "result_type"
     )
 
   return(result)

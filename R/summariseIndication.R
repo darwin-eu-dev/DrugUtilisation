@@ -81,10 +81,7 @@ summariseIndication <- function(cohort,
   ) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = paste0(
-        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
-        "_summariseIndication"
-      )
+      result_type = "Summary indication"
     )
 
   return(result)
