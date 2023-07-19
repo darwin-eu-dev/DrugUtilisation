@@ -1,6 +1,12 @@
 library(testthat)
 library(DrugUtilisation)
 
+dbToTest <- c(
+  "duckdb"
+  #,"sqlserver"
+  #,"redshift"
+)
+
 availableConnections <- list(list(
   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
   writeSchema = "main",
