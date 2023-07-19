@@ -65,13 +65,60 @@ test_that("basic functionality large scale characteristics", {
     cohort_interest = cohort_interest, drug_exposure = drug_exposure,
     condition_occurrence = condition_occurrence
   )
+
   expect_no_error(
     result <- cdm$cohort_interest %>%
       summariseLargeScaleCharacteristics(
         cdm, tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
-        minCellCount = 1
+        minCellCount = 1, overlap = FALSE
       )
   )
+  conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
+  windowName <- rep(c("0 to 0", "-inf to -366"), 3)
+  cohortName <- rep(c("cohort_1"), 6)
+  count <- c(NA, 2, NA, 1, NA, NA)
+  den <- c(3, 3, 3, 3, 3, 3)
+  for (k in seq_along(conceptId)) {
+    r <- result %>%
+      dplyr::filter(
+        .data$concept_id == .env$conceptId[k] &
+          .data$window_name == .env$windowName[k] &
+          .data$cohort_name == .env$cohortName[k]
+      )
+    if (is.na(count[k])) {
+      expect_true(nrow(r) == 0)
+    } else {
+      expect_true(r$count == count[k])
+      expect_true(r$denominator_count == den[k])
+    }
+  }
+
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      summariseLargeScaleCharacteristics(
+        cdm, tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
+        minCellCount = 1, overlap = TRUE
+      )
+  )
+  # conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
+  # windowName <- rep(c("0 to 0", "-inf to -366"), 3)
+  # cohortName <- rep(c("cohort_1"), 6)
+  # count <- c(NA, 2, NA, 1, NA, NA)
+  # den <- c(3, 3, 3, 3, 3, 3)
+  # for (k in seq_along(conceptId)) {
+  #   r <- result %>%
+  #     dplyr::filter(
+  #       .data$concept_id == .env$conceptId[k] &
+  #         .data$window_name == .env$windowName[k] &
+  #         .data$cohort_name == .env$cohortName[k]
+  #     )
+  #   if (is.na(count[k])) {
+  #     expect_true(nrow(r) == 0)
+  #   } else {
+  #     expect_true(r$count == count[k])
+  #     expect_true(r$denominator_count == den[k])
+  #   }
+  # }
 
   expect_no_error(
     result <- cdm$cohort_interest %>%
@@ -83,6 +130,25 @@ test_that("basic functionality large scale characteristics", {
         minCellCount = 1
       )
   )
+  # conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
+  # windowName <- rep(c("0 to 0", "-inf to -366"), 3)
+  # cohortName <- rep(c("cohort_1"), 6)
+  # count <- c(NA, 2, NA, 1, NA, NA)
+  # den <- c(3, 3, 3, 3, 3, 3)
+  # for (k in seq_along(conceptId)) {
+  #   r <- result %>%
+  #     dplyr::filter(
+  #       .data$concept_id == .env$conceptId[k] &
+  #         .data$window_name == .env$windowName[k] &
+  #         .data$cohort_name == .env$cohortName[k]
+  #     )
+  #   if (is.na(count[k])) {
+  #     expect_true(nrow(r) == 0)
+  #   } else {
+  #     expect_true(r$count == count[k])
+  #     expect_true(r$denominator_count == den[k])
+  #   }
+  # }
 })
 
 test_that("basic functionality summariseCodelist", {
