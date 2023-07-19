@@ -14,7 +14,8 @@ addDrugUse(
   duration = TRUE,
   cumulativeDose = TRUE,
   numberEras = TRUE,
-  supplementary = FALSE,
+  initialQuantity = TRUE,
+  cumulativeQuantity = TRUE,
   gapEra = 30,
   eraJoinMode = "Zero",
   overlapMode = "Sum",
@@ -46,7 +47,9 @@ of ingredient concept id will be used. By default: NULL.}
 
 \item{numberEras}{Whether the number of eras should be displayed}
 
-\item{supplementary}{Whether all supplementary variables should be displayed}
+\item{initialQuantity}{Whether initial quantity should be displayed}
+
+\item{cumulativeQuantity}{Whether cumulative quantity should be displayed}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era. By default: 180.}

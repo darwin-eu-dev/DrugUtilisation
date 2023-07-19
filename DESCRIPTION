@@ -1,7 +1,7 @@
 Package: DrugUtilisation
 Title: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP 
     Common Data Model 
-Version: 0.2.1
+Version: 0.3.0
 Authors@R: c(
     person(
         "Marti", "Catala", email = "marti.catalasabate@ndorms.ox.ac.uk", 
@@ -59,8 +59,6 @@ Imports:
     PatientProfiles (>= 0.3.0),
     magrittr,
     purrr
-Remotes:
-    darwin-eu-dev/PatientProfiles
 Depends: 
     R (>= 2.10)
 LazyData: true

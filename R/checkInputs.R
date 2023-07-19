@@ -638,6 +638,18 @@ checkLabel <- function(label, binaryColumns) {
   )
 }
 
+checkCumulativeQuantity <- function(cumulativeQuantity, cohort) {
+  if (!is.logical(cumulativeQuantity) | length(cumulativeQuantity) != 1) {
+    cli::cli_warn("cumulativeQuantity must be TRUE or FALSE")
+  }
+}
+
+checkInitialQuantity <- function(initialQuantity, cohort) {
+  if (!is.logical(initialQuantity) | length(initialQuantity) != 1) {
+    cli::cli_warn("initialQuantity must be TRUE or FALSE")
+  }
+}
+
 # other functions
 checkColumns <- function(x, columns) {
   if (!all(columns %in% colnames(x))) {

@@ -9,8 +9,8 @@ summariseCharacteristicsFromCodelist(
   cdm,
   conceptSetList,
   strata = list(),
-  window = list(c(-Inf, -366), c(-365, -91), c(-365, -31), c(-90, -1), c(-30, -1), c(0,
-    0), c(1, 30), c(1, 90), c(31, 365), c(91, 365), c(366, Inf)),
+  window = list(c(-Inf, -366), c(-365, -31), c(-30, -1), c(0, 0), c(1, 30), c(31, 365),
+    c(366, Inf)),
   overlap = TRUE,
   minCellCount = 5
 )
