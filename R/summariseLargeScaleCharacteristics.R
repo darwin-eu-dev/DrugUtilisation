@@ -68,11 +68,10 @@ summariseLargeScaleCharacteristics <- function(cohort,
                                                cdm = attr(cohort, "cdm_reference"),
                                                strata = list(),
                                                window = list(
-                                                 c(-Inf, -366), c(-365, -91),
-                                                 c(-365, -31), c(-90, -1),
-                                                 c(-30, -1), c(0, 0), c(1, 30),
-                                                 c(1, 90), c(31, 365),
-                                                 c(91, 365), c(366, Inf)
+                                                 c(-Inf, -366), c(-365, -31),
+                                                 c(-30, -1), c(0, 0),
+                                                 c(1, 30), c(31, 365),
+                                                 c(366, Inf)
                                                ),
                                                tablesToCharacterize = c(
                                                  "condition_occurrence",
@@ -362,11 +361,9 @@ summariseCharacteristicsFromCodelist <- function(cohort,
                                                  conceptSetList,
                                                  strata = list(),
                                                  window = list(
-                                                   c(-Inf, -366), c(-365, -91),
-                                                   c(-365, -31), c(-90, -1),
+                                                   c(-Inf, -366), c(-365, -31),
                                                    c(-30, -1), c(0, 0),
-                                                   c(1, 30), c(1, 90),
-                                                   c(31, 365), c(91, 365),
+                                                   c(1, 30), c(31, 365),
                                                    c(366, Inf)
                                                  ),
                                                  overlap = TRUE,
