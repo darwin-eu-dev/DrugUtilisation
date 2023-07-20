@@ -1018,7 +1018,7 @@ test_that("check all estimates", {
   expect_true(grepl("Summary drug use", unique(res$result_type)))
 })
 
-test_that("check all estimates", {
+test_that("check all variables", {
   all_estimates <- c(
     "min", "max", "mean", "median", "iqr", "range", "q05", "q10", "q15", "q20",
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
