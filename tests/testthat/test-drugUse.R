@@ -1017,3 +1017,22 @@ test_that("check all estimates", {
 
   expect_true(grepl("Summary drug use", unique(res$result_type)))
 })
+
+test_that("check all estimates", {
+  all_estimates <- c(
+    "min", "max", "mean", "median", "iqr", "range", "q05", "q10", "q15", "q20",
+    "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
+    "q75", "q80", "q85", "q90", "q95", "sd"
+  )
+  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm, "dus", list(acetaminophen = c(1125315, 43135274, 2905077, 1125360))
+  )
+  result <- cdm$dus %>%
+    addDrugUse(cdm, 1125315) %>%
+    summariseDrugUse(cdm, drugUseEstimates = all_estimates)
+  expect_true(all(c(
+    "initial_daily_dose", "number_exposures", "duration", "cumulative_dose",
+    "number_eras", "initial_quantity", "cumulative_quantity"
+  ) %in% result$variable))
+})

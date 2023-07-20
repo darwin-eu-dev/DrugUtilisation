@@ -114,7 +114,7 @@ drugUseColumns <- function(cohort) {
   checkInputs(cohort = cohort)
   names <- colnames(cohort) [colnames(cohort) %in% c(
     "initial_daily_dose", "number_exposures", "duration", "cumulative_dose",
-    "number_eras"
+    "number_eras", "initial_quantity", "cumulative_quantity"
   )]
   return(names)
 }
