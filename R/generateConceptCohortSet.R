@@ -76,7 +76,7 @@ generateConceptCohortSet <- function(cdm,
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
   # create cohortSet
-  cohortSet <- attr(conceptSet, "cohort_set") %>%
+  cohortSetRef <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
       days_prior_observation = as.character(dplyr::coalesce(
         .env$daysPriorObservation, as.numeric(NA)
@@ -86,11 +86,14 @@ generateConceptCohortSet <- function(cdm,
       offset = as.character(.env$offset),
       cohort_date_range_start = as.character(.env$cohortDateRange[1]),
       cohort_date_range_end = as.character(.env$cohortDateRange[2])
-    )
+    ) %>%
+    insertTable(cdm, paste0(name, "_set"))
 
   # subset tables
   cohortRef <- subsetTables(cdm, conceptSet)
-  cohortAttritionRef <- computeCohortAttrition(cohortRef, cdm)
+  cohortAttritionRef <- computeCohortAttrition(
+    cohortRef, cdm, cohortSet = cohortSetRef
+  )
 
   if (cohortRef %>% dplyr::tally() %>% dplyr::pull("n") > 0) {
 
@@ -101,7 +104,7 @@ generateConceptCohortSet <- function(cdm,
     cohortAttritionRef <- computeCohortAttrition(
       cohortRef, cdm, cohortAttritionRef, paste(
         "At least", daysPriorObservation, "days of prior observation"
-      )
+      ), cohortSet = cohortSetRef
     )
 
 
@@ -110,13 +113,14 @@ generateConceptCohortSet <- function(cdm,
     cohortAttritionRef <- computeCohortAttrition(
       cohortRef, cdm, cohortAttritionRef, paste(
         "Collapse records an overlap gaf of", gap, "days"
-      )
+      ), cohortSet = cohortSetRef
     )
 
     # apply washout
     cohortRef <- requirePriorUseWashout(cohortRef, cdm, washout)
     cohortAttritionRef <- computeCohortAttrition(
-      cohortRef, cdm, cohortAttritionRef, "Washout applied"
+      cohortRef, cdm, cohortAttritionRef, "Washout applied",
+      cohortSet = cohortSetRef
     )
 
     # trim start date
@@ -124,7 +128,7 @@ generateConceptCohortSet <- function(cdm,
     cohortAttritionRef <- computeCohortAttrition(
       cohortRef, cdm, cohortAttritionRef, paste(
         "cohort_start_date >=", cohortDateRange[1]
-      )
+      ), cohortSet = cohortSetRef
     )
 
     # offset
@@ -139,7 +143,7 @@ generateConceptCohortSet <- function(cdm,
     cohortAttritionRef <- computeCohortAttrition(
       cohortRef, cdm, cohortAttritionRef, paste(
         "cohort_end_date <=", cohortDateRange[2]
-      )
+      ), cohortSet = cohortSetRef
     )
   }
 
@@ -153,14 +157,14 @@ generateConceptCohortSet <- function(cdm,
       name = paste0(attr(cdm, "write_prefix"), name),
       FALSE, attr(cdm, "write_schema"), TRUE
     )
-  cohortSetRef <- cohortSet %>%
-    insertTable(cdm, paste0(name, "_set"))
   cohortAttritionRef <- cohortAttritionRef %>%
     CDMConnector::computeQuery(
       name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),
       FALSE, attr(cdm, "write_schema"), TRUE
     )
-  cohortCountRef <- computeCohortCount(cohortRef, cdm) %>%
+  cohortCountRef <- computeCohortCount(
+    cohortRef, cdm, cohortSet = cohortSetRef
+  ) %>%
     CDMConnector::computeQuery(
       name = paste0(attr(cdm, "write_prefix"), name, "_count"),
       FALSE, attr(cdm, "write_schema"), TRUE

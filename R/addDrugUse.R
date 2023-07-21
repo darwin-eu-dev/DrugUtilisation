@@ -325,7 +325,7 @@ addInfo <- function(cohort,
             .data$cohort_end_date
           ) %>%
           dplyr::filter(
-            drug_exposure_start_date == min(
+            .data$drug_exposure_start_date == min(
               .data$drug_exposure_start_date, na.rm = TRUE
             ) &
               .data$drug_exposure_start_date <= .data$cohort_start_date &
@@ -357,7 +357,7 @@ addInitialDailyDose <- function(cohort,
         .data$cohort_end_date
       ) %>%
       dplyr::filter(
-        drug_exposure_start_date == min(
+        .data$drug_exposure_start_date == min(
           .data$drug_exposure_start_date, na.rm = TRUE
         ) &
           .data$drug_exposure_start_date <= .data$cohort_start_date &
