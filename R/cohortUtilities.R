@@ -66,7 +66,7 @@ countAttrition <- function(cohort, reason, id, cohortSet) {
       number_subjects = dplyr::n_distinct(.data$subject_id),
       .groups = "drop"
     ) %>%
-    dplyr::left_join(
+    dplyr::right_join(
       cohortSet %>%
         dplyr::select("cohort_definition_id"),
       by = "cohort_definition_id"
@@ -127,7 +127,7 @@ computeCohortCount <- function(x,
         number_subjects = dplyr::n_distinct(.data$subject_id),
         .groups = "drop"
       ) %>%
-      dplyr::left_join(
+      dplyr::right_join(
         cohortSet %>%
           dplyr::select("cohort_definition_id"),
         by = "cohort_definition_id"
