@@ -87,7 +87,7 @@ summariseLargeScaleCharacteristics2 <- function(cohort,
       NULL
     ),
     ifelse(
-      !is.null(icd10Codelist),
+      !is.null(icd10Level),
       CodelistGenerator::getICD10StandardCodes(cdm = cdm, level = icd10Level),
       NULL
     )
