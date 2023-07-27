@@ -230,3 +230,48 @@ test_that("dates range", {
       dplyr::pull("n")
   )
 })
+
+test_that("priorUseWashout", {
+  cdm <- mockDrugUtilisation(
+    observation_period = dplyr::tibble(
+      observation_period_id = c(1, 2),
+      person_id = c(1, 2),
+      observation_period_start_date = as.Date("2020-01-01"),
+      observation_period_end_date = as.Date("2020-12-31"),
+      period_type_concept_id = 44814724
+    ),
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = c(1, 2, 3),
+      person_id = c(1, 1, 2),
+      drug_concept_id = c(1539462, 1539462, 1539462),
+      drug_exposure_start_date = as.Date(c("2020-02-01", "2020-10-01", "2020-10-01")),
+      drug_exposure_end_date = as.Date(c("2020-02-01", "2020-10-01", "2020-10-01")),
+      drug_type_concept_id = 38000177,
+      quantity = 1
+    )
+  )
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    name = "bp_cohorts_test",
+    conceptSetList = list("bp_conceptList" = 1539462),
+    summariseMode = "FirstEra",
+    daysPriorObservation  = 180,
+    gapEra = 30,
+    priorUseWashout = Inf,
+    imputeDuration = "eliminate",
+    durationRange = c(0, Inf)
+  )
+  expect_true(
+    cdm$bp_cohorts_test %>%
+      dplyr::filter(subject_id == 2) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 1
+  )
+  expect_true(
+    cdm$bp_cohorts_test %>%
+      dplyr::filter(subject_id == 1) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 0
+  )
+})
+
