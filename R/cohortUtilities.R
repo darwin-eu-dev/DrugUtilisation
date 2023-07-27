@@ -363,9 +363,18 @@ computeTable <- function(x,
 requireDaysPriorObservation <- function(x, cdm, daysPriorObservation) {
   if (!is.null(daysPriorObservation)) {
     xNew <- x %>%
-      PatientProfiles::addPriorObservation(cdm) %>%
+      PatientProfiles::addDemographics(cdm = cdm, age = FALSE, sex = FALSE) %>%
       dplyr::filter(.data$prior_observation >= .env$daysPriorObservation) %>%
       dplyr::select(-"prior_observation") %>%
+      dplyr::mutate(duration = !!CDMConnector::datediff(
+        "cohort_start_date", "cohort_end_Date"
+      )) %>%
+      dplyr::mutate(cohort_end_date = dplyr::if_else(
+        .data$future_observation < .data$duration,
+        !!CDMConnector::dateadd("cohort_start_date", "future_observation",),
+        .data$cohort_end_date
+      )) %>%
+      dplyr::select(-"future_observation", -"duration") %>%
       computeTable(cdm)
     xNew <- PatientProfiles::addAttributes(xNew, x)
     return(xNew)
