@@ -138,6 +138,14 @@ generateDrugUtilisationCohortSet <- function(cdm,
       cohort, cdm, attrition, "Join eras", cohortSet = cohortSetRef
     )
 
+    # require priorUseWashout
+    cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
+    attrition <- computeCohortAttrition(
+      cohort, cdm, attrition, paste0(
+        "prior use wahout of ", priorUseWashout, " days"
+      ), cohortSet = cohortSetRef
+    )
+
     # require daysPriorObservation
     if (!is.null(daysPriorObservation)) {
       cohort <- requireDaysPriorObservation(cohort, cdm, daysPriorObservation)
@@ -147,14 +155,6 @@ generateDrugUtilisationCohortSet <- function(cdm,
         ), cohortSet = cohortSetRef
       )
     }
-
-    # require priorUseWashout
-    cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste0(
-        "prior use wahout of ", priorUseWashout, " days"
-      ), cohortSet = cohortSetRef
-    )
 
     # trim start date
     cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
