@@ -232,6 +232,7 @@ test_that("dates range", {
 })
 
 test_that("priorUseWashout", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     observation_period = dplyr::tibble(
       observation_period_id = c(1, 2),
@@ -245,7 +246,7 @@ test_that("priorUseWashout", {
       person_id = c(1, 1, 2),
       drug_concept_id = c(1539462, 1539462, 1539462),
       drug_exposure_start_date = as.Date(c("2020-02-01", "2020-10-01", "2020-10-01")),
-      drug_exposure_end_date = as.Date(c("2020-02-01", "2020-10-01", "2020-10-01")),
+      drug_exposure_end_date = as.Date(c("2020-02-01", "2020-10-01", "2021-10-01")),
       drug_type_concept_id = 38000177,
       quantity = 1
     )
@@ -273,5 +274,9 @@ test_that("priorUseWashout", {
       dplyr::tally() %>%
       dplyr::pull() == 0
   )
+  expect_true(
+    cdm$bp_cohorts_test %>%
+      dplyr::filter(subject_id == 2) %>%
+      dplyr::pull("cohort_end_date") == as.Date("2020-12-31")
+  )
 })
-
