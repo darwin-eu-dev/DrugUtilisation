@@ -131,8 +131,10 @@ summariseLargeScaleCharacteristics <- function(cohort,
               tablesToCharacterize[k]
             ), "end_date" = ifelse(
               overlap[k],
-              PatientProfiles::getEndName(
-                tablesToCharacterize[k]
+              ifelse(
+                is.na(PatientProfiles::getEndName(tablesToCharacterize[k])),
+                PatientProfiles::getStartName(tablesToCharacterize[k]),
+                PatientProfiles::getEndName(tablesToCharacterize[k])
               ),
               PatientProfiles::getStartName(
                 tablesToCharacterize[k]
