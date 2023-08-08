@@ -66,10 +66,14 @@ test_that("basic functionality drug_conceptId", {
     )
   )
   acetaminophen <- list(acetaminophen = c(1125360, 2905077, 43135274))
+
   # check gap
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen, gapEra = 0
   )
+  #check cdm reference in attributes
+  expect_true(!is.null(attr(cdm1$dus,"cdm_reference",exact = TRUE)))
+
   expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen, gapEra = 13

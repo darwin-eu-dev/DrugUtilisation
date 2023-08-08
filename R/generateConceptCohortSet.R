@@ -178,6 +178,9 @@ generateConceptCohortSet <- function(cdm,
     cohortCountRef = cohortCountRef
   )
 
+  #add cdm_reference as attribute
+  attr(cdm[[name]], "cdm_reference") <- cdm
+
   return(cdm)
 }
 

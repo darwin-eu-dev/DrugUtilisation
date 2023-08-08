@@ -4,4 +4,8 @@ test_that("test inputs", {
   expect_no_error(cdm <- generateConceptCohortSet(
     cdm, "indications_cohort", indications
   ))
+
+  #check cdm reference in attributes
+  expect_true(!is.null(attr(cdm$indications_cohort,"cdm_reference",exact = TRUE)))
+
 })
