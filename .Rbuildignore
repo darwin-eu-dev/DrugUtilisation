@@ -1,4 +1,4 @@
-^DrugUtilisation\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.github$
@@ -12,3 +12,4 @@ README.Rmd
 ^cran-comments\.md$
 ^doc$
 ^Meta$
+^vignettes/articles$

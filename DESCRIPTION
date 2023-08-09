@@ -48,7 +48,11 @@ Suggests:
     ggplot2,
     cowplot,
     plotly,
-    magick
+    magick,
+    PaRe,
+    DT,
+    igraph,
+    DiagrammeRsvg
 Config/testthat/edition: 3
 Imports: 
     CDMConnector (>= 1.0.0),
