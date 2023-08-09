@@ -170,7 +170,7 @@ DT::datatable(
 
 ## Dependency review
 ### Check dependencies against whitelist
-```{r checkDependencies, warning=FALSE, echo=FALSE}
+```{r checkDependencies, warning=FALSE, echo=FALSE,eval = FALSE}
 DT::datatable(PaRe::checkDependencies(repo = repo, verbose = FALSE))
 ```
 
