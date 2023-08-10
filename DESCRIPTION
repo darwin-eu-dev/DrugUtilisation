@@ -45,7 +45,12 @@ Suggests:
     CodelistGenerator,
     knitr,
     PaRe,
-    rmarkdown
+    rmarkdown,
+    DT,
+    magick,
+    DiagrammeRsvg,
+    ggplot2,
+    cowplot
 Config/testthat/edition: 3
 Imports: 
     CDMConnector (>= 1.0.0),
