@@ -44,6 +44,7 @@ Suggests:
     duckdb,
     CodelistGenerator,
     knitr,
+    PaRe,
     rmarkdown
 Config/testthat/edition: 3
 Imports: 
