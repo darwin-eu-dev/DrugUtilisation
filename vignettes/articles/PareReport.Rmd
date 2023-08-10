@@ -22,8 +22,16 @@ library(PaRe)
 library(dplyr)
 ```
 
-```{r, echo=FALSE}
-repo <- PaRe::Repository$new("../../")
+```{r, echo=FALSE, results='hide'}
+tempDir <- tempdir()
+pathToRepo <- file.path(tempDir, "DrugUtilisation")
+
+git2r::clone(
+  url = "https://github.com/darwin-eu/DrugUtilisation.git",
+  local_path = pathToRepo
+)
+
+repo <- PaRe::Repository$new(pathToRepo)
 ```
 
 ## Package overview
