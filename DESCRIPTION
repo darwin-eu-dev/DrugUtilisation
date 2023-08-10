@@ -50,7 +50,8 @@ Suggests:
     magick,
     DiagrammeRsvg,
     ggplot2,
-    cowplot
+    cowplot,
+    plotly
 Config/testthat/edition: 3
 Imports: 
     CDMConnector (>= 1.0.0),
