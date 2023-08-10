@@ -42,7 +42,16 @@ Suggests:
     here,
     RPostgres,
     duckdb,
-    CodelistGenerator
+    CodelistGenerator,
+    knitr,
+    PaRe,
+    rmarkdown,
+    DT,
+    magick,
+    DiagrammeRsvg,
+    ggplot2,
+    cowplot,
+    plotly
 Config/testthat/edition: 3
 Imports: 
     CDMConnector (>= 1.0.0),
@@ -63,3 +72,4 @@ Depends:
     R (>= 2.10)
 LazyData: true
 URL: https://darwin-eu-dev.github.io/DrugUtilisation/
+VignetteBuilder: knitr
