@@ -10,8 +10,8 @@ generateDrugUtilisationCohortSet(
   conceptSetList,
   summariseMode = "AllEras",
   fixedTime = NULL,
-  daysPriorHistory = 0,
-  gapEra = 30,
+  daysPriorObservation = 0,
+  gapEra = 0,
   priorUseWashout = 0,
   cohortDateRange = as.Date(c(NA, NA)),
   imputeDuration = "eliminate",
@@ -39,13 +39,12 @@ By default: "AllEras".}
 ingredient of interest. Argument only considered if 'summariseMode' =
 "FixedTime". No default value is provided.}
 
-\item{daysPriorHistory}{Minimum number of days of prior history
-(observation time) required for the incident eras to be considered. By
-default: 0, meaning it has to be in observation_period table.
-When Null, we do not check if in observation_period table.}
+\item{daysPriorObservation}{Minimum number of days of prior observation
+required for the incident eras to be considered. If NULL its is not required
+to be within observation_period.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era. By default: 180.}
+considered in the same era. By default: 0.}
 
 \item{priorUseWashout}{Prior days without exposure. By default: NULL.}
 
@@ -80,7 +79,7 @@ cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm,
   name = "drug_cohorts",
   conceptSetList = druglist,
-  daysPriorHistory = 365
+  daysPriorObservation = 365
 )
 
 cdm$drug_cohorts

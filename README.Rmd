@@ -16,13 +16,13 @@ knitr::opts_chunk$set(
 # DrugUtilisation <img src='man/figures/hex-HELPWANTED.png' align="right" height="139"/>
 
 [![CRANstatus](https://www.r-pkg.org/badges/version/DrugUtilisation)](https://CRAN.R-project.org/package=DrugUtilisation) 
-[![codecov.io](https://codecov.io/github/darwin-eu-dev/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu-dev/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu-dev/DrugUtilisation/actions)
+[![codecov.io](https://codecov.io/github/darwin-eu/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
+[![R-CMD-check](https://github.com/darwin-eu/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/DrugUtilisation/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://lifecycle.r-lib.org/articles/stages.html)
 
 ## WARNING: This package is under development.
 
-* [addDailyDose](https://github.com/darwin-eu-dev/DrugUtilisation/R/addDailyDose.R) function works for the following patterns in the drug_strength table:
+* **addDailyDose** function works for the following patterns in the drug_strength table:
 
 | pattern_id | amount_unit | numerator_unit | denominator_unit |
 |:----------:|:------------------:|:--------------:|:----------------:|
@@ -60,23 +60,9 @@ DrugUtilisation contains functions to instantiate and characterize the cohorts u
 
 - Summarise the patients large scale characterics in a certain cohort
 
-## Package installation
-
-You can install the this version of DrugUtilisation using the following command:
-
-```{r, eval=FALSE}
-install.packages("remotes")
-remotes::install_github("darwin-eu-dev/DrugUtilisation")
-```
-
-When working with DrugUtilisation, you will use CDMConnector to manage your connection to the database. If you don´t already have this installed you can install it from [CRAN](https://CRAN.R-project.org/package=CDMConnector).
-```{r, eval=FALSE}
-install.packages("CDMConnector")
-```
-
 ## Example
 
-First, we need to create a cdm reference for the data we´ll be using. Here we´ll generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package [connection examples](https://darwin-eu.github.io/CDMConnector/articles/DBI_connection_examples.html).
+First, we need to create a cdm reference for the data we´ll be using. Here we´ll generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package [connection examples](https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html).
 
 The package also provides a functionality to generate a mockDrugUtilisation cdm reference:
 
@@ -109,7 +95,7 @@ cdm <- generateDrugUtilisationCohortSet(
   name = "dus_cohort",
   conceptSetList = conceptList,
   summariseMode = "FirstEra", 
-  daysPriorHistory = 365,
+  daysPriorObservation = 365,
   gapEra = 30,
   priorUseWashout = 0,
   imputeDuration = "eliminate", 
@@ -250,19 +236,28 @@ You can summarise the drug use using `summariseDrugUse` function
 
 ### Summarise patient characteristics
 
-You can summarise the patient characteristics with `summariseTableOne` function:
+You can summarise the patient characteristics with `summariseCharacteristics` function:
 
 ```{r}
-summariseTableOne(
+summariseCharacteristics(
   x, cdm, ageGroup = list(c(0, 24), c(25, 49), c(50, 74), c(75, 150)),
-  windowVisitOcurrence = c(-365, 0),
-  covariates = list("indications_cohort" = c(-365, 0))
+  tableIntersect = list(
+    "Visits" = list(
+      tableName = "visit_occurrence", value = "count", window = c(-365, 0)
+    )
+  ),
+  cohortIntersect = list(
+    "Indications" = list(
+      targetCohortTable  = "indications_cohort", value = "flag", 
+      window = c(-365, 0)
+    )
+  )
 )
 ```
 
 ### Summarise patients large scale characteristics
 
-You can summarise the patient characteristics with `summariseTableOne` function:
+You can summarise the patient characteristics with `summariseLargeScaleCharacteristics` function:
 
 ```{r}
 summariseLargeScaleCharacteristics(
@@ -272,7 +267,7 @@ summariseLargeScaleCharacteristics(
 
 ## ReportGenerator
 
-This package is included in the `ReportGenerator` environment. See exortable elements:
+This package is included in the `ReportGenerator` environment. See exportable elements:
 
 ```{r, eval = FALSE}
 DrugUtilisation::ReportGenerator

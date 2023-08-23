@@ -57,7 +57,7 @@ summariseDrugUse<- function(cohort,
                             cdm,
                             strata = list(),
                             drugUseVariables = drugUseColumns(cohort),
-                            drugUseEstimates = c("mean", "q25", "q75"),
+                            drugUseEstimates = c("median", "q25", "q75"),
                             minCellCount = 5) {
   # check inputs
   checkInputs(
@@ -81,10 +81,7 @@ summariseDrugUse<- function(cohort,
   ) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      generated_by = paste(
-        "DrugUtilisation_", utils::packageVersion("DrugUtilisation"),
-        "_summariseDrugUse"
-      )
+      result_type = "Summary drug use"
     )
 
   return(result)
@@ -104,19 +101,20 @@ summariseDrugUse<- function(cohort,
 #' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
+#' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus", getDrugIngredientCodes(cdm, "acetaminophen")
+#'   cdm, "dus", acetaminophen
 #' )
-#' #cdm$dus <- cdm$dus %>%
-#' #  addDrugUse(cdm, 1125315)
-#' #drugUseColumns(cdm$dus)
+#' cdm$dus <- cdm$dus %>%
+#'   addDrugUse(cdm, 1125315, acetaminophen)
+#' drugUseColumns(cdm$dus)
 #' }
 #'
 drugUseColumns <- function(cohort) {
   checkInputs(cohort = cohort)
   names <- colnames(cohort) [colnames(cohort) %in% c(
     "initial_daily_dose", "number_exposures", "duration", "cumulative_dose",
-    "number_eras"
+    "number_eras", "initial_quantity", "cumulative_quantity"
   )]
   return(names)
 }

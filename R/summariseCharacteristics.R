@@ -14,17 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# export report generator data
-
-reportGenerator <- list(
-  "indication" = list(
-    columnNames  = c(
-      "group_name", "group_level", "strata_name", "strata_level", "variable",
-      "variable_type", "variable_level", "estimate_type", "estimate",
-      "cdm_name", "generated_by"
-    ),
-    functions = "DrugUtilisation::displayIndication"
-  )
-)
-
-usethis::use_data(reportGenerator, internal = FALSE, overwrite = TRUE)
+#' @importFrom PatientProfiles summariseCharacteristics
+#' @export
+PatientProfiles::summariseCharacteristics

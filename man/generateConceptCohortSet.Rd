@@ -8,7 +8,7 @@ generateConceptCohortSet(
   cdm,
   name,
   conceptSetList,
-  daysPriorHistory = 0,
+  daysPriorObservation = 0,
   gap = 0,
   washout = 0,
   offset = 0,
@@ -22,9 +22,9 @@ generateConceptCohortSet(
 
 \item{conceptSetList}{Named list of concept sets.}
 
-\item{daysPriorHistory}{Minimum number of days of prior history required for
-the incident events. If NULL, it is not required that the veent is within the
-observation period.}
+\item{daysPriorObservation}{Minimum number of days of prior observation
+required for the incident events. If NULL, it is not required that the event
+is within the observation period.}
 
 \item{gap}{Number of days between two events to be joined.}
 
@@ -53,7 +53,7 @@ cdm <- generateConceptCohortSet(
   cdm = cdm,
   name = "covariates",
   conceptSetList = conditions,
-  daysPriorHistory = 365
+  daysPriorObservation = 365
 )
 
 cdm$covariates

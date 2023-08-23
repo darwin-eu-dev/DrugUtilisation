@@ -93,9 +93,9 @@ checkFixedTime <- function(fixedTime, summariseMode) {
   }
 }
 
-checkDaysPriorHistory <- function(daysPriorHistory) {
+checkDaysPriorObservation <- function(daysPriorObservatio) {
   checkmate::assertIntegerish(
-    daysPriorHistory, lower = 0, any.missing = F, len = 1, null.ok = T
+    daysPriorObservatio, lower = 0, any.missing = F, len = 1, null.ok = T
   )
 }
 
@@ -108,9 +108,11 @@ checkGap <- function(gap) {
 }
 
 checkPriorUseWashout <- function(priorUseWashout) {
-  checkmate::assertIntegerish(
-    priorUseWashout, lower = 0, any.missing = F, len = 1
-  )
+  if (!(is.numeric(priorUseWashout) & length(priorUseWashout) == 1 & is.infinite(priorUseWashout))) {
+    checkmate::assertIntegerish(
+      priorUseWashout, lower = 0, any.missing = F, len = 1
+    )
+  }
 }
 
 checkCohortDateRange <- function(cohortDateRange) {
@@ -636,6 +638,18 @@ checkLabel <- function(label, binaryColumns) {
   )
 }
 
+checkCumulativeQuantity <- function(cumulativeQuantity, cohort) {
+  if (!is.logical(cumulativeQuantity) | length(cumulativeQuantity) != 1) {
+    cli::cli_warn("cumulativeQuantity must be TRUE or FALSE")
+  }
+}
+
+checkInitialQuantity <- function(initialQuantity, cohort) {
+  if (!is.logical(initialQuantity) | length(initialQuantity) != 1) {
+    cli::cli_warn("initialQuantity must be TRUE or FALSE")
+  }
+}
+
 # other functions
 checkColumns <- function(x, columns) {
   if (!all(columns %in% colnames(x))) {
@@ -669,7 +683,7 @@ checkConsistentCohortSet<- function(cs,
                                     missingDurationRange) {
   expectedColnames <- c(
     "cohort_definition_id", "cohort_name", "summarise_mode", "fixed_time",
-    "days_prior_history", "gap_era", "prior_use_washout",
+    "days_prior_observation", "gap_era", "prior_use_washout",
     "cohort_date_range_start", "cohort_date_range_end", "impute_duration",
     "duration_range_min", "duration_range_max"
   )
@@ -692,9 +706,9 @@ checkConsistentCohortSet<- function(cs,
           "More than one gapEra found in cohortSet, please specify gapEra"
         )
       }
-      gapEra <- unique(cs$gap_era)
+      gapEra <- as.numeric(unique(cs$gap_era))
     } else {
-      if (!all(cs$gap_era == gapEra)) {
+      if (!all(cs$gap_era == as.character(gapEra))) {
         cli::cli_warn(glue::glue_collapse(
           "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
         ))
@@ -703,12 +717,12 @@ checkConsistentCohortSet<- function(cs,
     if (missingImputeDuration == TRUE) {
       if (length(unique(cs$impute_duration)) > 1) {
         cli::cli_abort(
-          "More than one imputeDuration found in cohortSet, please specify imputeDuration"
+          "More than one impueDuration found in cohortSet, please specify imputeDuration"
         )
       }
-      imputeDuration <- unique(cs$impute_duration)
+      imputeDuration <- as.numeric(unique(cs$impute_duration))
     } else {
-      if (imputeDuration != cs$impute_duration) {
+      if (as.character(imputeDuration) != cs$impute_duration) {
         cli::cli_warn(glue::glue(
           "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
         ))
@@ -720,11 +734,14 @@ checkConsistentCohortSet<- function(cs,
           "More than one durationRange found in cohortSet, please specify durationRange"
         )
       }
-      durationRange <- c(
+      durationRange <- as.numeric(c(
         unique(cs$duration_range_min), unique(cs$duration_range_max)
-      )
+      ))
     } else {
-      if (!identical(durationRange, c(cs$duration_range_min, cs$duration_range_max))) {
+      if (!identical(
+        as.character(durationRange),
+        c(cs$duration_range_min, cs$duration_range_max)
+        )) {
         cli::cli_warn(glue::glue_collapse(
           "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
         ))

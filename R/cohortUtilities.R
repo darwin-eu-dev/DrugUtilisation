@@ -24,67 +24,36 @@
 #'
 #' @return Reference to a table with the cohort attrition
 #'
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' library(DrugUtilisation)
-#' library(dplyr)
-#' library(PatientProfiles)
-#'
-#' cdm <- mockDrugUtilisation()
-#'
-#' cdm$new_cohort <- cdm$observation_period %>%
-#'   mutate(cohort_definition_id = 1) %>%
-#'   select(
-#'     cohort_definition_id, subject_id = person_id,
-#'     cohort_start_date = observation_period_start_date,
-#'     cohort_end_date = observation_period_end_date
-#'   ) %>%
-#'   compute()
-#'
-#' attrition <- computeCohortAttrition(cdm$new_cohort, cdm)
-#'
-#' cdm$new_cohort <- cdm$new_cohort %>%
-#'   addSex(cdm = cdm) %>%
-#'   filter(sex == "Female") %>%
-#'   select(-"sex") %>%
-#'   compute()
-#'
-#' attrition <- computeCohortAttrition(
-#'   cdm$new_cohort, cdm, attrition, "Exclude males"
-#' )
-#'
-#' print(attrition)
-#' }
+#' @noRd
 #'
 computeCohortAttrition <- function(x,
                                    cdm,
                                    attrition = NULL,
-                                   reason = "Qualifying initial records") {
+                                   reason = "Qualifying initial records",
+                                   cohortSet) {
   checkInputs(
     x = x, cdm = cdm, attrition = attrition, reason = reason
   )
-  attrition <- addAttritionLine(x, cdm, attrition, reason) %>%
+  attrition <- addAttritionLine(x, cdm, attrition, reason, cohortSet) %>%
     computeTable(cdm)
   return(attrition)
 }
 
 #' @noRd
-addAttritionLine <- function(cohort, cdm, attrition, reason) {
+addAttritionLine <- function(cohort, cdm, attrition, reason, cohortSet) {
   if (is.null(attrition)) {
-    attrition <- countAttrition(cohort, reason, 1)
+    attrition <- countAttrition(cohort, reason, 1, cohortSet)
   } else {
     id <- attrition %>% dplyr::pull("reason_id") %>% max()
     attrition <- attrition %>%
-      dplyr::union_all(countAttrition(cohort, reason, id + 1)) %>%
+      dplyr::union_all(countAttrition(cohort, reason, id + 1, cohortSet)) %>%
       addExcludedCounts()
   }
   return(attrition)
 }
 
 #' @noRd
-countAttrition <- function(cohort, reason, id) {
+countAttrition <- function(cohort, reason, id, cohortSet) {
   if (id == 1) {
     num <- 0
   } else {
@@ -97,7 +66,18 @@ countAttrition <- function(cohort, reason, id) {
       number_subjects = dplyr::n_distinct(.data$subject_id),
       .groups = "drop"
     ) %>%
+    dplyr::right_join(
+      cohortSet %>%
+        dplyr::select("cohort_definition_id"),
+      by = "cohort_definition_id"
+    ) %>%
     dplyr::mutate(
+      number_records = dplyr::if_else(
+        is.na(.data$number_records), 0, .data$number_records
+      ),
+      number_subjects = dplyr::if_else(
+        is.na(.data$number_subjects), 0, .data$number_subjects
+      ),
       reason_id = .env$id, reason = .env$reason, excluded_records = .env$num,
       excluded_subjects = .env$num
     )
@@ -133,43 +113,35 @@ addExcludedCounts <- function(attrition) {
 #'
 #' @return A reference to a table in the database with the cohortCount
 #'
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' library(DrugUtilisation)
-#' library(dplyr)
-#' library(PatientProfiles)
-#'
-#' cdm <- mockDrugUtilisation()
-#'
-#' cdm$new_cohort <- cdm$observation_period %>%
-#'   mutate(cohort_definition_id = 1) %>%
-#'   addSex(cdm = cdm) %>%
-#'   filter(sex == "Female") %>%
-#'   select(
-#'     cohort_definition_id, subject_id = person_id,
-#'     cohort_start_date = observation_period_start_date,
-#'     cohort_end_date = observation_period_end_date
-#'   ) %>%
-#'   compute()
-#'
-#' cohortCountRef <- computeCohortCount(cdm$new_cohort, cdm)
-#'
-#' print(cohortCountRef)
-#' }
+#' @noRd
 #'
 computeCohortCount <- function(x,
-                               cdm) {
+                               cdm,
+                               cohortSet) {
   checkInputs(x = x, cdm = cdm)
-  return(x %>%
-    dplyr::group_by(.data$cohort_definition_id) %>%
-    dplyr::summarise(
-      number_records = dplyr::n(),
-      number_subjects = dplyr::n_distinct(.data$subject_id),
-      .groups = "drop"
-    ) %>%
-    computeTable(cdm))
+  return(
+    x %>%
+      dplyr::group_by(.data$cohort_definition_id) %>%
+      dplyr::summarise(
+        number_records = dplyr::n(),
+        number_subjects = dplyr::n_distinct(.data$subject_id),
+        .groups = "drop"
+      ) %>%
+      dplyr::right_join(
+        cohortSet %>%
+          dplyr::select("cohort_definition_id"),
+        by = "cohort_definition_id"
+      ) %>%
+      dplyr::mutate(
+        number_records = dplyr::if_else(
+          is.na(.data$number_records), 0, .data$number_records
+        ),
+        number_subjects = dplyr::if_else(
+          is.na(.data$number_subjects), 0, .data$number_subjects
+        )
+      ) %>%
+      computeTable(cdm)
+  )
 }
 
 #' @noRd
@@ -278,20 +250,10 @@ getEndName <- function(domain) {
 }
 
 #' @noRd
-emptyCohort <- function(cdm, name = CDMConnector::uniqueTableName()) {
-  writePrefix <- attr(cdm, "write_prefix")
-  writeSchema <- attr(cdm, "write_schema")
-  con <- attr(cdm, "dbcon")
-  if (!is.null(writePrefix)) {
-    name <- CDMConnector::inSchema(
-      writeSchema, paste0(writePrefix, name), CDMConnector::dbms(con)
-    )
-    temporary <- FALSE
-  } else {
-    temporary <- TRUE
-  }
+emptyCohort <- function(cdm) {
+  name = CDMConnector::uniqueTableName()
   DBI::dbCreateTable(
-    con,
+    attr(cdm, "dbcon"),
     name,
     fields = c(
       cohort_definition_id = "INT",
@@ -299,9 +261,11 @@ emptyCohort <- function(cdm, name = CDMConnector::uniqueTableName()) {
       cohort_start_date = "DATE",
       cohort_end_date = "DATE"
     ),
-    temporary = temporary
+    temporary = TRUE
   )
-  dplyr::tbl(con, name)
+  ref <- dplyr::tbl(attr(cdm, "dbcon"), name)
+  attr(ref, "cdm_reference") <- cdm
+  return(ref)
 }
 
 #' @noRd
@@ -323,10 +287,17 @@ requirePriorUseWashout <- function(cohort, cdm, washout) {
     ) %>%
     dplyr::mutate(
       prior_time = !!CDMConnector::datediff("prior_date", "cohort_start_date")
-    ) %>%
-    dplyr::filter(
-      is.na(.data$prior_date) | .data$prior_time >= .env$washout
-    ) %>%
+    )
+  if (is.infinite(washout)) {
+    cohort <- cohort %>%
+      dplyr::filter(is.na(.data$prior_date))
+  } else {
+    cohort <- cohort %>%
+      dplyr::filter(
+        is.na(.data$prior_date) | .data$prior_time >= .env$washout
+      )
+  }
+  cohort <- cohort %>%
     dplyr::select(-c("id", "prior_date", "prior_time")) %>%
     dbplyr::window_order() %>%
     dplyr::ungroup() %>%
@@ -365,15 +336,14 @@ trimEndDate <- function(cohort, cdm, endDate) {
 #' @noRd
 insertTable <- function(x,
                         cdm,
-                        name = CDMConnector::uniqueTableName(),
-                        temporary = is.null(attr(cdm, "write_prefix"))) {
+                        name = CDMConnector::uniqueTableName()) {
   con <- attr(cdm, "dbcon")
   name <- CDMConnector::inSchema(
     attr(cdm, "write_schema"),
     paste0(attr(cdm, "write_prefix"), name),
     CDMConnector::dbms(con)
   )
-  DBI::dbWriteTable(con, name, x, temporary = temporary, overwrite = TRUE)
+  DBI::dbWriteTable(con, name, as.data.frame(x), overwrite = TRUE)
   dplyr::tbl(con, name)
 }
 
@@ -390,12 +360,21 @@ computeTable <- function(x,
 }
 
 #' @noRd
-requireDaysPriorHistory <- function(x, cdm, daysPriorHistory) {
-  if (!is.null(daysPriorHistory)) {
+requireDaysPriorObservation <- function(x, cdm, daysPriorObservation) {
+  if (!is.null(daysPriorObservation)) {
     xNew <- x %>%
-      PatientProfiles::addPriorHistory(cdm) %>%
-      dplyr::filter(.data$prior_history >= .env$daysPriorHistory) %>%
-      dplyr::select(-"prior_history") %>%
+      PatientProfiles::addDemographics(cdm = cdm, age = FALSE, sex = FALSE) %>%
+      dplyr::filter(.data$prior_observation >= .env$daysPriorObservation) %>%
+      dplyr::select(-"prior_observation") %>%
+      dplyr::mutate(duration = !!CDMConnector::datediff(
+        "cohort_start_date", "cohort_end_Date"
+      )) %>%
+      dplyr::mutate(cohort_end_date = dplyr::if_else(
+        .data$future_observation < .data$duration,
+        !!CDMConnector::dateadd("cohort_start_date", "future_observation",),
+        .data$cohort_end_date
+      )) %>%
+      dplyr::select(-"future_observation", -"duration") %>%
       computeTable(cdm)
     xNew <- PatientProfiles::addAttributes(xNew, x)
     return(xNew)

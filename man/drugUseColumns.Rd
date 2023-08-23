@@ -21,12 +21,13 @@ library(DrugUtilisation)
 library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
+acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(
-  cdm, "dus", getDrugIngredientCodes(cdm, "acetaminophen")
+  cdm, "dus", acetaminophen
 )
-#cdm$dus <- cdm$dus \%>\%
-#  addDrugUse(cdm, 1125315)
-#drugUseColumns(cdm$dus)
+cdm$dus <- cdm$dus \%>\%
+  addDrugUse(cdm, 1125315, acetaminophen)
+drugUseColumns(cdm$dus)
 }
 
 }

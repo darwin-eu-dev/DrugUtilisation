@@ -4,9 +4,9 @@
 \name{DrugUtilisation-package}
 \alias{DrugUtilisation}
 \alias{DrugUtilisation-package}
-\title{DrugUtilisation: Summarise patient-level drug utilisation in data mapped to the OMOP Common Data Model}
+\title{DrugUtilisation: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP Common Data Model}
 \description{
-Summarise patient-level drug utilisation in data mapped to the OMOP Common Data Model.
+Summarise patient-level drug utilisation cohorts using data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model. New users and prevalent users cohorts can be generated and their characteristics, indication and drug use summarised.
 }
 \seealso{
 Useful links:
@@ -22,6 +22,7 @@ Authors:
 \itemize{
   \item Mike Du \email{mike.du@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9517-8834}{ORCID})
   \item Yuchen Guo \email{yuchen.guo@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-0847-4855}{ORCID})
+  \item Kim Lopez-Guell \email{kim.lopez@spc.ox.ac.uk} (\href{https://orcid.org/0000-0002-8462-8668}{ORCID})
 }
 
 Other contributors:

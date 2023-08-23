@@ -6,6 +6,7 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(1)))
   expect_no_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
   cdmNew <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
+  expect_true("GeneratedCohortSet" %in% class(cdmNew$dus))
   expect_true(all(colnames(cdmNew$dus) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"
   )))
@@ -30,7 +31,7 @@ test_that("test inputs", {
     fixedTime = "1"
   ))
   expect_error(generateDrugUtilisationCohortSet(
-    cdm, "dus", list(acetaminophen = 1125360), daysPriorHistory = "7"
+    cdm, "dus", list(acetaminophen = 1125360), daysPriorObservation = "7"
   ))
   expect_error(generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = 1125360), gapEra = "7"
@@ -46,13 +47,8 @@ test_that("test inputs", {
   ))
 })
 
-test_that("class", {
-  cdm <- mockDrugUtilisation(connectionDetails)
-  cdm <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
-  expect_true("GeneratedCohortSet" %in% class(cdm$dus))
-})
-
 test_that("basic functionality drug_conceptId", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -70,10 +66,14 @@ test_that("basic functionality drug_conceptId", {
     )
   )
   acetaminophen <- list(acetaminophen = c(1125360, 2905077, 43135274))
+
   # check gap
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen, gapEra = 0
   )
+  #check cdm reference in attributes
+  expect_true(!is.null(attr(cdm1$dus,"cdm_reference",exact = TRUE)))
+
   expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen, gapEra = 13
@@ -189,6 +189,7 @@ test_that("basic functionality drug_conceptId", {
 })
 
 test_that("dates range", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(connectionDetails)
   start <- as.Date("2010-01-01")
   end <- as.Date("2018-06-01")
@@ -231,5 +232,55 @@ test_that("dates range", {
       dplyr::filter(.data$cohort_end_date == .env$end) %>%
       dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
       dplyr::pull("n")
+  )
+})
+
+test_that("priorUseWashout", {
+  skip_on_cran()
+  cdm <- mockDrugUtilisation(
+    observation_period = dplyr::tibble(
+      observation_period_id = c(1, 2),
+      person_id = c(1, 2),
+      observation_period_start_date = as.Date("2020-01-01"),
+      observation_period_end_date = as.Date("2020-12-31"),
+      period_type_concept_id = 44814724
+    ),
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = c(1, 2, 3),
+      person_id = c(1, 1, 2),
+      drug_concept_id = c(1539462, 1539462, 1539462),
+      drug_exposure_start_date = as.Date(c("2020-02-01", "2020-10-01", "2020-10-01")),
+      drug_exposure_end_date = as.Date(c("2020-02-01", "2020-10-01", "2021-10-01")),
+      drug_type_concept_id = 38000177,
+      quantity = 1
+    )
+  )
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    name = "bp_cohorts_test",
+    conceptSetList = list("bp_conceptList" = 1539462),
+    summariseMode = "FirstEra",
+    daysPriorObservation  = 180,
+    gapEra = 30,
+    priorUseWashout = Inf,
+    imputeDuration = "eliminate",
+    durationRange = c(0, Inf)
+  )
+  expect_true(
+    cdm$bp_cohorts_test %>%
+      dplyr::filter(subject_id == 2) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 1
+  )
+  expect_true(
+    cdm$bp_cohorts_test %>%
+      dplyr::filter(subject_id == 1) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 0
+  )
+  expect_true(
+    cdm$bp_cohorts_test %>%
+      dplyr::filter(subject_id == 2) %>%
+      dplyr::pull("cohort_end_date") == as.Date("2020-12-31")
   )
 })

@@ -1,5 +1,6 @@
 
 test_that("basic functionality large scale characteristics", {
+
   person <- dplyr::tibble(
     person_id = c(1, 2),
     gender_concept_id = c(8507, 8532),
@@ -64,13 +65,100 @@ test_that("basic functionality large scale characteristics", {
     cohort_interest = cohort_interest, drug_exposure = drug_exposure,
     condition_occurrence = condition_occurrence
   )
+
   expect_no_error(
     result <- cdm$cohort_interest %>%
       summariseLargeScaleCharacteristics(
         cdm, tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
+        minCellCount = 1, overlap = FALSE
+      )
+  )
+  conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
+  windowName <- rep(c("0 to 0", "-inf to -366"), 3)
+  cohortName <- rep(c("cohort_1"), 6)
+  count <- c(NA, 2, NA, 1, NA, NA)
+  den <- c(3, 3, 3, 3, 3, 3)
+  for (k in seq_along(conceptId)) {
+    r <- result %>%
+      dplyr::filter(
+        .data$concept_id == .env$conceptId[k] &
+          .data$window_name == .env$windowName[k] &
+          .data$cohort_name == .env$cohortName[k]
+      )
+    if (is.na(count[k])) {
+      expect_true(nrow(r) == 0)
+    } else {
+      expect_true(r$count == count[k])
+      expect_true(r$denominator_count == den[k])
+    }
+  }
+
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      summariseLargeScaleCharacteristics(
+        cdm, tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
+        minCellCount = 1, overlap = TRUE
+      )
+  )
+  conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
+  windowName <- rep(c("0 to 0", "-inf to -366"), 3)
+  cohortName <- rep(c("cohort_1"), 6)
+  count <- c(1, 2, 1, 1, 2, 2)
+  den <- c(3, 3, 3, 3, 3, 3)
+  for (k in seq_along(conceptId)) {
+    r <- result %>%
+      dplyr::filter(
+        .data$concept_id == .env$conceptId[k] &
+          .data$window_name == .env$windowName[k] &
+          .data$cohort_name == .env$cohortName[k]
+      )
+    if (is.na(count[k])) {
+      expect_true(nrow(r) == 0)
+    } else {
+      expect_true(r$count == count[k])
+      expect_true(r$denominator_count == den[k])
+    }
+  }
+
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      PatientProfiles::addDemographics(
+        cdm = cdm, ageGroup = list(c(0, 24), c(25, 150))
+      ) %>%
+      summariseLargeScaleCharacteristics(
+        cdm = cdm,
+        strata = list("age" = "age_group", "age & sex" = c("age_group", "sex")),
+        tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
         minCellCount = 1
       )
   )
+  expect_true(all(c("cohort_1", "cohort_2") %in% result$cohort_name))
+  expect_true(all(c("Overall", "age", "age & sex") %in% result$strata_name))
+  expect_true(all(c(
+    "Overall", "0 to 24", "25 to 150", "0 to 24 and Female",
+    "25 to 150 and Male", "0 to 24 and Male"
+  ) %in% result$strata_level))
+  result <- result %>%
+    dplyr::filter(strata_level == "0 to 24 and Female")
+  conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
+  windowName <- rep(c("0 to 0", "-inf to -366"), 3)
+  cohortName <- rep(c("cohort_1"), 6)
+  count <- c(NA, 1, 1, NA, NA, NA)
+  den <- c(1, 1, 1, 1, 1, 1)
+  for (k in seq_along(conceptId)) {
+    r <- result %>%
+      dplyr::filter(
+        .data$concept_id == .env$conceptId[k] &
+          .data$window_name == .env$windowName[k] &
+          .data$cohort_name == .env$cohortName[k]
+      )
+    if (is.na(count[k])) {
+      expect_true(nrow(r) == 0)
+    } else {
+      expect_true(r$count == count[k])
+      expect_true(r$denominator_count == den[k])
+    }
+  }
 })
 
 test_that("basic functionality summariseCodelist", {
@@ -84,5 +172,16 @@ test_that("basic functionality summariseCodelist", {
   )
   expect_no_error(
     summariseCharacteristicsFromCodelist(cdm$cohort1, cdm, conceptSetList)
+  )
+  cdm$cohort1 <- cdm$cohort1 %>%
+    dplyr::mutate(window1 = dplyr::if_else(cohort_start_date <= as.Date("2020-01-01"), "prior 2020", "after 2020")) %>%
+    dplyr::mutate(window2 = dplyr::if_else(cohort_start_date <= as.Date("2021-01-01"), "prior 2021", "after 2021"))
+  expect_no_error(
+    summariseCharacteristicsFromCodelist(
+      cdm$cohort1, cdm, conceptSetList, strata = list(
+        "p2020" = c("window1"), "p2021" = c("window2"),
+        "p2020 and p2021" = c("window1", "window2")
+      )
+    )
   )
 })

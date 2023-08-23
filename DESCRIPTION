@@ -1,7 +1,7 @@
 Package: DrugUtilisation
-Title: Summarise patient-level drug utilisation in data mapped to the OMOP 
+Title: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP 
     Common Data Model 
-Version: 0.2.0
+Version: 0.3.1
 Authors@R: c(
     person(
         "Marti", "Catala", email = "marti.catalasabate@ndorms.ox.ac.uk", 
@@ -16,6 +16,10 @@ Authors@R: c(
         comment = c(ORCID = "0000-0002-0847-4855")
     ),
     person(
+        "Kim", "Lopez-Guell", , "kim.lopez@spc.ox.ac.uk", role = c("aut"),
+        comment = c(ORCID = "0000-0002-8462-8668")
+    ),
+    person(
         "Edward", "Burn", email = "edward.burn@ndorms.ox.ac.uk", 
         role = c("ctb"), comment = c(ORCID = "0000-0002-9286-1128")
     ), 
@@ -23,8 +27,10 @@ Authors@R: c(
         "Xintong", "Li", email = "xintong.li@ndorms.ox.ac.uk", role = c("ctb"),
         comment = c(ORCID = "0000-0002-6872-5804")
     ))
-Description: Summarise patient-level drug utilisation in data mapped to the OMOP
-    Common Data Model.
+Description: Summarise patient-level drug utilisation cohorts using data mapped 
+    to the Observational Medical Outcomes Partnership (OMOP) common data model. 
+    New users and prevalent users cohorts can be generated and their 
+    characteristics, indication and drug use summarised.
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -35,7 +41,17 @@ Suggests:
     odbc,
     here,
     RPostgres,
-    duckdb
+    duckdb,
+    CodelistGenerator,
+    knitr,
+    PaRe,
+    rmarkdown,
+    DT,
+    magick,
+    DiagrammeRsvg,
+    ggplot2,
+    cowplot,
+    plotly
 Config/testthat/edition: 3
 Imports: 
     CDMConnector (>= 1.0.0),
@@ -49,13 +65,11 @@ Imports:
     rlang,
     RJSONIO,
     cli,
-    PatientProfiles,
+    PatientProfiles (>= 0.3.0),
     magrittr,
-    purrr,
-    CodelistGenerator
-Remotes: 
-    oxford-pharmacoepi/PatientProfiles
+    purrr
 Depends: 
     R (>= 2.10)
 LazyData: true
 URL: https://darwin-eu-dev.github.io/DrugUtilisation/
+VignetteBuilder: knitr

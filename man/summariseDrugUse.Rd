@@ -9,7 +9,7 @@ summariseDrugUse(
   cdm,
   strata = list(),
   drugUseVariables = drugUseColumns(cohort),
-  drugUseEstimates = c("mean", "q25", "q75"),
+  drugUseEstimates = c("median", "q25", "q75"),
   minCellCount = 5
 )
 }
