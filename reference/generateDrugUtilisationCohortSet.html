@@ -24,7 +24,6 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/PareReport.html">PaRe Report: DrugUtilisation [0.3.1]</a>
     <a class="dropdown-item" href="../articles/my-vignette.html">my-vignette</a>
   </div>
 </li>
@@ -138,9 +137,9 @@ references of the object.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="co">#' library(DrugUtilisation)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CodelistGenerator/" class="external-link">CodelistGenerator</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">CDMConnector</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -155,7 +154,7 @@ references of the object.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;main.drug_cohorts&gt; [9 x 4]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1042-azure:R 4.3.1/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 5.15.0-1041-azure:R 4.3.1/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          7 2017-07-11        2017-10-04     </span>
@@ -168,7 +167,7 @@ references of the object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span>                    1          5 2017-08-29        2019-12-14     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">9</span>                    1         10 2003-08-02        2004-05-06     </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cohortSet.html" class="external-link">cohortSet</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortSet.html" class="external-link">cohortSet</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 12</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name                     summarise_mode fixed_time</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
@@ -179,14 +178,14 @@ references of the object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cohort_date_range_end &lt;chr&gt;, impute_duration &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   duration_range_min &lt;chr&gt;, duration_range_max &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id number_records number_subjects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1              7               4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2              2               1</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/CDMConnector/man/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_cohorts</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 16 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    cohort_definition_id number_records number_subjects reason_id reason         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>

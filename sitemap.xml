@@ -7,9 +7,6 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/PareReport.html</loc>
-  </url>
-  <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/index.html</loc>
   </url>
   <url>
@@ -41,9 +38,6 @@
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/drugUseColumns.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateConceptCohortSet.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateDrugUtilisationCohortSet.html</loc>
