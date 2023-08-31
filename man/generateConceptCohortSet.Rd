@@ -49,7 +49,7 @@ cdm <- mockDrugUtilisation()
 
 conditions <- list("headache" = 378253, "asthma" = 317009)
 
-cdm <- generateConceptCohortSet(
+cdm <- DrugUtilisation::generateConceptCohortSet(
   cdm = cdm,
   name = "covariates",
   conceptSetList = conditions,

@@ -35,7 +35,9 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' indications <- list("headache" = 378253, "asthma" = 317009)
-#' cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
+#' cdm <- DrugUtilisation::generateConceptCohortSet(
+#'   cdm, "indication_cohorts", indications
+#' )
 #'
 #' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
