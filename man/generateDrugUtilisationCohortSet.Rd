@@ -67,9 +67,9 @@ Generates a cohort of the drug use of a certain list of concepts.
 }
 \examples{
 \donttest{
-#' library(DrugUtilisation)
 library(CodelistGenerator)
 library(CDMConnector)
+library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 

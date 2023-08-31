@@ -51,7 +51,8 @@
 mockDrugUtilisation <- function(connectionDetails = list(
                                   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
                                   writeSchema = "main",
-                                  mockPrefix = NULL
+                                  cdmPrefix = NULL,
+                                  writePrefix = NULL
                                 ),
                                 numberIndividuals = 10,
                                 seed = 1,
@@ -127,47 +128,54 @@ mockDrugUtilisation <- function(connectionDetails = list(
 
   con <- connectionDetails$con
   writeSchema <- strsplit(connectionDetails[["writeSchema"]], "\\.")[[1]]
-  writePrefix <- connectionDetails$mockPrefix
+  if (length(writeSchema) == 2) {
+    writeSchema <- c(
+      catlog = writeSchema[1], schema = writeSchema[2],
+      prefix = connectionDetails$writePrefix
+    )
+    cdmSchema <- c(
+      catlog = writeSchema[1], schema = writeSchema[2],
+      prefix = connectionDetails$cdmPrefix
+    )
+  } else {
+    writeSchema <- c(
+      schema = writeSchema[1], prefix = connectionDetails$writePrefix
+    )
+    cdmSchema <- c(
+      schema = writeSchema[1], prefix = connectionDetails$cdmPrefix
+    )
+  }
 
   for (newTable in names(listTables)) {
-    writeTable(con, writeSchema, newTable, writePrefix, listTables[[newTable]])
+    writeTable(con, cdmSchema, newTable, listTables[[newTable]])
   }
   for (nam in names(cohorts)) {
-    writeTable(con, writeSchema, nam, writePrefix, cohorts[[nam]])
+    writeTable(con, writeSchema, nam, cohorts[[nam]])
     writeTable(
-      con, writeSchema, paste0(nam, "_set"), writePrefix,
-      attr(cohorts[[nam]], "cohort_set")
+      con, writeSchema, paste0(nam, "_set"), attr(cohorts[[nam]], "cohort_set")
     )
     writeTable(
-      con, writeSchema, paste0(nam, "_attrition"), writePrefix,
+      con, writeSchema, paste0(nam, "_attrition"),
       attr(cohorts[[nam]], "cohort_attrition")
     )
     writeTable(
-      con, writeSchema, paste0(nam, "_count"), writePrefix,
+      con, writeSchema, paste0(nam, "_count"),
       attr(cohorts[[nam]], "cohort_count")
     )
   }
 
-  if (length(writeSchema) > 1) {
-    dbSchema = DBI::Id(
-      "catalog" = writeSchema[1], "schema" = writeSchema[2],
-      "prefix" = writePrefix
-    )
-  } else {
-    dbSchema = DBI::Id("schema" = writeSchema, "prefix" = writePrefix)
-  }
-
   cdm <- CDMConnector::cdm_from_con(
     con,
-    cdm_schema = dbSchema,
-    write_schema = dbSchema,
-    cohort_tables = names(cohorts)
+    cdm_schema = cdmSchema,
+    write_schema = writeSchema,
+    cohort_tables = names(cohorts),
+    cdm_name = "DUS MOCK"
   )
 
   for (newTable in names(extraTables)) {
-    writeTable(con, writeSchema, newTable, writePrefix, extraTables[[newTable]])
+    writeTable(con, writeSchema, newTable, extraTables[[newTable]])
     cdm[[newTable]] <- dplyr::tbl(
-      con, DBI::Id(schema = writeSchema, name = paste0(writePrefix, newTable))
+      con, CDMConnector::inSchema(writeSchema, newTable)
     )
   }
 
@@ -176,17 +184,8 @@ mockDrugUtilisation <- function(connectionDetails = list(
 
 #' To write a table in the mock database
 #' @noRd
-writeTable <- function(con, writeSchema, name, writePrefix, x) {
-  if (length(writeSchema) > 1) {
-    name = DBI::Id(
-      "catalog" = writeSchema[1], "schema" = writeSchema[2],
-      "table" = paste0(writePrefix, name)
-    )
-  } else {
-    name = DBI::Id(
-      "schema" = writeSchema, "table" = paste0(writePrefix, name)
-    )
-  }
+writeTable <- function(con, writeSchema, name, x) {
+  name <- CDMConnector::inSchema(writeSchema, name)
   DBI::dbWriteTable(conn = con, name = name, as.data.frame(x), overwrite = TRUE)
 }
 
@@ -455,6 +454,19 @@ createConditionOccurrence <- function(observation_period, concept) {
       condition_type_concept_id = numeric()
     )
   }
+  condition_occurrence <- condition_occurrence  %>%
+    dplyr::mutate(
+      condition_start_datetime = as.Date(NA),
+      condition_end_datetime = as.Date(NA),
+      condition_status_concept_id = as.numeric(NA),
+      stop_reason = NA,
+      provider_id = NA,
+      visit_occurrence_id = NA,
+      visit_detail_id = NA,
+      condition_source_value = NA,
+      condition_source_concept_id = NA,
+      condition_status_source_value = NA
+    )
   return(condition_occurrence)
 }
 
