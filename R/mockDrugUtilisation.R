@@ -454,6 +454,19 @@ createConditionOccurrence <- function(observation_period, concept) {
       condition_type_concept_id = numeric()
     )
   }
+  condition_occurrence <- condition_occurrence  %>%
+    dplyr::mutate(
+      condition_start_datetime = as.Date(NA),
+      condition_end_datetime = as.Date(NA),
+      condition_status_concept_id = as.numeric(NA),
+      stop_reason = NA,
+      provider_id = NA,
+      visit_occurrence_id = NA,
+      visit_detail_id = NA,
+      condition_source_value = NA,
+      condition_source_concept_id = NA,
+      condition_status_source_value = NA
+    )
   return(condition_occurrence)
 }
 
