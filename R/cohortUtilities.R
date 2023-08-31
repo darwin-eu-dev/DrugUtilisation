@@ -367,7 +367,7 @@ requireDaysPriorObservation <- function(x, cdm, daysPriorObservation) {
       dplyr::filter(.data$prior_observation >= .env$daysPriorObservation) %>%
       dplyr::select(-"prior_observation") %>%
       dplyr::mutate(duration = !!CDMConnector::datediff(
-        "cohort_start_date", "cohort_end_Date"
+        "cohort_start_date", "cohort_end_date"
       )) %>%
       dplyr::mutate(cohort_end_date = dplyr::if_else(
         .data$future_observation < .data$duration,
