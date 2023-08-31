@@ -21,7 +21,7 @@ library(DrugUtilisation)
 library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
-indications <- list("headache" = 378253, "asthma" = 4214676)
+indications <- list("headache" = 378253, "asthma" = 317009)
 cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
