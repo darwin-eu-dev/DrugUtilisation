@@ -42,8 +42,8 @@ Generates a cohort for a certain list of concepts.
 }
 \examples{
 \donttest{
-library(DrugUtilisation)
 library(CDMConnector)
+library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 
