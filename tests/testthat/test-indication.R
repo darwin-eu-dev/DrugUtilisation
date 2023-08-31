@@ -11,14 +11,13 @@ test_that("test case single indication", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
     cohort_start_date = as.Date(
       c(
         "2019-12-30",
         "2020-01-01",
         "2020-05-25",
-        "2020-01-01",
         "2020-05-25"
       )
     ),
@@ -27,7 +26,6 @@ test_that("test case single indication", {
         "2019-12-30",
         "2020-01-01",
         "2020-05-25",
-        "2020-01-01",
         "2020-05-25"
       )
     )
@@ -174,13 +172,13 @@ test_that("test case single indication with unknown indication table", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
     cohort_start_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     )),
     cohort_end_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     ))
   )
   condition_occurrence <- dplyr::tibble(
@@ -325,26 +323,14 @@ test_that("test indicationDate", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2019-12-30",
-        "2020-01-01",
-        "2020-05-25",
-        "2020-01-01",
-        "2020-05-25"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2019-12-30",
-        "2020-01-01",
-        "2020-05-25",
-        "2020-01-01",
-        "2020-05-25"
-      )
-    )
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
+    cohort_start_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+    ))
   )
   attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
     cohort_definition_id = c(1, 2),
@@ -445,26 +431,14 @@ test_that("test attributes", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2019-12-30",
-        "2020-01-01",
-        "2020-05-25",
-        "2020-01-01",
-        "2020-05-25"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2019-12-30",
-        "2020-01-01",
-        "2020-05-25",
-        "2020-01-01",
-        "2020-05-25"
-      )
-    )
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
+    cohort_start_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+    ))
   )
   attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
     cohort_definition_id = c(1, 2),
@@ -514,13 +488,13 @@ test_that("summariseIndication", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
     cohort_start_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     )),
     cohort_end_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     ))
   )
   condition_occurrence <- dplyr::tibble(
