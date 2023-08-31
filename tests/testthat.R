@@ -10,7 +10,8 @@ dbToTest <- c(
 availableConnections <- list(list(
   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
   writeSchema = "main",
-  mockPrefix = NULL
+  cdmPrefix = NULL,
+  writePrefix = NULL
 ))
 
 # if (Sys.getenv("CDM5_SQL_SERVER_USER") != "") {
