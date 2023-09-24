@@ -74,7 +74,7 @@ addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
     dplyr::inner_join(
       cdm[["drug_strength"]] %>%
         dplyr::filter(
-          .data$ingredient_concept_id == .env$ingredientConceptId
+          .data$ingredient_concept_id %in% .env$ingredientConceptId
         ) %>%
         dplyr::mutate(
           amount_numeric = dplyr::if_else(!is.na(.data$amount_value), 1, 0),

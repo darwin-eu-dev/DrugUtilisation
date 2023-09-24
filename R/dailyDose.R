@@ -112,36 +112,37 @@ addDailyDose <- function(drugExposure,
 dailyDoseCoverage <- function(cdm,
                               ingredientConceptId,
                               sample = NULL,
-                              conceptSetList = NULL,
-                              stratifyByConcept = TRUE,
-                              seed = 1) {
-  # add conceptSetList if needed
-  if (is.null(conceptSetList)) {
-    checkInputs(ingredientConceptId = ingredientConceptId, cdm = cdm)
-    conceptSetList <- list(
-      cdm[["drug_strength"]] %>%
-        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-        dplyr::pull("drug_concept_id")
-    )
-    names(conceptSetList) <- cdm[["concept"]] %>%
-      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-      dplyr::pull("concept_name")
-  }
-
+                              conceptSetList = NULL) {
   # initial checks
   checkInputs(
     cdm = cdm, sample = sample, ingredientConceptId = ingredientConceptId,
-    conceptSetList = conceptSetList, stratifyByConcept = stratifyByConcept,
-    seed = seed
+    conceptSetList = conceptSetList
   )
 
   # extract concept sets
-  conceptSet <- conceptSetFromConceptSetList(conceptSetList) %>%
-    dplyr::rename("drug_concept_id" = "concept_id")
+  if (is.null(conceptSetList)) {
+    conceptSet <- cdm[["drug_strength"]] %>%
+      dplyr::filter(
+        .data$ingredient_concept_id %in% .env$ingredientConceptId
+      ) %>%
+      dplyr::select(
+        "concept_id" = "drug_concept_id", "ingredient_concept_id"
+      )
+  } else {
+    conceptSet <- conceptSetFromConceptSetList(conceptSetList) %>%
+      dplyr::rename("drug_concept_id" = "concept_id") %>%
+      dplyr::inner_join(
+        dplyr::tibble(
+          concept_name = names(conceptSetList),
+          ingredient_concept_id = ingredientConceptId
+        ),
+        by = "concept_name"
+      ) %>%
+      dplyr::select("drug_concept_id", "ingredient_concept_id")
+  }
 
   # random sample
   if (!is.null(sample)) {
-    set.seed(seed)
     cdm[["drug_exposure"]] <- cdm[["drug_exposure"]] %>%
       dplyr::inner_join(
         cdm[["person"]] %>%
@@ -153,56 +154,54 @@ dailyDoseCoverage <- function(cdm,
 
   # compute daily dose
   doseCoverage <- cdm[["drug_exposure"]] %>%
-    dplyr::inner_join(conceptSet, by = "drug_concept_id", copy = TRUE) %>%
-    addDailyDose(cdm, ingredientConceptId)
-
-  # summarise counts
-  result <- doseCoverage %>%
-    dplyr::mutate(
-      daily_dose = dplyr::if_else(is.na(.data$daily_dose), 0, 1)
-    ) %>%
-    dplyr::group_by(.data$cohort_definition_id, .data$drug_concept_id) %>%
-    dplyr::summarise(
-      number_records = dplyr::n(),
-      number_dose = sum(.data$daily_dose, na.rm = TRUE),
-      .groups = "drop"
-    ) %>%
-    dplyr::collect() %>%
-    dplyr::right_join(
-      attr(conceptSet, "cohort_set"), by = "cohort_definition_id"
-    ) %>%
-    dplyr::mutate(
-      number_records = dplyr::if_else(
-        is.na(.data$number_records), 0, .data$number_records
-      ),
-      number_dose = dplyr::if_else(
-        is.na(.data$number_dose), 0, .data$number_dose
-      )
-    )
-
-  # get overall counts
-  result <- result %>%
-    dplyr::group_by(.data$cohort_definition_id, .data$cohort_name) %>%
-    dplyr::summarise(
-      number_records = sum(.data$number_records),
-      number_dose = sum(.data$number_dose),
-      .groups = "drop"
-    ) %>%
-    dplyr::mutate(drug_concept_id = as.numeric(NA)) %>%
-    dplyr::union_all(result) %>%
-    dplyr::mutate(coverage = .data$number_dose/.data$number_records) %>%
-    dplyr::arrange(
-      .data$cohort_definition_id, dplyr::desc(.data$number_records)
-    ) %>%
     dplyr::select(
-      "concept_set" = "cohort_name", "drug_concept_id", "number_records",
-      "number_dose", "coverage"
-    )
+      "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
+      "quantity"
+    ) %>%
+    dplyr::mutate(days_exposed = !!CDMConnector::datediff(
+      start = "drug_exposure_start_date",
+      end = "drug_exposure_end_date"
+    ) + 1) %>%
+    dplyr::inner_join() %>%
+    addPatternInternal(cdm, ingredientConceptId) %>%
+    standardUnits() %>%
+    applyFormula() %>%
+    dplyr::select(
+      "drug_concept_id", "ingredient_concept_id", "daily_dose", "unit"
+    ) %>%
+    CDMConnector::computeQuery()
 
-  if (stratifyByConcept == FALSE) {
-    result <- result %>%
-      dplyr::filter(is.na(.data$drug_concept_id))
-  }
+  # add route
+
+  # collect
+  doseCoverage <- doseCoverage %>% dplyr::collect()
+
+  # add ingredient name
+  ingredientNames <- cdm[["concept"]] %>%
+    dplyr::filter(.data$concept_id %in% ingredientConceptId) %>%
+    dplyr::collect() %>%
+    dplyr::mutate(
+      "ingredient" = "concept_name", "ingredient_concept_id" = "concept_id"
+    )
+  doseCoverage <- doseCoverage %>%
+    dplyr::inner_join(ingredientNames, by = "ingredient_concept_id")
+
+  # summarise coverage
+  result <- doseCoverage %>%
+    PatientProfiles::summariseResult(
+      group = list("ingredient"),
+      includeOverallGroup = FALSE,
+      strata = list("unit", c("unit", "route")),
+      includeOverallStrata = FALSE,
+      variables = "daily_dose",
+      functions = c(
+        "missing", "mean", "sd", "min", "q05", "q25", "median", "q75", "q95",
+        "max"
+      )
+    ) %>%
+    PatientProfiles::addCdmName(cdm = cdm) %>%
+    dplyr::mutate(result_type = "dose coverage") %>%
+    dplyr::relocate(c("cdm_name", "result_type"))
 
   return(result)
 }
