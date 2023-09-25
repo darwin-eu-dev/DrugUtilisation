@@ -91,11 +91,6 @@ addDailyDose <- function(drugExposure,
 #'
 #' @param cdm A cdm reference created using CDMConnector
 #' @param ingredientConceptId Code indicating the ingredient of interest
-#' @param sample A number indicating the size of the random sample to take from
-#' the 'person' table of the cdm
-#' @param conceptSetList A concept list that we want to test
-#' @param stratifyByConcept Whether to stratify the result by drug_concept_id
-#' @param seed Seed for the random sample
 #'
 #' @return The function returns information of the coverage of computeDailyDose.R
 #' for the selected ingredients and concept sets
@@ -110,47 +105,9 @@ addDailyDose <- function(drugExposure,
 #' }
 #'
 dailyDoseCoverage <- function(cdm,
-                              ingredientConceptId,
-                              sample = NULL,
-                              conceptSetList = NULL) {
+                              ingredientConceptId) {
   # initial checks
-  checkInputs(
-    cdm = cdm, sample = sample, ingredientConceptId = ingredientConceptId,
-    conceptSetList = conceptSetList
-  )
-
-  # extract concept sets
-  if (is.null(conceptSetList)) {
-    conceptSet <- cdm[["drug_strength"]] %>%
-      dplyr::filter(
-        .data$ingredient_concept_id %in% .env$ingredientConceptId
-      ) %>%
-      dplyr::select(
-        "concept_id" = "drug_concept_id", "ingredient_concept_id"
-      )
-  } else {
-    conceptSet <- conceptSetFromConceptSetList(conceptSetList) %>%
-      dplyr::rename("drug_concept_id" = "concept_id") %>%
-      dplyr::inner_join(
-        dplyr::tibble(
-          concept_name = names(conceptSetList),
-          ingredient_concept_id = ingredientConceptId
-        ),
-        by = "concept_name"
-      ) %>%
-      dplyr::select("drug_concept_id", "ingredient_concept_id")
-  }
-
-  # random sample
-  if (!is.null(sample)) {
-    cdm[["drug_exposure"]] <- cdm[["drug_exposure"]] %>%
-      dplyr::inner_join(
-        cdm[["person"]] %>%
-          dplyr::select("person_id") %>%
-          dplyr::slice_sample(n = sample),
-        by = "person_id"
-      )
-  }
+  checkInputs(cdm = cdm, ingredientConceptId = ingredientConceptId)
 
   # compute daily dose
   doseCoverage <- cdm[["drug_exposure"]] %>%
@@ -162,7 +119,6 @@ dailyDoseCoverage <- function(cdm,
       start = "drug_exposure_start_date",
       end = "drug_exposure_end_date"
     ) + 1) %>%
-    dplyr::inner_join() %>%
     addPatternInternal(cdm, ingredientConceptId) %>%
     standardUnits() %>%
     applyFormula() %>%
@@ -173,18 +129,17 @@ dailyDoseCoverage <- function(cdm,
 
   # add route
 
-  # collect
-  doseCoverage <- doseCoverage %>% dplyr::collect()
-
   # add ingredient name
-  ingredientNames <- cdm[["concept"]] %>%
-    dplyr::filter(.data$concept_id %in% ingredientConceptId) %>%
-    dplyr::collect() %>%
-    dplyr::mutate(
-      "ingredient" = "concept_name", "ingredient_concept_id" = "concept_id"
-    )
   doseCoverage <- doseCoverage %>%
-    dplyr::inner_join(ingredientNames, by = "ingredient_concept_id")
+    dplyr::inner_join(
+      cdm[["concept"]] %>%
+        dplyr::filter(.data$concept_id %in% .env$ingredientConceptId) %>%
+        dplyr::mutate(
+          "ingredient" = "concept_name", "ingredient_concept_id" = "concept_id"
+        ),
+      by = "ingredient_concept_id"
+    ) %>%
+    CDMConnector::computeQuery()
 
   # summarise coverage
   result <- doseCoverage %>%
