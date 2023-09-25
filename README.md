@@ -264,37 +264,37 @@ function:
 
 ``` r
 summariseIndication(x, cdm)
-#> # A tibble: 40 × 11
+#> # A tibble: 21 × 11
 #>    group_name  group_level      strata_name strata_level variable variable_level
 #>    <chr>       <chr>            <chr>       <chr>        <chr>    <chr>         
-#>  1 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
-#>  2 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
-#>  3 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  4 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  5 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  6 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  7 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  8 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  9 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#> 10 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#> # ℹ 30 more rows
+#>  1 cohort_name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  2 cohort_name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  3 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  4 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  5 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  6 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  7 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  8 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  9 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#> 10 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#> # ℹ 11 more rows
 #> # ℹ 5 more variables: variable_type <chr>, estimate_type <chr>, estimate <chr>,
 #> #   cdm_name <chr>, result_type <chr>
 ```
 
 ``` r
 summariseIndication(x, cdm) %>% glimpse()
-#> Rows: 40
+#> Rows: 21
 #> Columns: 11
-#> $ group_name     <chr> "Cohort name", "Cohort name", "Cohort name", "Cohort na…
+#> $ group_name     <chr> "cohort_name", "cohort_name", "cohort_name", "cohort_na…
 #> $ group_level    <chr> "Ingredient: acetaminophen (1125315)", "Ingredient: ace…
 #> $ strata_name    <chr> "Overall", "Overall", "Overall", "Overall", "Overall", …
 #> $ strata_level   <chr> "Overall", "Overall", "Overall", "Overall", "Overall", …
 #> $ variable       <chr> "number subjects", "number records", "indication_gap_0_…
 #> $ variable_level <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
 #> $ variable_type  <chr> NA, NA, "binary", "binary", "binary", "binary", "binary…
-#> $ estimate_type  <chr> "count", "count", "count", "%", "count", "%", "count", …
-#> $ estimate       <chr> "46", "46", "0", "0", "0", "0", "46", "100", "0", "0", …
+#> $ estimate_type  <chr> "count", "count", "count", "count", "count", "count", "…
+#> $ estimate       <chr> "46", "46", "0", "0", "46", "0", "0", "46", "5", "2", "…
 #> $ cdm_name       <chr> "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MO…
 #> $ result_type    <chr> "Summary indication", "Summary indication", "Summary in…
 ```
@@ -308,41 +308,46 @@ use it as strata
 
 ``` r
 library(PatientProfiles)
+#> 
+#> Attaching package: 'PatientProfiles'
+#> The following object is masked from 'package:DrugUtilisation':
+#> 
+#>     summariseLargeScaleCharacteristics
 x <- x %>%
   addAge(cdm, ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
   addSex(cdm)
-summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")))
-#> # A tibble: 560 × 11
+summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex")))
+#> # A tibble: 294 × 11
 #>    group_name  group_level      strata_name strata_level variable variable_level
 #>    <chr>       <chr>            <chr>       <chr>        <chr>    <chr>         
-#>  1 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
-#>  2 Cohort name Ingredient: ace… Overall     Overall      number … <NA>          
-#>  3 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  4 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  5 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  6 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  7 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  8 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#>  9 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#> 10 Cohort name Ingredient: ace… Overall     Overall      indicat… <NA>          
-#> # ℹ 550 more rows
+#>  1 cohort_name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  2 cohort_name Ingredient: ace… Overall     Overall      number … <NA>          
+#>  3 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  4 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  5 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  6 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  7 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  8 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#>  9 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#> 10 cohort_name Ingredient: ace… Overall     Overall      indicat… <NA>          
+#> # ℹ 284 more rows
 #> # ℹ 5 more variables: variable_type <chr>, estimate_type <chr>, estimate <chr>,
 #> #   cdm_name <chr>, result_type <chr>
 ```
 
 ``` r
-summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex"))) %>% glimpse()
-#> Rows: 560
+summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex"))) %>% glimpse()
+#> Rows: 294
 #> Columns: 11
-#> $ group_name     <chr> "Cohort name", "Cohort name", "Cohort name", "Cohort na…
+#> $ group_name     <chr> "cohort_name", "cohort_name", "cohort_name", "cohort_na…
 #> $ group_level    <chr> "Ingredient: acetaminophen (1125315)", "Ingredient: ace…
 #> $ strata_name    <chr> "Overall", "Overall", "Overall", "Overall", "Overall", …
 #> $ strata_level   <chr> "Overall", "Overall", "Overall", "Overall", "Overall", …
 #> $ variable       <chr> "number subjects", "number records", "indication_gap_0_…
 #> $ variable_level <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
 #> $ variable_type  <chr> NA, NA, "binary", "binary", "binary", "binary", "binary…
-#> $ estimate_type  <chr> "count", "count", "count", "%", "count", "%", "count", …
-#> $ estimate       <chr> "46", "46", "0", "0", "0", "0", "46", "100", "0", "0", …
+#> $ estimate_type  <chr> "count", "count", "count", "count", "count", "count", "…
+#> $ estimate       <chr> "46", "46", "0", "0", "46", "0", "0", "46", "5", "2", "…
 #> $ cdm_name       <chr> "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MO…
 #> $ result_type    <chr> "Summary indication", "Summary indication", "Summary in…
 ```
@@ -418,16 +423,16 @@ summariseCharacteristics(
 #> # A tibble: 46 × 11
 #>    cdm_name result_type group_name group_level strata_name strata_level variable
 #>    <chr>    <chr>       <chr>      <chr>       <chr>       <chr>        <chr>   
-#>  1 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Number …
-#>  2 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Number …
-#>  3 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  4 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  5 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  6 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  7 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  8 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
-#>  9 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
-#> 10 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
+#>  1 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Number …
+#>  2 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Number …
+#>  3 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Cohort …
+#>  4 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Cohort …
+#>  5 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Cohort …
+#>  6 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Cohort …
+#>  7 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Cohort …
+#>  8 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Cohort …
+#>  9 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Cohort …
+#> 10 DUS MOCK Summary ch… cohort_na… Ingredient… Overall     Overall      Cohort …
 #> # ℹ 36 more rows
 #> # ℹ 4 more variables: variable_level <chr>, variable_type <chr>,
 #> #   estimate_type <chr>, estimate <chr>
@@ -439,7 +444,7 @@ You can summarise the patient characteristics with
 `summariseLargeScaleCharacteristics` function:
 
 ``` r
-summariseLargeScaleCharacteristics(
+DrugUtilisation::summariseLargeScaleCharacteristics(
   x, cdm, tablesToCharacterize = c("drug_exposure", "condition_occurrence")
 )
 #> # A tibble: 79 × 12
@@ -458,13 +463,4 @@ summariseLargeScaleCharacteristics(
 #> # ℹ 69 more rows
 #> # ℹ 6 more variables: concept_name <chr>, count <chr>, denominator_count <chr>,
 #> #   `%` <dbl>, cdm_name <chr>, result_type <chr>
-```
-
-## ReportGenerator
-
-This package is included in the `ReportGenerator` environment. See
-exportable elements:
-
-``` r
-DrugUtilisation::ReportGenerator
 ```

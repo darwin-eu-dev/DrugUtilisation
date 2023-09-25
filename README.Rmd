@@ -184,11 +184,11 @@ library(PatientProfiles)
 x <- x %>%
   addAge(cdm, ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
   addSex(cdm)
-summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")))
+summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex")))
 ```
 
 ```{r}
-summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex"))) %>% glimpse()
+summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex"))) %>% glimpse()
 ```
 
 ### Daily dose
@@ -260,16 +260,7 @@ summariseCharacteristics(
 You can summarise the patient characteristics with `summariseLargeScaleCharacteristics` function:
 
 ```{r}
-summariseLargeScaleCharacteristics(
+DrugUtilisation::summariseLargeScaleCharacteristics(
   x, cdm, tablesToCharacterize = c("drug_exposure", "condition_occurrence")
 )
 ```
-
-## ReportGenerator
-
-This package is included in the `ReportGenerator` environment. See exportable elements:
-
-```{r, eval = FALSE}
-DrugUtilisation::ReportGenerator
-```
-

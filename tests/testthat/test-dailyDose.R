@@ -155,4 +155,3 @@ test_that("functionality of addDailyDose function",{
   )))
 
 })
-
