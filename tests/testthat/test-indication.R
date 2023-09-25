@@ -560,7 +560,10 @@ test_that("summariseIndication", {
     PatientProfiles::addSex(cdm)
 
   result <- summariseIndication(
-    res, cdm, strata = list("age_group", "sex", c("age_group", "sex"))
+    res, cdm, strata = list(
+      "age_group" = "age_group", "sex" = "sex",
+      "age_group and sex" = c("age_group", "sex")
+    )
   )
 
   expect_true(all(c(
@@ -573,13 +576,14 @@ test_that("summariseIndication", {
     group_level = c(
       "Overall", CDMConnector::cohortSet(res) %>% dplyr::pull("cohort_name")
     ),
-    strata_name = c("Overall", "age", "sex", "age & sex")
+    strata_name = c("Overall", "age_group", "sex", "age_group and sex")
   ) %>%
     dplyr::inner_join(
       dplyr::tibble(
         strata_name = c(
-          "age", "age", "sex", "sex", "age & sex", "age & sex", "age & sex",
-          "age & sex", "Overall"
+          "age_group", "age_group", "sex", "sex", "age_group and sex",
+          "age_group and sex", "age_group and sex", "age_group and sex",
+          "Overall"
         ),
         strata_level = c(
           "<40", ">=40", "Male", "Female", "<40 and Female", "<40 and Male",

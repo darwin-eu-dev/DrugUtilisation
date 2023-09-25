@@ -51,7 +51,9 @@
 #'   addSex(cdm)
 #'
 #' summariseIndication(
-#'   cdm$drug_cohort, cdm, strata = list("age_group", c("age_group", "sex"))
+#'   cdm$drug_cohort, cdm, strata = list(
+#'     "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
+#'   )
 #' )
 #' }
 #'
@@ -74,8 +76,8 @@ summariseIndication <- function(cohort,
 
   # summarise indication columns
   result <- PatientProfiles::summariseResult(
-    table = cohort, group = list("cohort_name"), strata = strata,
-    variables = list(binary = indicationVariables),
+    table = cohort, group = list("cohort_name" = "cohort_name"),
+    strata = strata, variables = list(binary = indicationVariables),
     functions = list(binary = c("count")),# to add percentage
     minCellCount = minCellCount
   ) %>%
