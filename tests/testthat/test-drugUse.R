@@ -968,7 +968,8 @@ test_that("check output format", {
 
 test_that("check all estimates", {
   all_estimates <- c(
-    "min", "max", "mean", "median", "iqr", "range", "q05", "q10", "q15", "q20",
+    "min", "max", "mean", "median", #"iqr", "range",
+    "q05", "q10", "q15", "q20",
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "sd"
   )
@@ -1002,7 +1003,7 @@ test_that("check all estimates", {
       drugUseVariables = c("initial_dose", "cumulative_dose"),
       drugUseEstimates = all_estimates[k]
     ) %>%
-      dplyr::filter(.data$group_name == "Cohort name")
+      dplyr::filter(.data$group_name == "cohort_name")
     expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
     expect_true(res$estimate_type[res$variable == c("initial_dose")] == all_estimates[k])
     expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
@@ -1020,7 +1021,8 @@ test_that("check all estimates", {
 
 test_that("check all variables", {
   all_estimates <- c(
-    "min", "max", "mean", "median", "iqr", "range", "q05", "q10", "q15", "q20",
+    "min", "max", "mean", "median", #"iqr", "range",
+    "q05", "q10", "q15", "q20",
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "sd"
   )

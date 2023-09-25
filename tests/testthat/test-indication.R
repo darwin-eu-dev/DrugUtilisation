@@ -560,9 +560,7 @@ test_that("summariseIndication", {
     PatientProfiles::addSex(cdm)
 
   result <- summariseIndication(
-    res, cdm, strata = list(
-      "age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")
-    )
+    res, cdm, strata = list("age_group", "sex", c("age_group", "sex"))
   )
 
   expect_true(all(c(
