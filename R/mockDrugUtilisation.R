@@ -149,7 +149,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
   }
 
   if (length(writeSchema) > 1) {
-    dbSchema = c(
+    dbSchema = DBI::Id(
       "catalog" = writeSchema[1], "schema" = writeSchema[2],
       "prefix" = writePrefix
     )
@@ -167,7 +167,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
   for (newTable in names(extraTables)) {
     writeTable(con, writeSchema, newTable, writePrefix, extraTables[[newTable]])
     cdm[[newTable]] <- dplyr::tbl(
-      con, c(schema = writeSchema, name = paste0(writePrefix, newTable))
+      con, DBI::Id(schema = writeSchema, name = paste0(writePrefix, newTable))
     )
   }
 
@@ -178,12 +178,12 @@ mockDrugUtilisation <- function(connectionDetails = list(
 #' @noRd
 writeTable <- function(con, writeSchema, name, writePrefix, x) {
   if (length(writeSchema) > 1) {
-    name = c(
+    name = DBI::Id(
       "catalog" = writeSchema[1], "schema" = writeSchema[2],
       "table" = paste0(writePrefix, name)
     )
   } else {
-    name = c(
+    name = DBI::Id(
       "schema" = writeSchema, "table" = paste0(writePrefix, name)
     )
   }
