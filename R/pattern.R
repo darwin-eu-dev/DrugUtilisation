@@ -179,8 +179,8 @@ patternTable <- function(cdm, recordCount = FALSE) {
       .data$denominator_unit, .data$denominator_unit_concept_id
     ) %>%
     dplyr::summarise(
-      number_concepts = dplyr::n_distinct(.data$drug_concept_id),
-      number_ingredients = dplyr::n_distinct(.data$ingredient_concept_id),
+      number_concepts = as.numeric(dplyr::n_distinct(.data$drug_concept_id)),
+      number_ingredients = as.numeric(dplyr::n_distinct(.data$ingredient_concept_id)),
       .groups = "drop"
     ) %>%
     dplyr::collect()
@@ -194,7 +194,7 @@ patternTable <- function(cdm, recordCount = FALSE) {
         .data$numerator_numeric, .data$numerator_unit_concept_id,
         .data$denominator_numeric, .data$denominator_unit_concept_id
       ) %>%
-      dplyr::summarise(number_records = dplyr::n(), .groups = "drop") %>%
+      dplyr::summarise(number_records = as.numeric(dplyr::n()), .groups = "drop") %>%
       dplyr::collect()
     pattern <- pattern %>%
       dplyr::left_join(

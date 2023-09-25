@@ -119,9 +119,7 @@ Cohort set:
 
 ``` r
 library(CDMConnector)
-#> Warning: package 'CDMConnector' was built under R version 4.2.3
 library(dplyr)
-#> Warning: package 'dplyr' was built under R version 4.2.3
 #> 
 #> Attaching package: 'dplyr'
 #> The following objects are masked from 'package:stats':
@@ -164,12 +162,12 @@ cohortAttrition(cdm$dus_cohort) %>% glimpse()
 #> Rows: 8
 #> Columns: 7
 #> $ cohort_definition_id <int> 1, 1, 1, 1, 1, 1, 1, 1
-#> $ number_records       <dbl> 109, 109, 83, 52, 52, 52, 52, 46
-#> $ number_subjects      <dbl> 69, 69, 69, 46, 46, 46, 46, 46
+#> $ number_records       <dbl> 109, 109, 83, 83, 52, 52, 52, 46
+#> $ number_subjects      <dbl> 69, 69, 69, 69, 46, 46, 46, 46
 #> $ reason_id            <dbl> 1, 2, 3, 4, 5, 6, 7, 8
 #> $ reason               <chr> "Qualifying initial records", "Duration imputatio…
-#> $ excluded_records     <dbl> 0, 0, 26, 31, 0, 0, 0, 6
-#> $ excluded_subjects    <dbl> 0, 0, 0, 23, 0, 0, 0, 0
+#> $ excluded_records     <dbl> 0, 0, 26, 0, 31, 0, 0, 6
+#> $ excluded_subjects    <dbl> 0, 0, 0, 0, 23, 0, 0, 0
 ```
 
 ### Indication
@@ -179,13 +177,13 @@ create concept based cohorts using `generateConceptCohortSet`.
 
 ``` r
 indications <- list(headache = 378253, influenza = 4266367)
-cdm <- generateConceptCohortSet(cdm, "indications_cohort", indications)
+cdm <- generateConceptCohortSet(cdm, indications, "indications_cohort")
 cohortCount(cdm$indications_cohort)
 #> # A tibble: 2 × 3
 #>   cohort_definition_id number_records number_subjects
 #>                  <int>          <dbl>           <dbl>
-#> 1                    1             71              59
-#> 2                    2             59              52
+#> 1                    1             59              59
+#> 2                    2             52              52
 ```
 
 Then we can add the indication using the function `addIndication`. That
@@ -200,7 +198,7 @@ x <- cdm$dus_cohort %>%
 glimpse(x)
 #> Rows: ??
 #> Columns: 16
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.3/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ subject_id                   <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…
 #> $ cohort_start_date            <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011…
@@ -228,7 +226,7 @@ x <- x %>% indicationToStrata(keep = TRUE)
 glimpse(x)
 #> Rows: ??
 #> Columns: 19
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.3/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ subject_id                   <dbl> 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…
 #> $ cohort_start_date            <date> 2005-02-07, 2019-01-22, 1995-09-13, 2011…
@@ -297,7 +295,7 @@ summariseIndication(x, cdm) %>% glimpse()
 #> $ variable_type  <chr> NA, NA, "binary", "binary", "binary", "binary", "binary…
 #> $ estimate_type  <chr> "count", "count", "count", "%", "count", "%", "count", …
 #> $ estimate       <chr> "46", "46", "0", "0", "0", "0", "46", "100", "0", "0", …
-#> $ cdm_name       <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+#> $ cdm_name       <chr> "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MO…
 #> $ result_type    <chr> "Summary indication", "Summary indication", "Summary in…
 ```
 
@@ -345,7 +343,7 @@ summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "a
 #> $ variable_type  <chr> NA, NA, "binary", "binary", "binary", "binary", "binary…
 #> $ estimate_type  <chr> "count", "count", "count", "%", "count", "%", "count", …
 #> $ estimate       <chr> "46", "46", "0", "0", "0", "0", "46", "100", "0", "0", …
-#> $ cdm_name       <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+#> $ cdm_name       <chr> "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MO…
 #> $ result_type    <chr> "Summary indication", "Summary indication", "Summary in…
 ```
 
@@ -420,16 +418,16 @@ summariseCharacteristics(
 #> # A tibble: 46 × 11
 #>    cdm_name result_type group_name group_level strata_name strata_level variable
 #>    <chr>    <chr>       <chr>      <chr>       <chr>       <chr>        <chr>   
-#>  1 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Number …
-#>  2 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Number …
-#>  3 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  4 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  5 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  6 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  7 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
-#>  8 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
-#>  9 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
-#> 10 <NA>     Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
+#>  1 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Number …
+#>  2 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Number …
+#>  3 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  4 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  5 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  6 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  7 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Age     
+#>  8 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
+#>  9 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
+#> 10 DUS MOCK Summary ch… Cohort na… Ingredient… Overall     Overall      Future …
 #> # ℹ 36 more rows
 #> # ℹ 4 more variables: variable_level <chr>, variable_type <chr>,
 #> #   estimate_type <chr>, estimate <chr>
@@ -444,20 +442,20 @@ You can summarise the patient characteristics with
 summariseLargeScaleCharacteristics(
   x, cdm, tablesToCharacterize = c("drug_exposure", "condition_occurrence")
 )
-#> # A tibble: 124 × 12
+#> # A tibble: 79 × 12
 #>    cohort_name        strata_name strata_level table_name window_name concept_id
 #>    <chr>              <chr>       <chr>        <chr>      <chr>            <dbl>
 #>  1 Ingredient: aceta… Overall     Overall      condition… -inf to -3…     317009
 #>  2 Ingredient: aceta… Overall     Overall      condition… -inf to -3…     378253
 #>  3 Ingredient: aceta… Overall     Overall      condition… -inf to -3…    4266367
-#>  4 Ingredient: aceta… Overall     Overall      condition… -365 to -91     317009
-#>  5 Ingredient: aceta… Overall     Overall      condition… -365 to -91     378253
-#>  6 Ingredient: aceta… Overall     Overall      condition… -365 to -91    4266367
-#>  7 Ingredient: aceta… Overall     Overall      condition… -365 to -31     317009
-#>  8 Ingredient: aceta… Overall     Overall      condition… -365 to -31     378253
-#>  9 Ingredient: aceta… Overall     Overall      condition… -365 to -31    4266367
-#> 10 Ingredient: aceta… Overall     Overall      condition… -90 to -1       317009
-#> # ℹ 114 more rows
+#>  4 Ingredient: aceta… Overall     Overall      condition… -365 to -31     317009
+#>  5 Ingredient: aceta… Overall     Overall      condition… -365 to -31     378253
+#>  6 Ingredient: aceta… Overall     Overall      condition… -365 to -31    4266367
+#>  7 Ingredient: aceta… Overall     Overall      condition… -30 to -1       317009
+#>  8 Ingredient: aceta… Overall     Overall      condition… -30 to -1       378253
+#>  9 Ingredient: aceta… Overall     Overall      condition… -30 to -1      4266367
+#> 10 Ingredient: aceta… Overall     Overall      condition… 0 to 0          317009
+#> # ℹ 69 more rows
 #> # ℹ 6 more variables: concept_name <chr>, count <chr>, denominator_count <chr>,
 #> #   `%` <dbl>, cdm_name <chr>, result_type <chr>
 ```
