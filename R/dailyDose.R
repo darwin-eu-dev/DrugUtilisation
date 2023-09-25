@@ -191,8 +191,8 @@ dailyDoseCoverage <- function(cdm,
     PatientProfiles::summariseResult(
       group = list("ingredient"),
       includeOverallGroup = FALSE,
-      strata = list("unit", c("unit", "route")),
-      includeOverallStrata = FALSE,
+      strata = list("route", "unit", c("unit", "route")),
+      includeOverallStrata = TRUE,
       variables = "daily_dose",
       functions = c(
         "missing", "mean", "sd", "min", "q05", "q25", "median", "q75", "q95",
