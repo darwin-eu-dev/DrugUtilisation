@@ -11,14 +11,13 @@ test_that("test case single indication", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
     cohort_start_date = as.Date(
       c(
         "2019-12-30",
         "2020-01-01",
         "2020-05-25",
-        "2020-01-01",
         "2020-05-25"
       )
     ),
@@ -27,7 +26,6 @@ test_that("test case single indication", {
         "2019-12-30",
         "2020-01-01",
         "2020-05-25",
-        "2020-01-01",
         "2020-05-25"
       )
     )
@@ -174,13 +172,13 @@ test_that("test case single indication with unknown indication table", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
     cohort_start_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     )),
     cohort_end_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     ))
   )
   condition_occurrence <- dplyr::tibble(
@@ -325,26 +323,14 @@ test_that("test indicationDate", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2019-12-30",
-        "2020-01-01",
-        "2020-05-25",
-        "2020-01-01",
-        "2020-05-25"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2019-12-30",
-        "2020-01-01",
-        "2020-05-25",
-        "2020-01-01",
-        "2020-05-25"
-      )
-    )
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
+    cohort_start_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+    ))
   )
   attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
     cohort_definition_id = c(1, 2),
@@ -445,26 +431,14 @@ test_that("test attributes", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
-    cohort_start_date = as.Date(
-      c(
-        "2019-12-30",
-        "2020-01-01",
-        "2020-05-25",
-        "2020-01-01",
-        "2020-05-25"
-      )
-    ),
-    cohort_end_date = as.Date(
-      c(
-        "2019-12-30",
-        "2020-01-01",
-        "2020-05-25",
-        "2020-01-01",
-        "2020-05-25"
-      )
-    )
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
+    cohort_start_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+    )),
+    cohort_end_date = as.Date(c(
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+    ))
   )
   attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
     cohort_definition_id = c(1, 2),
@@ -514,13 +488,13 @@ test_that("summariseIndication", {
     ))
   )
   indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 3, 1),
-    subject_id = c(1, 3, 1, 2, 1),
+    cohort_definition_id = c(1, 1, 2, 1),
+    subject_id = c(1, 3, 1, 1),
     cohort_start_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     )),
     cohort_end_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-01-01", "2020-05-25"
+      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     ))
   )
   condition_occurrence <- dplyr::tibble(
@@ -587,7 +561,8 @@ test_that("summariseIndication", {
 
   result <- summariseIndication(
     res, cdm, strata = list(
-      "age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")
+      "age_group" = "age_group", "sex" = "sex",
+      "age_group and sex" = c("age_group", "sex")
     )
   )
 
@@ -601,13 +576,14 @@ test_that("summariseIndication", {
     group_level = c(
       "Overall", CDMConnector::cohortSet(res) %>% dplyr::pull("cohort_name")
     ),
-    strata_name = c("Overall", "age", "sex", "age & sex")
+    strata_name = c("Overall", "age_group", "sex", "age_group and sex")
   ) %>%
     dplyr::inner_join(
       dplyr::tibble(
         strata_name = c(
-          "age", "age", "sex", "sex", "age & sex", "age & sex", "age & sex",
-          "age & sex", "Overall"
+          "age_group", "age_group", "sex", "sex", "age_group and sex",
+          "age_group and sex", "age_group and sex", "age_group and sex",
+          "Overall"
         ),
         strata_level = c(
           "<40", ">=40", "Male", "Female", "<40 and Female", "<40 and Male",

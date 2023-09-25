@@ -52,9 +52,9 @@
 #'
 #' @examples
 #' \donttest{
-#' #' library(DrugUtilisation)
 #' library(CodelistGenerator)
 #' library(CDMConnector)
+#' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
 #'

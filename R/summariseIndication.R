@@ -38,7 +38,7 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #' indications <- list("headache" = 378253, "asthma" = 317009)
-#' cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
+#' cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 #' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 #' cdm$drug_cohort <- cdm$drug_cohort %>%
@@ -50,9 +50,11 @@
 #'   addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) %>%
 #'   addSex(cdm)
 #'
-#' summariseIndication(cdm$drug_cohort, cdm, strata = list(
-#'   "Age" = "age_group", "Age & Sex" = c("age_group", "sex")
-#' ))
+#' summariseIndication(
+#'   cdm$drug_cohort, cdm, strata = list(
+#'     "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
+#'   )
+#' )
 #' }
 #'
 summariseIndication <- function(cohort,
@@ -74,9 +76,9 @@ summariseIndication <- function(cohort,
 
   # summarise indication columns
   result <- PatientProfiles::summariseResult(
-    table = cohort, group = list("Cohort name" = "cohort_name"),
-    strata = strata, variables = list(binaryVariables = indicationVariables),
-    functions = list(binaryVariables = c("count", "%")),
+    table = cohort, group = list("cohort_name" = "cohort_name"),
+    strata = strata, variables = list(binary = indicationVariables),
+    functions = list(binary = c("count")),# to add percentage
     minCellCount = minCellCount
   ) %>%
     dplyr::mutate(
@@ -101,8 +103,8 @@ summariseIndication <- function(cohort,
 #' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
-#' indications <- list("headache" = 378253, "asthma" = 4214676)
-#' cdm <- generateConceptCohortSet(cdm, "indication_cohorts", indications)
+#' indications <- list("headache" = 378253, "asthma" = 317009)
+#' cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 #' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 #' cdm$drug_cohort <- cdm$drug_cohort %>%
