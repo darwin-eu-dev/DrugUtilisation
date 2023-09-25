@@ -1,6 +1,6 @@
 ---
 title: "Add indications to Drug Utilisation Cohort"
-author: "Martí Català, Mike Du, Yuchen Guo, Kim López-Güell, Xintong Li, Núria Mercadé-Besora, and Edward Burn"
+author: "Martí Català, Mike Du, Yuchen Guo, Kim López-Güell, and Edward Burn"
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -30,7 +30,7 @@ library(CDMConnector)
 library(CodelistGenerator)
 library(dplyr)
 library(PatientProfiles)
-library(ggplot2)
+
 
 con <- DBI::dbConnect(duckdb::duckdb(), eunomia_dir())
 
