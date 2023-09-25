@@ -59,3 +59,4 @@ usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,
   patternfile, internal = TRUE, overwrite = TRUE
 )
+
