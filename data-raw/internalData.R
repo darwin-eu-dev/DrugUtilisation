@@ -32,7 +32,7 @@ domainInformation <- readr::read_csv(
   here::here("data-raw", "domain_information.csv"), show_col_types = FALSE
 )
 
-# add the current pattern file
+# add the current pattern file (of patterns for which we can calculate dose)
 patternfile <- readr::read_csv(
   here::here("data-raw", "pattern_drug_strength.csv"),
   col_types = list(
@@ -55,7 +55,65 @@ patternfile <- readr::read_csv(
     "valid", "pattern_name", "amount_unit", "numerator_unit", "denominator_unit"
   ))
 
+formulafile <- read_csv(
+  here::here("data-raw", "pattern_assessment_for_dose_final.csv"),
+  col_types = list(
+    numerator = "character",
+    numerator_unit = "character",
+    numerator_unit_concept_id = "numeric",
+    denominator = "character",
+    denominator_unit = "character",
+    denominator_unit_concept_id = "numeric",
+    pattern_meaning = "character",
+    formula_id = "numeric",
+    pattern_meaning = "character",
+    route = "character",
+    unit = "character"
+  )
+)
+
+decisiontable <- read_csv(
+  here::here("data-raw", "doseform_final.csv"),
+  comment = "",
+  col_types = list(
+    route = "character",
+    source_concept_id = "numeric",
+    source_code_id = "character",
+    source_name = "character",
+    class = "character",
+    concept = "character",
+    domain = "character",
+    validity = "character",
+    vocabulary = "character"
+  )
+)
+
+# add all rows in patternfile for the "any" dose patterns with all the possibilities
+all_routes <- decisiontable %>%
+  dplyr::select(route) %>%
+  dplyr::distinct() %>%
+  dplyr::pull()
+
+formulafile_add <- formulafile %>%
+  dplyr::filter(route == "any")
+
+for(route_n in all_routes) {
+  formulafile_add <- formulafile_add %>%
+    dplyr::union_all(
+      formulafile %>%
+        dplyr::filter(route == "any") %>%
+        dplyr::mutate(route = route_n)
+    )
+}
+
+formulafile <- formulafile %>%
+  dplyr::union_all(formulafile_add) %>%
+  dplyr::mutate(route = dplyr::if_else(
+    route == "any", as.character(NA), route
+  ))
+
+
 usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,
-  patternfile, internal = TRUE, overwrite = TRUE
+  patternfile, formulafile, decisiontable, internal = TRUE, overwrite = TRUE
 )

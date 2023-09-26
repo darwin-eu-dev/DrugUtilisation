@@ -96,7 +96,12 @@
 #' library(DrugUtilisation)
 #' library(CodelistGenerator)
 #'
-#' cdm <- mockDrugUtilisation()
+#' concept_relationship <- dplyr::tibble(
+#' concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
+#' concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
+#' relationship_id = c(rep("RxNorm has dose form", 4))
+#' )
+#' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 #' )
@@ -213,7 +218,8 @@ addDrugUse <- function(cohort,
       # add daily dose
       cohortInfo <- cohortInfo %>%
         addDailyDose(cdm, ingredientConceptId) %>%
-        dplyr::select(-"quantity", -"unit")
+        dplyr::select(-"quantity", -"unit", -"route") %>%
+        dplyr::distinct()
 
       # impute daily dose
       cohortInfo <- imputeVariable(
