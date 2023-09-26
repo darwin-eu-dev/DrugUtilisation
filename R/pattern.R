@@ -170,10 +170,7 @@ patternTable <- function(cdm) {
   # counts concepts and ingredients
   pattern <- drugStrengthPattern %>%
     dplyr::group_by(
-      .data$pattern_id, .data$formula_id, .data$amount_numeric,
-      .data$amount_unit_concept_id, .data$numerator_numeric,
-      .data$numerator_unit_concept_id, .data$denominator_numeric,
-      .data$denominator_unit_concept_id, .data$pattern_file_id
+      .data$pattern_id, .data$formula_id, .data$pattern_file_id
     ) %>%
     dplyr::summarise(
       number_concepts = as.numeric(dplyr::n_distinct(.data$drug_concept_id)),
@@ -199,7 +196,8 @@ patternTable <- function(cdm) {
     dplyr::mutate(number_records = dplyr::if_else(
       is.na(.data$number_records), 0, .data$number_records
     )) %>%
-    dplyr::arrange(.data$pattern_file_id)
+    dplyr::arrange(.data$pattern_file_id) %>%
+    dplyr::left_join(patterns, by = c("pattern_id", "pattern_file_id"))
 
   # not present / new patterns
   newPattern <- pattern %>%
@@ -215,7 +213,7 @@ patternTable <- function(cdm) {
 
   # new patterns
   newNewPattern <- newPattern %>%
-    dplyr::filter(.data$validity != "records with no pattern")
+    dplyr::filter(.data$validity == "new pattern")
   if (nrow(newNewPattern) > 0) {
     cli::cli_alert_info(
       "This cdm contains non standard patterns please inform the mantainer of
@@ -237,7 +235,9 @@ patternTable <- function(cdm) {
     )) %>%
     dplyr::union_all(newPattern) %>%
     dplyr::relocate(dplyr::starts_with("number")) %>%
-    dplyr::relocate(c("pattern_file_id", "pattern_id", "validity"))
+    dplyr::relocate(
+      c("pattern_file_id", "pattern_id", "formula_id", "validity")
+    )
 
   return(pattern)
 }
