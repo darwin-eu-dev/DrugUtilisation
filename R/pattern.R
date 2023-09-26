@@ -225,11 +225,10 @@ patternTable <- function(cdm, recordCount = FALSE) {
         "denominator_unit_concept_id"
       )
     ) %>%
-    dplyr::mutate(
-      validity = dplyr::if_else(
-        is.na(.data$pattern_id), "no formula provided", "valid"
-      )
-    )
+    dplyr::mutate(validity = dplyr::if_else(
+      is.na(.data$pattern_id), "no formula provided", "valid"
+    )) %>%
+    dplyr::arrange(.data$pattern_id)
 
   # not present / new patterns
   newPattern <- pattern %>%
