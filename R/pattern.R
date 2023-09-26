@@ -62,7 +62,7 @@ drugStrengthPattern <- function(cdm,
   # add formula
   if (formula | unit) {
     drugStrengthRelated <- drugStrengthRelated %>%
-      dplyr::left_join(formulas, by = c("pattern_id", "route"))
+      dplyr::left_join(formulas, by = c("pattern_id", "route"), copy = TRUE)
   }
 
   # select desired columns
