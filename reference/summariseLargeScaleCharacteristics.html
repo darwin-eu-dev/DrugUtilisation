@@ -14,7 +14,7 @@ cohort table"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/lib
     
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -138,22 +138,7 @@ Finally "overlap" is also included in the list.</p>
 <span class="r-in"><span>  cohort <span class="op">=</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span>,</span></span>
 <span class="r-in"><span>  tablesToCharacterize<span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drug_exposure"</span>, <span class="st">"condition_occurrence"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 83 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    cohort_name strata_name strata_level table_name        window_name concept_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cohort_1    Overall     Overall      condition_occurr… -inf to -3…     <span style="text-decoration: underline;">317</span>009</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cohort_1    Overall     Overall      condition_occurr… -30 to -1       <span style="text-decoration: underline;">378</span>253</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cohort_1    Overall     Overall      condition_occurr… 1 to 30         <span style="text-decoration: underline;">378</span>253</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cohort_1    Overall     Overall      condition_occurr… 31 to 365       <span style="text-decoration: underline;">378</span>253</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cohort_1    Overall     Overall      condition_occurr… 366 to inf      <span style="text-decoration: underline;">317</span>009</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cohort_1    Overall     Overall      drug_exposure     -inf to -3…    1<span style="text-decoration: underline;">125</span>360</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_1    Overall     Overall      drug_exposure     -365 to -31    1<span style="text-decoration: underline;">125</span>360</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_1    Overall     Overall      drug_exposure     -365 to -31    1<span style="text-decoration: underline;">516</span>980</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_1    Overall     Overall      drug_exposure     -365 to -31    1<span style="text-decoration: underline;">539</span>462</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_1    Overall     Overall      drug_exposure     -365 to -31    1<span style="text-decoration: underline;">539</span>463</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 73 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: concept_name &lt;chr&gt;, count &lt;chr&gt;, denominator_count &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   `%` &lt;dbl&gt;, cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in summariseLargeScaleCharacteristics(cohort = cdm$cohort1, tablesToCharacterize = c("drug_exposure",     "condition_occurrence")):</span> unused argument (tablesToCharacterize = c("drug_exposure", "condition_occurrence"))</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
