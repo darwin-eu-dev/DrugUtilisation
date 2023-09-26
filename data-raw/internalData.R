@@ -33,7 +33,7 @@ domainInformation <- readr::read_csv(
 )
 
 # add the current pattern file (of patterns for which we can calculate dose)
-patternfile <- readr::read_csv(
+patterns <- readr::read_csv(
   here::here("data-raw", "pattern_drug_strength.csv"),
   col_types = list(
     pattern_id = "numeric",
@@ -52,10 +52,11 @@ patternfile <- readr::read_csv(
   )
 ) %>%
   dplyr::select(-c(
-    "valid", "pattern_name", "amount_unit", "numerator_unit", "denominator_unit"
+    "valid", "pattern_name", "amount_unit", "numerator_unit",
+    "denominator_unit", "unit"
   ))
 
-formulafile <- read_csv(
+formulas <- readr::read_csv(
   here::here("data-raw", "pattern_assessment_for_dose_final.csv"),
   col_types = list(
     numerator = "character",
@@ -70,9 +71,10 @@ formulafile <- read_csv(
     route = "character",
     unit = "character"
   )
-)
+) %>%
+  dplyr::select("pattern_id", "route", "formula_id", "unit")
 
-decisiontable <- read_csv(
+routes <- readr::read_csv(
   here::here("data-raw", "doseform_final.csv"),
   comment = "",
   col_types = list(
@@ -86,35 +88,31 @@ decisiontable <- read_csv(
     validity = "character",
     vocabulary = "character"
   )
-)
+) %>%
+  dplyr::select("dose_form_concept_id" = "source_concept_id", "route")
 
 # add all rows in patternfile for the "any" dose patterns with all the possibilities
-all_routes <- decisiontable %>%
-  dplyr::select(route) %>%
+allRoutes <- routes %>%
+  dplyr::select("route") %>%
   dplyr::distinct() %>%
   dplyr::pull()
 
-formulafile_add <- formulafile %>%
-  dplyr::filter(route == "any")
-
-for(route_n in all_routes) {
-  formulafile_add <- formulafile_add %>%
+formulasAny <- formulas %>%
+  dplyr::filter(.data$route == "any")
+for(route in allRoutes) {
+  formulas <- formulas %>%
     dplyr::union_all(
-      formulafile %>%
-        dplyr::filter(route == "any") %>%
-        dplyr::mutate(route = route_n)
+      formulasAny %>%
+        dplyr::mutate("route" = .env$route)
     )
 }
-
-formulafile <- formulafile %>%
-  dplyr::union_all(formulafile_add) %>%
-  dplyr::mutate(route = dplyr::if_else(
-    route == "any", as.character(NA), route
-  ))
+formulas <- formulas %>%
+  dplyr::filter(.data$route != "any") %>%
+  dplyr::arrange(.data$pattern_id)
 
 
 usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,
-  patternfile, formulafile, decisiontable, internal = TRUE, overwrite = TRUE
+  patterns, formulas, routes, internal = TRUE, overwrite = TRUE
 )
 

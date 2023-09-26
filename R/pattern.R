@@ -14,131 +14,77 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' add pattern info to a table containing drug_strength information
-#'
-#' @param drugList Table in the cdm that has contain drug_concept_id
-#' @param cdm cdm_reference
-#' @param ingredientConceptId ingredientConceptId
-#'
-#' @return It adds pattern_id and unit to the current table
-#'
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' library(DrugUtilisation)
-#' library(dplyr)
-#'
-#' cdm <- mockDrugUtilisation()
-#'
-#' cdm$drug_exposure %>%
-#'   addPattern(cdm, 1125315)
-#'
-#' cdm$concept %>%
-#'   filter(domain_id == "Drug") %>%
-#'   select(drug_concept_id = concept_id) %>%
-#'   addPattern(cdm, 1125315)
-#' }
-#'
-addPattern <- function(drugList, cdm, ingredientConceptId) {
-  # initial checks
-  checkInputs(
-    drugList = drugList, cdm = cdm, ingredientConceptId = ingredientConceptId
-  )
+#' @noRd
+drugStrengthPattern <- function(cdm,
+                                ingredientConceptId = NULL,
+                                pattern = TRUE,
+                                patternDetails = TRUE,
+                                unit = TRUE,
+                                route = TRUE,
+                                formula = TRUE,
+                                ingredient = TRUE) {
+  # start table
+  drugStrengthRelated <- cdm[["drug_strength"]]
 
-  # insert as temporal if it is a local tbl
-  if (!("tbl_sql" %in% class(drugList))) {
-    name <- CDMConnector::uniqueTableName()
-    DBI::dbWriteTable(attr(cdm, "dbcon"), name, as.data.frame(drugList), temporary = TRUE)
-    drugList <- dplyr::tbl(attr(cdm, "dbcon"), name)
+  # filter ingredients
+  if (!is.null(ingredientConceptId)) {
+    drugStrengthRelated <- drugStrengthRelated %>%
+      dplyr::filter(.data$ingredient_concept_id %in% .env$ingredientConceptId)
   }
 
-  # select only pattern_id and unit
-  drugList <- drugList %>%
-    dplyr::left_join(
-      drugList %>%
-        dplyr::select("drug_concept_id") %>%
-        dplyr::distinct() %>%
-        addPatternInternal(cdm, ingredientConceptId) %>%
-        dplyr::select("drug_concept_id", "pattern_id", "unit"),
-      by = "drug_concept_id"
-    ) %>%
-    CDMConnector::computeQuery()
+  # add route
+  if (route | formula | unit) {
+    drugStrengthRelated <- drugStrengthRelated %>% addRoute()
+  }
 
-  return(drugList)
-}
-
-#' @noRd
-addPatternInternal <- function(drugList, cdm, ingredientConceptId) {
-  drugList %>%
-    dplyr::inner_join(
-      cdm[["drug_strength"]] %>%
-        dplyr::filter(
-          .data$ingredient_concept_id == .env$ingredientConceptId
-        ) %>%
-        dplyr::mutate(
-          amount_numeric = dplyr::if_else(!is.na(.data$amount_value), 1, 0),
-          numerator_numeric = dplyr::if_else(
-            !is.na(.data$numerator_value), 1, 0
-          ),
-          denominator_numeric = dplyr::if_else(
-            !is.na(.data$denominator_value), 1, 0
-          )
-        ) %>%
-        dplyr::inner_join(
-          patternfile,
-          by = c(
-            "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
-            "numerator_unit_concept_id", "denominator_numeric",
-            "denominator_unit_concept_id"
-          ), copy = TRUE, na_matches = "na"
-        ) %>%
-        dplyr::select(
-          "drug_concept_id", "amount_value", "numerator_value",
-          "denominator_value", "pattern_id", "unit", "amount_unit_concept_id",
-          "numerator_unit_concept_id", "denominator_unit_concept_id"
+  # add pattern
+  if (pattern | patternDetails | unit | formula) {
+    drugStrengthRelated <- drugStrengthRelated %>%
+      dplyr::mutate(
+        amount_numeric = dplyr::if_else(!is.na(.data$amount_value), 1, 0),
+        numerator_numeric = dplyr::if_else(
+          !is.na(.data$numerator_value), 1, 0
         ),
-      by = "drug_concept_id"
-    )
+        denominator_numeric = dplyr::if_else(
+          !is.na(.data$denominator_value), 1, 0
+        )
+      ) %>%
+      dplyr::left_join(
+        patterns,
+        by = c(
+          "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
+          "numerator_unit_concept_id", "denominator_numeric",
+          "denominator_unit_concept_id"
+        ), copy = TRUE, na_matches = "na"
+      )
+  }
+
+  # add formula
+  if (formula | unit) {
+    drugStrengthRelated <- drugStrengthRelated %>%
+      dplyr::left_join(formulas, by = c("pattern_id", "route"))
+  }
+
+  # select desired columns
+  variables <- c(
+    {if (pattern) "pattern_id"},
+    {if (patternDetails) c(
+      "amount_value", "numerator_value", "denominator_value",
+      "amount_unit_concept_id", "numerator_unit_concept_id",
+      "denominator_unit_concept_id", "pattern_file_id"
+    )},
+    {if (unit) "unit"},
+    {if (route) "route"},
+    {if (formula) "formula_id"},
+    {if (ingredient) "ingredient_concept_id"}
+  )
+  drugStrengthRelated <- drugStrengthRelated %>%
+    dplyr::select(dplyr::all_of(c("drug_concept_id", variables)))
+
+  return(drugStrengthRelated)
 }
 
-#' @noRd
-addFormulaInternal <- function(drugList, cdm, ingredientConceptId) {
-  drugList %>%
-    addRoute(cdm) %>%
-    dplyr::left_join(
-      cdm[["drug_strength"]] %>%
-        dplyr::filter(
-          .data$ingredient_concept_id %in% .env$ingredientConceptId
-        ) %>%
-        dplyr::mutate(
-          amount = dplyr::if_else(!is.na(.data$amount_value), "numeric", NA),
-          numerator = dplyr::if_else(
-            !is.na(.data$numerator_value), "numeric", NA
-          ),
-          denominator = dplyr::if_else(
-            !is.na(.data$denominator_value), "numeric", NA
-          )
-        ) %>%
-        dplyr::left_join(
-          formulafile,
-          by = c(
-            "numerator",
-            "numerator_unit_concept_id", "denominator",
-            "denominator_unit_concept_id",
-            "amount", "amount_unit_concept_id"
-          ), copy = TRUE, na_matches = "na"
-        ) %>%
-        dplyr::select(
-          "drug_concept_id", "numerator_value", "denominator_value", "amount_value",
-          "numerator_unit_concept_id", "denominator_unit_concept_id", "amount_unit_concept_id",
-          "unit", "formula_id", "route"
-        ),
-      by = c("drug_concept_id", "route")
-    )
-}
-
-#' add route info to a table containing drug_exposure information
+#' add route column to a table containing drug_exposure information
 #'
 #' @param drugTable Table in the cdm that must contain drug_concept_id
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
@@ -172,40 +118,30 @@ addFormulaInternal <- function(drugList, cdm, ingredientConceptId) {
 #' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
 #'
 #' cdm$drug_exposure %>%
-#'   addRoute(cdm)
+#'   addRoute()
 #' }
 #'
-addRoute <- function(drugTable, cdm) {
-
+addRoute <- function(drugTable, cdm = attr(drugTable, "cdm_reference")) {
   drugTable %>%
     dplyr::left_join(
-      cdm$concept_relationship %>%
+      cdm[["concept_relationship"]] %>%
         dplyr::select(c("concept_id_1", "concept_id_2", "relationship_id")) %>%
-        dplyr::group_by(.data$relationship_id) %>%
         dplyr::filter(.data$relationship_id == "RxNorm has dose form") %>%
-        dplyr::ungroup() %>%
         dplyr::select(-"relationship_id") %>%
         dplyr::rename(
           "drug_concept_id" = "concept_id_1",
-          "source_concept_id" = "concept_id_2"
+          "dose_form_concept_id" = "concept_id_2"
         ),
-      by = "drug_concept_id",
-      copy = TRUE
+      by = "drug_concept_id"
     ) %>%
-    dplyr::left_join(decisiontable %>%
-                       dplyr::select(c("route", "source_concept_id")),
-                     by = "source_concept_id",
-                     copy = TRUE
-    ) %>%
-    dplyr::select(-"source_concept_id")
-
+    dplyr::left_join(routes, by = "dose_form_concept_id", copy = TRUE) %>%
+    dplyr::select(-"dose_form_concept_id")
 }
 
 #' Function to create a tibble with the patterns from current drug strength table
 #'
 #' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
 #' must contain 'drug_strength' and 'concept' tables.
-#' @param recordCount Whether number of records per pattern should be computed
 #'
 #' @return The function creates a tibble with the different patterns found in
 #' the table, plus a column of potentially valid and invalid combinations.
@@ -221,61 +157,21 @@ addRoute <- function(drugTable, cdm) {
 #' patternTable(cdm)
 #' }
 #'
-patternTable <- function(cdm, recordCount = FALSE) {
+patternTable <- function(cdm) {
   # Initial chekc on inputs
-  checkInputs(cdm = cdm, recordCount = recordCount)
+  checkInputs(cdm = cdm)
 
-  # create patterns
-  x <- cdm[["drug_strength"]] %>%
-    dplyr::left_join(
-      cdm[["concept"]] %>%
-        dplyr::select(
-          "amount_unit_concept_id" = "concept_id",
-          "amount_unit" = "concept_name"
-        ),
-      by = "amount_unit_concept_id"
-    ) %>%
-    dplyr::left_join(
-      cdm[["concept"]] %>%
-        dplyr::select(
-          "numerator_unit_concept_id" = "concept_id",
-          "numerator_unit" = "concept_name"
-        ),
-      by = "numerator_unit_concept_id"
-    ) %>%
-    dplyr::left_join(
-      cdm[["concept"]] %>%
-        dplyr::select(
-          "denominator_unit_concept_id" = "concept_id",
-          "denominator_unit" = "concept_name"
-        ),
-      by = "denominator_unit_concept_id"
-    ) %>%
-    dplyr::mutate(
-      amount_numeric = ifelse(is.na(.data$amount_value), 0, 1),
-      numerator_numeric = ifelse(is.na(.data$numerator_value), 0, 1),
-      denominator_numeric = ifelse(is.na(.data$denominator_value), 0, 1)
-    ) %>%
-    dplyr::select(
-      "drug_concept_id", "ingredient_concept_id", "amount_numeric",
-      "amount_unit", "amount_unit_concept_id", "numerator_numeric",
-      "numerator_unit", "numerator_unit_concept_id", "denominator_numeric",
-      "denominator_unit", "denominator_unit_concept_id"
-    ) %>%
+  # drug strength pattern
+  drugStrengthPattern <- drugStrengthPattern(route = FALSE, unit = FALSE) %>%
     CDMConnector::computeQuery()
 
-  # get pattern
-  pattern <- x %>%
-    dplyr::select(-"drug_concept_id", -"ingredient_concept_id") %>%
-    dplyr::distinct() %>%
-    dplyr::collect()
-
-  pattern <- x %>%
+  # counts concepts and ingredients
+  pattern <- drugStrengthPattern %>%
     dplyr::group_by(
-      .data$amount_numeric, .data$amount_unit, .data$amount_unit_concept_id,
-      .data$numerator_numeric, .data$numerator_unit,
+      .data$pattern_id, .data$formula_id, .data$amount_numeric,
+      .data$amount_unit_concept_id, .data$numerator_numeric,
       .data$numerator_unit_concept_id, .data$denominator_numeric,
-      .data$denominator_unit, .data$denominator_unit_concept_id
+      .data$denominator_unit_concept_id, .data$pattern_file_id
     ) %>%
     dplyr::summarise(
       number_concepts = as.numeric(dplyr::n_distinct(.data$drug_concept_id)),
@@ -284,72 +180,35 @@ patternTable <- function(cdm, recordCount = FALSE) {
     ) %>%
     dplyr::collect()
 
-  # get recordCount
-  if (recordCount) {
-    recordCounts <- cdm[["drug_exposure"]] %>%
-      dplyr::left_join(x, by = "drug_concept_id") %>%
-      dplyr::group_by(
-        .data$amount_numeric, .data$amount_unit_concept_id,
-        .data$numerator_numeric, .data$numerator_unit_concept_id,
-        .data$denominator_numeric, .data$denominator_unit_concept_id
-      ) %>%
-      dplyr::summarise(number_records = as.numeric(dplyr::n()), .groups = "drop") %>%
-      dplyr::collect()
-    pattern <- pattern %>%
-      dplyr::full_join(
-        recordCounts,
-        by = c(
-          "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
-          "numerator_unit_concept_id", "denominator_numeric",
-          "denominator_unit_concept_id"
-        )
-      ) %>%
-      dplyr::mutate(number_records = dplyr::if_else(
-        is.na(.data$number_records), 0, .data$number_records
-      ))
-  }
-
-  # present patterns
-  presentPattern <- pattern %>%
-    dplyr::inner_join(
-      patternfile %>%
-        dplyr::select(
-          "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
-          "numerator_unit_concept_id", "denominator_numeric",
-          "denominator_unit_concept_id", "pattern_id"
-        ),
-      by = c(
-        "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
-        "numerator_unit_concept_id", "denominator_numeric",
-        "denominator_unit_concept_id"
-      )
+  # create patterns
+  pattern <- pattern %>%
+    dplyr::full_join(
+      cdm[["drug_exposure"]] %>%
+        dplyr::left_join(drugStrengthPattern, by = "drug_concept_id") %>%
+        dplyr::group_by(
+          .data$pattern_id, .data$formula_id, .data$pattern_file_id
+        ) %>%
+        dplyr::summarise(
+          number_records = as.numeric(dplyr::n()), .groups = "drop"
+        ) %>%
+        dplyr::collect(),
+      by = c("pattern_id", "formula_id", "pattern_file_id")
     ) %>%
-    dplyr::mutate(validity = dplyr::if_else(
-      is.na(.data$pattern_id), "no formula provided", "valid"
+    dplyr::mutate(number_records = dplyr::if_else(
+      is.na(.data$number_records), 0, .data$number_records
     )) %>%
-    dplyr::arrange(.data$pattern_id)
+    dplyr::arrange(.data$pattern_file_id)
 
   # not present / new patterns
   newPattern <- pattern %>%
-    dplyr::anti_join(
-      patternfile,
-      by = c(
-        "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
-        "numerator_unit_concept_id", "denominator_numeric",
-        "denominator_unit_concept_id"
-      )
-    ) %>%
-    dplyr::mutate(
-      pattern_id = as.numeric(NA),
-      validity = "new pattern, inform please"
-    ) %>%
+    dplyr::filter(is.na(.data$pattern_file_id)) %>%
     dplyr::mutate(validity = dplyr::if_else(
       is.na(.data$amount_numeric) & is.na(.data$amount_unit_concept_id) &
         is.na(.data$numerator_numeric) &
         is.na(.data$numerator_unit_concept_id) &
         is.na(.data$denominator_numeric) &
         is.na(.data$denominator_unit_concept_id),
-      "records with no pattern", .data$validity
+      "no pattern", "new pattern"
     ))
 
   # new patterns
@@ -365,9 +224,18 @@ patternTable <- function(cdm, recordCount = FALSE) {
   }
 
   # join supported and non supported patterns
-  pattern <- dplyr::union_all(presentPattern, newPattern) %>%
+  pattern <- pattern %>%
+    dplyr::filter(!is.na(.data$pattern_file_id)) %>%
+    dplyr::mutate(validity = dplyr::if_else(
+      is.na(.data$pattern_id),
+      "pattern with no formula",
+      dplyr::if_else(
+        is.na(.data$formula_id), "pattern wrong route", "pattern with formula"
+      )
+    )) %>%
+    dplyr::union_all(newPattern) %>%
     dplyr::relocate(dplyr::starts_with("number")) %>%
-    dplyr::relocate(c("pattern_id", "validity"))
+    dplyr::relocate(c("pattern_file_id", "pattern_id", "validity"))
 
   return(pattern)
 }

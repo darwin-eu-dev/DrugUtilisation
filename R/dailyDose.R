@@ -18,7 +18,6 @@
 #'
 #' @param drugExposure drugExposure it must contain drug_concept_id, quantity,
 #' drug_exposure_start_date and drug_exposure_end_date as columns
-#' @param cdm cdm
 #' @param ingredientConceptId ingredientConceptId for which to filter the
 #' drugs of interest
 #'
@@ -54,12 +53,12 @@
 #' }
 #'
 addDailyDose <- function(drugExposure,
-                         cdm,
                          ingredientConceptId) {
+  cdm <- attr(drugExposure, "cdm_reference")
+
   # initial checks
   checkInputs(
-    drugExposure = drugExposure, cdm = cdm,
-    ingredientConceptId = ingredientConceptId
+    drugExposure = drugExposure, ingredientConceptId = ingredientConceptId
   )
 
   # select only pattern_id and unit
@@ -74,10 +73,7 @@ addDailyDose <- function(drugExposure,
       end = "drug_exposure_end_date"
     ) + 1) %>%
     dplyr::inner_join(
-      drugExposure %>%
-        dplyr::select("drug_concept_id") %>%
-        dplyr::distinct() %>%
-        addFormulaInternal(cdm, ingredientConceptId),
+      drugStrengthPattern(cdm = cdm, ingredientConceptId = ingredientConceptId),
       by = "drug_concept_id"
     ) %>%
     standardUnits() %>%
@@ -261,24 +257,23 @@ standardUnits <- function(drugExposure) {
       )
     )
 }
-
 applyFormula <- function(drugExposure) {
   drugExposure %>%
     dplyr::mutate(
       daily_dose = dplyr::case_when(
         is.na(.data$quantity) ~
           as.numeric(NA),
-        .data$quantity <= 0 ~
+        .data$quantity <= 0 ~ # TO REMOVE
           as.numeric(NA),
-        .data$formula_id %in% c(1:15) ~
+        .data$formula_id == 1 ~
           .data$numerator_value * .data$quantity / .data$days_exposed,
-        .data$formula_id %in% c(16:20) ~
+        .data$formula_id == 2 ~
           .data$amount_value * .data$quantity / .data$days_exposed,
-        .data$formula_id %in% c(21,22)  & .data$denominator_value > 24 ~
+        .data$formula_id == 3  & .data$denominator_value > 24 ~
           .data$numerator_value * 24 / .data$denominator_value,
-        .data$formula_id %in% c(21,22) & .data$denominator_value <= 24 ~
+        .data$formula_id == 3 & .data$denominator_value <= 24 ~ # WHY?
           .data$numerator_value,
-        .data$formula_id %in% c(23,24) ~
+        .data$formula_id == 4 ~
           .data$numerator_value * 24,
         .default = as.numeric(NA)
       )
