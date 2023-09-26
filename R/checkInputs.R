@@ -270,17 +270,17 @@ checkSameIndexMode <- function(sameIndexMode) {
   }
 }
 
-checkIngredientConceptId <- function(ingredientConceptId, cdm) {
+checkIngredientConceptId <- function(ingredientConceptId, cdm, len = 1) {
   if (is.null(ingredientConceptId)) {
     cli::cli_abort("ingredientConceptId ca not be NULL")
   }
-  if (!isInteger(ingredientConceptId)) {
-    cli::cli_abort("ingredientConceptId is not an integer of length 1")
+  if (!is.na(len) & len != length(ingredientConceptId)) {
+    cli::cli_abort("ingredientConceptId is not length {len}")
   }
-  if (cdm[["concept"]] %>%
-      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+  if (any(cdm[["concept"]] %>%
+      dplyr::filter(.data$concept_id %in% .env$ingredientConceptId) %>%
       dplyr::pull("concept_class_id") != "Ingredient"
-  ) {
+  )) {
     cli::cli_abort("ingredientConceptId is not found in vocabulary")
   }
 }
