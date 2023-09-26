@@ -63,59 +63,83 @@ test_that("functionality of addDailyDose function",{
       max_levels_of_separation = 0
     ))
 
+  concept_relationship <- dplyr::tibble(
+    concept_id_1 = c(2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,
+                     29050773, 1125360, 15033297, 15030327, 15033427, 15036327, 15394662,
+                     43135274, 11253605, 431352774, 431359274, 112530, 1539465, 29050772,
+                     431352074, 15394062, 43135277, 15033327, 11253603, 15516980, 5034327,
+                     1539462, 15033528, 15394636, 15176980, 1539463, 431395274, 15186980,
+                     15316978),
+    concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
+                     2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
+                     19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
+                     19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
+                     19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
+                     35604394, 702776 ),
+    relationship_id = c(rep("RxNorm has dose form", 37))
+  )
+
   cdm <- mockDrugUtilisation(
     connectionDetails,
     seed = 11,
     drug_strength = drug_strength,
     concept = concept,
     numberIndividuals = 50,
-    concept_ancestor = concept_ancestor
+    concept_ancestor = concept_ancestor,
+    extraTables = list("concept_relationship" = concept_relationship)
   )
 
   # should only add patterns 1 to 9, which are drugs 1:7, 10, 11, 25, 30
   daily_dose <- addDailyDose(cdm$drug_exposure, cdm, 1)
 
   expect_true(
+    daily_dose %>% dplyr::anti_join(
+      daily_dose %>%
+        dplyr::left_join(cdm$drug_strength, by = "drug_concept_id") %>%
+        dplyr::filter(numerator_unit_concept_id %in% c(8576, 8587, 9551, 9655) || is.na(numerator_unit_concept_id)) %>%
+        dplyr::filter(denominator_unit_concept_id %in% c(8576, 8587, 45744809, 8505) || is.na(denominator_unit_concept_id)) %>%
+        dplyr::filter(amount_unit_concept_id %in% c(8718, 9655, 9551, 8576, 8587) || is.na(amount_unit_concept_id))
+    ) %>%
+      dplyr::filter(!is.na(daily_dose)) %>%
+      dplyr::tally() %>%
+      dplyr::pull() == 0
+  )
+
+  expect_true(
     daily_dose %>% dplyr::tally() %>% dplyr::pull("n") ==
       cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull("n")
   )
-  expect_true(
-    length(colnames(cdm$drug_exposure)) + 2 == length(colnames(daily_dose))
-  )
-  expect_true(all(colnames(cdm$drug_exposure) %in% colnames(daily_dose)))
-  expect_true(all(c("daily_dose", "unit") %in% colnames(daily_dose)))
 
-  # expect_true(all(
-  #   daily_dose %>%
-  #     dplyr::filter(!is.na(daily_dose)) %>%
-  #     dplyr::select(drug_concept_id) %>%
-  #     dplyr::arrange(drug_concept_id) %>%
-  #     dplyr::pull() ==
-  #     c(1125360, 1516978, 1539462, 2905077)
-  # ))
+  expect_true(
+    length(colnames(cdm$drug_exposure)) + 3 == length(colnames(daily_dose))
+  )
+
+  expect_true(all(colnames(cdm$drug_exposure) %in% colnames(daily_dose)))
+  expect_true(all(c("daily_dose", "unit", "route") %in% colnames(daily_dose)))
 
   patterns <- cdm$drug_exposure %>%
-    addPattern(cdm, 1)
+    addFormulaInternal(cdm, 1)
   expect_true(
     cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull() ==
       patterns %>% dplyr::tally() %>% dplyr::pull()
   )
-  expect_true(length(colnames(cdm$drug_exposure)) + 2 == length(colnames(patterns)))
+
   expect_true(all(colnames(cdm$drug_exposure) %in% colnames(patterns)))
-  expect_true(all(c("pattern_id", "unit") %in% colnames(patterns)))
+  expect_true(all(c("formula_id", "unit", "route") %in% colnames(patterns)))
 
   x <- daily_dose %>%
     dplyr::select("drug_exposure_id", "daily_dose", "unit") %>%
     dplyr::inner_join(
       patterns %>%
-        dplyr::select("drug_exposure_id", "pattern_id", "unit"),
+        dplyr::select("drug_exposure_id", "formula_id", "unit"),
       by = "drug_exposure_id"
     ) %>%
     dplyr::collect()
 
   expect_true(all(colnames(x) %in% c(
-    "drug_exposure_id", "daily_dose", "unit.x", "pattern_id", "unit.y"
+    "drug_exposure_id", "daily_dose", "unit.x", "formula_id", "unit.y"
   )))
+
   expect_true(all(
     x %>%
       dplyr::filter(is.na(.data$unit.x)) %>%
@@ -126,6 +150,7 @@ test_that("functionality of addDailyDose function",{
       dplyr::arrange(.data$drug_exposure_id) %>%
       dplyr::pull("drug_exposure_id")
   ))
+
   expect_true(all(
     x %>%
       dplyr::filter(!is.na(.data$unit.x)) %>%
@@ -136,13 +161,14 @@ test_that("functionality of addDailyDose function",{
       dplyr::arrange(.data$drug_exposure_id) %>%
       dplyr::pull("unit.y")
   ))
+
   expect_true(all(
     x %>%
       dplyr::filter(is.na(.data$daily_dose)) %>%
       dplyr::arrange(.data$drug_exposure_id) %>%
       dplyr::pull("drug_exposure_id") ==
       x %>%
-      dplyr::filter(is.na(.data$pattern_id)) %>%
+      dplyr::filter(is.na(.data$formula_id)) %>%
       dplyr::arrange(.data$drug_exposure_id) %>%
       dplyr::pull("drug_exposure_id")
   ))
