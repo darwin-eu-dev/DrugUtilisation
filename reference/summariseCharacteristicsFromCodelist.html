@@ -24,6 +24,7 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/Intro_create_cohort.html">Use DrugUtilisation to create cohort</a>
     <a class="dropdown-item" href="../articles/addIndications-example.html">Add indications to Drug Utilisation Cohort</a>
     <a class="dropdown-item" href="../articles/my-vignette.html">my-vignette</a>
   </div>
@@ -120,20 +121,20 @@
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → measurement table not present in the cdm</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → procedure_occurrence table not present in the cdm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 22 × 12</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 24 × 12</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level strata_name strata_level window_name variable     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Cohort name cohort_3    Overall     Overall      -365 to -1  group A      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Cohort name cohort_1    Overall     Overall      -365 to -1  group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Cohort name cohort_1    Overall     Overall      -365 to -1  acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Cohort name cohort_2    Overall     Overall      -365 to -1  acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Cohort name cohort_3    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Cohort name cohort_1    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Cohort name cohort_2    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Cohort name cohort_3    Overall     Overall      0 to 0      group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Cohort name cohort_1    Overall     Overall      0 to 0      group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Cohort name cohort_1    Overall     Overall      0 to 0      acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 12 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Cohort name cohort_2    Overall     Overall      -365 to -1  acetaminophen</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Cohort name cohort_1    Overall     Overall      -365 to -1  acetaminophen</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Cohort name cohort_3    Overall     Overall      -365 to -1  acetaminophen</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Cohort name cohort_2    Overall     Overall      -365 to -1  group A      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Cohort name cohort_1    Overall     Overall      -365 to -1  denominator  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Cohort name cohort_2    Overall     Overall      -365 to -1  denominator  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Cohort name cohort_3    Overall     Overall      -365 to -1  denominator  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Cohort name cohort_3    Overall     Overall      0 to 0      group A      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 14 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: variable_type &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate &lt;chr&gt;, cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
