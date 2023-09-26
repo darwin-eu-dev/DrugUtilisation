@@ -117,3 +117,4 @@ usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,
   patternfile, formulafile, decisiontable, internal = TRUE, overwrite = TRUE
 )
+
