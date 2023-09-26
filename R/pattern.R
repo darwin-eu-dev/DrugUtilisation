@@ -162,7 +162,9 @@ patternTable <- function(cdm) {
   checkInputs(cdm = cdm)
 
   # drug strength pattern
-  drugStrengthPattern <- drugStrengthPattern(route = FALSE, unit = FALSE) %>%
+  drugStrengthPattern <- drugStrengthPattern(
+    cdm = cdm, route = FALSE, unit = FALSE
+  ) %>%
     CDMConnector::computeQuery()
 
   # counts concepts and ingredients
