@@ -188,7 +188,7 @@ patternTable <- function(cdm, recordCount = FALSE) {
   # get recordCount
   if (recordCount) {
     recordCounts <- cdm[["drug_exposure"]] %>%
-      dplyr::inner_join(x, by = "drug_concept_id") %>%
+      dplyr::left_join(x, by = "drug_concept_id") %>%
       dplyr::group_by(
         .data$amount_numeric, .data$amount_unit_concept_id,
         .data$numerator_numeric, .data$numerator_unit_concept_id,
@@ -197,7 +197,7 @@ patternTable <- function(cdm, recordCount = FALSE) {
       dplyr::summarise(number_records = as.numeric(dplyr::n()), .groups = "drop") %>%
       dplyr::collect()
     pattern <- pattern %>%
-      dplyr::left_join(
+      dplyr::full_join(
         recordCounts,
         by = c(
           "amount_numeric", "amount_unit_concept_id", "numerator_numeric",
@@ -225,11 +225,10 @@ patternTable <- function(cdm, recordCount = FALSE) {
         "denominator_unit_concept_id"
       )
     ) %>%
-    dplyr::mutate(
-      validity = dplyr::if_else(
-        is.na(.data$pattern_id), "no formula provided", "valid"
-      )
-    )
+    dplyr::mutate(validity = dplyr::if_else(
+      is.na(.data$pattern_id), "no formula provided", "valid"
+    )) %>%
+    dplyr::arrange(.data$pattern_id)
 
   # not present / new patterns
   newPattern <- pattern %>%
@@ -244,9 +243,20 @@ patternTable <- function(cdm, recordCount = FALSE) {
     dplyr::mutate(
       pattern_id = as.numeric(NA),
       validity = "new pattern, inform please"
-    )
+    ) %>%
+    dplyr::mutate(validity = dplyr::if_else(
+      is.na(.data$amount_numeric) & is.na(.data$amount_unit_concept_id) &
+        is.na(.data$numerator_numeric) &
+        is.na(.data$numerator_unit_concept_id) &
+        is.na(.data$denominator_numeric) &
+        is.na(.data$denominator_unit_concept_id),
+      "records with no pattern", .data$validity
+    ))
 
-  if (nrow(newPattern) > 0) {
+  # new patterns
+  newNewPattern <- newPattern %>%
+    dplyr::filter(.data$validity != "records with no pattern")
+  if (nrow(newNewPattern) > 0) {
     cli::cli_alert_info(
       "This cdm contains non standard patterns please inform the mantainer of
       the package or open an issue in

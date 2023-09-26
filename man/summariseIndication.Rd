@@ -54,9 +54,11 @@ cdm$drug_cohort <- cdm$drug_cohort \%>\%
   addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) \%>\%
   addSex(cdm)
 
-summariseIndication(cdm$drug_cohort, cdm, strata = list(
-  "Age" = "age_group", "Age & Sex" = c("age_group", "sex")
-))
+summariseIndication(
+  cdm$drug_cohort, cdm, strata = list(
+    "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
+  )
+)
 }
 
 }
