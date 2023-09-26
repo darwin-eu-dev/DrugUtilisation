@@ -40,7 +40,7 @@
 #'   addPattern(cdm, 1125315)
 #' }
 #'
-addPattern <- function(drugList, cdm, ingredientConceptId) {
+addPattern <- function(drugList, cdm = attr(drugList, "cdm_reference"), ingredientConceptId) {
   # initial checks
   checkInputs(
     drugList = drugList, cdm = cdm, ingredientConceptId = ingredientConceptId
@@ -396,7 +396,7 @@ patternTable <- function(cdm, recordCount = FALSE) {
 #' codelistStratified
 #' }
 #'
-stratifyByUnit <- function(conceptSetList, cdm, ingredientConceptId) {
+stratifyByUnit <- function(conceptSetList, cdm , ingredientConceptId) {
   # check initial inputs
   checkInputs(
     conceptSetList = conceptSetList, cdm = cdm,

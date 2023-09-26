@@ -70,7 +70,7 @@
 #' }
 #'
 summariseDrugUse<- function(cohort,
-                            cdm,
+                            cdm = attr(cohort, "cdm_reference"),
                             strata = list(),
                             drugUseVariables = drugUseColumns(cohort),
                             drugUseEstimates = c("median", "q25", "q75"),

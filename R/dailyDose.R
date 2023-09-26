@@ -54,7 +54,7 @@
 #' }
 #'
 addDailyDose <- function(drugExposure,
-                         cdm,
+                         cdm = attr(drugExposure, "cdm_reference"),
                          ingredientConceptId) {
   # initial checks
   checkInputs(

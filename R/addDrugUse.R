@@ -110,7 +110,7 @@
 #' }
 #'
 addDrugUse <- function(cohort,
-                       cdm,
+                       cdm = attr(cohort, "cdm_reference"),
                        ingredientConceptId,
                        conceptSetList = NULL,
                        initialDailyDose = TRUE,

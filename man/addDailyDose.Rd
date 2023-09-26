@@ -4,7 +4,11 @@
 \alias{addDailyDose}
 \title{add daily dose information to a drug_exposure table}
 \usage{
-addDailyDose(drugExposure, cdm, ingredientConceptId)
+addDailyDose(
+  drugExposure,
+  cdm = attr(drugExposure, "cdm_reference"),
+  ingredientConceptId
+)
 }
 \arguments{
 \item{drugExposure}{drugExposure it must contain drug_concept_id, quantity,

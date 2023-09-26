@@ -47,7 +47,7 @@
 #' }
 #'
 addIndication <- function(x,
-                          cdm,
+                          cdm = attr(x, "cdm_reference"),
                           indicationCohortName,
                           indicationGap = 0,
                           unknownIndicationTable = NULL,

@@ -7,7 +7,7 @@ cohorts.}
 \usage{
 summariseIndication(
   cohort,
-  cdm,
+  cdm = attr(cohort, "cdm_reference"),
   strata = list(),
   indicationVariables = indicationColumns(cohort),
   minCellCount = 1

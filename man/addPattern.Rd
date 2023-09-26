@@ -4,7 +4,11 @@
 \alias{addPattern}
 \title{add pattern info to a table containing drug_strength information}
 \usage{
-addPattern(drugList, cdm, ingredientConceptId)
+addPattern(
+  drugList,
+  cdm = attr(drugList, "cdm_reference"),
+  ingredientConceptId
+)
 }
 \arguments{
 \item{drugList}{Table in the cdm that has contain drug_concept_id}
