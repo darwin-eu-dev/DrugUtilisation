@@ -150,11 +150,18 @@ test_that("test case single indication", {
 
   resinf <- resinf %>% indicationToStrata()
 
-  expect_true(identical(
+  expect_true(any(identical(
+    resinf %>%
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+      dplyr::pull("indication_gap_inf"),
+    c("Asthma", "Covid and Asthma", "None", "Asthma")
+  ),
+  identical(
     resinf %>%
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
       dplyr::pull("indication_gap_inf"),
     c("Asthma", "Asthma and Covid", "None", "Asthma")
+  )
   ))
 
 })

@@ -311,7 +311,7 @@ trimStartDate <- function(cohort, cdm, startDate) {
     cohort <- cohort %>%
       dplyr::mutate(cohort_start_date = dplyr::if_else(
         .data$cohort_start_date <= !!startDate,
-        !!startDate, .data$cohort_start_date
+        as.Date(!!startDate), as.Date(.data$cohort_start_date)
       )) %>%
       dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) %>%
       computeTable(cdm)
@@ -325,7 +325,7 @@ trimEndDate <- function(cohort, cdm, endDate) {
     cohort <- cohort %>%
       dplyr::mutate(cohort_end_date = dplyr::if_else(
         .data$cohort_end_date >= !!endDate,
-        !!endDate, .data$cohort_end_date
+        as.Date(!!endDate), as.Date(.data$cohort_end_date)
       )) %>%
       dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) %>%
       computeTable(cdm)

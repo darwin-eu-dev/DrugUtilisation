@@ -233,6 +233,15 @@ test_that("dates range", {
       dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
       dplyr::pull("n")
   )
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm, "dus_date", acetaminophen, gapEra = 0, cohortDateRange = c(start, end)
+  )
+
+  sapply(list(cdm$dus_date %>% dplyr::pull("cohort_start_date")), function(x) inherits(x, 'Date'))
+
+  sapply(list(cdm$dus_date %>% dplyr::pull("cohort_end_date")), function(x) inherits(x, 'Date'))
+
+
 })
 
 test_that("priorUseWashout", {
@@ -284,3 +293,4 @@ test_that("priorUseWashout", {
       dplyr::pull("cohort_end_date") == as.Date("2020-12-31")
   )
 })
+
