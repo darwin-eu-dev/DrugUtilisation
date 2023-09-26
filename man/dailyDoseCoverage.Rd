@@ -5,14 +5,7 @@
 \title{Check coverage of daily dose computation in a sample of the cdm for selected
 concept sets and ingredient}
 \usage{
-dailyDoseCoverage(
-  cdm,
-  ingredientConceptId,
-  sample = NULL,
-  conceptSetList = NULL,
-  stratifyByConcept = TRUE,
-  seed = 1
-)
+dailyDoseCoverage(cdm, ingredientConceptId)
 }
 \arguments{
 \item{cdm}{A cdm reference created using CDMConnector}

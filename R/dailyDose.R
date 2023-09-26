@@ -103,11 +103,6 @@ addDailyDose <- function(drugExposure,
 #'
 #' @param cdm A cdm reference created using CDMConnector
 #' @param ingredientConceptId Code indicating the ingredient of interest
-#' @param sample A number indicating the size of the random sample to take from
-#' the 'person' table of the cdm
-#' @param conceptSetList A concept list that we want to test
-#' @param stratifyByConcept Whether to stratify the result by drug_concept_id
-#' @param seed Seed for the random sample
 #'
 #' @return The function returns information of the coverage of computeDailyDose.R
 #' for the selected ingredients and concept sets
