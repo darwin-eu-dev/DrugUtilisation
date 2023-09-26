@@ -154,7 +154,7 @@ test_that("test case single indication", {
     resinf %>%
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
       dplyr::pull("indication_gap_inf"),
-    c("Asthma", "Asthma and Covid", "None", "Asthma")
+    c("Asthma", "Covid and Asthma", "None", "Asthma")
   ))
 
 })
