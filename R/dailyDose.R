@@ -90,7 +90,7 @@ addDailyDose <- function(drugExposure,
 #' concept sets and ingredient
 #'
 #' @param cdm A cdm reference created using CDMConnector
-#' @param ingredientConceptId Code indicating the ingredient of interest
+#' @param ingredientConceptId Code indicating the ingredient(s) of interest
 #'
 #' @return The function returns information of the coverage of computeDailyDose.R
 #' for the selected ingredients and concept sets
