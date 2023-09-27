@@ -187,8 +187,8 @@ test_that("functionality of addDailyDose function",{
   coverage <- dailyDoseCoverage(cdm, 1)
 
   expect_true(all(colnames(coverage) %in% c(
-    "concept_set", "drug_concept_id", "number_records", "number_dose",
-    "coverage"
+    "group_name", "group_level", "strata_name", "strata_level", "variable",
+    "variable_level", "variable_type", "estimate_type", "estimate"
   )))
 
 })

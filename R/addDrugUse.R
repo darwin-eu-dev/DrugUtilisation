@@ -160,12 +160,18 @@ addDrugUse <- function(cohort,
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
   # check unit
-  conceptSet <-
   conceptSet <- conceptSet %>%
     dplyr::rename("drug_concept_id" = "concept_id") %>%
-    addUnit(cdm = cdm, ingredientConceptId = ingredientConceptId) %>%
-    dplyr::filter(!is.na(.data$unit)) %>%
-    dplyr::collect()
+    dplyr::left_join(
+      drugStrengthPattern(
+        cdm = cdm, ingredientConceptId = ingredientConceptId, pattern = FALSE,
+        patternDetails = FALSE, unit = TRUE, route = FALSE, formula = FALSE,
+        ingredient = FALSE
+      ) %>%
+        dplyr::collect(),
+      by = "drug_concept_id"
+    ) %>%
+    dplyr::filter(!is.na(.data$unit))
   unit <- conceptSet %>% dplyr::pull("unit") %>% unique()
   if (length(unit) > 1) {
     cli::cli_abort(
@@ -219,7 +225,7 @@ addDrugUse <- function(cohort,
 
       # add daily dose
       cohortInfo <- cohortInfo %>%
-        addDailyDose(cdm, ingredientConceptId) %>%
+        addDailyDose(ingredientConceptId) %>%
         dplyr::select(-"quantity", -"unit", -"route") %>%
         dplyr::distinct()
 

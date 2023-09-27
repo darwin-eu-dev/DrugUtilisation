@@ -130,7 +130,7 @@ addDailyDose <- function(drugExposure,
 #' )
 #'
 #' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
-
+#'
 #' dailyDoseCoverage(cdm, 1125315)
 #' }
 #'

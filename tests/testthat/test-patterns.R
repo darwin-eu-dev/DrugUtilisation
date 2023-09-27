@@ -3,20 +3,11 @@ test_that("check mock patterns", {
 
   expect_no_error(patterns <- patternTable(cdm))
   expect_true(all(colnames(patterns) == c(
-    "pattern_id", "validity", "number_concepts", "number_ingredients",
-    "amount_numeric", "amount_unit", "amount_unit_concept_id",
-    "numerator_numeric", "numerator_unit", "numerator_unit_concept_id",
-    "denominator_numeric", "denominator_unit", "denominator_unit_concept_id"
+    "pattern_file_id", "pattern_id", "formula_id", "validity", "number_concepts",
+    "number_ingredients", "number_records", "amount_numeric",
+    "amount_unit_concept_id", "numerator_numeric", "numerator_unit_concept_id",
+    "denominator_numeric", "denominator_unit_concept_id"
   )))
-
-  expect_no_error(patternsCounts <- patternTable(cdm, TRUE))
-  expect_true(all(colnames(patternsCounts) == c(
-    "pattern_id", "validity", "number_concepts", "number_ingredients",
-    "number_records", "amount_numeric", "amount_unit", "amount_unit_concept_id",
-    "numerator_numeric", "numerator_unit", "numerator_unit_concept_id",
-    "denominator_numeric", "denominator_unit", "denominator_unit_concept_id"
-  )))
-
 })
 
 test_that("create patterns, correct output", {
@@ -49,10 +40,10 @@ test_that("create patterns, correct output", {
 
  expect_no_error(patterns <- patternTable(cdm))
  expect_true(all(colnames(patterns) == c(
-   "pattern_id", "validity", "number_concepts", "number_ingredients",
-   "amount_numeric", "amount_unit", "amount_unit_concept_id",
-   "numerator_numeric", "numerator_unit", "numerator_unit_concept_id",
-   "denominator_numeric", "denominator_unit", "denominator_unit_concept_id"
+   "pattern_file_id", "pattern_id", "formula_id", "validity", "number_concepts",
+   "number_ingredients", "number_records", "amount_numeric",
+   "amount_unit_concept_id", "numerator_numeric", "numerator_unit_concept_id",
+   "denominator_numeric", "denominator_unit_concept_id"
  )))
 
  expect_true(nrow(patterns) == 3)
@@ -60,7 +51,7 @@ test_that("create patterns, correct output", {
  patValid <- patterns %>% dplyr::filter(.data$amount_unit_concept_id == 8718)
  patNotValid <- patterns %>% dplyr::anti_join(patValid, by = colnames(patValid))
  expect_true(nrow(patValid) == 1)
- expect_true(unique(patValid$validity) == "valid")
+ expect_true(unique(patValid$validity) == "pattern with formula")
  expect_true(nrow(patNotValid) == 2)
 
 })
