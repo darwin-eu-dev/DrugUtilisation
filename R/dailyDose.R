@@ -49,7 +49,7 @@
 #'
 #' cdm$drug_exposure %>%
 #'   filter(drug_concept_id == 2905077) %>%
-#'   addDailyDose(cdm, 1125315)
+#'   addDailyDose(1125315)
 #' }
 #'
 addDailyDose <- function(drugExposure,
@@ -58,7 +58,8 @@ addDailyDose <- function(drugExposure,
 
   # initial checks
   checkInputs(
-    drugExposure = drugExposure, ingredientConceptId = ingredientConceptId
+    drugExposure = drugExposure, ingredientConceptId = ingredientConceptId,
+    cdm = cdm
   )
 
   # select only pattern_id and unit
@@ -137,8 +138,6 @@ dailyDoseCoverage <- function(cdm,
                               ingredientConceptId) {
   # initial checks
   checkInputs(cdm = cdm)
-
-  ingredientConceptId <- c(956874, 1106776, 1137529, 1301025, 1503297)
 
   # get concepts
   concepts <- cdm[["concept_ancestor"]] %>%

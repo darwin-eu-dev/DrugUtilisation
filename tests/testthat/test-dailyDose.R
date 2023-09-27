@@ -90,7 +90,7 @@ test_that("functionality of addDailyDose function",{
   )
 
   # should only add patterns 1 to 9, which are drugs 1:7, 10, 11, 25, 30
-  daily_dose <- addDailyDose(cdm$drug_exposure, cdm, 1)
+  daily_dose <- addDailyDose(cdm$drug_exposure,1)
 
   expect_true(
     daily_dose %>% dplyr::anti_join(
@@ -117,60 +117,71 @@ test_that("functionality of addDailyDose function",{
   expect_true(all(colnames(cdm$drug_exposure) %in% colnames(daily_dose)))
   expect_true(all(c("daily_dose", "unit", "route") %in% colnames(daily_dose)))
 
-  patterns <- cdm$drug_exposure %>%
-    addFormulaInternal(cdm, 1)
+  withPattern <- cdm$drug_exposure %>%
+    dplyr::left_join(
+      drugStrengthPattern(
+        cdm = cdm, ingredientConceptId = 1, pattern = TRUE,
+        patternDetails = FALSE, unit = TRUE, route = TRUE, formula = TRUE,
+        ingredient = FALSE
+      ),
+      by = "drug_concept_id"
+    ) %>%
+    dplyr::collect()
   expect_true(
     cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull() ==
-      patterns %>% dplyr::tally() %>% dplyr::pull()
+      withPattern %>% dplyr::tally() %>% dplyr::pull()
   )
 
-  expect_true(all(colnames(cdm$drug_exposure) %in% colnames(patterns)))
-  expect_true(all(c("formula_id", "unit", "route") %in% colnames(patterns)))
+  expect_true(all(colnames(cdm$drug_exposure) %in% colnames(withPattern)))
+  expect_true(all(c("formula_id", "unit", "route") %in% colnames(withPattern)))
 
   x <- daily_dose %>%
-    dplyr::select("drug_exposure_id", "daily_dose", "unit") %>%
-    dplyr::inner_join(
-      patterns %>%
-        dplyr::select("drug_exposure_id", "formula_id", "unit"),
-      by = "drug_exposure_id"
+    dplyr::select("drug_concept_id", "daily_dose", "unit") %>%
+    dplyr::left_join(
+      drugStrengthPattern(
+        cdm = cdm, ingredientConceptId = 1, pattern = FALSE,
+        patternDetails = FALSE, unit = TRUE, route = FALSE, formula = TRUE,
+        ingredient = FALSE
+      ),
+      by = "drug_concept_id"
     ) %>%
     dplyr::collect()
 
   expect_true(all(colnames(x) %in% c(
-    "drug_exposure_id", "daily_dose", "unit.x", "formula_id", "unit.y"
+    "drug_concept_id", "daily_dose", "unit.x", "formula_id", "unit.y"
   )))
 
   expect_true(all(
     x %>%
       dplyr::filter(is.na(.data$unit.x)) %>%
-      dplyr::arrange(.data$drug_exposure_id) %>%
-      dplyr::pull("drug_exposure_id") ==
+      dplyr::arrange(.data$drug_concept_id) %>%
+      dplyr::pull("drug_concept_id") ==
       x %>%
       dplyr::filter(is.na(.data$unit.y)) %>%
-      dplyr::arrange(.data$drug_exposure_id) %>%
-      dplyr::pull("drug_exposure_id")
+      dplyr::arrange(.data$drug_concept_id) %>%
+      dplyr::pull("drug_concept_id")
   ))
 
   expect_true(all(
     x %>%
       dplyr::filter(!is.na(.data$unit.x)) %>%
-      dplyr::arrange(.data$drug_exposure_id) %>%
+      dplyr::arrange(.data$drug_concept_id) %>%
       dplyr::pull("unit.x") ==
       x %>%
       dplyr::filter(!is.na(.data$unit.y)) %>%
-      dplyr::arrange(.data$drug_exposure_id) %>%
+      dplyr::arrange(.data$drug_concept_id) %>%
       dplyr::pull("unit.y")
   ))
 
   expect_true(all(
     x %>%
       dplyr::filter(is.na(.data$daily_dose)) %>%
-      dplyr::arrange(.data$drug_exposure_id) %>%
-      dplyr::pull("drug_exposure_id") ==
+      dplyr::arrange(.data$drug_concept_id) %>%
+      dplyr::pull("drug_concept_id") ==
       x %>%
       dplyr::filter(is.na(.data$formula_id)) %>%
-      dplyr::arrange(.data$drug_exposure_id) %>%
-      dplyr::pull("drug_exposure_id")
+      dplyr::arrange(.data$drug_concept_id) %>%
+      dplyr::pull("drug_concept_id")
   ))
 
   coverage <- dailyDoseCoverage(cdm, 1)

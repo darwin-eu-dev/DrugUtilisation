@@ -1,13 +1,3 @@
-availableConnections <- list(list(
-  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-  writeSchema = "main",
-  cdmPrefix = NULL,
-  writePrefix = NULL
-))
-
-k = 1
-
-connectionDetails <- availableConnections[[k]]
 
 test_that("test overlapMode", {
   skip_on_cran()

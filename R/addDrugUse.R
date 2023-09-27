@@ -160,10 +160,12 @@ addDrugUse <- function(cohort,
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
   # check unit
+  conceptSet <-
   conceptSet <- conceptSet %>%
     dplyr::rename("drug_concept_id" = "concept_id") %>%
-    addPattern(cdm, ingredientConceptId) %>%
-    dplyr::filter(!is.na(.data$unit))
+    addUnit(cdm = cdm, ingredientConceptId = ingredientConceptId) %>%
+    dplyr::filter(!is.na(.data$unit)) %>%
+    dplyr::collect()
   unit <- conceptSet %>% dplyr::pull("unit") %>% unique()
   if (length(unit) > 1) {
     cli::cli_abort(

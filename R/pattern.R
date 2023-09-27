@@ -15,6 +15,45 @@
 # limitations under the License.
 
 #' @noRd
+addUnit <- function(x, cdm = attr(x, "cdm_reference"), ingredientConceptId = NULL) {
+  x %>%
+    dplyr::left_join(
+      drugStrengthPattern(
+        cdm = cdm, ingredientConceptId = ingredientConceptId, pattern = FALSE,
+        patternDetails = FALSE, unit = TRUE, route = FALSE, formula = FALSE,
+        ingredient = FALSE
+      ),
+      by = "drug_concept_id"
+    )
+}
+
+#' @noRd
+addPattern <- function(x, cdm = attr(x, "cdm_reference"), ingredientConceptId = NULL) {
+  x %>%
+    dplyr::left_join(
+      drugStrengthPattern(
+        cdm = cdm, ingredientConceptId = ingredientConceptId, pattern = TRUE,
+        patternDetails = FALSE, unit = FALSE, route = FALSE, formula = FALSE,
+        ingredient = FALSE
+      ),
+      by = "drug_concept_id"
+    )
+}
+
+#' @noRd
+addFormula <- function(x, cdm = attr(x, "cdm_reference"), ingredientConceptId = NULL) {
+  x %>%
+    dplyr::left_join(
+      drugStrengthPattern(
+        cdm = cdm, ingredientConceptId = ingredientConceptId, pattern = FALSE,
+        patternDetails = FALSE, unit = FALSE, route = FALSE, formula = TRUE,
+        ingredient = FALSE
+      ),
+      by = "drug_concept_id"
+    )
+}
+
+#' @noRd
 drugStrengthPattern <- function(cdm,
                                 ingredientConceptId = NULL,
                                 pattern = TRUE,
@@ -276,10 +315,16 @@ stratifyByUnit <- function(conceptSetList, cdm, ingredientConceptId) {
   # add the conceptSet to a tibble
   x <- lapply(conceptSetList, function(x){
     x <- dplyr::tibble(drug_concept_id = x) %>%
-      addPattern(cdm, ingredientConceptId) %>%
-      dplyr::filter(!is.na(.data$unit)) %>%
-      dplyr::select("drug_concept_id", "unit") %>%
-      dplyr::collect()
+      dplyr::inner_join(
+        drugStrengthPattern(
+          cdm = cdm, ingredientConceptId = ingredientConceptId, pattern = FALSE,
+          patternDetails = FALSE, unit = TRUE, route = FALSE, formula = FALSE,
+          ingredient = FALSE
+        ) %>%
+          dplyr::collect(),
+        by = c("drug_concept_id")
+      ) %>%
+      dplyr::filter(!is.na(.data$unit))
     split(x, x$unit) %>%
       lapply(dplyr::pull, var = "drug_concept_id")
   })
