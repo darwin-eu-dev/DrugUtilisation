@@ -18,6 +18,7 @@
 #'
 #' @param drugExposure drugExposure it must contain drug_concept_id, quantity,
 #' drug_exposure_start_date and drug_exposure_end_date as columns
+#' @param cdm A cdm reference
 #' @param ingredientConceptId ingredientConceptId for which to filter the
 #' drugs of interest
 #'
@@ -49,13 +50,12 @@
 #'
 #' cdm$drug_exposure %>%
 #'   filter(drug_concept_id == 2905077) %>%
-#'   addDailyDose(1125315)
+#'   addDailyDose(ingredientConceptId = 1125315)
 #' }
 #'
 addDailyDose <- function(drugExposure,
+                         cdm = attr(drugExposure, "cdm_reference"),
                          ingredientConceptId) {
-  cdm <- attr(drugExposure, "cdm_reference")
-
   # initial checks
   checkInputs(
     drugExposure = drugExposure, ingredientConceptId = ingredientConceptId,

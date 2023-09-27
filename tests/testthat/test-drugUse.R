@@ -72,6 +72,20 @@ test_that("test overlapMode", {
     "cumulative_dose", "initial_quantity", "cumulative_quantity"
   )
 
+  #check no error without cdm object specified
+  expect_no_error(suppressWarnings(addDrugUse(
+    cohort = cdm$cohort1,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
+  )))
+
   # prev
   suppressWarnings(x <- addDrugUse(
     cohort = cdm$cohort1,
@@ -220,6 +234,9 @@ test_that("test overlapMode", {
   for (k in 1:length(value_cohort_1)) {
     expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
+
+
+
 })
 
 test_that("test gapEra and eraJoinMode", {

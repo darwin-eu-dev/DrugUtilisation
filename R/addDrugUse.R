@@ -110,7 +110,7 @@
 #' }
 #'
 addDrugUse <- function(cohort,
-                       cdm,
+                       cdm = attr(cohort, "cdm_reference"),
                        ingredientConceptId,
                        conceptSetList = NULL,
                        initialDailyDose = TRUE,
@@ -225,7 +225,7 @@ addDrugUse <- function(cohort,
 
       # add daily dose
       cohortInfo <- cohortInfo %>%
-        addDailyDose(ingredientConceptId) %>%
+        addDailyDose(ingredientConceptId = ingredientConceptId) %>%
         dplyr::select(-"quantity", -"unit", -"route") %>%
         dplyr::distinct()
 

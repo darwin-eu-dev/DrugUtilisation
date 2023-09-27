@@ -337,7 +337,7 @@ patternTable <- function(cdm) {
 #' codelistStratified
 #' }
 #'
-stratifyByUnit <- function(conceptSetList, cdm, ingredientConceptId) {
+stratifyByUnit <- function(conceptSetList, cdm , ingredientConceptId) {
   # check initial inputs
   checkInputs(
     conceptSetList = conceptSetList, cdm = cdm,

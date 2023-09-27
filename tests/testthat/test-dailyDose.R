@@ -90,7 +90,9 @@ test_that("functionality of addDailyDose function",{
   )
 
   # should only add patterns 1 to 9, which are drugs 1:7, 10, 11, 25, 30
-  daily_dose <- addDailyDose(cdm$drug_exposure,1)
+  daily_dose <- addDailyDose(cdm$drug_exposure, ingredientConceptId = 1)
+
+
 
   expect_true(
     daily_dose %>% dplyr::anti_join(
@@ -190,5 +192,9 @@ test_that("functionality of addDailyDose function",{
     "group_name", "group_level", "strata_name", "strata_level", "variable",
     "variable_level", "variable_type", "estimate_type", "estimate"
   )))
+
+  #check it works without specifying cdm object
+  expect_no_error(addDailyDose(cdm$drug_exposure, ingredientConceptId = 1))
+
 
 })
