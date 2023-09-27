@@ -48,10 +48,9 @@ test_that("create patterns, correct output", {
 
  expect_true(nrow(patterns) == 3)
  expect_true(all(patterns %>% dplyr::select(number_concepts) %>% dplyr::pull() == c(1,1,1)))
- patValid <- patterns %>% dplyr::filter(.data$amount_unit_concept_id == 8718)
+ patValid <- patterns %>% dplyr::filter(.data$validity  == "pattern with formula")
  patNotValid <- patterns %>% dplyr::anti_join(patValid, by = colnames(patValid))
- expect_true(nrow(patValid) == 1)
- expect_true(unique(patValid$validity) == "pattern with formula")
- expect_true(nrow(patNotValid) == 2)
+ expect_true(nrow(patValid) == 2)
+ expect_true(nrow(patNotValid) == 1)
 
 })
