@@ -18,7 +18,6 @@
 #'
 #' @param drugExposure drugExposure it must contain drug_concept_id, quantity,
 #' drug_exposure_start_date and drug_exposure_end_date as columns
-#' @param cdm cdm
 #' @param ingredientConceptId ingredientConceptId for which to filter the
 #' drugs of interest
 #'
@@ -50,16 +49,17 @@
 #'
 #' cdm$drug_exposure %>%
 #'   filter(drug_concept_id == 2905077) %>%
-#'   addDailyDose(cdm, 1125315)
+#'   addDailyDose(1125315)
 #' }
 #'
 addDailyDose <- function(drugExposure,
-                         cdm,
                          ingredientConceptId) {
+  cdm <- attr(drugExposure, "cdm_reference")
+
   # initial checks
   checkInputs(
-    drugExposure = drugExposure, cdm = cdm,
-    ingredientConceptId = ingredientConceptId
+    drugExposure = drugExposure, ingredientConceptId = ingredientConceptId,
+    cdm = cdm
   )
 
   # select only pattern_id and unit
@@ -74,10 +74,7 @@ addDailyDose <- function(drugExposure,
       end = "drug_exposure_end_date"
     ) + 1) %>%
     dplyr::inner_join(
-      drugExposure %>%
-        dplyr::select("drug_concept_id") %>%
-        dplyr::distinct() %>%
-        addFormulaInternal(cdm, ingredientConceptId),
+      drugStrengthPattern(cdm = cdm, ingredientConceptId = ingredientConceptId),
       by = "drug_concept_id"
     ) %>%
     standardUnits() %>%
@@ -107,11 +104,6 @@ addDailyDose <- function(drugExposure,
 #'
 #' @param cdm A cdm reference created using CDMConnector
 #' @param ingredientConceptId Code indicating the ingredient of interest
-#' @param sample A number indicating the size of the random sample to take from
-#' the 'person' table of the cdm
-#' @param conceptSetList A concept list that we want to test
-#' @param stratifyByConcept Whether to stratify the result by drug_concept_id
-#' @param seed Seed for the random sample
 #'
 #' @return The function returns information of the coverage of computeDailyDose.R
 #' for the selected ingredients and concept sets
@@ -138,106 +130,69 @@ addDailyDose <- function(drugExposure,
 #' )
 #'
 #' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
-
+#'
 #' dailyDoseCoverage(cdm, 1125315)
 #' }
 #'
 dailyDoseCoverage <- function(cdm,
-                              ingredientConceptId,
-                              sample = NULL,
-                              conceptSetList = NULL,
-                              stratifyByConcept = TRUE,
-                              seed = 1) {
-  # add conceptSetList if needed
-  if (is.null(conceptSetList)) {
-    checkInputs(ingredientConceptId = ingredientConceptId, cdm = cdm)
-    conceptSetList <- list(
-      cdm[["drug_strength"]] %>%
-        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-        dplyr::pull("drug_concept_id")
-    )
-    names(conceptSetList) <- cdm[["concept"]] %>%
-      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-      dplyr::pull("concept_name")
-  }
-
+                              ingredientConceptId) {
   # initial checks
-  checkInputs(
-    cdm = cdm, sample = sample, ingredientConceptId = ingredientConceptId,
-    conceptSetList = conceptSetList, stratifyByConcept = stratifyByConcept,
-    seed = seed
-  )
+  checkInputs(cdm = cdm)
 
-  # extract concept sets
-  conceptSet <- conceptSetFromConceptSetList(conceptSetList) %>%
-    dplyr::rename("drug_concept_id" = "concept_id")
+  # get concepts
+  concepts <- cdm[["concept_ancestor"]] %>%
+    dplyr::filter(.data$ancestor_concept_id %in% .env$ingredientConceptId) %>%
+    dplyr::pull("descendant_concept_id")
 
-  # random sample
-  if (!is.null(sample)) {
-    set.seed(seed)
-    cdm[["drug_exposure"]] <- cdm[["drug_exposure"]] %>%
-      dplyr::inner_join(
-        cdm[["person"]] %>%
-          dplyr::select("person_id") %>%
-          dplyr::slice_sample(n = sample),
-        by = "person_id"
-      )
-  }
-
-  # compute daily dose
-  doseCoverage <- cdm[["drug_exposure"]] %>%
-    dplyr::inner_join(conceptSet, by = "drug_concept_id", copy = TRUE) %>%
-    addDailyDose(cdm, ingredientConceptId)
-
-  # summarise counts
-  result <- doseCoverage %>%
-    dplyr::mutate(
-      daily_dose = dplyr::if_else(is.na(.data$daily_dose), 0, 1)
-    ) %>%
-    dplyr::group_by(.data$cohort_definition_id, .data$drug_concept_id) %>%
-    dplyr::summarise(
-      number_records = dplyr::n(),
-      number_dose = sum(.data$daily_dose, na.rm = TRUE),
-      .groups = "drop"
-    ) %>%
-    dplyr::collect() %>%
-    dplyr::right_join(
-      attr(conceptSet, "cohort_set"), by = "cohort_definition_id"
-    ) %>%
-    dplyr::mutate(
-      number_records = dplyr::if_else(
-        is.na(.data$number_records), 0, .data$number_records
-      ),
-      number_dose = dplyr::if_else(
-        is.na(.data$number_dose), 0, .data$number_dose
-      )
-    )
-
-  # get overall counts
-  result <- result %>%
-    dplyr::group_by(.data$cohort_definition_id, .data$cohort_name) %>%
-    dplyr::summarise(
-      number_records = sum(.data$number_records),
-      number_dose = sum(.data$number_dose),
-      .groups = "drop"
-    ) %>%
-    dplyr::mutate(drug_concept_id = as.numeric(NA)) %>%
-    dplyr::union_all(result) %>%
-    dplyr::mutate(coverage = .data$number_dose/.data$number_records) %>%
-    dplyr::arrange(
-      .data$cohort_definition_id, dplyr::desc(.data$number_records)
-    ) %>%
+  # get daily dosage
+  dailyDose <- cdm[["drug_exposure"]] %>%
+    dplyr::filter(.data$drug_concept_id %in% .env$concepts) %>%
     dplyr::select(
-      "concept_set" = "cohort_name", "drug_concept_id", "number_records",
-      "number_dose", "coverage"
+      "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
+      "quantity"
+    ) %>%
+    dplyr::mutate(days_exposed = !!CDMConnector::datediff(
+      start = "drug_exposure_start_date",
+      end = "drug_exposure_end_date"
+    ) + 1) %>%
+    dplyr::left_join(
+      drugStrengthPattern(cdm = cdm, ingredientConceptId = ingredientConceptId),
+      by = "drug_concept_id"
+    ) %>%
+    standardUnits() %>%
+    applyFormula() %>%
+    dplyr::select(
+      "drug_concept_id", "daily_dose", "unit", "route",
+      "concept_id" =  "ingredient_concept_id"
+    ) %>%
+    dplyr::left_join(
+      cdm[["concept"]] %>%
+        dplyr::rename("ingredient_name" = "concept_name") %>%
+        dplyr::select("concept_id", "ingredient_name"),
+      by = "concept_id"
+    ) %>%
+    dplyr::collect()
+
+  # summarise
+  dailyDoseSummary <- dailyDose %>%
+    PatientProfiles::summariseResult(
+      group = list("ingredient_name"),
+      includeOverallGroup = FALSE,
+      strata = list("route", "unit", c("route", "unit")),
+      includeOverallStrata = TRUE,
+      variables = "daily_dose",
+      functions = c(
+        "missing", "mean", "sd", "min", "q05", "q25", "median", "q75", "q95",
+        "max"
+      )
+    ) %>%
+    dplyr::filter(
+      !(.data$strata_name %in% c("Overall", "route")) |
+        .data$variable != "daily_dose" |
+        .data$estimate_type %in% c("count", "percentage")
     )
 
-  if (stratifyByConcept == FALSE) {
-    result <- result %>%
-      dplyr::filter(is.na(.data$drug_concept_id))
-  }
-
-  return(result)
+  return(dailyDoseSummary)
 }
 
 standardUnits <- function(drugExposure) {
@@ -261,24 +216,23 @@ standardUnits <- function(drugExposure) {
       )
     )
 }
-
 applyFormula <- function(drugExposure) {
   drugExposure %>%
     dplyr::mutate(
       daily_dose = dplyr::case_when(
         is.na(.data$quantity) ~
           as.numeric(NA),
-        .data$quantity <= 0 ~
+        .data$quantity <= 0 ~ # TO REMOVE
           as.numeric(NA),
-        .data$formula_id %in% c(1:15) ~
+        .data$formula_id == 1 ~
           .data$numerator_value * .data$quantity / .data$days_exposed,
-        .data$formula_id %in% c(16:20) ~
+        .data$formula_id == 2 ~
           .data$amount_value * .data$quantity / .data$days_exposed,
-        .data$formula_id %in% c(21,22)  & .data$denominator_value > 24 ~
+        .data$formula_id == 3  & .data$denominator_value > 24 ~
           .data$numerator_value * 24 / .data$denominator_value,
-        .data$formula_id %in% c(21,22) & .data$denominator_value <= 24 ~
+        .data$formula_id == 3 & .data$denominator_value <= 24 ~ # WHY?
           .data$numerator_value,
-        .data$formula_id %in% c(23,24) ~
+        .data$formula_id == 4 ~
           .data$numerator_value * 24,
         .default = as.numeric(NA)
       )

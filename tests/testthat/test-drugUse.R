@@ -1,13 +1,3 @@
-availableConnections <- list(list(
-  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-  writeSchema = "main",
-  cdmPrefix = NULL,
-  writePrefix = NULL
-))
-
-k = 1
-
-connectionDetails <- availableConnections[[k]]
 
 test_that("test overlapMode", {
   skip_on_cran()
@@ -60,15 +50,9 @@ test_that("test overlapMode", {
     ),
     extraTables = list(
       "concept_relationship" = dplyr::tibble(
-        concept_id_1 = c(c(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5,
-                           1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2)),
-        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
-                         2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
-                         19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
-                         19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
-                         19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
-                         35604394, 702776 ),
-        relationship_id = c(rep("RxNorm has dose form", 37))
+        concept_id_1 = c(c(1, 2, 3, 4, 5)),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
       )
     )
   )
@@ -289,15 +273,9 @@ test_that("test gapEra and eraJoinMode", {
     ),
     extraTables = list(
       "concept_relationship" = dplyr::tibble(
-        concept_id_1 = c(c(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5,
-                           1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2)),
-        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
-                         2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
-                         19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
-                         19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
-                         19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
-                         35604394, 702776 ),
-        relationship_id = c(rep("RxNorm has dose form", 37))
+        concept_id_1 = c(1, 2, 3, 4, 5),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
       )
     )
   )
@@ -526,15 +504,9 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     ),
     extraTables = list(
       "concept_relationship" = dplyr::tibble(
-        concept_id_1 = c(c(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5,
-                           1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2)),
-        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
-                         2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
-                         19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
-                         19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
-                         19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
-                         35604394, 702776 ),
-        relationship_id = c(rep("RxNorm has dose form", 37))
+        concept_id_1 = c(c(1, 2, 3, 4, 5)),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
       )
     )
   )
@@ -1078,7 +1050,7 @@ test_that("check all variables", {
   cdm <- mockDrugUtilisation(connectionDetails,
                              extraTables = list(
                                "concept_relationship" = dplyr::tibble(
-                                 concept_id_1 = c(c(1125315, 43135274, 2905077, 1125360)),
+                                 concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
                                  concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
                                  relationship_id = c(rep("RxNorm has dose form", 4))
                                )

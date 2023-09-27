@@ -197,7 +197,7 @@ We can compute daily dose for a certain ingredient from a subset of drug_exposur
 
 ```{r}
 #cdm$drug_exposure %>%
-#  addDailyDose(cdm, ingredientConceptId = 1125315) %>%
+#  addDailyDose(ingredientConceptId = 1125315) %>%
 #  glimpse()
 ```
 

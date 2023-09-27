@@ -2,9 +2,9 @@
 % Please edit documentation in R/pattern.R
 \name{addRoute}
 \alias{addRoute}
-\title{add route info to a table containing drug_exposure information}
+\title{add route column to a table containing drug_exposure information}
 \usage{
-addRoute(drugTable, cdm)
+addRoute(drugTable, cdm = attr(drugTable, "cdm_reference"))
 }
 \arguments{
 \item{drugTable}{Table in the cdm that must contain drug_concept_id}
@@ -16,7 +16,7 @@ must contain 'concept_relationship' table.}
 It adds route to the current table
 }
 \description{
-add route info to a table containing drug_exposure information
+add route column to a table containing drug_exposure information
 }
 \examples{
 \donttest{
@@ -42,7 +42,7 @@ relationship_id = c(rep("RxNorm has dose form", 37))
 cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
 
 cdm$drug_exposure \%>\%
-  addRoute(cdm)
+  addRoute()
 }
 
 }
