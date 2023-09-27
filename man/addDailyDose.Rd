@@ -14,6 +14,8 @@ addDailyDose(
 \item{drugExposure}{drugExposure it must contain drug_concept_id, quantity,
 drug_exposure_start_date and drug_exposure_end_date as columns}
 
+\item{cdm}{A cdm reference}
+
 \item{ingredientConceptId}{ingredientConceptId for which to filter the
 drugs of interest}
 }
