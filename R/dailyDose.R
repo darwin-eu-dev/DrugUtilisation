@@ -141,7 +141,7 @@ dailyDoseCoverage <- function(cdm,
 
   # get concepts
   concepts <- cdm[["concept_ancestor"]] %>%
-    dplyr::filter(ancestor_concept_id %in% .env$ingredientConceptId) %>%
+    dplyr::filter(.data$ancestor_concept_id %in% .env$ingredientConceptId) %>%
     dplyr::pull("descendant_concept_id")
 
   # get daily dosage
