@@ -52,7 +52,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addDrugUse</span><span class="op">(</span></span>
 <span>  <span class="va">cohort</span>,</span>
-<span>  <span class="va">cdm</span>,</span>
+<span>  cdm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="st">"cdm_reference"</span><span class="op">)</span>,</span>
 <span>  <span class="va">ingredientConceptId</span>,</span>
 <span>  conceptSetList <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  initialDailyDose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -230,7 +230,7 @@ dusCohortName.</p>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> cohortSet.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NAs introduced by coercion</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;dbplyr_049&gt; [?? x 11]</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1011-azure:R 4.3.1/:memory:]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>                    1          7 2018-05-21        2018-07-20            61</span>

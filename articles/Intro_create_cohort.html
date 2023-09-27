@@ -173,7 +173,7 @@ they are using the same concept code.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_1</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.asthma_1&gt; [2 x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1011-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1         10 2022-03-24        2022-03-30     </span></span>
@@ -209,7 +209,7 @@ is different:</p>
 <span><span class="op">)</span></span>
 <span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_2</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.asthma_2&gt; [2 x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1011-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1         10 2022-03-24        2022-03-26     </span></span>
@@ -229,7 +229,7 @@ Let’s check it now to see how reducing required observation affect the
 <span><span class="op">)</span></span>
 <span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_3</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.asthma_3&gt; [0 x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1011-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 variables: cohort_definition_id &lt;int&gt;, subject_id &lt;int&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   cohort_start_date &lt;date&gt;, cohort_end_date &lt;date&gt;</span></span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
@@ -258,7 +258,7 @@ you can set. We first use default settings:</p>
 <span><span class="op">)</span></span>
 <span><span class="va">cdm2</span><span class="op">$</span><span class="va">dus_alleras</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.dus_alleras&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1011-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         57 2020-09-14        2020-11-26     </span></span>
