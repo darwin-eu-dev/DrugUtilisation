@@ -50,7 +50,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addDailyDose</span><span class="op">(</span><span class="va">drugExposure</span>, <span class="va">cdm</span>, <span class="va">ingredientConceptId</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addDailyDose</span><span class="op">(</span><span class="va">drugExposure</span>, <span class="va">ingredientConceptId</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -58,10 +58,6 @@
     <dl><dt>drugExposure</dt>
 <dd><p>drugExposure it must contain drug_concept_id, quantity,
 drug_exposure_start_date and drug_exposure_end_date as columns</p></dd>
-
-
-<dt>cdm</dt>
-<dd><p>cdm</p></dd>
 
 
 <dt>ingredientConceptId</dt>
@@ -110,8 +106,8 @@ drugs of interest</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">drug_exposure</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">drug_concept_id</span> <span class="op">==</span> <span class="fl">2905077</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu">addDailyDose</span><span class="op">(</span><span class="va">cdm</span>, <span class="fl">1125315</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;dbplyr_004&gt; [3 x 10]</span></span>
+<span class="r-in"><span>  <span class="fu">addDailyDose</span><span class="op">(</span><span class="fl">1125315</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;dbplyr_005&gt; [3 x 10]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1011-azure:R 4.3.1/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   drug_exposure_id person_id drug_concept_id drug_exposure_start_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  </span>

@@ -234,19 +234,19 @@
 <span><span class="co">#&gt; # A tibble: 1 × 3</span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects</span></span>
 <span><span class="co">#&gt;                  &lt;int&gt;          &lt;dbl&gt;           &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1                    1             46              46</span></span></code></pre></div>
+<span><span class="co">#&gt; 1                    1             35              35</span></span></code></pre></div>
 <p>Cohort attrition:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_cohort</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 8</span></span>
 <span><span class="co">#&gt; Columns: 7</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1</span></span>
-<span><span class="co">#&gt; $ number_records       &lt;dbl&gt; 109, 109, 83, 83, 52, 52, 52, 46</span></span>
-<span><span class="co">#&gt; $ number_subjects      &lt;dbl&gt; 69, 69, 69, 69, 46, 46, 46, 46</span></span>
+<span><span class="co">#&gt; $ number_records       &lt;dbl&gt; 90, 90, 70, 70, 41, 41, 41, 35</span></span>
+<span><span class="co">#&gt; $ number_subjects      &lt;dbl&gt; 62, 62, 62, 62, 35, 35, 35, 35</span></span>
 <span><span class="co">#&gt; $ reason_id            &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8</span></span>
 <span><span class="co">#&gt; $ reason               &lt;chr&gt; "Qualifying initial records", "Duration imputatio…</span></span>
-<span><span class="co">#&gt; $ excluded_records     &lt;dbl&gt; 0, 0, 26, 0, 31, 0, 0, 6</span></span>
-<span><span class="co">#&gt; $ excluded_subjects    &lt;dbl&gt; 0, 0, 0, 0, 23, 0, 0, 0</span></span></code></pre></div>
+<span><span class="co">#&gt; $ excluded_records     &lt;dbl&gt; 0, 0, 20, 0, 29, 0, 0, 6</span></span>
+<span><span class="co">#&gt; $ excluded_subjects    &lt;dbl&gt; 0, 0, 0, 0, 27, 0, 0, 0</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level3">
@@ -260,8 +260,8 @@
 <span><span class="co">#&gt; # A tibble: 2 × 3</span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects</span></span>
 <span><span class="co">#&gt;                  &lt;int&gt;          &lt;dbl&gt;           &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1                    1             59              59</span></span>
-<span><span class="co">#&gt; 2                    2             52              52</span></span></code></pre></div>
+<span><span class="co">#&gt; 1                    1             52              52</span></span>
+<span><span class="co">#&gt; 2                    2             46              46</span></span></code></pre></div>
 <p>Then we can add the indication using the function <code>addIndication</code>. That will add a new column for each indication gap and indication.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">dus_cohort</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
@@ -274,21 +274,21 @@
 <span><span class="co">#&gt; Columns: 16</span></span>
 <span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.3/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id         &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ subject_id                   &lt;dbl&gt; 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date            &lt;date&gt; 2005-02-07, 2019-01-22, 1995-09-13, 2011…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date              &lt;date&gt; 2005-04-15, 2019-03-27, 1997-11-17, 2013…</span></span>
-<span><span class="co">#&gt; $ indication_gap_0_influenza   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ subject_id                   &lt;dbl&gt; 81, 47, 96, 75, 91, 93, 46, 88, 8, 54, 9,…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date            &lt;date&gt; 1995-09-13, 1963-12-22, 2011-05-25, 2010…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date              &lt;date&gt; 1997-11-17, 1965-09-16, 2013-01-23, 2011…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_headache    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_0_influenza   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_none        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_influenza  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_30_headache   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_none       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_influenza &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_30_influenza  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_30_none       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_365_headache  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_influenza &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_unknown     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_unknown    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0,…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ indication_gap_30_unknown    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…</span></span></code></pre></div>
 <p>We can combine the indications in a single column using the <code><a href="reference/indicationToStrata.html">indicationToStrata()</a></code> function. This column can be used as stratification of the results if needed:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/indicationToStrata.html">indicationToStrata</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -297,31 +297,29 @@
 <span><span class="co">#&gt; Columns: 19</span></span>
 <span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.3/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id         &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ subject_id                   &lt;dbl&gt; 37, 61, 81, 84, 60, 47, 70, 90, 96, 75, 9…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date            &lt;date&gt; 2005-02-07, 2019-01-22, 1995-09-13, 2011…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date              &lt;date&gt; 2005-04-15, 2019-03-27, 1997-11-17, 2013…</span></span>
-<span><span class="co">#&gt; $ indication_gap_0_influenza   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ subject_id                   &lt;dbl&gt; 81, 47, 96, 75, 91, 93, 46, 88, 8, 54, 9,…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date            &lt;date&gt; 1995-09-13, 1963-12-22, 2011-05-25, 2010…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date              &lt;date&gt; 1997-11-17, 1965-09-16, 2013-01-23, 2011…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_headache    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_0_influenza   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_none        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_influenza  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_30_headache   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_none       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_influenza &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_30_influenza  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_30_none       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_365_headache  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_influenza &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_unknown     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_unknown    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_30_unknown    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0             &lt;chr&gt; "None", "None", "None", "None", "None", "…</span></span>
 <span><span class="co">#&gt; $ indication_gap_30            &lt;chr&gt; "None", "None", "None", "None", "None", "…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365           &lt;chr&gt; "None", "None", "None", "None", "Unknown"…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ indication_gap_365           &lt;chr&gt; "None", "None", "None", "None", "None", "…</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="st">"indication_gap_365"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;               Headache              Influenza Influenza and Headache </span></span>
-<span><span class="co">#&gt;                      1                      4                      1 </span></span>
-<span><span class="co">#&gt;                   None                Unknown </span></span>
-<span><span class="co">#&gt;                     35                      5</span></span></code></pre></div>
+<span><span class="co">#&gt;  Headache Influenza      None   Unknown </span></span>
+<span><span class="co">#&gt;         2         3        27         3</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="summarise-the-indication">Summarise the indication<a class="anchor" aria-label="anchor" href="#summarise-the-indication"></a>
@@ -357,7 +355,7 @@
 <span><span class="co">#&gt; $ variable_level &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
 <span><span class="co">#&gt; $ variable_type  &lt;chr&gt; NA, NA, "binary", "binary", "binary", "binary", "binary…</span></span>
 <span><span class="co">#&gt; $ estimate_type  &lt;chr&gt; "count", "count", "count", "count", "count", "count", "…</span></span>
-<span><span class="co">#&gt; $ estimate       &lt;chr&gt; "46", "46", "0", "0", "46", "0", "0", "46", "5", "2", "…</span></span>
+<span><span class="co">#&gt; $ estimate       &lt;chr&gt; "35", "35", "0", "0", "35", "0", "0", "34", "2", "3", "…</span></span>
 <span><span class="co">#&gt; $ cdm_name       &lt;chr&gt; "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MO…</span></span>
 <span><span class="co">#&gt; $ result_type    &lt;chr&gt; "Summary indication", "Summary indication", "Summary in…</span></span></code></pre></div>
 </div>
@@ -376,7 +374,7 @@
 <span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html" class="external-link">addAge</a></span><span class="op">(</span><span class="va">cdm</span>, ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">39</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">59</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">79</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html" class="external-link">addSex</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">cdm</span>, strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 294 × 11</span></span>
+<span><span class="co">#&gt; # A tibble: 231 × 11</span></span>
 <span><span class="co">#&gt;    group_name  group_level      strata_name strata_level variable variable_level</span></span>
 <span><span class="co">#&gt;    &lt;chr&gt;       &lt;chr&gt;            &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt;         </span></span>
 <span><span class="co">#&gt;  1 cohort_name Ingredient: ace… Overall     Overall      number … &lt;NA&gt;          </span></span>
@@ -389,12 +387,12 @@
 <span><span class="co">#&gt;  8 cohort_name Ingredient: ace… Overall     Overall      indicat… &lt;NA&gt;          </span></span>
 <span><span class="co">#&gt;  9 cohort_name Ingredient: ace… Overall     Overall      indicat… &lt;NA&gt;          </span></span>
 <span><span class="co">#&gt; 10 cohort_name Ingredient: ace… Overall     Overall      indicat… &lt;NA&gt;          </span></span>
-<span><span class="co">#&gt; # ℹ 284 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 221 more rows</span></span>
 <span><span class="co">#&gt; # ℹ 5 more variables: variable_type &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">cdm</span>, strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Rows: 294</span></span>
+<span><span class="co">#&gt; Rows: 231</span></span>
 <span><span class="co">#&gt; Columns: 11</span></span>
 <span><span class="co">#&gt; $ group_name     &lt;chr&gt; "cohort_name", "cohort_name", "cohort_name", "cohort_na…</span></span>
 <span><span class="co">#&gt; $ group_level    &lt;chr&gt; "Ingredient: acetaminophen (1125315)", "Ingredient: ace…</span></span>
@@ -404,7 +402,7 @@
 <span><span class="co">#&gt; $ variable_level &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
 <span><span class="co">#&gt; $ variable_type  &lt;chr&gt; NA, NA, "binary", "binary", "binary", "binary", "binary…</span></span>
 <span><span class="co">#&gt; $ estimate_type  &lt;chr&gt; "count", "count", "count", "count", "count", "count", "…</span></span>
-<span><span class="co">#&gt; $ estimate       &lt;chr&gt; "46", "46", "0", "0", "46", "0", "0", "46", "5", "2", "…</span></span>
+<span><span class="co">#&gt; $ estimate       &lt;chr&gt; "35", "35", "0", "0", "35", "0", "0", "34", "2", "3", "…</span></span>
 <span><span class="co">#&gt; $ cdm_name       &lt;chr&gt; "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MO…</span></span>
 <span><span class="co">#&gt; $ result_type    &lt;chr&gt; "Summary indication", "Summary indication", "Summary in…</span></span></code></pre></div>
 </div>
@@ -414,7 +412,7 @@
 <p>We can compute daily dose for a certain ingredient from a subset of drug_exposure or the whole drug exposure (can be very computationally expensive).</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#cdm$drug_exposure %&gt;%</span></span>
-<span><span class="co">#  addDailyDose(cdm, ingredientConceptId = 1125315) %&gt;%</span></span>
+<span><span class="co">#  addDailyDose(ingredientConceptId = 1125315) %&gt;%</span></span>
 <span><span class="co">#  glimpse()</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="coverage">Coverage<a class="anchor" aria-label="anchor" href="#coverage"></a>
@@ -491,7 +489,7 @@
 <code class="sourceCode R"><span><span class="fu">DrugUtilisation</span><span class="fu">::</span><span class="fu"><a href="reference/summariseLargeScaleCharacteristics.html">summariseLargeScaleCharacteristics</a></span><span class="op">(</span></span>
 <span>  <span class="va">x</span>, <span class="va">cdm</span>, tablesToCharacterize <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"drug_exposure"</span>, <span class="st">"condition_occurrence"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 79 × 12</span></span>
+<span><span class="co">#&gt; # A tibble: 80 × 12</span></span>
 <span><span class="co">#&gt;    cohort_name        strata_name strata_level table_name window_name concept_id</span></span>
 <span><span class="co">#&gt;    &lt;chr&gt;              &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;            &lt;dbl&gt;</span></span>
 <span><span class="co">#&gt;  1 Ingredient: aceta… Overall     Overall      condition… -inf to -3…     317009</span></span>
@@ -504,7 +502,7 @@
 <span><span class="co">#&gt;  8 Ingredient: aceta… Overall     Overall      condition… -30 to -1       378253</span></span>
 <span><span class="co">#&gt;  9 Ingredient: aceta… Overall     Overall      condition… -30 to -1      4266367</span></span>
 <span><span class="co">#&gt; 10 Ingredient: aceta… Overall     Overall      condition… 0 to 0          317009</span></span>
-<span><span class="co">#&gt; # ℹ 69 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 70 more rows</span></span>
 <span><span class="co">#&gt; # ℹ 6 more variables: concept_name &lt;chr&gt;, count &lt;chr&gt;, denominator_count &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   `%` &lt;dbl&gt;, cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span></code></pre></div>
 </div>
