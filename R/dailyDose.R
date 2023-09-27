@@ -50,7 +50,7 @@
 #'
 #' cdm$drug_exposure %>%
 #'   filter(drug_concept_id == 2905077) %>%
-#'   addDailyDose(1125315)
+#'   addDailyDose(ingredientConceptId = 1125315)
 #' }
 #'
 addDailyDose <- function(drugExposure,

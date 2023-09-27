@@ -90,7 +90,7 @@ test_that("functionality of addDailyDose function",{
   )
 
   # should only add patterns 1 to 9, which are drugs 1:7, 10, 11, 25, 30
-  daily_dose <- addDailyDose(cdm$drug_exposure,1)
+  daily_dose <- addDailyDose(cdm$drug_exposure, ingredientConceptId = 1)
 
 
 
@@ -194,7 +194,7 @@ test_that("functionality of addDailyDose function",{
   )))
 
   #check it works without specifying cdm object
-  expect_no_error(addDailyDose(cdm$drug_exposure, ingredientConceptId =1))
+  expect_no_error(addDailyDose(cdm$drug_exposure, ingredientConceptId = 1))
 
 
 })
