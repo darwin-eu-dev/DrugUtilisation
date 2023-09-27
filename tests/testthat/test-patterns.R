@@ -38,18 +38,18 @@ test_that("create patterns, correct output", {
    connectionDetails, drug_strength = drug_strength, concept = concept
  )
 
- expect_no_error(patterns <- patternTable(cdm))
- expect_true(all(colnames(patterns) == c(
+ expect_no_error(patternTab <- patternTable(cdm))
+ expect_true(all(colnames(patternTab) == c(
    "pattern_file_id", "pattern_id", "formula_id", "validity", "number_concepts",
    "number_ingredients", "number_records", "amount_numeric",
    "amount_unit_concept_id", "numerator_numeric", "numerator_unit_concept_id",
    "denominator_numeric", "denominator_unit_concept_id"
  )))
 
- expect_true(nrow(patterns) == 3)
- expect_true(all(patterns %>% dplyr::select(number_concepts) %>% dplyr::pull() == c(1,1,1)))
- patValid <- patterns %>% dplyr::filter(.data$validity  == "pattern with formula")
- patNotValid <- patterns %>% dplyr::anti_join(patValid, by = colnames(patValid))
+ expect_true(nrow(patternTab) == 3)
+ expect_true(all(patternTab %>% dplyr::select(number_concepts) %>% dplyr::pull() == c(1,1,1)))
+ patValid <- patternTab %>% dplyr::filter(.data$validity  == "pattern with formula")
+ patNotValid <- patternTab %>% dplyr::anti_join(patValid, by = colnames(patValid))
  expect_true(nrow(patValid) == 2)
  expect_true(nrow(patNotValid) == 1)
 
