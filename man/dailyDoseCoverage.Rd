@@ -5,28 +5,12 @@
 \title{Check coverage of daily dose computation in a sample of the cdm for selected
 concept sets and ingredient}
 \usage{
-dailyDoseCoverage(
-  cdm,
-  ingredientConceptId,
-  sample = NULL,
-  conceptSetList = NULL,
-  stratifyByConcept = TRUE,
-  seed = 1
-)
+dailyDoseCoverage(cdm, ingredientConceptId)
 }
 \arguments{
 \item{cdm}{A cdm reference created using CDMConnector}
 
 \item{ingredientConceptId}{Code indicating the ingredient of interest}
-
-\item{sample}{A number indicating the size of the random sample to take from
-the 'person' table of the cdm}
-
-\item{conceptSetList}{A concept list that we want to test}
-
-\item{stratifyByConcept}{Whether to stratify the result by drug_concept_id}
-
-\item{seed}{Seed for the random sample}
 }
 \value{
 The function returns information of the coverage of computeDailyDose.R
@@ -57,6 +41,7 @@ relationship_id = c(rep("RxNorm has dose form", 37))
 )
 
 cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
+
 dailyDoseCoverage(cdm, 1125315)
 }
 
