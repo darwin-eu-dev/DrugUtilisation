@@ -4,13 +4,17 @@
 \alias{addDailyDose}
 \title{add daily dose information to a drug_exposure table}
 \usage{
-addDailyDose(drugExposure, cdm, ingredientConceptId)
+addDailyDose(
+  drugExposure,
+  cdm = attr(drugExposure, "cdm_reference"),
+  ingredientConceptId
+)
 }
 \arguments{
 \item{drugExposure}{drugExposure it must contain drug_concept_id, quantity,
 drug_exposure_start_date and drug_exposure_end_date as columns}
 
-\item{cdm}{cdm}
+\item{cdm}{A cdm reference}
 
 \item{ingredientConceptId}{ingredientConceptId for which to filter the
 drugs of interest}
@@ -26,11 +30,27 @@ add daily dose information to a drug_exposure table
 library(DrugUtilisation)
 library(dplyr)
 
-cdm <- mockDrugUtilisation()
+concept_relationship <- dplyr::tibble(
+concept_id_1 = c(2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,
+                 29050773, 1125360, 15033297, 15030327, 15033427, 15036327, 15394662,
+                 43135274, 11253605, 431352774, 431359274, 112530, 1539465, 29050772,
+                 431352074, 15394062, 43135277, 15033327, 11253603, 15516980, 5034327,
+                 1539462, 15033528, 15394636, 15176980, 1539463, 431395274, 15186980,
+                 15316978),
+concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
+                 2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
+                 19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
+                 19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
+                 19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
+                 35604394, 702776 ),
+relationship_id = c(rep("RxNorm has dose form", 37))
+)
+
+cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
 
 cdm$drug_exposure \%>\%
   filter(drug_concept_id == 2905077) \%>\%
-  addDailyDose(cdm, 1125315)
+  addDailyDose(ingredientConceptId = 1125315)
 }
 
 }

@@ -47,6 +47,13 @@ test_that("test overlapMode", {
       subject_id = c(1, 1, 2),
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    ),
+    extraTables = list(
+      "concept_relationship" = dplyr::tibble(
+        concept_id_1 = c(c(1, 2, 3, 4, 5)),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
+      )
     )
   )
   # variables <- c(
@@ -64,6 +71,20 @@ test_that("test overlapMode", {
     "number_exposures", "number_eras", "initial_daily_dose", "duration",
     "cumulative_dose", "initial_quantity", "cumulative_quantity"
   )
+
+  #check no error without cdm object specified
+  expect_no_error(suppressWarnings(addDrugUse(
+    cohort = cdm$cohort1,
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "eliminate",
+    imputeDailyDose = "eliminate",
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
+  )))
 
   # prev
   suppressWarnings(x <- addDrugUse(
@@ -213,6 +234,9 @@ test_that("test overlapMode", {
   for (k in 1:length(value_cohort_1)) {
     expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
+
+
+
 })
 
 test_that("test gapEra and eraJoinMode", {
@@ -263,6 +287,13 @@ test_that("test gapEra and eraJoinMode", {
       subject_id = c(1, 1, 2),
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    ),
+    extraTables = list(
+      "concept_relationship" = dplyr::tibble(
+        concept_id_1 = c(1, 2, 3, 4, 5),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
+      )
     )
   )
 
@@ -487,6 +518,13 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       subject_id = c(1, 1, 2),
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    ),
+    extraTables = list(
+      "concept_relationship" = dplyr::tibble(
+        concept_id_1 = c(c(1, 2, 3, 4, 5)),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
+      )
     )
   )
 
@@ -1026,13 +1064,21 @@ test_that("check all variables", {
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "sd"
   )
-  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- mockDrugUtilisation(connectionDetails,
+                             extraTables = list(
+                               "concept_relationship" = dplyr::tibble(
+                                 concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
+                                 concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
+                                 relationship_id = c(rep("RxNorm has dose form", 4))
+                               )
+                             ))
   cdm <- generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = c(1125315, 43135274, 2905077, 1125360))
   )
+
   result <- cdm$dus %>%
     addDrugUse(cdm, 1125315) %>%
-    summariseDrugUse(cdm, drugUseEstimates = all_estimates)
+    summariseDrugUse(cdm)
   expect_true(all(c(
     "initial_daily_dose", "number_exposures", "duration", "cumulative_dose",
     "number_eras", "initial_quantity", "cumulative_quantity"

@@ -96,7 +96,12 @@
 #' library(DrugUtilisation)
 #' library(CodelistGenerator)
 #'
-#' cdm <- mockDrugUtilisation()
+#' concept_relationship <- dplyr::tibble(
+#' concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
+#' concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
+#' relationship_id = c(rep("RxNorm has dose form", 4))
+#' )
+#' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 #' )
@@ -105,7 +110,7 @@
 #' }
 #'
 addDrugUse <- function(cohort,
-                       cdm,
+                       cdm = attr(cohort, "cdm_reference"),
                        ingredientConceptId,
                        conceptSetList = NULL,
                        initialDailyDose = TRUE,
@@ -157,7 +162,15 @@ addDrugUse <- function(cohort,
   # check unit
   conceptSet <- conceptSet %>%
     dplyr::rename("drug_concept_id" = "concept_id") %>%
-    addPattern(cdm, ingredientConceptId) %>%
+    dplyr::left_join(
+      drugStrengthPattern(
+        cdm = cdm, ingredientConceptId = ingredientConceptId, pattern = FALSE,
+        patternDetails = FALSE, unit = TRUE, route = FALSE, formula = FALSE,
+        ingredient = FALSE
+      ) %>%
+        dplyr::collect(),
+      by = "drug_concept_id"
+    ) %>%
     dplyr::filter(!is.na(.data$unit))
   unit <- conceptSet %>% dplyr::pull("unit") %>% unique()
   if (length(unit) > 1) {
@@ -212,8 +225,9 @@ addDrugUse <- function(cohort,
 
       # add daily dose
       cohortInfo <- cohortInfo %>%
-        addDailyDose(cdm, ingredientConceptId) %>%
-        dplyr::select(-"quantity", -"unit")
+        addDailyDose(ingredientConceptId = ingredientConceptId) %>%
+        dplyr::select(-"quantity", -"unit", -"route") %>%
+        dplyr::distinct()
 
       # impute daily dose
       cohortInfo <- imputeVariable(

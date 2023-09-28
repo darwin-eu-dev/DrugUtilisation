@@ -5,28 +5,12 @@
 \title{Check coverage of daily dose computation in a sample of the cdm for selected
 concept sets and ingredient}
 \usage{
-dailyDoseCoverage(
-  cdm,
-  ingredientConceptId,
-  sample = NULL,
-  conceptSetList = NULL,
-  stratifyByConcept = TRUE,
-  seed = 1
-)
+dailyDoseCoverage(cdm, ingredientConceptId)
 }
 \arguments{
 \item{cdm}{A cdm reference created using CDMConnector}
 
 \item{ingredientConceptId}{Code indicating the ingredient of interest}
-
-\item{sample}{A number indicating the size of the random sample to take from
-the 'person' table of the cdm}
-
-\item{conceptSetList}{A concept list that we want to test}
-
-\item{stratifyByConcept}{Whether to stratify the result by drug_concept_id}
-
-\item{seed}{Seed for the random sample}
 }
 \value{
 The function returns information of the coverage of computeDailyDose.R
@@ -40,7 +24,24 @@ concept sets and ingredient
 \donttest{
 library(DrugUtilisation)
 
-cdm <- mockDrugUtilisation()
+concept_relationship <- dplyr::tibble(
+concept_id_1 = c(2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,
+                 29050773, 1125360, 15033297, 15030327, 15033427, 15036327, 15394662,
+                 43135274, 11253605, 431352774, 431359274, 112530, 1539465, 29050772,
+                 431352074, 15394062, 43135277, 15033327, 11253603, 15516980, 5034327,
+                 1539462, 15033528, 15394636, 15176980, 1539463, 431395274, 15186980,
+                 15316978),
+concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
+                 2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
+                 19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
+                 19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
+                 19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
+                 35604394, 702776 ),
+relationship_id = c(rep("RxNorm has dose form", 37))
+)
+
+cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
+
 dailyDoseCoverage(cdm, 1125315)
 }
 

@@ -1,0 +1,25 @@
+amount,amount_unit,amount_unit_concept_id,numerator,numerator_unit,numerator_unit_concept_id,denominator,denominator_unit,denominator_unit_concept_id,pattern_meaning,pattern_id,formula_id,route,formula,unit
+NA,NA,NA,numeric,milligram,8576,NA,milligram,8576,milligram per milligram missing denominator,10,1,oral,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milligram,8576,NA,milliliter,8587,milligram per milliliter missing denominator,11,1,injectable,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milligram,8576,NA,milliliter,8587,milligram per milliliter missing denominator,11,1,oral,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milligram,8576,NA,milliliter,8587,milligram per milliliter missing denominator,11,1,inhalable,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milliliter,8587,NA,milliliter,8587,milliter per milliliter missing denominator,12,1,oral,dose = numerator*quantity / duration,milliliter
+NA,NA,NA,numeric,milliequivalent,9551,NA,milliliter,8587,milliequivalent per milliliter missing denominator,13,1,oral,dose = numerator*quantity / duration,milliequivalent
+NA,NA,NA,numeric,milligram,8576,NA,Actuation,45744809,milligram per actuation missing denominator,14,1,inhalable,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milligram,8576,NA,Actuation,45744809,milligram per actuation missing denominator,14,1,oral,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milligram,8576,numeric,milliliter,8587,milligram per milliliter,15,1,inhalable,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milligram,8576,numeric,milliliter,8587,milligram per milliliter,15,1,injectable,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milligram,8576,numeric,milliliter,8587,milligram per milliliter,15,1,oral,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milliliter,8587,numeric,milliliter,8587,milliter per milliliter,16,1,injectable,dose = numerator*quantity / duration,milliliter
+NA,NA,NA,numeric,milliliter,8587,numeric,milliliter,8587,milliter per milliliter,16,1,oral,dose = numerator*quantity / duration,milliliter
+NA,NA,NA,numeric,milligram,8576,numeric,Actuation,45744809,milligram per actuation,17,1,inhalable,dose = numerator*quantity / duration,milligram
+NA,NA,NA,numeric,milligram,8576,numeric,Actuation,45744809,milligram per actuation,17,1,injectable,dose = numerator*quantity / duration,milligram
+numeric,international unit,8718,NA,NA,NA,NA,NA,NA,international_unit,1,2,any,dose = amount * quantity / days_exposed,international unit
+numeric,microgram,9655,NA,NA,NA,NA,NA,NA,milligram,2,2,any,dose = amount * quantity / days_exposed,milligram
+numeric,milliequivalent,9551,NA,NA,NA,NA,NA,NA,milliequivalent,3,2,any,dose = amount * quantity / days_exposed,milliequivalent
+numeric,milligram,8576,NA,NA,NA,NA,NA,NA,milligram,4,2,any,dose = amount * quantity / days_exposed,milligram
+numeric,milliliter,8587,NA,NA,NA,NA,NA,NA,milliliter,5,2,any,dose = amount * quantity / days_exposed,milliliter
+NA,NA,NA,numeric,microgram,9655,numeric,hour,8505,milligram_per_hour,6,3,any,"(den > 24) dose = numerator*24/denominator, den <= 24) dose = numerator",milligram
+NA,NA,NA,numeric,milligram,8576,numeric,hour,8505,milligram_per_hour,7,3,any,"(den > 24) dose = numerator*24/denom,  (den <= 24) dose = numeratorinator",milligram
+NA,NA,NA,numeric,microgram,9655,NA,hour,8505,milligram_per_missing_hour,8,4,any,dose = numerator*24,milligram
+NA,NA,NA,numeric,milligram,8576,NA,hour,8505,milligram_per_missing_hour,9,4,any,dose = numerator*24,milligram

@@ -73,6 +73,16 @@ test_that("basic functionality large scale characteristics", {
         minCellCount = 1, overlap = FALSE
       )
   )
+  #check it works without cdm object specified
+  expect_no_error(
+    result <- cdm$cohort_interest %>%
+      summariseLargeScaleCharacteristics(
+        tablesToCharacterize = c("condition_occurrence", "drug_exposure"),
+        minCellCount = 1,
+        overlap = FALSE
+      )
+  )
+
   conceptId <- c(317009, 317009, 378253, 378253, 4266367, 4266367)
   windowName <- rep(c("0 to 0", "-inf to -366"), 3)
   cohortName <- rep(c("cohort_1"), 6)

@@ -32,8 +32,8 @@ domainInformation <- readr::read_csv(
   here::here("data-raw", "domain_information.csv"), show_col_types = FALSE
 )
 
-# add the current pattern file
-patternfile <- readr::read_csv(
+# add the current pattern file (of patterns for which we can calculate dose)
+patterns <- readr::read_csv(
   here::here("data-raw", "pattern_drug_strength.csv"),
   col_types = list(
     pattern_id = "numeric",
@@ -52,11 +52,67 @@ patternfile <- readr::read_csv(
   )
 ) %>%
   dplyr::select(-c(
-    "valid", "pattern_name", "amount_unit", "numerator_unit", "denominator_unit"
+    "valid", "pattern_name", "amount_unit", "numerator_unit",
+    "denominator_unit", "unit"
   ))
+
+formulas <- readr::read_csv(
+  here::here("data-raw", "pattern_assessment_for_dose_final.csv"),
+  col_types = list(
+    numerator = "character",
+    numerator_unit = "character",
+    numerator_unit_concept_id = "numeric",
+    denominator = "character",
+    denominator_unit = "character",
+    denominator_unit_concept_id = "numeric",
+    pattern_meaning = "character",
+    formula_id = "numeric",
+    pattern_meaning = "character",
+    route = "character",
+    unit = "character"
+  )
+) %>%
+  dplyr::select("pattern_id", "route", "formula_id", "unit")
+
+routes <- readr::read_csv(
+  here::here("data-raw", "doseform_final.csv"),
+  comment = "",
+  col_types = list(
+    route = "character",
+    source_concept_id = "numeric",
+    source_code_id = "character",
+    source_name = "character",
+    class = "character",
+    concept = "character",
+    domain = "character",
+    validity = "character",
+    vocabulary = "character"
+  )
+) %>%
+  dplyr::select("dose_form_concept_id" = "source_concept_id", "route")
+
+# add all rows in patternfile for the "any" dose patterns with all the possibilities
+allRoutes <- routes %>%
+  dplyr::select("route") %>%
+  dplyr::distinct() %>%
+  dplyr::pull()
+
+formulasAny <- formulas %>%
+  dplyr::filter(.data$route == "any")
+for(route in allRoutes) {
+  formulas <- formulas %>%
+    dplyr::union_all(
+      formulasAny %>%
+        dplyr::mutate("route" = .env$route)
+    )
+}
+formulas <- formulas %>%
+  dplyr::filter(.data$route != "any") %>%
+  dplyr::arrange(.data$pattern_id)
+
 
 usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,
-  patternfile, internal = TRUE, overwrite = TRUE
+  patterns, formulas, routes, internal = TRUE, overwrite = TRUE
 )
 

@@ -59,6 +59,12 @@ test_that("test case single indication", {
       condition_occurrence = condition_occurrence,
       observation_period = observationPeriod
     )
+  #check it works without cdm object specified
+
+  expect_no_error(cdm$cohort1 %>%
+    addIndication(indicationCohortName = "cohort2", indicationGap = 0,
+      unknownIndicationTable = NULL
+    ))
 
   # check for indication 0
   res0 <- cdm$cohort1 %>%
