@@ -29,10 +29,10 @@
 #                              drug_strength = drug_strength,
 #                              drug_exposure = drug_exposure)
 #
-#   result <- addDailyDose(cdm$drug_exposure, 1) %>%
+#   result <- addDailyDose(cdm[["drug_exposure"]], 1) %>%
 #     dplyr::collect() %>% dplyr::arrange(drug_concept_id)
 #
-#   expect_true(nrow(result) == cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull("n"))
+#   expect_true(nrow(result) == cdm[["drug_exposure"]] %>% dplyr::tally() %>% dplyr::pull("n"))
 #   expect_true(all(result %>% dplyr::filter(!is.na(daily_dose)) %>% dplyr::select(drug_concept_id) %>% unique() %in% c(2)))
 #
 #   compareNA <- function(v1,v2) {
@@ -87,10 +87,10 @@
 #     dplyr::filter(dplyr::row_number() == 1) %>%
 #     dplyr::ungroup()
 #
-#   result <- addDailyDose(cdm$drug_exposure, 2) %>%
+#   result <- addDailyDose(cdm[["drug_exposure"]], 2) %>%
 #     dplyr::collect() %>% dplyr::arrange(drug_concept_id)
 #
-#   expect_true(nrow(result) == cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull("n"))
+#   expect_true(nrow(result) == cdm[["drug_exposure"]] %>% dplyr::tally() %>% dplyr::pull("n"))
 #   expect_true(all(result %>% dplyr::filter(!is.na(daily_dose)) %>% dplyr::select(drug_concept_id) %>% dplyr::pull() %in% c(2905077 )))
 #
 #   compareNA <- function(v1,v2) {
@@ -124,7 +124,7 @@
 #
 #   expect_error(result <- addDailyDose())
 #   expect_error(result <- addDailyDose())
-#   expect_error(addDailyDose(cdm$drug_exposure, "xx"))
+#   expect_error(addDailyDose(cdm[["drug_exposure"]], "xx"))
 #
 # })
 

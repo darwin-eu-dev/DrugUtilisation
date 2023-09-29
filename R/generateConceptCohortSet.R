@@ -51,13 +51,13 @@ CDMConnector::generateConceptCohortSet
 # #'   daysPriorObservation = 365
 # #' )
 # #'
-# #' cdm$covariates
+# #' cdm[["covariates"]]
 # #'
-# #' cohortSet(cdm$covariates)
+# #' cohortSet(cdm[["covariates"]])
 # #'
-# #' cohortCount(cdm$covariates)
+# #' cohortCount(cdm[["covariates"]])
 # #'
-# #' cohortAttrition(cdm$covariates)
+# #' cohortAttrition(cdm[["covariates"]])
 # #' }
 # #'
 # generateConceptCohortSet <- function(cdm,

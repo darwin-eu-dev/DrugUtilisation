@@ -65,7 +65,7 @@ cdmSubset <- function(cdm,
       dplyr::tally() %>%
       dplyr::pull("n") !=
       subjects %>%
-      dplyr::inner_join(cdm$person, by = "person_id") %>%
+      dplyr::inner_join(cdm[["person"]], by = "person_id") %>%
       dplyr::tally() %>%
       dplyr::pull("n")) {
     warning("Not all subjects are present in person table.")
@@ -98,11 +98,11 @@ cdmSample <- function(cdm,
 
   numberIndividuals <- as.numeric(numberIndividuals)
 
-  if (numberIndividuals > cdm$person %>% dplyr::tally() %>% dplyr::pull("n")) {
+  if (numberIndividuals > cdm[["person"]] %>% dplyr::tally() %>% dplyr::pull("n")) {
     stop("numberIndividuals is bigger than individuals in the cdm reference.")
   }
 
-  subjects <- cdm$person %>%
+  subjects <- cdm[["person"]] %>%
     dplyr::select("person_id") %>%
     dplyr::slice_sample(n = numberIndividuals) %>%
     dplyr::compute()
