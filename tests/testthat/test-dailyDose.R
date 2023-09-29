@@ -90,14 +90,14 @@ test_that("functionality of addDailyDose function",{
   )
 
   # should only add patterns 1 to 9, which are drugs 1:7, 10, 11, 25, 30
-  daily_dose <- addDailyDose(cdm$drug_exposure, ingredientConceptId = 1)
+  daily_dose <- addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1)
 
 
 
   expect_true(
     daily_dose %>% dplyr::anti_join(
       daily_dose %>%
-        dplyr::left_join(cdm$drug_strength, by = "drug_concept_id") %>%
+        dplyr::left_join(cdm[["drug_strength"]], by = "drug_concept_id") %>%
         dplyr::filter(numerator_unit_concept_id %in% c(8576, 8587, 9551, 9655) || is.na(numerator_unit_concept_id)) %>%
         dplyr::filter(denominator_unit_concept_id %in% c(8576, 8587, 45744809, 8505) || is.na(denominator_unit_concept_id)) %>%
         dplyr::filter(amount_unit_concept_id %in% c(8718, 9655, 9551, 8576, 8587) || is.na(amount_unit_concept_id))
@@ -109,17 +109,17 @@ test_that("functionality of addDailyDose function",{
 
   expect_true(
     daily_dose %>% dplyr::tally() %>% dplyr::pull("n") ==
-      cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull("n")
+      cdm[["drug_exposure"]] %>% dplyr::tally() %>% dplyr::pull("n")
   )
 
   expect_true(
-    length(colnames(cdm$drug_exposure)) + 3 == length(colnames(daily_dose))
+    length(colnames(cdm[["drug_exposure"]])) + 3 == length(colnames(daily_dose))
   )
 
-  expect_true(all(colnames(cdm$drug_exposure) %in% colnames(daily_dose)))
+  expect_true(all(colnames(cdm[["drug_exposure"]]) %in% colnames(daily_dose)))
   expect_true(all(c("daily_dose", "unit", "route") %in% colnames(daily_dose)))
 
-  withPattern <- cdm$drug_exposure %>%
+  withPattern <- cdm[["drug_exposure"]] %>%
     dplyr::left_join(
       drugStrengthPattern(
         cdm = cdm, ingredientConceptId = 1, pattern = TRUE,
@@ -130,11 +130,11 @@ test_that("functionality of addDailyDose function",{
     ) %>%
     dplyr::collect()
   expect_true(
-    cdm$drug_exposure %>% dplyr::tally() %>% dplyr::pull() ==
+    cdm[["drug_exposure"]] %>% dplyr::tally() %>% dplyr::pull() ==
       withPattern %>% dplyr::tally() %>% dplyr::pull()
   )
 
-  expect_true(all(colnames(cdm$drug_exposure) %in% colnames(withPattern)))
+  expect_true(all(colnames(cdm[["drug_exposure"]]) %in% colnames(withPattern)))
   expect_true(all(c("formula_id", "unit", "route") %in% colnames(withPattern)))
 
   x <- daily_dose %>%
@@ -194,7 +194,7 @@ test_that("functionality of addDailyDose function",{
   )))
 
   #check it works without specifying cdm object
-  expect_no_error(addDailyDose(cdm$drug_exposure, ingredientConceptId = 1))
+  expect_no_error(addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))
 
 
 })

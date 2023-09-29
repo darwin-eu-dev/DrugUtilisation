@@ -108,7 +108,7 @@ cdm <- generateDrugUtilisationCohortSet(
 The generated cohort will have the `GeneratedCohortSet` as seen in CDMConnector
 
 ```{r}
-class(cdm$dus_cohort)
+class(cdm[["dus_cohort"]])
 ```
 
 Cohort set:
@@ -116,19 +116,19 @@ Cohort set:
 ```{r}
 library(CDMConnector)
 library(dplyr)
-cohortSet(cdm$dus_cohort) %>% glimpse()
+cohortSet(cdm[["dus_cohort"]]) %>% glimpse()
 ```
 
 Cohort count:
 
 ```{r}
-cohortCount(cdm$dus_cohort)
+cohortCount(cdm[["dus_cohort"]])
 ```
 
 Cohort attrition:
 
 ```{r}
-cohortAttrition(cdm$dus_cohort) %>% glimpse()
+cohortAttrition(cdm[["dus_cohort"]]) %>% glimpse()
 ```
 
 ### Indication
@@ -138,13 +138,13 @@ Indications will always be cohorts. An option that the package has is to create 
 ```{r}
 indications <- list(headache = 378253, influenza = 4266367)
 cdm <- generateConceptCohortSet(cdm, indications, "indications_cohort")
-cohortCount(cdm$indications_cohort)
+cohortCount(cdm[["indications_cohort"]])
 ```
 
 Then we can add the indication using the function `addIndication`. That will add a new column for each indication gap and indication. 
 
 ```{r}
-x <- cdm$dus_cohort %>%
+x <- cdm[["dus_cohort"]] %>%
   addIndication(
     cdm = cdm, indicationCohortName = "indications_cohort", indicationGap = c(0, 30, 365), 
     unknownIndicationTable = c("condition_occurrence")
@@ -196,7 +196,7 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 We can compute daily dose for a certain ingredient from a subset of drug_exposure or the whole drug exposure (can be very computationally expensive).
 
 ```{r}
-#cdm$drug_exposure %>%
+#cdm[["drug_exposure"]] %>%
 #  addDailyDose(ingredientConceptId = 1125315) %>%
 #  glimpse()
 ```

@@ -200,35 +200,35 @@ test_that("dates range", {
     )
   )
   expect_true(
-    cdm$dus %>%
+    cdm[["dus"]] %>%
       dplyr::filter(.data$cohort_start_date < start) %>%
       dplyr::tally() %>%
       dplyr::pull() == 0
   )
   expect_true(
-    cdm$dus %>%
+    cdm[["dus"]] %>%
       dplyr::filter(.data$cohort_end_date > end) %>%
       dplyr::tally() %>%
       dplyr::pull() == 0
   )
   expect_true(
-    cdm$drug_exposure %>%
+    cdm[["drug_exposure"]] %>%
       dplyr::filter(.data$drug_exposure_start_date <= .env$start) %>%
       dplyr::filter(.data$drug_exposure_end_date >= .env$start) %>%
       dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
       dplyr::pull("n") ==
-      cdm$dus %>%
+      cdm[["dus"]] %>%
       dplyr::filter(.data$cohort_start_date == .env$start) %>%
       dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
       dplyr::pull("n")
   )
   expect_true(
-    cdm$drug_exposure %>%
+    cdm[["drug_exposure"]] %>%
       dplyr::filter(.data$drug_exposure_start_date <= .env$end) %>%
       dplyr::filter(.data$drug_exposure_end_date >= .env$end) %>%
       dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
       dplyr::pull("n") ==
-      cdm$dus %>%
+      cdm[["dus"]] %>%
       dplyr::filter(.data$cohort_end_date == .env$end) %>%
       dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
       dplyr::pull("n")
@@ -237,9 +237,9 @@ test_that("dates range", {
     cdm, "dus_date", acetaminophen, gapEra = 0, cohortDateRange = c(start, end)
   )
 
-  sapply(list(cdm$dus_date %>% dplyr::pull("cohort_start_date")), function(x) inherits(x, 'Date'))
+  sapply(list(cdm[["dus_date"]] %>% dplyr::pull("cohort_start_date")), function(x) inherits(x, 'Date'))
 
-  sapply(list(cdm$dus_date %>% dplyr::pull("cohort_end_date")), function(x) inherits(x, 'Date'))
+  sapply(list(cdm[["dus_date"]] %>% dplyr::pull("cohort_end_date")), function(x) inherits(x, 'Date'))
 
 
 })
@@ -276,19 +276,19 @@ test_that("priorUseWashout", {
     durationRange = c(0, Inf)
   )
   expect_true(
-    cdm$bp_cohorts_test %>%
+    cdm[["bp_cohorts_test"]] %>%
       dplyr::filter(subject_id == 2) %>%
       dplyr::tally() %>%
       dplyr::pull() == 1
   )
   expect_true(
-    cdm$bp_cohorts_test %>%
+    cdm[["bp_cohorts_test"]] %>%
       dplyr::filter(subject_id == 1) %>%
       dplyr::tally() %>%
       dplyr::pull() == 0
   )
   expect_true(
-    cdm$bp_cohorts_test %>%
+    cdm[["bp_cohorts_test"]] %>%
       dplyr::filter(subject_id == 2) %>%
       dplyr::pull("cohort_end_date") == as.Date("2020-12-31")
   )

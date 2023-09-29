@@ -48,7 +48,7 @@
 #'
 #' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
 #'
-#' cdm$drug_exposure %>%
+#' cdm[["drug_exposure"]] %>%
 #'   filter(drug_concept_id == 2905077) %>%
 #'   addDailyDose(ingredientConceptId = 1125315)
 #' }
