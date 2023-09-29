@@ -67,7 +67,7 @@
                         <h4 data-toc-skip class="author">Martí Català,
 Mike Du, Yuchen Guo, Kim López-Güell, and Edward Burn</h4>
             
-            <h4 data-toc-skip class="date">2023-09-27</h4>
+            <h4 data-toc-skip class="date">2023-09-29</h4>
       
       
       <div class="d-none name"><code>addIndications-example.Rmd</code></div>
@@ -146,9 +146,9 @@ generateConceptCohortSet().</p>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>, name <span class="op">=</span> <span class="st">"indications_cohort"</span>, <span class="va">indications</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">indications_cohort</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"indications_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortSet.html" class="external-link">cohortSet</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">indications_cohort</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortSet.html" class="external-link">cohortSet</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"indications_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">cohort_definition_id</span>, <span class="va">cohort_name</span><span class="op">)</span>, </span>
 <span>    by <span class="op">=</span> <span class="st">"cohort_definition_id"</span></span>
 <span>  <span class="op">)</span></span>
@@ -168,7 +168,7 @@ gaps is defined as the gap between the event and the indication. It also
 allow user to specify the tables to look for unknown indication.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">acetaminophen_users</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
 <span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
@@ -176,7 +176,7 @@ allow user to specify the tables to look for unknown indication.</p>
 <span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;dbplyr_037&gt; [?? x 16]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1//tmp/RtmpnjuWe4/file1c87547ee1e2.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1//tmp/RtmpUcovDI/file1cbb588901a6.duckdb]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         78 1968-11-25        1968-12-16     </span></span>
@@ -185,16 +185,16 @@ allow user to specify the tables to look for unknown indication.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        141 1987-10-31        1987-11-14     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        141 1995-07-30        1995-09-28     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        260 1974-03-05        1974-03-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        260 1979-09-06        1979-09-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        260 1990-08-10        1990-09-16     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        300 2005-06-16        2005-06-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        300 2007-08-21        2007-08-28     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        260 1979-02-22        1979-03-08     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        260 1979-09-06        1979-09-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        260 1990-08-10        1990-09-16     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        300 2005-06-16        2005-06-30     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: indication_gap_0_bronchitis &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_sinusitis &lt;dbl&gt;, indication_gap_0_none &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_sinusitis &lt;dbl&gt;, indication_gap_30_bronchitis &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_none &lt;dbl&gt;, indication_gap_365_sinusitis &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_365_bronchitis &lt;dbl&gt;, indication_gap_365_none &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: indication_gap_0_sinusitis &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_bronchitis &lt;dbl&gt;, indication_gap_0_none &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_bronchitis &lt;dbl&gt;, indication_gap_30_sinusitis &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_none &lt;dbl&gt;, indication_gap_365_bronchitis &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_365_sinusitis &lt;dbl&gt;, indication_gap_365_none &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_unknown &lt;dbl&gt;, indication_gap_30_unknown &lt;dbl&gt;, …</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -204,7 +204,7 @@ allow user to specify the tables to look for unknown indication.</p>
 summariseIndication function.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">acetaminophen_users</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
 <span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
@@ -218,11 +218,11 @@ summariseIndication function.</p>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number subjects               count         2679    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number records                count         13860   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> indication_gap_0_bronchitis   count         2518    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> indication_gap_0_sinusitis    count         1       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> indication_gap_0_sinusitis    count         1       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> indication_gap_0_bronchitis   count         2518    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> indication_gap_0_none         count         163     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> indication_gap_30_bronchitis  count         2519    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> indication_gap_30_sinusitis   count         21      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> indication_gap_30_sinusitis   count         21      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> indication_gap_30_bronchitis  count         2519    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> indication_gap_30_none        count         7       </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> indication_gap_365_sinusitis  count         311     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> indication_gap_365_bronchitis count         2705    </span></span>
@@ -235,7 +235,7 @@ in the summariseIndication function. In the example below, it is
 summarized by ageGroup and sex.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">acetaminophen_users</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
 <span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
