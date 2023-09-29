@@ -59,7 +59,7 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' summariseLargeScaleCharacteristics(
-#'   cohort = cdm$cohort1,
+#'   cohort = cdm[["cohort1"]],
 #'   tablesToCharacterize= c("drug_exposure", "condition_occurrence")
 #' )
 #' }
@@ -353,7 +353,7 @@ summariseLargeScaleCharacteristics <- function(cohort,
 #'   )
 #' )
 #' summariseCharacteristicsFromCodelist(
-#'   cdm$cohort1, cdm, conceptSetList,
+#'   cdm[["cohort1"]], cdm, conceptSetList,
 #'   window = list(c(-365, -1), c(0, 0), c(1, 365))
 #' )
 #' }

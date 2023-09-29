@@ -156,7 +156,7 @@ drugStrengthPattern <- function(cdm,
 #'
 #' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
 #'
-#' cdm$drug_exposure %>%
+#' cdm[["drug_exposure"]] %>%
 #'   addRoute()
 #' }
 #'

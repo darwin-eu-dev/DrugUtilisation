@@ -74,7 +74,7 @@ test_that("test overlapMode", {
 
   #check no error without cdm object specified
   expect_no_error(suppressWarnings(addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -88,7 +88,7 @@ test_that("test overlapMode", {
 
   # prev
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
@@ -101,7 +101,7 @@ test_that("test overlapMode", {
     dailyDoseRange = c(0, Inf)
   ))
 
-  expect_equal(sort(names(attributes(cdm$cohort1))), sort(names(attributes(x))))
+  expect_equal(sort(names(attributes(cdm[["cohort1"]]))), sort(names(attributes(x))))
   expect_true(all(variables %in% colnames(x)))
 
   value_cohort_1 <- c(
@@ -121,7 +121,7 @@ test_that("test overlapMode", {
 
   # sub
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
@@ -150,7 +150,7 @@ test_that("test overlapMode", {
 
   # min
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
@@ -179,7 +179,7 @@ test_that("test overlapMode", {
 
   # max
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
@@ -208,7 +208,7 @@ test_that("test overlapMode", {
 
   # sum
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
@@ -315,7 +315,7 @@ test_that("test gapEra and eraJoinMode", {
 
   # overall functionality
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 0,
@@ -347,7 +347,7 @@ test_that("test gapEra and eraJoinMode", {
 
   # gapEra = 24
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 24,
@@ -378,7 +378,7 @@ test_that("test gapEra and eraJoinMode", {
 
   # gapEra = 25 & joinMode = Zero
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 25,
@@ -409,7 +409,7 @@ test_that("test gapEra and eraJoinMode", {
 
   # gapEra = 25 & joinMode = Previous
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 25,
@@ -440,7 +440,7 @@ test_that("test gapEra and eraJoinMode", {
 
   # gapEra = 25 & joinMode = Subsequent
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 25,
@@ -546,7 +546,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
 
   # overall functionality
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 0,
@@ -601,7 +601,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
 
   for (k in 1:nrow(parameters)) {
     suppressWarnings(x <- addDrugUse(
-      cohort = cdm$cohort1,
+      cohort = cdm[["cohort1"]],
       cdm = cdm,
       ingredientConceptId = 1,
       gapEra = parameters$gapEra[k],
@@ -920,7 +920,7 @@ test_that("test empty targetCohortName", {
     dplyr::filter(.data$subject_id < 1)
 
   expect_error(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
@@ -994,7 +994,7 @@ test_that("check output format", {
       cara = c("a", "b", "b", "a")
     )
   )
-  result <- cdm$cohort %>%
+  result <- cdm[["cohort"]] %>%
     summariseDrugUse(cdm = cdm)
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
   expect_true(all(colnames(result) %in% c(
@@ -1030,13 +1030,13 @@ test_that("check all estimates", {
       )
     )
   )
-  attr(cdm$dose_table, "cohort_set") <- dplyr::tibble(
+  attr(cdm[["dose_table"]], "cohort_set") <- dplyr::tibble(
     cohort_definition_id = 1, cohort_name = "cohort1"
   )
-  class(cdm$dose_table) <- c("GeneratedCohortSet", class(cdm$dose_table))
+  class(cdm[["dose_table"]]) <- c("GeneratedCohortSet", class(cdm[["dose_table"]]))
   for (k in 1:length(all_estimates)) {
     res <- summariseDrugUse(
-      cdm$dose_table,
+      cdm[["dose_table"]],
       cdm = cdm,
       drugUseVariables = c("initial_dose", "cumulative_dose"),
       drugUseEstimates = all_estimates[k]
@@ -1048,7 +1048,7 @@ test_that("check all estimates", {
     expect_true(res$estimate_type[res$variable == c("cumulative_dose")] == all_estimates[k])
   }
   res <- summariseDrugUse(
-    cdm$dose_table,
+    cdm[["dose_table"]],
     cdm = cdm,
     drugUseVariables = c("initial_dose", "cumulative_dose"),
     drugUseEstimates = all_estimates
@@ -1076,7 +1076,7 @@ test_that("check all variables", {
     cdm, "dus", list(acetaminophen = c(1125315, 43135274, 2905077, 1125360))
   )
 
-  result <- cdm$dus %>%
+  result <- cdm[["dus"]] %>%
     addDrugUse(cdm, 1125315) %>%
     summariseDrugUse(cdm)
   expect_true(all(c(
