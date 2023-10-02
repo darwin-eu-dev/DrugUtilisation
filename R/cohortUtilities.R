@@ -160,7 +160,7 @@ conceptSetFromConceptSetList <- function(conceptSetList) {
 
 #' @noRd
 subsetTables <- function(cdm, conceptSet, domains = NULL) {
-  conceptSet <- cdm$concept %>%
+  conceptSet <- cdm[["concept"]] %>%
     dplyr::select("concept_id", "domain_id") %>%
     dplyr::right_join(
       conceptSet %>%

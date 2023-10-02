@@ -42,7 +42,7 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' cdm$cohort1 %>%
+#' cdm[["cohort1"]] %>%
 #'   summariseLargeScaleCharacteristics(
 #'     window = list(c(-180, -1), c(0, 0), c(1, 180)),
 #'     standardConcept = c("drug_exposure", "condition_occurrence")

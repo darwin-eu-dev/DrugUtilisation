@@ -67,13 +67,13 @@
 #'   daysPriorObservation = 365
 #' )
 #'
-#' cdm$drug_cohorts
+#' cdm[["drug_cohorts"]]
 #'
-#' cohortSet(cdm$drug_cohorts)
+#' cohortSet(cdm[["drug_cohorts"]])
 #'
-#' cohortCount(cdm$drug_cohorts)
+#' cohortCount(cdm[["drug_cohorts"]])
 #'
-#' cohortAttrition(cdm$drug_cohorts)
+#' cohortAttrition(cdm[["drug_cohorts"]])
 #' }
 #'
 generateDrugUtilisationCohortSet <- function(cdm,

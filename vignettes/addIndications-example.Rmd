@@ -89,9 +89,9 @@ indications <-
 cdm <-
   generateConceptCohortSet(cdm, name = "indications_cohort", indications)
 
-cohortCount(cdm$indications_cohort) %>%
+cohortCount(cdm[["indications_cohort"]]) %>%
   left_join(
-    cohortSet(cdm$indications_cohort) %>%
+    cohortSet(cdm[["indications_cohort"]]) %>%
       select(cohort_definition_id, cohort_name), 
     by = "cohort_definition_id"
   )
@@ -105,7 +105,7 @@ Then to add indication to the drug Utilisation cohort we can simple use the addI
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 
-cdm$acetaminophen_users %>%
+cdm[["acetaminophen_users"]] %>%
   addIndication(
     cdm = cdm, 
     indicationCohortName = "indications_cohort",
@@ -120,7 +120,7 @@ To create a summary table of the indications cohort, you can use the summariseIn
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 
-cdm$acetaminophen_users %>%
+cdm[["acetaminophen_users"]] %>%
   addIndication(
     cdm = cdm, 
     indicationCohortName = "indications_cohort",
@@ -136,7 +136,7 @@ You can also summarize the indications by using the strata argument in the summa
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 
-cdm$acetaminophen_users %>%
+cdm[["acetaminophen_users"]] %>%
   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) %>%
   addIndication(
     cdm = cdm,
