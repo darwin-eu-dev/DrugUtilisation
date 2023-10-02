@@ -41,7 +41,7 @@ relationship_id = c(rep("RxNorm has dose form", 37))
 
 cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
 
-cdm$drug_exposure \%>\%
+cdm[["drug_exposure"]] \%>\%
   addRoute()
 }
 

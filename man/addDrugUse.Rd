@@ -20,7 +20,8 @@ addDrugUse(
   eraJoinMode = "Zero",
   overlapMode = "Sum",
   sameIndexMode = "Sum",
-  imputeDuration = "eliminate",
+  imputeDuration = "none",
+  missingEndDate = 1,
   imputeDailyDose = "eliminate",
   durationRange = c(1, Inf),
   dailyDoseRange = c(0, Inf)
@@ -97,8 +98,11 @@ the subexposure.
 By default: "Sum".}
 
 \item{imputeDuration}{Whether/how the duration should be imputed
-"eliminate", "median", "mean", "quantile25", "quantile75".
-. By default: eliminate}
+"none", "median", "mean", "mode"
+. By default: "none"}
+
+\item{missingEndDate}{How to deal with missing end dates.
+Can be "none", "median", "mean", "mode", or it can be a count.}
 
 \item{imputeDailyDose}{Whether/how the daily_dose should be imputed
 "eliminate", "median", "mean", "quantile25", "quantile75". By default:
@@ -136,7 +140,7 @@ cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_r
 cdm <- generateDrugUtilisationCohortSet(
   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 )
-cdm$dus_cohort \%>\%
+cdm[["dus_cohort"]] \%>\%
   addDrugUse(cdm, 1125315)
 }
 

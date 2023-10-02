@@ -52,7 +52,7 @@ conceptSetList <- list(
   )
 )
 summariseCharacteristicsFromCodelist(
-  cdm$cohort1, cdm, conceptSetList,
+  cdm[["cohort1"]], cdm, conceptSetList,
   window = list(c(-365, -1), c(0, 0), c(1, 365))
 )
 }

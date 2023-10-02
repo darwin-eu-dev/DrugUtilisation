@@ -71,8 +71,10 @@
 #' the subexposure.
 #' By default: "Sum".
 #' @param imputeDuration Whether/how the duration should be imputed
-#' "eliminate", "median", "mean", "quantile25", "quantile75".
-#' . By default: eliminate
+#' "none", "median", "mean", "mode"
+#' . By default: "none"
+#' @param missingEndDate How to deal with missing end dates.
+#' Can be "none", "median", "mean", "mode", or it can be a count.
 #' @param imputeDailyDose Whether/how the daily_dose should be imputed
 #' "eliminate", "median", "mean", "quantile25", "quantile75". By default:
 #' "eliminate"
@@ -124,7 +126,8 @@ addDrugUse <- function(cohort,
                        eraJoinMode = "Zero",
                        overlapMode = "Sum",
                        sameIndexMode = "Sum",
-                       imputeDuration = "eliminate",
+                       imputeDuration = "none",
+                       missingEndDate = 1,
                        imputeDailyDose = "eliminate",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
@@ -152,8 +155,9 @@ addDrugUse <- function(cohort,
     gapEra = gapEra, eraJoinMode = eraJoinMode,
     initialQuantity = initialQuantity, cumulativeQuantity = cumulativeQuantity,
     overlapMode = overlapMode, sameIndexMode = sameIndexMode,
-    imputeDuration = imputeDuration, imputeDailyDose = imputeDailyDose,
-    durationRange = durationRange, dailyDoseRange = dailyDoseRange
+    imputeDuration = imputeDuration, missingEndDate = missingEndDate,
+    imputeDailyDose = imputeDailyDose, durationRange = durationRange,
+    dailyDoseRange = dailyDoseRange
   )
 
   # get conceptSet
@@ -187,8 +191,8 @@ addDrugUse <- function(cohort,
   # consistency with cohortSet
   cs <- CDMConnector::cohortSet(cohort)
   parameters <- checkConsistentCohortSet(
-    cs, conceptSetList, gapEra, imputeDuration, durationRange,
-    missing(gapEra), missing(imputeDuration), missing(durationRange)
+    cs, conceptSetList, gapEra, imputeDuration, missingEndDate, durationRange,
+    missing(gapEra), missing(imputeDuration), missing(missingEndDate), missing(durationRange)
   )
   gapEra <- parameters$gapEra
   imputeDuration <- parameters$imputeDuration
@@ -219,7 +223,7 @@ addDrugUse <- function(cohort,
     if (initialDailyDose | cumulativeDose | numberEras) {
       # correct duration
       cohortInfo <- correctDuration(
-        cohortInfo, imputeDuration, durationRange, cdm,
+        cohortInfo, missingEndDate, imputeDuration, durationRange, cdm,
         "drug_exposure_start_date", "drug_exposure_end_date"
       )
 
@@ -231,7 +235,9 @@ addDrugUse <- function(cohort,
 
       # impute daily dose
       cohortInfo <- imputeVariable(
-        cohortInfo, "daily_dose", imputeDailyDose, dailyDoseRange
+        cohortInfo, "daily_dose", impute = imputeDailyDose, impute_end_date = NULL,
+        range = dailyDoseRange, start = "drug_exposure_start_date",
+        end = "drug_exposure_end_date"
       ) %>%
         computeTable(cdm)
 

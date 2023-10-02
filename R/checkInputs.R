@@ -64,6 +64,19 @@ checkConceptSetList <- function(conceptSetList) {
   }
 }
 
+checkMissingEndDate <- function(missingEndDate) {
+  if (is.character(missingEndDate)) {
+    checkmate::assertChoice(
+      missingEndDate,
+      c("none", "median", "mean", "mode")
+    )
+  } else {
+    checkmate::assertCount(
+      missingEndDate, positive = TRUE
+    )
+  }
+}
+
 checkName <- function(name, cdm) {
   checkmate::assertCharacter(name, len = 1, any.missing = FALSE)
   if (name %in% CDMConnector::tbl_group("all")) {
@@ -79,23 +92,17 @@ checkName <- function(name, cdm) {
   }
 }
 
-checkSummariseMode <- function(summariseMode) {
-  if (!(summariseMode %in% c("AllEras", "FirstEra", "FixedTime"))) {
+checkLimit <- function(limit) {
+  if (!(limit %in% c("All", "First"))) {
     cli::cli_abort(
-      "`summariseMode` should be one of: AllEras, FirstEra, FixedTime"
+      "`Limit` should be one of: All, First"
     )
   }
 }
 
-checkFixedTime <- function(fixedTime, summariseMode) {
-  if (summariseMode == "FixedTime") {
-    checkmate::assertIntegerish(fixedTime, lower = 1, any.missing = F, len = 1)
-  }
-}
-
-checkDaysPriorObservation <- function(daysPriorObservatio) {
+checkPriorObservation <- function(priorObservation) {
   checkmate::assertIntegerish(
-    daysPriorObservatio, lower = 0, any.missing = F, len = 1, null.ok = T
+    priorObservation, lower = 0, any.missing = F, len = 1, null.ok = T
   )
 }
 
@@ -130,7 +137,7 @@ checkImputeDuration <- function(imputeDuration) {
   if (is.character(imputeDuration)) {
     checkmate::assertChoice(
       imputeDuration,
-      c("eliminate", "median", "mean", "quantile25", "quantile75")
+      c("none", "median", "mean", "mode")
     )
   } else {
     checkmate::assertCount(
@@ -677,15 +684,17 @@ checkConsistentCohortSet<- function(cs,
                                     conceptSetList,
                                     gapEra,
                                     imputeDuration,
+                                    missingEndDate,
                                     durationRange,
                                     missingGapEra,
                                     missingImputeDuration,
+                                    missingMissingEndDate,
                                     missingDurationRange) {
   expectedColnames <- c(
-    "cohort_definition_id", "cohort_name", "summarise_mode", "fixed_time",
-    "days_prior_observation", "gap_era", "prior_use_washout",
+    "cohort_definition_id", "cohort_name", "limit",
+    "prior_observation", "gap_era", "prior_use_washout",
     "cohort_date_range_start", "cohort_date_range_end", "impute_duration",
-    "duration_range_min", "duration_range_max"
+    "duration_range_min", "duration_range_max", "missing_end_date"
   )
   if (
     length(colnames(cs)) == length(expectedColnames) &
@@ -717,7 +726,7 @@ checkConsistentCohortSet<- function(cs,
     if (missingImputeDuration == TRUE) {
       if (length(unique(cs$impute_duration)) > 1) {
         cli::cli_abort(
-          "More than one impueDuration found in cohortSet, please specify imputeDuration"
+          "More than one imputeDuration found in cohortSet, please specify imputeDuration"
         )
       }
       imputeDuration <- as.numeric(unique(cs$impute_duration))
@@ -744,6 +753,21 @@ checkConsistentCohortSet<- function(cs,
         )) {
         cli::cli_warn(glue::glue_collapse(
           "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
+        ))
+      }
+    }
+
+    if (missingMissingEndDate == TRUE) {
+      if (length(unique(cs$missing_end_date)) > 1) {
+        cli::cli_abort(
+          "More than one missingEndDate found in cohortSet, please specify missingEndDate"
+        )
+      }
+      missingEndDate <- as.numeric(unique(cs$missing_end_date))
+    } else {
+      if (as.character(missingEndDate) != cs$missing_end_date) {
+        cli::cli_warn(glue::glue(
+          "missingEndDate is different than at the cohort creation stage (input: {missingEndDate}, cohortSet: {cs$missing_end_date})."
         ))
       }
     }

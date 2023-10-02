@@ -30,7 +30,7 @@ stratification columns
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
-cdm$cohort1 <- cdm$cohort1 \%>\%
+cdm[["cohort1"]] <- cdm[["cohort1"]] \%>\%
   addIndication(cdm, "cohort2") \%>\%
   indicationToStrata()
 }
