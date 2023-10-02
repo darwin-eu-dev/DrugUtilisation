@@ -144,7 +144,8 @@ dailyDoseCoverage <- function(cdm,
     dplyr::inner_join(
       cdm[["concept_ancestor"]] %>%
         dplyr::filter(ancestor_concept_id %in% .env$ingredientConceptId) %>%
-        dplyr::select("drug_concept_id" = "descendant_concept_id"),
+        dplyr::select("drug_concept_id" = "descendant_concept_id") %>%
+        dplyr::distinct(),
       by = "drug_concept_id"
     ) %>%
     dplyr::select(
