@@ -139,14 +139,15 @@ dailyDoseCoverage <- function(cdm,
   # initial checks
   checkInputs(cdm = cdm)
 
-  # get concepts
-  concepts <- cdm[["concept_ancestor"]] %>%
-    dplyr::filter(.data$ancestor_concept_id %in% .env$ingredientConceptId) %>%
-    dplyr::pull("descendant_concept_id")
-
   # get daily dosage
   dailyDose <- cdm[["drug_exposure"]] %>%
-    dplyr::filter(.data$drug_concept_id %in% .env$concepts) %>%
+    dplyr::inner_join(
+      cdm[["concept_ancestor"]] %>%
+        dplyr::filter(.data$ancestor_concept_id %in% .env$ingredientConceptId) %>%
+        dplyr::select("drug_concept_id" = "descendant_concept_id") %>%
+        dplyr::distinct(),
+      by = "drug_concept_id"
+    ) %>%
     dplyr::select(
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
       "quantity"
