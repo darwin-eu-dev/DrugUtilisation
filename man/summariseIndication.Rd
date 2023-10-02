@@ -45,17 +45,17 @@ indications <- list("headache" = 378253, "asthma" = 317009)
 cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
-cdm$drug_cohort <- cdm$drug_cohort \%>\%
+cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] \%>\%
   addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
 
-summariseIndication(cdm$drug_cohort, cdm)
+summariseIndication(cdm[["drug_cohort"]], cdm)
 
-cdm$drug_cohort <- cdm$drug_cohort \%>\%
+cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] \%>\%
   addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) \%>\%
   addSex(cdm)
 
 summariseIndication(
-  cdm$drug_cohort, cdm, strata = list(
+  cdm[["drug_cohort"]], cdm, strata = list(
     "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
   )
 )

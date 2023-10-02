@@ -375,12 +375,13 @@ test_that("test indicationDate", {
       indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL
     ) %>% dplyr::relocate(indication_gap_inf_asthma) %>%
     indicationToStrata()
-  expect_true(all(
-    setdiff(colnames(res012inf), colnames(cdm[["cohort1"]])) == c(
+  expect_equal(
+    sort(setdiff(colnames(res012inf), colnames(cdm[["cohort1"]]))),
+    sort(c(
       "indication_gap_0", "indication_gap_1", "indication_gap_2",
       "indication_gap_inf"
-    )
-  ))
+    ))
+  )
 
   # change indicationDate
   cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
@@ -392,12 +393,13 @@ test_that("test indicationDate", {
       indicationDate = "start_date"
     ) %>% dplyr::relocate(indication_gap_inf_asthma) %>%
     indicationToStrata()
-  expect_true(all(
-    setdiff(colnames(res012infS), colnames(cdm[["cohort1"]])) == c(
+  expect_equal(
+    sort(setdiff(colnames(res012infS), colnames(cdm[["cohort1"]]))),
+    sort(c(
       "indication_gap_0", "indication_gap_1", "indication_gap_2",
       "indication_gap_inf"
-    )
-  ))
+    ))
+  )
   expect_true(
     setdiff(colnames(res012inf), colnames(res012infS)) == "cohort_start_date"
   )
