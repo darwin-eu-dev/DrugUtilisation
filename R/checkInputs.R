@@ -25,7 +25,7 @@ checkInputs <- function(...) {
     varName <- eval(parse(text = paste0("names(formals(", funName, "))")))
     eval(parse(text = paste0(
       funName, "(",
-      paste0( paste0("inputs[[\"", varName, "\"]]"), collapse = ", "), ")"
+      paste0(paste0("inputs[[\"", varName, "\"]]"), collapse = ", "), ")"
     )))
   })
   invisible(NULL)
@@ -64,18 +64,6 @@ checkConceptSetList <- function(conceptSetList) {
   }
 }
 
-checkMissingEndDate <- function(missingEndDate) {
-  if (is.character(missingEndDate)) {
-    checkmate::assertChoice(
-      missingEndDate,
-      c("none", "median", "mean", "mode")
-    )
-  } else {
-    checkmate::assertCount(
-      missingEndDate, positive = TRUE
-    )
-  }
-}
 
 checkName <- function(name, cdm) {
   checkmate::assertCharacter(name, len = 1, any.missing = FALSE)
@@ -102,7 +90,8 @@ checkLimit <- function(limit) {
 
 checkPriorObservation <- function(priorObservation) {
   checkmate::assertIntegerish(
-    priorObservation, lower = 0, any.missing = F, len = 1, null.ok = T
+    priorObservation,
+    lower = 0, any.missing = F, len = 1, null.ok = T
   )
 }
 
@@ -117,7 +106,8 @@ checkGap <- function(gap) {
 checkPriorUseWashout <- function(priorUseWashout) {
   if (!(is.numeric(priorUseWashout) & length(priorUseWashout) == 1 & is.infinite(priorUseWashout))) {
     checkmate::assertIntegerish(
-      priorUseWashout, lower = 0, any.missing = F, len = 1
+      priorUseWashout,
+      lower = 0, any.missing = F, len = 1
     )
   }
 }
@@ -125,8 +115,8 @@ checkPriorUseWashout <- function(priorUseWashout) {
 checkCohortDateRange <- function(cohortDateRange) {
   checkmate::assertDate(cohortDateRange, len = 2)
   if (!is.na(cohortDateRange[1]) &
-      !is.na(cohortDateRange[2]) &
-      cohortDateRange[1] > cohortDateRange[2]) {
+    !is.na(cohortDateRange[2]) &
+    cohortDateRange[1] > cohortDateRange[2]) {
     cli::cli_abort(
       "cohortDateRange[1] should be equal or smaller than cohortDateRange[2]"
     )
@@ -141,12 +131,13 @@ checkImputeDuration <- function(imputeDuration) {
     )
   } else {
     checkmate::assertCount(
-      imputeDuration, positive = TRUE
+      imputeDuration,
+      positive = TRUE
     )
   }
 }
 
-checkImputeDailyDose<- function(imputeDailyDose) {
+checkImputeDailyDose <- function(imputeDailyDose) {
   if (is.character(imputeDailyDose)) {
     checkmate::assertChoice(
       imputeDailyDose,
@@ -154,7 +145,8 @@ checkImputeDailyDose<- function(imputeDailyDose) {
     )
   } else {
     checkmate::assertCount(
-      imputeDailyDose, positive = TRUE
+      imputeDailyDose,
+      positive = TRUE
     )
   }
 }
@@ -163,8 +155,8 @@ checkDurationRange <- function(durationRange) {
   errorMessage <- "durationRange has to be numeric of length 2 with no NA and
       durationRange[1] <= durationRange[2]"
   if (!is.numeric(durationRange) |
-      length(durationRange) != 2 |
-      any(is.na(durationRange))) {
+    length(durationRange) != 2 |
+    any(is.na(durationRange))) {
     cli::cli_abort(errorMessage)
   }
   if (durationRange[1] > durationRange[2]) {
@@ -176,8 +168,8 @@ checkDailyDoseRange <- function(dailyDoseRange) {
   errorMessage <- "dailyDoseRange has to be numeric of length 2 with no NA and
       dailyDoseRange[1] <= dailyDoseRange[2]"
   if (!is.numeric(dailyDoseRange) |
-      length(dailyDoseRange) != 2 |
-      any(is.na(dailyDoseRange))) {
+    length(dailyDoseRange) != 2 |
+    any(is.na(dailyDoseRange))) {
     cli::cli_abort(errorMessage)
   }
   if (dailyDoseRange[1] > dailyDoseRange[2]) {
@@ -194,8 +186,8 @@ checkAttrition <- function(attrition) {
       cli::cli_abort(errorMessage)
     }
     if (!all(c(
-      'cohort_definition_id', 'number_records', 'number_subjects', 'reason_id',
-      'reason', 'excluded_records', 'excluded_subjects'
+      "cohort_definition_id", "number_records", "number_subjects", "reason_id",
+      "reason", "excluded_records", "excluded_subjects"
     ) %in% colnames(attrition))) {
       cli::cli_abort(errorMessage)
     }
@@ -225,7 +217,7 @@ checkTargetCohortName <- function(targetCohortName, cdm) {
 }
 
 checkPath <- function(path) {
-  if(typeof(path) != "character" || length(path) != 1) {
+  if (typeof(path) != "character" || length(path) != 1) {
     cli::cli_abort("path is not a character of length 1")
   }
 
@@ -241,7 +233,9 @@ checkAgeGroup <- function(ageGroup) {
     if (!all(lengths(ageGroup) == 2) | !is.numeric(unlist(ageGroup))) {
       cli::cli_abort(errorMessage)
     }
-    if (!all(unlist(lapply(ageGroup, function(x) {x[1] <= x[2]})))) {
+    if (!all(unlist(lapply(ageGroup, function(x) {
+      x[1] <= x[2]
+    })))) {
       cli::cli_abort(errorMessage)
     }
   }
@@ -252,7 +246,7 @@ checkEraJoinMode <- function(eraJoinMode) {
   if (!is.character(eraJoinMode) | length(eraJoinMode) > 1) {
     cli::cli_abort(errorMessage)
   }
-  if (!(eraJoinMode %in% c('Previous', 'Subsequent', 'Zero', 'Join'))) {
+  if (!(eraJoinMode %in% c("Previous", "Subsequent", "Zero", "Join"))) {
     cli::cli_abort(errorMessage)
   }
 }
@@ -262,7 +256,7 @@ checkOverlapMode <- function(overlapMode) {
   if (!is.character(overlapMode) | length(overlapMode) > 1) {
     cli::cli_abort(errorMessage)
   }
-  if (!(overlapMode %in% c('Previous', 'Subsequent', 'Minimum', 'Maximum', 'Sum'))) {
+  if (!(overlapMode %in% c("Previous", "Subsequent", "Minimum", "Maximum", "Sum"))) {
     cli::cli_abort(errorMessage)
   }
 }
@@ -272,7 +266,7 @@ checkSameIndexMode <- function(sameIndexMode) {
   if (!is.character(sameIndexMode) | length(sameIndexMode) > 1) {
     cli::cli_abort(errorMessage)
   }
-  if (!(sameIndexMode %in% c('Minimum', 'Maximum', 'Sum'))) {
+  if (!(sameIndexMode %in% c("Minimum", "Maximum", "Sum"))) {
     cli::cli_abort(errorMessage)
   }
 }
@@ -285,8 +279,8 @@ checkIngredientConceptId <- function(ingredientConceptId, cdm) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
   }
   if (cdm[["concept"]] %>%
-      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-      dplyr::pull("concept_class_id") != "Ingredient"
+    dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+    dplyr::pull("concept_class_id") != "Ingredient"
   ) {
     cli::cli_abort("ingredientConceptId is not found in vocabulary")
   }
@@ -487,12 +481,13 @@ checkSupplementary <- function(supplementary, cohort) {
 
 checkWindowVisitOcurrence <- function(windowVisitOccurrence) {
   checkmate::assertNumeric(
-    windowVisitOccurrence, any.missing = FALSE, null.ok = TRUE, len = 2
+    windowVisitOccurrence,
+    any.missing = FALSE, null.ok = TRUE, len = 2
   )
 }
 
 checkCovariates <- function(covariates, cdm) {
-  if (!is.null(covariates)){
+  if (!is.null(covariates)) {
     errorMessage <- "covariates should be a named list of two numeric values
     (windows). First element of the window must be smaller than the second one.
     Names should point to tables of the cdm."
@@ -516,7 +511,8 @@ checkOverlap <- function(overlap, tablesToCharacterize) {
     checkmate::assertLogical(overlap, any.missing = FALSE)
   } else {
     checkmate::assertLogical(
-      overlap, any.missing = FALSE, len = length(tablesToCharacterize)
+      overlap,
+      any.missing = FALSE, len = length(tablesToCharacterize)
     )
   }
 }
@@ -539,7 +535,9 @@ checkWindow <- function(window) {
   if (!all(!is.na(unlist(window)))) {
     cli::cli_abort(errorMessage)
   }
-  if (!all(unlist(lapply(window, function(x) {x[1] <= x[2]})))) {
+  if (!all(unlist(lapply(window, function(x) {
+    x[1] <= x[2]
+  })))) {
     cli::cli_abort(errorMessage)
   }
 }
@@ -641,7 +639,8 @@ checkNewColumn <- function(newColumn) {
 
 checkLabel <- function(label, binaryColumns) {
   checkmate::assertCharacter(
-    label, any.missing = FALSE, len = length(binaryColumns)
+    label,
+    any.missing = FALSE, len = length(binaryColumns)
   )
 }
 
@@ -672,7 +671,7 @@ isInteger <- function(integer) {
     return(FALSE)
   } else {
     if (!is.infinite(integer) &&
-        abs(integer - round(integer)) > sqrt(.Machine$double.eps)) {
+      abs(integer - round(integer)) > sqrt(.Machine$double.eps)) {
       return(FALSE)
     } else {
       return(TRUE)
@@ -680,25 +679,23 @@ isInteger <- function(integer) {
   }
 }
 
-checkConsistentCohortSet<- function(cs,
-                                    conceptSetList,
-                                    gapEra,
-                                    imputeDuration,
-                                    missingEndDate,
-                                    durationRange,
-                                    missingGapEra,
-                                    missingImputeDuration,
-                                    missingMissingEndDate,
-                                    missingDurationRange) {
+checkConsistentCohortSet <- function(cs,
+                                     conceptSetList,
+                                     gapEra,
+                                     imputeDuration,
+                                     durationRange,
+                                     missingGapEra,
+                                     missingImputeDuration,
+                                     missingDurationRange) {
   expectedColnames <- c(
     "cohort_definition_id", "cohort_name", "limit",
     "prior_observation", "gap_era", "prior_use_washout",
-    "cohort_date_range_start", "cohort_date_range_end", "impute_duration",
-    "duration_range_min", "duration_range_max", "missing_end_date"
+    "cohort_date_range_start", "cohort_date_range_end",
+    "impute_duration", "duration_range_min", "duration_range_max"
   )
   if (
     length(colnames(cs)) == length(expectedColnames) &
-    all(expectedColnames %in% colnames(cs))
+      all(expectedColnames %in% colnames(cs))
   ) {
     notPresent <- names(conceptSetList)[!(
       names(conceptSetList) %in% cs$cohort_name
@@ -750,24 +747,9 @@ checkConsistentCohortSet<- function(cs,
       if (!identical(
         as.character(durationRange),
         c(cs$duration_range_min, cs$duration_range_max)
-        )) {
+      )) {
         cli::cli_warn(glue::glue_collapse(
           "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
-        ))
-      }
-    }
-
-    if (missingMissingEndDate == TRUE) {
-      if (length(unique(cs$missing_end_date)) > 1) {
-        cli::cli_abort(
-          "More than one missingEndDate found in cohortSet, please specify missingEndDate"
-        )
-      }
-      missingEndDate <- as.numeric(unique(cs$missing_end_date))
-    } else {
-      if (as.character(missingEndDate) != cs$missing_end_date) {
-        cli::cli_warn(glue::glue(
-          "missingEndDate is different than at the cohort creation stage (input: {missingEndDate}, cohortSet: {cs$missing_end_date})."
         ))
       }
     }
@@ -780,5 +762,3 @@ checkConsistentCohortSet<- function(cs,
   )
   return(parameters)
 }
-
-

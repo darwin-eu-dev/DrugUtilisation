@@ -21,7 +21,6 @@ addDrugUse(
   overlapMode = "Sum",
   sameIndexMode = "Sum",
   imputeDuration = "none",
-  missingEndDate = 1,
   imputeDailyDose = "eliminate",
   durationRange = c(1, Inf),
   dailyDoseRange = c(0, Inf)
@@ -100,9 +99,6 @@ By default: "Sum".}
 \item{imputeDuration}{Whether/how the duration should be imputed
 "none", "median", "mean", "mode"
 . By default: "none"}
-
-\item{missingEndDate}{How to deal with missing end dates.
-Can be "none", "median", "mean", "mode", or it can be a count.}
 
 \item{imputeDailyDose}{Whether/how the daily_dose should be imputed
 "eliminate", "median", "mean", "quantile25", "quantile75". By default:

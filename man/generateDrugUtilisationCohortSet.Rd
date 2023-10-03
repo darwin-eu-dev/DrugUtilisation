@@ -9,7 +9,6 @@ generateDrugUtilisationCohortSet(
   name,
   conceptSetList,
   durationRange = c(1, Inf),
-  missingEndDate = 1,
   imputeDuration = "none",
   gapEra = 0,
   priorUseWashout = 0,
@@ -29,9 +28,6 @@ generateDrugUtilisationCohortSet(
 be a numeric vector of length two, with no NAs and the first value should be
 equal or smaller than the second one. It is only required if imputeDuration
 = TRUE. If NULL no restrictions are applied. By default: NULL.}
-
-\item{missingEndDate}{How to deal with missing end dates.
-Can be "none", "median", "mean", "mode", or it can be a count.}
 
 \item{imputeDuration}{Whether/how the duration should be imputed
 "none", "median", "mean", "mode", or it can be a count}

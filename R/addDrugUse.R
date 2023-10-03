@@ -73,8 +73,6 @@
 #' @param imputeDuration Whether/how the duration should be imputed
 #' "none", "median", "mean", "mode"
 #' . By default: "none"
-#' @param missingEndDate How to deal with missing end dates.
-#' Can be "none", "median", "mean", "mode", or it can be a count.
 #' @param imputeDailyDose Whether/how the daily_dose should be imputed
 #' "eliminate", "median", "mean", "quantile25", "quantile75". By default:
 #' "eliminate"
@@ -127,7 +125,6 @@ addDrugUse <- function(cohort,
                        overlapMode = "Sum",
                        sameIndexMode = "Sum",
                        imputeDuration = "none",
-                       missingEndDate = 1,
                        imputeDailyDose = "eliminate",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
@@ -155,7 +152,7 @@ addDrugUse <- function(cohort,
     gapEra = gapEra, eraJoinMode = eraJoinMode,
     initialQuantity = initialQuantity, cumulativeQuantity = cumulativeQuantity,
     overlapMode = overlapMode, sameIndexMode = sameIndexMode,
-    imputeDuration = imputeDuration, missingEndDate = missingEndDate,
+    imputeDuration = imputeDuration,
     imputeDailyDose = imputeDailyDose, durationRange = durationRange,
     dailyDoseRange = dailyDoseRange
   )
@@ -176,7 +173,9 @@ addDrugUse <- function(cohort,
       by = "drug_concept_id"
     ) %>%
     dplyr::filter(!is.na(.data$unit))
-  unit <- conceptSet %>% dplyr::pull("unit") %>% unique()
+  unit <- conceptSet %>%
+    dplyr::pull("unit") %>%
+    unique()
   if (length(unit) > 1) {
     cli::cli_abort(
       "More than one unit included in the conceptSetList, please stratify by
@@ -191,8 +190,8 @@ addDrugUse <- function(cohort,
   # consistency with cohortSet
   cs <- CDMConnector::cohortSet(cohort)
   parameters <- checkConsistentCohortSet(
-    cs, conceptSetList, gapEra, imputeDuration, missingEndDate, durationRange,
-    missing(gapEra), missing(imputeDuration), missing(missingEndDate), missing(durationRange)
+    cs, conceptSetList, gapEra, imputeDuration, durationRange,
+    missing(gapEra), missing(imputeDuration), missing(durationRange)
   )
   gapEra <- parameters$gapEra
   imputeDuration <- parameters$imputeDuration
@@ -212,7 +211,7 @@ addDrugUse <- function(cohort,
     CDMConnector::computeQuery()
 
   if (initialDailyDose | numberExposures | cumulativeDose | numberEras |
-      initialQuantity | cumulativeQuantity) {
+    initialQuantity | cumulativeQuantity) {
     # subset drug_exposure and only get the drug concept ids that we are
     # interested in.
     cohortInfo <- initialSubset(cdm, cohort, conceptSet)
@@ -223,7 +222,7 @@ addDrugUse <- function(cohort,
     if (initialDailyDose | cumulativeDose | numberEras) {
       # correct duration
       cohortInfo <- correctDuration(
-        cohortInfo, missingEndDate, imputeDuration, durationRange, cdm,
+        cohortInfo, imputeDuration, durationRange, cdm,
         "drug_exposure_start_date", "drug_exposure_end_date"
       )
 
@@ -235,8 +234,10 @@ addDrugUse <- function(cohort,
 
       # impute daily dose
       cohortInfo <- imputeVariable(
-        cohortInfo, "daily_dose", impute = imputeDailyDose, impute_end_date = NULL,
-        range = dailyDoseRange, start = "drug_exposure_start_date",
+        cohortInfo, "daily_dose",
+        impute = imputeDailyDose,
+        range = dailyDoseRange,
+        start = "drug_exposure_start_date",
         end = "drug_exposure_end_date"
       ) %>%
         computeTable(cdm)
@@ -275,15 +276,14 @@ addDrugUse <- function(cohort,
         # add cumulative dose
         cohort <- addCumulativeDose(cohort, cohortInfo)
       }
-
     }
-
   }
 
   # add result
   cohort <- originalCohort %>%
     dplyr::left_join(
-      cohort, by = c("subject_id", "cohort_start_date", "cohort_end_date")
+      cohort,
+      by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
     CDMConnector::computeQuery() %>%
     PatientProfiles::addAttributes(originalCohort)
@@ -346,7 +346,8 @@ addInfo <- function(cohort,
           ) %>%
           dplyr::filter(
             .data$drug_exposure_start_date == min(
-              .data$drug_exposure_start_date, na.rm = TRUE
+              .data$drug_exposure_start_date,
+              na.rm = TRUE
             ) &
               .data$drug_exposure_start_date <= .data$cohort_start_date &
               .data$drug_exposure_end_date >= .data$cohort_start_date
@@ -378,7 +379,8 @@ addInitialDailyDose <- function(cohort,
       ) %>%
       dplyr::filter(
         .data$drug_exposure_start_date == min(
-          .data$drug_exposure_start_date, na.rm = TRUE
+          .data$drug_exposure_start_date,
+          na.rm = TRUE
         ) &
           .data$drug_exposure_start_date <= .data$cohort_start_date &
           .data$drug_exposure_end_date >= .data$cohort_start_date
@@ -767,7 +769,7 @@ solveOverlap <- function(x, cdm, overlapMode) {
     dplyr::filter(dplyr::n() > 1)
   if (
     x_overlap %>% dplyr::ungroup() %>% dplyr::tally() %>% dplyr::pull("n") > 0
-  ){
+  ) {
     if (overlapMode == "Minimum") {
       x_overlap <- x_overlap %>%
         dplyr::select(-"considered_subexposure")
@@ -1155,7 +1157,7 @@ getVariables <- function(initialDailyDose,
   )[c(
     initialDailyDose, numberExposures, duration, cumulativeDose, numberEras
   )]
-  if(supplementary) {
+  if (supplementary) {
     variables <- c(
       variables, "gap_days", "unexposed_days", "not_considered_days",
       "number_subexposures", "number_continuous_exposures", "number_gaps",

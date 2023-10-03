@@ -251,7 +251,7 @@ test_that("priorUseWashout", {
 
 
 
-test_that("test missing end date throw warning", {
+test_that("test missing end date or out of durationRange", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
@@ -270,48 +270,44 @@ test_that("test missing end date throw warning", {
     )
   )
   acetaminophen <- list(acetaminophen = c(1125360, 2905077, 43135274))
-  expect_warning(
-    cdm1 <- generateDrugUtilisationCohortSet(
-      cdm = cdm,
-      name = "test_missing",
-      missingEndDate = 1,
-      durationRange = c(1, Inf),
-      imputeDuration = "mean",
-      conceptSetList = acetaminophen
-    )
+
+  cdm1 <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    name = "test_missing",
+    durationRange = c(1, Inf),
+    imputeDuration = 1,
+    conceptSetList = acetaminophen
   )
-  expect_true(attr(cdm1$test_missing, "numberMissingEndDate") == 2)
-  #by setting missingEndDate == 1, the missing end date is the same as start date
+
+
   expect_true(cdm1[["test_missing"]] %>%
     dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%
-      dplyr::pull(cohort_end_date) == as.Date("2021-03-01"))
+    dplyr::pull(cohort_end_date) == as.Date("2021-03-01"))
   expect_true(cdm1[["test_missing"]] %>%
-                dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
-                dplyr::pull(cohort_end_date) == as.Date("2021-02-12"))
+    dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
+    dplyr::pull(cohort_end_date) == as.Date("2021-02-12"))
 
-  #test durationRange and missingEndDate work at the same time
-  expect_warning(
-    cdm2 <- generateDrugUtilisationCohortSet(
-      cdm = cdm,
-      name = "test_missing",
-      missingEndDate = 10,
-      durationRange = c(1, 10),
-      imputeDuration = "mean",
-      conceptSetList = acetaminophen
-    )
+  # test durationRange and missingEndDate work at the same time
+
+  cdm2 <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    name = "test_missing",
+    durationRange = c(1, 10),
+    imputeDuration = 10,
+    conceptSetList = acetaminophen
   )
-  expect_true(attr(cdm2$test_missing, "numberMissingEndDate") == 2)
-  expect_true(attr(cdm2$test_missing, "numberImputation") == 1)
-  #check the number is correct with missingEndDate
+
+  expect_true(attr(cdm2$test_missing, "numberImputation") == 4)
+  # check the number is correct with missingEndDate
   expect_true(cdm2[["test_missing"]] %>%
-                dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%
-                dplyr::pull(cohort_end_date) == as.Date("2021-03-10"))
+    dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%
+    dplyr::pull(cohort_end_date) == as.Date("2021-03-10"))
   expect_true(cdm2[["test_missing"]] %>%
-                dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
-                dplyr::pull(cohort_end_date) == as.Date("2021-02-21"))
+    dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
+    dplyr::pull(cohort_end_date) == as.Date("2021-02-21"))
 
 
-  #test missingEndDate mean mode median works correctly
+  # test missingEndDate mean mode median works correctly
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -319,10 +315,12 @@ test_that("test missing end date throw warning", {
       person_id = c(1, 1, 1, 1, 1),
       drug_concept_id = sample(c(1125360, 2905077, 43135274), 5, replace = T),
       drug_exposure_start_date = as.Date(
-        c("2020-04-01", "2020-04-05", "2020-06-01", "2021-02-12", "2021-03-01"), "%Y-%m-%d"
+        c("2020-04-01", "2020-04-05", "2020-06-01", "2021-02-12", "2021-03-01"),
+        "%Y-%m-%d"
       ),
       drug_exposure_end_date = as.Date(
-        c("2020-04-02", "2020-04-06", "2020-06-03", NA, NA), "%Y-%m-%d"
+        c("2020-04-02", "2020-04-06", "2020-06-03", NA, NA),
+        "%Y-%m-%d"
       ),
       drug_type_concept_id = 38000177,
       quantity = 1
@@ -331,24 +329,21 @@ test_that("test missing end date throw warning", {
 
   acetaminophen <- list(acetaminophen = c(1125360, 2905077, 43135274))
 
-  expect_warning(
-    cdm2 <- generateDrugUtilisationCohortSet(
-      cdm = cdm,
-      name = "test_both",
-      missingEndDate = "mean",
-      durationRange = c(1, 2),
-      imputeDuration = "median",
-      conceptSetList = acetaminophen
-    )
+
+  cdm2 <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    name = "test_both",
+    durationRange = c(1, 2),
+    imputeDuration = "mean",
+    conceptSetList = acetaminophen
   )
 
-  #non-missing durations: 2,2,3 --> mean, mode and median are all 2 (floor())
+  # non-missing durations: 2,2,3 --> mean, mode and median are all 2 (floor())
 
   expect_true(cdm2[["test_both"]] %>%
-                dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%
-                dplyr::pull(cohort_end_date) == as.Date("2021-03-02"))
+    dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%
+    dplyr::pull(cohort_end_date) == as.Date("2021-03-02"))
   expect_true(cdm2[["test_both"]] %>%
-                dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
-                dplyr::pull(cohort_end_date) == as.Date("2021-02-13"))
-
+    dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
+    dplyr::pull(cohort_end_date) == as.Date("2021-02-13"))
 })

@@ -149,9 +149,9 @@ cohortAttrition(cdm2$dus_alleras) %>% select(number_records, reason, excluded_re
 
 ```
 
-### missingEndDate, imputeDuration and durationRange 
+### imputeDuration and durationRange 
 
-The parameter *durationRange* specifies the range within which the duration must fall, where duration = end date - start date + 1. Default as c(1, Inf). It should be a numeric vector of length two, with no NAs and the first value should be equal or smaller than the second one. Duration values outside of *durationRange* will be imputed using *imputeDuration*. It can ne set as: "none", "median", "mean", "mode" or an integer (count). Parameter *missingEndDate* specifies what to do when having missing end date. It can ne set as: "none", "median", "mean", "mode" or an integer (count).
+The parameter *durationRange* specifies the range within which the duration must fall, where duration = end date - start date + 1. Default as c(1, Inf). It should be a numeric vector of length two, with no NAs and the first value should be equal or smaller than the second one. Duration values outside of *durationRange* will be imputed using *imputeDuration*. It can ne set as: "none", "median", "mean", "mode" or an integer (count).
 
 ```{r, message=FALSE, warning=FALSE}
 cdm3 <- generateDrugUtilisationCohortSet(cdm,

@@ -455,28 +455,25 @@ applyLimit <- function(cohort, cdm, limit) {
 
 #' Impute or eliminate values under a certain conditions
 #' @noRd
-imputeVariable <- function(x, column, impute, impute_end_date, range, start, end, imputeRound = FALSE) {
+imputeVariable <- function(x, column, impute, range, start, end, imputeRound = FALSE) {
   # identify NA
-  if (!is.null(impute_end_date)) {
-    x <- x %>%
-      dplyr::mutate(
-        impute_end_date = dplyr::if_else(is.na(!!rlang::sym(end)), 1, 0),
-        impute = 0
-      )
-  }
+  x <- x %>%
+    dplyr::mutate(impute = dplyr::if_else(
+      is.na(.data[[column]]), 1, 0
+    ))
 
   # identify < range[1]
   if (!is.infinite(range[1])) {
     x <- x %>%
       dplyr::mutate(impute = dplyr::if_else(
-        .data$impute == 0, dplyr::if_else(.data[[column]] < !!range[1] && !is.na(.data[[column]]), 1, 0), 1
+        .data$impute == 0, dplyr::if_else(.data[[column]] < !!range[1], 1, 0), 1
       ))
   }
   # identify > range[2]
   if (!is.infinite(range[2])) {
     x <- x %>%
       dplyr::mutate(impute = dplyr::if_else(
-        .data$impute == 0, dplyr::if_else(.data[[column]] > !!range[2] && !is.na(.data[[column]]), 1, 0), 1
+        .data$impute == 0, dplyr::if_else(.data[[column]] > !!range[2], 1, 0), 1
       ))
   }
 
@@ -484,59 +481,6 @@ imputeVariable <- function(x, column, impute, impute_end_date, range, start, end
     dplyr::filter(.data$impute == 1) %>%
     dplyr::summarise(n = as.numeric(dplyr::n())) %>%
     dplyr::pull()
-
-  if (!is.null(impute_end_date)) {
-    numberMissingEndDate <- x %>%
-      dplyr::filter(.data$impute_end_date == 1) %>%
-      dplyr::summarise(n = as.numeric(dplyr::n())) %>%
-      dplyr::pull()
-
-
-    if (numberMissingEndDate > 0) {
-      cli::cli_warn(paste0(
-        "Records with missing end dates (", numberMissingEndDate,
-        ") found",
-        paste0(", impute with the parameter numberMissingEndDate provided"),
-        "."
-      ))
-      if (checkmate::test_integerish(impute_end_date)) {
-        x <- x %>%
-          dplyr::mutate_at(dplyr::vars(!!end), ~ ifelse(is.na(!!rlang::sym(end)), as.Date(
-            !!CDMConnector::dateadd(date = start, number = impute_end_date - 1)
-          ), .)) %>%
-          dplyr::mutate(
-            duration = !!CDMConnector::datediff(start = start, end = end) + 1
-          )
-      } else if (impute_end_date == "none") {
-        x <- x %>%
-          dplyr::filter(.data$impute_end_date == 0)
-      } else {
-        if (is.character(impute_end_date)) {
-          values_end_date <- x %>%
-            dplyr::filter(.data$impute_end_date == 0 && .data$impute == 0) %>%
-            dplyr::pull(dplyr::all_of(column))
-          impute_end_date <- switch(impute_end_date,
-            "median" = stats::median(values_end_date),
-            "mean" = mean(values_end_date),
-            "mode" = unique(values_end_date)[which.max(tabulate(match(
-              values_end_date,
-              unique(values_end_date)
-            )))]
-          )
-          if (imputeRound) {
-            impute_end_date <- round(impute_end_date)
-          }
-        }
-        x <- x %>%
-          dplyr::mutate(!!column := dplyr::if_else(
-            .data$impute_end_date == 1, .env$impute_end_date, .data[[column]]
-          ))
-      }
-    }
-    x <- x %>%
-      dplyr::select(-"impute_end_date")
-    attr(x, "numberMissingEndDate") <- numberMissingEndDate
-  }
 
   if (numberImputations > 0) {
     # if impute is false then all values with impute = 1 are not considered
@@ -547,13 +491,14 @@ imputeVariable <- function(x, column, impute, impute_end_date, range, start, end
       if (is.character(impute)) {
         values <- x %>%
           dplyr::filter(.data$impute == 0) %>%
-          # dplyr::filter({if("impute_end_date" %in% names(.)) .data$impute_end_date else NULL} == 0) %>%
           dplyr::pull(dplyr::all_of(column))
         impute <- switch(impute,
           "median" = stats::median(values),
           "mean" = mean(values),
-          "mode" = unique(values_end_date)[which.max(tabulate(match(values_end_date,
-                                                                    unique(values_end_date))))]
+          "mode" = unique(values)[which.max(tabulate(match(
+            values,
+            unique(values)
+          )))]
         )
         if (imputeRound) {
           impute <- round(impute)
@@ -567,7 +512,6 @@ imputeVariable <- function(x, column, impute, impute_end_date, range, start, end
     x <- x %>%
       dplyr::select(-"impute")
     attr(x, "numberImputations") <- numberImputations
-
   }
 
   return(x)
@@ -576,7 +520,6 @@ imputeVariable <- function(x, column, impute, impute_end_date, range, start, end
 
 #' @noRd
 correctDuration <- function(x,
-                            missingEndDate,
                             imputeDuration,
                             durationRange,
                             cdm,
@@ -585,27 +528,23 @@ correctDuration <- function(x,
   # compute the number of days exposed according to:
   # duration = end - start + 1
   x <- x %>%
-    dplyr::filter(!is.na(rlang::sym(!!start))) %>%
     dplyr::mutate(
       duration = !!CDMConnector::datediff(start = start, end = end) + 1
     )
 
   # impute or eliminate the exposures that duration does not fulfill the given requirements
-  # impute missing end date with missingEndDate
   # conditions (<daysExposedRange[1]; >daysExposedRange[2])
   x <- imputeVariable(
     x = x,
     column = "duration",
     impute = imputeDuration,
-    impute_end_date =  missingEndDate,
     range = durationRange,
     start = start,
-    end =  end,
+    end = end,
     imputeRound = TRUE
   )
-  numberImputations <- attr(x, "numberImputations")
 
-  numberMissingEndDate <- attr(x, "numberMissingEndDate")
+  numberImputations <- attr(x, "numberImputations")
 
   x <- x %>%
     dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
@@ -615,10 +554,6 @@ correctDuration <- function(x,
     dplyr::select(-c("duration", "days_to_add")) %>%
     computeTable(cdm)
   attr(x, "numberImputations") <- numberImputations
-  attr(x, "numberMissingEndDate") <- numberMissingEndDate
 
   return(x)
 }
-
-
-
