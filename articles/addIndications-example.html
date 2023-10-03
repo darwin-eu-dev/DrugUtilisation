@@ -67,7 +67,7 @@
                         <h4 data-toc-skip class="author">Martí Català,
 Mike Du, Yuchen Guo, Kim López-Güell, and Edward Burn</h4>
             
-            <h4 data-toc-skip class="date">2023-10-02</h4>
+            <h4 data-toc-skip class="date">2023-10-03</h4>
       
       
       <div class="d-none name"><code>addIndications-example.Rmd</code></div>
@@ -176,7 +176,7 @@ allow user to specify the tables to look for unknown indication.</p>
 <span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;dbplyr_037&gt; [?? x 16]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1//tmp/Rtmp5AJHpY/file1c517cd805de.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB 0.8.1 [unknown@Linux 6.2.0-1012-azure:R 4.3.1//tmp/RtmpW0HuYP/file1c16746e54d6.duckdb]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         78 1968-11-25        1968-12-16     </span></span>
@@ -190,8 +190,8 @@ allow user to specify the tables to look for unknown indication.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        300 2005-06-16        2005-06-30     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        300 2007-08-21        2007-08-28     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: indication_gap_0_bronchitis &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_sinusitis &lt;dbl&gt;, indication_gap_0_none &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: indication_gap_0_sinusitis &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_bronchitis &lt;dbl&gt;, indication_gap_0_none &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_sinusitis &lt;dbl&gt;, indication_gap_30_bronchitis &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_none &lt;dbl&gt;, indication_gap_365_bronchitis &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_365_sinusitis &lt;dbl&gt;, indication_gap_365_none &lt;dbl&gt;,</span></span></span>
@@ -252,14 +252,14 @@ summarized by ageGroup and sex.</p>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number subjects             count         2679     Overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number records              count         13860    Overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> indication_gap_0_sinusitis  count         1        Overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> indication_gap_0_bronchitis count         2518     Overall    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> indication_gap_0_bronchitis count         2518     Overall    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> indication_gap_0_sinusitis  count         1        Overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> indication_gap_0_none       count         163      Overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> indication_gap_0_unknown    count         11178    Overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> number subjects             count         2414     age_group  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> number records              count         6070     age_group  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> indication_gap_0_sinusitis  count         1        age_group  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> indication_gap_0_bronchitis count         1817     age_group  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> indication_gap_0_bronchitis count         1817     age_group  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> indication_gap_0_sinusitis  count         1        age_group  </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 20 more rows</span></span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
