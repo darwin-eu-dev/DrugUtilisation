@@ -54,7 +54,7 @@ Suggests:
     plotly
 Config/testthat/edition: 3
 Imports: 
-    CDMConnector (>= 1.0.0),
+    CDMConnector (>= 1.1.2),
     checkmate,
     DBI,
     dbplyr,
