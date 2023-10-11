@@ -441,7 +441,8 @@ unionCohort <- function(x, gap, cdm) {
 
 #' @noRd
 applyLimit <- function(cohort, cdm, limit) {
-  if (limit == "First") {
+  limit <- tolower(limit)
+  if (limit == "first") {
     cohort <- cohort %>%
       dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
       dplyr::filter(
@@ -457,6 +458,9 @@ applyLimit <- function(cohort, cdm, limit) {
 #' @noRd
 imputeVariable <- function(x, column, impute, range, start, end, imputeRound = FALSE) {
   # identify NA
+  if(is.character(impute)){
+    impute <- tolower(impute)
+  }
   x <- x %>%
     dplyr::mutate(impute = dplyr::if_else(
       is.na(.data[[column]]), 1, 0

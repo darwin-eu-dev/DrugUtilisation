@@ -34,11 +34,11 @@
 #' @param cohortDateRange Range for cohort_start_date and cohort_end_date
 #' @param limit Choice on how to summarise the exposures. There are
 #' two options:
-#' "All" we summarise the output will be a summary of the exposed eras of
+#' "all" we summarise the output will be a summary of the exposed eras of
 #' each individual. Each individual can contribute multiple times.
-#' "First" we only consider the first observable era of each individual that fulfills the criteria provided
+#' "first" we only consider the first observable era of each individual that fulfills the criteria provided
 #' in previous parameters. In this case each individual can not contribute with multiple rows.
-#' By default: "All".
+#' By default: "all".
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
 #'
@@ -79,7 +79,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              priorUseWashout = 0,
                                              priorObservation = 0,
                                              cohortDateRange = as.Date(c(NA, NA)),
-                                             limit = "All") {
+                                             limit = "all") {
   checkInputs(
     cdm = cdm, name = name, conceptSetList = conceptSetList,
     limit = limit, priorObservation = priorObservation, gapEra = gapEra,

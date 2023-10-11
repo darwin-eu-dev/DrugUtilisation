@@ -14,7 +14,7 @@ generateDrugUtilisationCohortSet(
   priorUseWashout = 0,
   priorObservation = 0,
   cohortDateRange = as.Date(c(NA, NA)),
-  limit = "All"
+  limit = "all"
 )
 }
 \arguments{
@@ -45,11 +45,11 @@ to be within observation_period.}
 
 \item{limit}{Choice on how to summarise the exposures. There are
 two options:
-"All" we summarise the output will be a summary of the exposed eras of
+"all" we summarise the output will be a summary of the exposed eras of
 each individual. Each individual can contribute multiple times.
-"First" we only consider the first observable era of each individual that fulfills the criteria provided
+"first" we only consider the first observable era of each individual that fulfills the criteria provided
 in previous parameters. In this case each individual can not contribute with multiple rows.
-By default: "All".}
+By default: "all".}
 }
 \value{
 The function returns the 'cdm' object with the created tables as

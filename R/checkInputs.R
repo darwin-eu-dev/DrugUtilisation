@@ -80,13 +80,19 @@ checkName <- function(name, cdm) {
   }
 }
 
+
 checkLimit <- function(limit) {
-  if (!(limit %in% c("All", "First"))) {
-    cli::cli_abort(
-      "`Limit` should be one of: All, First"
-    )
+  errorMessage <- "limit must be a choice between: 'all' and 'first'"
+  if (!is.character(limit) | length(limit) > 1) {
+    cli::cli_abort(errorMessage)
+  } else{
+    limit <- tolower(limit)
+  }
+  if (!(limit %in% c("all", "first"))) {
+    cli::cli_abort(errorMessage)
   }
 }
+
 
 checkPriorObservation <- function(priorObservation) {
   checkmate::assertIntegerish(
@@ -125,6 +131,7 @@ checkCohortDateRange <- function(cohortDateRange) {
 
 checkImputeDuration <- function(imputeDuration) {
   if (is.character(imputeDuration)) {
+    imputeDuration <- tolower(imputeDuration)
     checkmate::assertChoice(
       imputeDuration,
       c("none", "median", "mean", "mode")
@@ -242,31 +249,37 @@ checkAgeGroup <- function(ageGroup) {
 }
 
 checkEraJoinMode <- function(eraJoinMode) {
-  errorMessage <- "eraJoinMode must be a coice between: 'Previous', 'Subsequent', 'Zero' and 'Join'"
+  errorMessage <- "eraJoinMode must be a choice between: 'previous', 'subsequent', 'zero' and 'join'"
   if (!is.character(eraJoinMode) | length(eraJoinMode) > 1) {
     cli::cli_abort(errorMessage)
+  } else{
+    eraJoinMode <- tolower(eraJoinMode)
   }
-  if (!(eraJoinMode %in% c("Previous", "Subsequent", "Zero", "Join"))) {
+  if (!(eraJoinMode %in% c("previous", "subsequent", "zero", "join"))) {
     cli::cli_abort(errorMessage)
   }
 }
 
 checkOverlapMode <- function(overlapMode) {
-  errorMessage <- "overlapMode must be a coice between: 'Previous', 'Subsequent', 'Minimum', 'Maximum' and 'Sum'"
+  errorMessage <- "overlapMode must be a choice between: 'previous', 'subsequent', 'minimum', 'maximum' and 'sum'"
   if (!is.character(overlapMode) | length(overlapMode) > 1) {
     cli::cli_abort(errorMessage)
+  } else{
+    overlapMode <- tolower(overlapMode)
   }
-  if (!(overlapMode %in% c("Previous", "Subsequent", "Minimum", "Maximum", "Sum"))) {
+  if (!(overlapMode %in% c("previous", "subsequent", "minimum", "maximum", "sum"))) {
     cli::cli_abort(errorMessage)
   }
 }
 
 checkSameIndexMode <- function(sameIndexMode) {
-  errorMessage <- "sameIndexMode must be a coice between: 'Minimum', 'Maximum' and 'Sum'"
+  errorMessage <- "sameIndexMode must be a choice between: 'minimum', 'maximum' and 'sum'"
   if (!is.character(sameIndexMode) | length(sameIndexMode) > 1) {
     cli::cli_abort(errorMessage)
+  }else{
+    sameIndexMode <- tolower(sameIndexMode)
   }
-  if (!(sameIndexMode %in% c("Minimum", "Maximum", "Sum"))) {
+  if (!(sameIndexMode %in% c("minimum", "maximum", "sum"))) {
     cli::cli_abort(errorMessage)
   }
 }
@@ -728,7 +741,7 @@ checkConsistentCohortSet <- function(cs,
       }
       imputeDuration <- as.numeric(unique(cs$impute_duration))
     } else {
-      if (as.character(imputeDuration) != cs$impute_duration) {
+      if (as.character(tolower(imputeDuration)) != tolower(cs$impute_duration)) {
         cli::cli_warn(glue::glue(
           "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
         ))
