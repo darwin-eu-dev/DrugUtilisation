@@ -128,6 +128,13 @@ addDrugUse <- function(cohort,
                        imputeDailyDose = "eliminate",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
+  character <- c("eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration", "imputeDailyDose")
+  for (char in character) {
+    if (is.character(get(char))) {
+      assign(char, tolower(get(char)))
+    }
+  }
+
   if (length(conceptSetList) > 1) {
     cli::cli_abort("Only one concept set should be provided")
   }
@@ -156,13 +163,6 @@ addDrugUse <- function(cohort,
     imputeDailyDose = imputeDailyDose, durationRange = durationRange,
     dailyDoseRange = dailyDoseRange
   )
-
-  character <- c("eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration", "imputeDailyDose")
-  for (char in character) {
-    if (is.character(eval(parse(text = char)))) {
-      is.character(eval(parse(text = paste0(char, " <- tolower(", char, ")"))))
-    }
-  }
 
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
