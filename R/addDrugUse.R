@@ -128,8 +128,8 @@ addDrugUse <- function(cohort,
                        imputeDailyDose = "eliminate",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
-  character <- c("eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration", "imputeDailyDose")
-  for (char in character) {
+  vars <- c("eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration", "imputeDailyDose")
+  for (char in vars) {
     if (is.character(get(char))) {
       assign(char, tolower(get(char)))
     }
