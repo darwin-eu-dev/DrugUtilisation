@@ -87,6 +87,13 @@ generateDrugUtilisationCohortSet <- function(cdm,
     imputeDuration = imputeDuration, durationRange = durationRange
   )
 
+  character <- c("imputeDuration")
+  for (char in character) {
+    if (is.character(eval(parse(text = char)))) {
+      is.character(eval(parse(text = paste0(char, " <- tolower(", char, ")"))))
+    }
+  }
+
   # get conceptSet
   conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
