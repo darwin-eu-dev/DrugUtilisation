@@ -21,7 +21,7 @@ addDrugUse(
   overlapMode = "sum",
   sameIndexMode = "sum",
   imputeDuration = "none",
-  imputeDailyDose = "eliminate",
+  imputeDailyDose = "none",
   durationRange = c(1, Inf),
   dailyDoseRange = c(0, Inf)
 )
@@ -101,8 +101,8 @@ By default: "sum".}
 . By default: "none"}
 
 \item{imputeDailyDose}{Whether/how the daily_dose should be imputed
-"eliminate", "median", "mean", "quantile25", "quantile75". By default:
-"eliminate"}
+"none", "median", "mean", "mode"
+. By default: "none"}
 
 \item{durationRange}{Range between the duration must be comprised. It should
 be a numeric vector of length two, with no NAs and the first value should be
