@@ -67,7 +67,7 @@
 <span>  overlapMode <span class="op">=</span> <span class="st">"sum"</span>,</span>
 <span>  sameIndexMode <span class="op">=</span> <span class="st">"sum"</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
-<span>  imputeDailyDose <span class="op">=</span> <span class="st">"eliminate"</span>,</span>
+<span>  imputeDailyDose <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  dailyDoseRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -182,8 +182,8 @@ By default: "sum".</p></dd>
 
 <dt>imputeDailyDose</dt>
 <dd><p>Whether/how the daily_dose should be imputed
-"eliminate", "median", "mean", "quantile25", "quantile75". By default:
-"eliminate"</p></dd>
+"none", "median", "mean", "mode"
+. By default: "none"</p></dd>
 
 
 <dt>durationRange</dt>
