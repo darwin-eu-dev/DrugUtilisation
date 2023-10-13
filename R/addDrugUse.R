@@ -33,46 +33,46 @@
 #' considered in the same era. By default: 180.
 #' @param eraJoinMode How two different continuous exposures are joined in an
 #' era. There are four options:
-#' "Zero" the exposures are joined considering that the period between both
+#' "zero" the exposures are joined considering that the period between both
 #' continuous exposures the subject is treated with a daily dose of zero. The
 #' time between both exposures contributes to the total exposed time.
-#' "Join" the exposures are joined considering that the period between both
+#' "join" the exposures are joined considering that the period between both
 #' continuous exposures the subject is treated with a daily dose of zero. The
 #' time between both exposures does not contribute to the total exposed time.
-#' "Previous" the exposures are joined considering that the period between both
+#' "previous" the exposures are joined considering that the period between both
 #' continuous exposures the subject is treated with the daily dose of the
 #' previous subexposure. The time between both exposures contributes to the
 #' total exposed time.
-#' "Subsequent" the exposures are joined considering that the period between
+#' "subsequent" the exposures are joined considering that the period between
 #' both continuous exposures the subject is treated with the daily dose of the
 #' subsequent subexposure. The time between both exposures contributes to the
 #' total exposed time.
-#' By default: "Previous".
+#' By default: "previous".
 #' @param overlapMode How the overlapping between two exposures that do not
 #' start on the same day is solved inside a subexposure. There are five possible
 #'  options:
-#' "Previous" the considered daily_dose is the one of the earliest exposure.
-#' "Subsequent" the considered daily_dose is the one of the new exposure that
+#' "previous" the considered daily_dose is the one of the earliest exposure.
+#' "subsequent" the considered daily_dose is the one of the new exposure that
 #' starts in that subexposure.
-#' "Minimum" the considered daily_dose is the minimum of all of the exposures in
+#' "minimum" the considered daily_dose is the minimum of all of the exposures in
 #' the subexposure.
-#' "Maximum" the considered daily_dose is the maximum of all of the exposures in
+#' "maximum" the considered daily_dose is the maximum of all of the exposures in
 #' the subexposure.
-#' "Sum" the considered daily_dose is the sum of all the exposures present in
+#' "sum" the considered daily_dose is the sum of all the exposures present in
 #' the subexposure.
-#' By default: "Previous".
+#' By default: "previous".
 #' @param sameIndexMode How the overlapping between two exposures that start on
 #' the same day is solved inside a subexposure. There are five possible options:
-#' "Minimum" the considered daily_dose is the minimum of all of the exposures in
+#' "minimum" the considered daily_dose is the minimum of all of the exposures in
 #' the subexposure.
-#' "Maximum" the considered daily_dose is the maximum of all of the exposures in
+#' "maximum" the considered daily_dose is the maximum of all of the exposures in
 #' the subexposure.
-#' "Sum" the considered daily_dose is the sum of all the exposures present in
+#' "sum" the considered daily_dose is the sum of all the exposures present in
 #' the subexposure.
-#' By default: "Sum".
+#' By default: "sum".
 #' @param imputeDuration Whether/how the duration should be imputed
-#' "eliminate", "median", "mean", "quantile25", "quantile75".
-#' . By default: eliminate
+#' "none", "median", "mean", "mode"
+#' . By default: "none"
 #' @param imputeDailyDose Whether/how the daily_dose should be imputed
 #' "eliminate", "median", "mean", "quantile25", "quantile75". By default:
 #' "eliminate"
@@ -121,13 +121,20 @@ addDrugUse <- function(cohort,
                        initialQuantity = TRUE,
                        cumulativeQuantity = TRUE,
                        gapEra = 30,
-                       eraJoinMode = "Zero",
-                       overlapMode = "Sum",
-                       sameIndexMode = "Sum",
-                       imputeDuration = "eliminate",
+                       eraJoinMode = "zero",
+                       overlapMode = "sum",
+                       sameIndexMode = "sum",
+                       imputeDuration = "none",
                        imputeDailyDose = "eliminate",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
+  vars <- c("eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration", "imputeDailyDose")
+  for (char in vars) {
+    if (is.character(get(char))) {
+      assign(char, tolower(get(char)))
+    }
+  }
+
   if (length(conceptSetList) > 1) {
     cli::cli_abort("Only one concept set should be provided")
   }
@@ -152,8 +159,9 @@ addDrugUse <- function(cohort,
     gapEra = gapEra, eraJoinMode = eraJoinMode,
     initialQuantity = initialQuantity, cumulativeQuantity = cumulativeQuantity,
     overlapMode = overlapMode, sameIndexMode = sameIndexMode,
-    imputeDuration = imputeDuration, imputeDailyDose = imputeDailyDose,
-    durationRange = durationRange, dailyDoseRange = dailyDoseRange
+    imputeDuration = imputeDuration,
+    imputeDailyDose = imputeDailyDose, durationRange = durationRange,
+    dailyDoseRange = dailyDoseRange
   )
 
   # get conceptSet
@@ -172,7 +180,9 @@ addDrugUse <- function(cohort,
       by = "drug_concept_id"
     ) %>%
     dplyr::filter(!is.na(.data$unit))
-  unit <- conceptSet %>% dplyr::pull("unit") %>% unique()
+  unit <- conceptSet %>%
+    dplyr::pull("unit") %>%
+    unique()
   if (length(unit) > 1) {
     cli::cli_abort(
       "More than one unit included in the conceptSetList, please stratify by
@@ -208,7 +218,7 @@ addDrugUse <- function(cohort,
     CDMConnector::computeQuery()
 
   if (initialDailyDose | numberExposures | cumulativeDose | numberEras |
-      initialQuantity | cumulativeQuantity) {
+    initialQuantity | cumulativeQuantity) {
     # subset drug_exposure and only get the drug concept ids that we are
     # interested in.
     cohortInfo <- initialSubset(cdm, cohort, conceptSet)
@@ -231,7 +241,11 @@ addDrugUse <- function(cohort,
 
       # impute daily dose
       cohortInfo <- imputeVariable(
-        cohortInfo, "daily_dose", imputeDailyDose, dailyDoseRange
+        cohortInfo, "daily_dose",
+        impute = imputeDailyDose,
+        range = dailyDoseRange,
+        start = "drug_exposure_start_date",
+        end = "drug_exposure_end_date"
       ) %>%
         computeTable(cdm)
 
@@ -269,15 +283,14 @@ addDrugUse <- function(cohort,
         # add cumulative dose
         cohort <- addCumulativeDose(cohort, cohortInfo)
       }
-
     }
-
   }
 
   # add result
   cohort <- originalCohort %>%
     dplyr::left_join(
-      cohort, by = c("subject_id", "cohort_start_date", "cohort_end_date")
+      cohort,
+      by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
     CDMConnector::computeQuery() %>%
     PatientProfiles::addAttributes(originalCohort)
@@ -340,7 +353,8 @@ addInfo <- function(cohort,
           ) %>%
           dplyr::filter(
             .data$drug_exposure_start_date == min(
-              .data$drug_exposure_start_date, na.rm = TRUE
+              .data$drug_exposure_start_date,
+              na.rm = TRUE
             ) &
               .data$drug_exposure_start_date <= .data$cohort_start_date &
               .data$drug_exposure_end_date >= .data$cohort_start_date
@@ -364,6 +378,7 @@ addInitialDailyDose <- function(cohort,
                                 cohortInfo,
                                 initialDailyDose,
                                 sameIndexMode) {
+  sameIndexMode <- tolower(sameIndexMode)
   if (initialDailyDose) {
     cohortInfo <- cohortInfo %>%
       dplyr::group_by(
@@ -372,12 +387,13 @@ addInitialDailyDose <- function(cohort,
       ) %>%
       dplyr::filter(
         .data$drug_exposure_start_date == min(
-          .data$drug_exposure_start_date, na.rm = TRUE
+          .data$drug_exposure_start_date,
+          na.rm = TRUE
         ) &
           .data$drug_exposure_start_date <= .data$cohort_start_date &
           .data$drug_exposure_end_date >= .data$cohort_start_date
       )
-    if (sameIndexMode == "Sum") {
+    if (sameIndexMode == "sum") {
       cohortInfo <- cohortInfo %>%
         dplyr::summarise(
           initial_daily_dose = sum(.data$daily_dose, na.rm = TRUE),
@@ -677,13 +693,14 @@ addContinuousExposureId <- function(x) {
 
 #' @noRd
 solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
+  sameIndexMode <- tolower(sameIndexMode)
   x_same_index <- x %>%
     dplyr::group_by(
       .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
       .data$drug_exposure_start_date
     ) %>%
     dplyr::filter(dplyr::n() > 1)
-  if (sameIndexMode == "Minimum") {
+  if (sameIndexMode == "minimum") {
     x_same_index <- x_same_index %>%
       dplyr::left_join(
         x_same_index %>%
@@ -701,7 +718,7 @@ solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
         "no",
         "yes"
       ))
-  } else if (sameIndexMode == "Maximum") {
+  } else if (sameIndexMode == "maximum") {
     x_same_index <- x_same_index %>%
       dplyr::left_join(
         x_same_index %>%
@@ -719,7 +736,7 @@ solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
         "no",
         "yes"
       ))
-  } else if (sameIndexMode == "Sum") {
+  } else if (sameIndexMode == "sum") {
     x_same_index <- x_same_index %>%
       dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
       dplyr::filter(
@@ -750,6 +767,7 @@ solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
 
 #' @noRd
 solveOverlap <- function(x, cdm, overlapMode) {
+  overlapMode <- tolower(overlapMode)
   x_overlap <- x %>%
     dplyr::group_by(
       .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
@@ -761,8 +779,8 @@ solveOverlap <- function(x, cdm, overlapMode) {
     dplyr::filter(dplyr::n() > 1)
   if (
     x_overlap %>% dplyr::ungroup() %>% dplyr::tally() %>% dplyr::pull("n") > 0
-  ){
-    if (overlapMode == "Minimum") {
+  ) {
+    if (overlapMode == "minimum") {
       x_overlap <- x_overlap %>%
         dplyr::select(-"considered_subexposure")
       x_overlap <- x_overlap %>%
@@ -783,7 +801,7 @@ solveOverlap <- function(x, cdm, overlapMode) {
           "no",
           "yes"
         ))
-    } else if (overlapMode == "Maximum") {
+    } else if (overlapMode == "maximum") {
       x_overlap <- x_overlap %>%
         dplyr::select(-"considered_subexposure")
       x_overlap <- x_overlap %>%
@@ -803,10 +821,10 @@ solveOverlap <- function(x, cdm, overlapMode) {
           "no",
           "yes"
         ))
-    } else if (overlapMode == "Sum") {
+    } else if (overlapMode == "sum") {
       x_overlap <- x_overlap %>%
         dplyr::mutate(considered_subexposure = "yes")
-    } else if (overlapMode == "Previous") {
+    } else if (overlapMode == "previous") {
       x_overlap <- x_overlap %>%
         dplyr::mutate(
           first_drug_exposure_start_date =
@@ -821,7 +839,7 @@ solveOverlap <- function(x, cdm, overlapMode) {
           )
         ) %>%
         dplyr::select(-"first_drug_exposure_start_date")
-    } else if (overlapMode == "Subsequent") {
+    } else if (overlapMode == "subsequent") {
       x_overlap <- x_overlap %>%
         dplyr::mutate(
           last_drug_exposure_start_date =
@@ -860,12 +878,13 @@ solveOverlap <- function(x, cdm, overlapMode) {
 
 #' @noRd
 addGapDailyDose <- function(x, cdm, eraJoinMode) {
+  eraJoinMode <- tolower(eraJoinMode)
   x_gaps_dose <- x %>%
     dplyr::filter(.data$type_subexposure == "gap")
-  if (eraJoinMode == "Zero") {
+  if (eraJoinMode == "zero") {
     x_gaps_dose <- x_gaps_dose %>%
       dplyr::mutate(daily_dose = as.numeric(0))
-  } else if (eraJoinMode == "Previous") {
+  } else if (eraJoinMode == "previous") {
     x_gaps_dose <- x_gaps_dose %>%
       dplyr::select(-"daily_dose") %>%
       dplyr::inner_join(
@@ -887,7 +906,7 @@ addGapDailyDose <- function(x, cdm, eraJoinMode) {
           "subexposure_id"
         )
       )
-  } else if (eraJoinMode == "Subsequent") {
+  } else if (eraJoinMode == "subsequent") {
     x_gaps_dose <- x_gaps_dose %>%
       dplyr::select(-"daily_dose") %>%
       dplyr::inner_join(
@@ -1149,7 +1168,7 @@ getVariables <- function(initialDailyDose,
   )[c(
     initialDailyDose, numberExposures, duration, cumulativeDose, numberEras
   )]
-  if(supplementary) {
+  if (supplementary) {
     variables <- c(
       variables, "gap_days", "unexposed_days", "not_considered_days",
       "number_subexposures", "number_continuous_exposures", "number_gaps",

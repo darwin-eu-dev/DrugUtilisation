@@ -17,10 +17,10 @@ addDrugUse(
   initialQuantity = TRUE,
   cumulativeQuantity = TRUE,
   gapEra = 30,
-  eraJoinMode = "Zero",
-  overlapMode = "Sum",
-  sameIndexMode = "Sum",
-  imputeDuration = "eliminate",
+  eraJoinMode = "zero",
+  overlapMode = "sum",
+  sameIndexMode = "sum",
+  imputeDuration = "none",
   imputeDailyDose = "eliminate",
   durationRange = c(1, Inf),
   dailyDoseRange = c(0, Inf)
@@ -56,49 +56,49 @@ considered in the same era. By default: 180.}
 
 \item{eraJoinMode}{How two different continuous exposures are joined in an
 era. There are four options:
-"Zero" the exposures are joined considering that the period between both
+"zero" the exposures are joined considering that the period between both
 continuous exposures the subject is treated with a daily dose of zero. The
 time between both exposures contributes to the total exposed time.
-"Join" the exposures are joined considering that the period between both
+"join" the exposures are joined considering that the period between both
 continuous exposures the subject is treated with a daily dose of zero. The
 time between both exposures does not contribute to the total exposed time.
-"Previous" the exposures are joined considering that the period between both
+"previous" the exposures are joined considering that the period between both
 continuous exposures the subject is treated with the daily dose of the
 previous subexposure. The time between both exposures contributes to the
 total exposed time.
-"Subsequent" the exposures are joined considering that the period between
+"subsequent" the exposures are joined considering that the period between
 both continuous exposures the subject is treated with the daily dose of the
 subsequent subexposure. The time between both exposures contributes to the
 total exposed time.
-By default: "Previous".}
+By default: "previous".}
 
 \item{overlapMode}{How the overlapping between two exposures that do not
 start on the same day is solved inside a subexposure. There are five possible
 options:
-"Previous" the considered daily_dose is the one of the earliest exposure.
-"Subsequent" the considered daily_dose is the one of the new exposure that
+"previous" the considered daily_dose is the one of the earliest exposure.
+"subsequent" the considered daily_dose is the one of the new exposure that
 starts in that subexposure.
-"Minimum" the considered daily_dose is the minimum of all of the exposures in
+"minimum" the considered daily_dose is the minimum of all of the exposures in
 the subexposure.
-"Maximum" the considered daily_dose is the maximum of all of the exposures in
+"maximum" the considered daily_dose is the maximum of all of the exposures in
 the subexposure.
-"Sum" the considered daily_dose is the sum of all the exposures present in
+"sum" the considered daily_dose is the sum of all the exposures present in
 the subexposure.
-By default: "Previous".}
+By default: "previous".}
 
 \item{sameIndexMode}{How the overlapping between two exposures that start on
 the same day is solved inside a subexposure. There are five possible options:
-"Minimum" the considered daily_dose is the minimum of all of the exposures in
+"minimum" the considered daily_dose is the minimum of all of the exposures in
 the subexposure.
-"Maximum" the considered daily_dose is the maximum of all of the exposures in
+"maximum" the considered daily_dose is the maximum of all of the exposures in
 the subexposure.
-"Sum" the considered daily_dose is the sum of all the exposures present in
+"sum" the considered daily_dose is the sum of all the exposures present in
 the subexposure.
-By default: "Sum".}
+By default: "sum".}
 
 \item{imputeDuration}{Whether/how the duration should be imputed
-"eliminate", "median", "mean", "quantile25", "quantile75".
-. By default: eliminate}
+"none", "median", "mean", "mode"
+. By default: "none"}
 
 \item{imputeDailyDose}{Whether/how the daily_dose should be imputed
 "eliminate", "median", "mean", "quantile25", "quantile75". By default:

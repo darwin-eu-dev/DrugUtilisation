@@ -69,11 +69,10 @@ cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm,
   name = "acetaminophen_users",
   conceptSetList = conceptList,
-  summariseMode = "AllEras",
+  limit = "All",
   gapEra = 30,
   priorUseWashout = 0
 )
-
 ```
 ## Create a indication cohort
 
@@ -92,10 +91,9 @@ cdm <-
 cohortCount(cdm[["indications_cohort"]]) %>%
   left_join(
     cohortSet(cdm[["indications_cohort"]]) %>%
-      select(cohort_definition_id, cohort_name), 
+      select(cohort_definition_id, cohort_name),
     by = "cohort_definition_id"
   )
-
 
 ```
 
