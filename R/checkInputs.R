@@ -148,7 +148,7 @@ checkImputeDailyDose <- function(imputeDailyDose) {
   if (is.character(imputeDailyDose)) {
     checkmate::assertChoice(
       imputeDailyDose,
-      c("eliminate", "median", "mean", "quantile25", "quantile75")
+      c("none", "median", "mean", "mode")
     )
   } else {
     checkmate::assertCount(

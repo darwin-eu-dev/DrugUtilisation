@@ -74,8 +74,8 @@
 #' "none", "median", "mean", "mode"
 #' . By default: "none"
 #' @param imputeDailyDose Whether/how the daily_dose should be imputed
-#' "eliminate", "median", "mean", "quantile25", "quantile75". By default:
-#' "eliminate"
+#' "none", "median", "mean", "mode"
+#' . By default: "none"
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
 #' equal or smaller than the second one. It is only required if imputeDuration
@@ -125,7 +125,7 @@ addDrugUse <- function(cohort,
                        overlapMode = "sum",
                        sameIndexMode = "sum",
                        imputeDuration = "none",
-                       imputeDailyDose = "eliminate",
+                       imputeDailyDose = "none",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
   vars <- c("eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration", "imputeDailyDose")
@@ -151,7 +151,7 @@ addDrugUse <- function(cohort,
   }
 
   # initial checks
-  checkInputs(
+  DrugUtilisation:::checkInputs(
     cohort = cohort, cdm = cdm, ingredientConceptId = ingredientConceptId,
     conceptSetList = conceptSetList, initialDailyDose = initialDailyDose,
     numberExposures = numberExposures, duration = duration,
@@ -165,13 +165,13 @@ addDrugUse <- function(cohort,
   )
 
   # get conceptSet
-  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
+  conceptSet <- DrugUtilisation:::conceptSetFromConceptSetList(conceptSetList)
 
   # check unit
   conceptSet <- conceptSet %>%
     dplyr::rename("drug_concept_id" = "concept_id") %>%
     dplyr::left_join(
-      drugStrengthPattern(
+      DrugUtilisation:::drugStrengthPattern(
         cdm = cdm, ingredientConceptId = ingredientConceptId, pattern = FALSE,
         patternDetails = FALSE, unit = TRUE, route = FALSE, formula = FALSE,
         ingredient = FALSE
@@ -214,7 +214,7 @@ addDrugUse <- function(cohort,
   cohort <- cohort %>%
     dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
     dplyr::distinct() %>%
-    addDuration(duration) %>%
+    DrugUtilisation:::addDuration(duration) %>%
     CDMConnector::computeQuery()
 
   if (initialDailyDose | numberExposures | cumulativeDose | numberEras |

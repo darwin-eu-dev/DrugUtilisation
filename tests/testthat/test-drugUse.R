@@ -81,7 +81,7 @@ test_that("test overlapMode", {
     overlapMode = "Sum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   )))
@@ -96,7 +96,7 @@ test_that("test overlapMode", {
     overlapMode = "Previous",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -129,7 +129,7 @@ test_that("test overlapMode", {
     overlapMode = "Subsequent",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -158,7 +158,7 @@ test_that("test overlapMode", {
     overlapMode = "Minimum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -187,7 +187,7 @@ test_that("test overlapMode", {
     overlapMode = "Maximum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -216,7 +216,7 @@ test_that("test overlapMode", {
     overlapMode = "Sum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -323,7 +323,7 @@ test_that("test gapEra and eraJoinMode", {
     overlapMode = "Sum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -355,7 +355,7 @@ test_that("test gapEra and eraJoinMode", {
     overlapMode = "Sum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -386,7 +386,7 @@ test_that("test gapEra and eraJoinMode", {
     overlapMode = "Sum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -417,7 +417,7 @@ test_that("test gapEra and eraJoinMode", {
     overlapMode = "Sum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -448,7 +448,7 @@ test_that("test gapEra and eraJoinMode", {
     overlapMode = "Sum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -554,7 +554,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     overlapMode = "Sum",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
@@ -609,7 +609,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       overlapMode = parameters$overlapMode[k],
       sameIndexMode = parameters$sameIndexMode[k],
       imputeDuration = "none",
-      imputeDailyDose = "eliminate",
+      imputeDailyDose = "none",
       durationRange = c(1, Inf),
       dailyDoseRange = c(0, Inf)
     ))
@@ -928,7 +928,7 @@ test_that("test empty targetCohortName", {
     overlapMode = "Previous",
     sameIndexMode = "Sum",
     imputeDuration = "none",
-    imputeDailyDose = "eliminate",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(100, Inf)
   ))
