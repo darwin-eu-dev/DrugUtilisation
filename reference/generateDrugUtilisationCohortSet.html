@@ -54,14 +54,13 @@
 <span>  <span class="va">cdm</span>,</span>
 <span>  <span class="va">name</span>,</span>
 <span>  <span class="va">conceptSetList</span>,</span>
-<span>  summariseMode <span class="op">=</span> <span class="st">"AllEras"</span>,</span>
-<span>  fixedTime <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  daysPriorObservation <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
+<span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  priorUseWashout <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  priorObservation <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  cohortDateRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  imputeDuration <span class="op">=</span> <span class="st">"eliminate"</span>,</span>
-<span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span></span>
+<span>  limit <span class="op">=</span> <span class="st">"all"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,28 +78,16 @@
 <dd><p>Named list of concept sets.</p></dd>
 
 
-<dt>summariseMode</dt>
-<dd><p>Choice on how to summarize the exposures. There are
-three options:
-"FixedTime" each individual is followed the exact same number of days
-specified in 'fixedTime' argument.
-"AllEras" we summarize the output will be a summary of the exposed eras of
-each individual. Each individual can contribute multiple times.
-"FirstEra" we only consider the first observable era of each individual. In
-this case each individual can not contribute with multiple rows.
-By default: "AllEras".</p></dd>
+<dt>durationRange</dt>
+<dd><p>Range between the duration must be comprised. It should
+be a numeric vector of length two, with no NAs and the first value should be
+equal or smaller than the second one. It is only required if imputeDuration
+= TRUE. If NULL no restrictions are applied. By default: NULL.</p></dd>
 
 
-<dt>fixedTime</dt>
-<dd><p>Time period after first exposure where we summarize the
-ingredient of interest. Argument only considered if 'summariseMode' =
-"FixedTime". No default value is provided.</p></dd>
-
-
-<dt>daysPriorObservation</dt>
-<dd><p>Minimum number of days of prior observation
-required for the incident eras to be considered. If NULL its is not required
-to be within observation_period.</p></dd>
+<dt>imputeDuration</dt>
+<dd><p>Whether/how the duration should be imputed
+"none", "median", "mean", "mode", or it can be a count</p></dd>
 
 
 <dt>gapEra</dt>
@@ -112,20 +99,24 @@ considered in the same era. By default: 0.</p></dd>
 <dd><p>Prior days without exposure. By default: NULL.</p></dd>
 
 
+<dt>priorObservation</dt>
+<dd><p>Minimum number of days of prior observation
+required for the incident eras to be considered. If NULL its is not required
+to be within observation_period.</p></dd>
+
+
 <dt>cohortDateRange</dt>
 <dd><p>Range for cohort_start_date and cohort_end_date</p></dd>
 
 
-<dt>imputeDuration</dt>
-<dd><p>Whether/how the duration should be imputed
-"eliminate", "median", "mean", "quantile25", "quantile75".</p></dd>
-
-
-<dt>durationRange</dt>
-<dd><p>Range between the duration must be comprised. It should
-be a numeric vector of length two, with no NAs and the first value should be
-equal or smaller than the second one. It is only required if imputeDuration
-= TRUE. If NULL no restrictions are applied. By default: NULL.</p></dd>
+<dt>limit</dt>
+<dd><p>Choice on how to summarise the exposures. There are
+two options:
+"all" we summarise the output will be a summary of the exposed eras of
+each individual. Each individual can contribute multiple times.
+"first" we only consider the first observable era of each individual that fulfills the criteria provided
+in previous parameters. In this case each individual can not contribute with multiple rows.
+By default: "all".</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -151,7 +142,7 @@ references of the object.</p>
 <span class="r-in"><span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"drug_cohorts"</span>,</span></span>
 <span class="r-in"><span>  conceptSetList <span class="op">=</span> <span class="va">druglist</span>,</span></span>
-<span class="r-in"><span>  daysPriorObservation <span class="op">=</span> <span class="fl">365</span></span></span>
+<span class="r-in"><span>  priorObservation <span class="op">=</span> <span class="fl">365</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"drug_cohorts"</span><span class="op">]</span><span class="op">]</span></span></span>
@@ -168,13 +159,12 @@ references of the object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span>                    2         10 1992-02-27        2004-03-07     </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortSet.html" class="external-link">cohortSet</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"drug_cohorts"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name                     summarise_mode fixed_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1 Ingredient: acetaminophen (112… AllEras        <span style="color: #BB0000;">NA</span>        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2 Ingredient: metformin (1503297) AllEras        <span style="color: #BB0000;">NA</span>        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8 more variables: days_prior_observation &lt;chr&gt;, gap_era &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   prior_use_washout &lt;chr&gt;, cohort_date_range_start &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id cohort_name   limit prior_observation gap_era</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1 acetaminophen all   365               0      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    2 metformin     all   365               0      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: prior_use_washout &lt;chr&gt;, cohort_date_range_start &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cohort_date_range_end &lt;chr&gt;, impute_duration &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   duration_range_min &lt;chr&gt;, duration_range_max &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
@@ -189,22 +179,22 @@ references of the object.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 16 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    cohort_definition_id number_records number_subjects reason_id reason         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>                    2              8               5         1 Qualifying ini…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>                    2              8               5         2 Duration imput…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>                    2              7               5         3 Join eras      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>                    2              7               5         4 prior use waho…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>                    2              3               2         5 at least 365 p…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>                    2              3               2         6 cohort_start_d…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>                    2              3               2         7 cohort_end_dat…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>                    2              3               2         8 summariseMode:…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>                    1             13               9         1 Qualifying ini…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>                    1             13               9         2 Duration imput…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span>                    1             11               9         3 Join eras      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span>                    1             11               9         4 prior use waho…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span>                    1              4               4         5 at least 365 p…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span>                    1              4               4         6 cohort_start_d…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span>                    1              4               4         7 cohort_end_dat…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span>                    1              4               4         8 summariseMode:…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>                    2              8               5         1 <span style="color: #949494;">"</span>Qualifying in…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>                    2              8               5         2 <span style="color: #949494;">"</span>Duration impu…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>                    2              7               5         3 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>                    2              7               5         4 <span style="color: #949494;">"</span>prior use wah…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>                    2              3               2         5 <span style="color: #949494;">"</span>at least 365 …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>                    2              3               2         6 <span style="color: #949494;">"</span>cohort_start_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>                    2              3               2         7 <span style="color: #949494;">"</span>cohort_end_da…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>                    2              3               2         8 <span style="color: #949494;">"</span>limit: all ap…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>                    1             13               9         1 <span style="color: #949494;">"</span>Qualifying in…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>                    1             13               9         2 <span style="color: #949494;">"</span>Duration impu…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span>                    1             11               9         3 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span>                    1             11               9         4 <span style="color: #949494;">"</span>prior use wah…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span>                    1              4               4         5 <span style="color: #949494;">"</span>at least 365 …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span>                    1              4               4         6 <span style="color: #949494;">"</span>cohort_start_…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span>                    1              4               4         7 <span style="color: #949494;">"</span>cohort_end_da…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span>                    1              4               4         8 <span style="color: #949494;">"</span>limit: all ap…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: excluded_records &lt;dbl&gt;, excluded_subjects &lt;dbl&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
