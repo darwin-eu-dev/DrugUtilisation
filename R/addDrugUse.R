@@ -201,7 +201,7 @@ addDrugUse <- function(cohort,
     CDMConnector::computeQuery()
 
   if (initialDailyDose | numberExposures | cumulativeDose | numberEras |
-    initialQuantity | cumulativeQuantity) {
+      initialQuantity | cumulativeQuantity) {
     # subset drug_exposure and only get the drug concept ids that we are
     # interested in.
     cohortInfo <- initialSubset(cdm, cohort, conceptSet)
@@ -219,52 +219,55 @@ addDrugUse <- function(cohort,
       # add number eras
       cohort <- addNumberEras(cohort, cohortInfo, gapEra, numberEras)
 
-      # add daily dose
-      cohortInfo <- cohortInfo %>%
-        addDailyDose(ingredientConceptId = ingredientConceptId) %>%
-        dplyr::select(-"quantity", -"route") %>%
-        dplyr::distinct()
+      if (initialDailyDose | cumulativeDose) {
 
-      # impute daily dose
-      cohortInfo <- imputeVariable(
-        cohortInfo, "daily_dose",
-        impute = imputeDailyDose,
-        range = dailyDoseRange,
-        start = "drug_exposure_start_date",
-        end = "drug_exposure_end_date"
-      ) %>%
-        computeTable(cdm)
+        # add daily dose
+        cohortInfo <- cohortInfo %>%
+          addDailyDose(ingredientConceptId = ingredientConceptId) %>%
+          dplyr::select(-"quantity", -"route") %>%
+          dplyr::distinct()
 
-      cohort <- cohort %>%
-        addInitialDailyDose(cohortInfo, initialDailyDose, sameIndexMode, units)
+        # impute daily dose
+        cohortInfo <- imputeVariable(
+          cohortInfo, "daily_dose",
+          impute = imputeDailyDose,
+          range = dailyDoseRange,
+          start = "drug_exposure_start_date",
+          end = "drug_exposure_end_date"
+        ) %>%
+          computeTable(cdm)
 
-      # split the exposures in subexposures inside each cohort
-      cohortInfo <- splitSubexposures(cohortInfo, cdm)
+        cohort <- cohort %>%
+          addInitialDailyDose(cohortInfo, initialDailyDose, sameIndexMode, units)
 
-      # add the overlapping flag
-      cohortInfo <- addOverlappingFlag(cohortInfo)
+        if (cumulativeDose) {
+          # split the exposures in subexposures inside each cohort
+          cohortInfo <- splitSubexposures(cohortInfo, cdm)
 
-      # add the type of subexposure
-      cohortInfo <- addTypeSubexposure(cohortInfo, gapEra)
+          # add the overlapping flag
+          cohortInfo <- addOverlappingFlag(cohortInfo)
 
-      # add era_id
-      cohortInfo <- addEraId(cohortInfo)
+          # add the type of subexposure
+          cohortInfo <- addTypeSubexposure(cohortInfo, gapEra)
 
-      if (cumulativeDose) {
-        # add continuous_exposure_id
-        cohortInfo <- addContinuousExposureId(cohortInfo)
+          # add era_id
+          cohortInfo <- addEraId(cohortInfo)
 
-        # solve same index day overlapping
-        cohortInfo <- solveSameIndexOverlap(cohortInfo, cdm, sameIndexMode)
+          # add continuous_exposure_id
+          cohortInfo <- addContinuousExposureId(cohortInfo)
 
-        # solve not same index overlapping
-        cohortInfo <- solveOverlap(cohortInfo, cdm, overlapMode)
+          # solve same index day overlapping
+          cohortInfo <- solveSameIndexOverlap(cohortInfo, cdm, sameIndexMode)
 
-        # add daily dose to gaps
-        cohortInfo <- addGapDailyDose(cohortInfo, cdm, eraJoinMode)
+          # solve not same index overlapping
+          cohortInfo <- solveOverlap(cohortInfo, cdm, overlapMode)
 
-        # add cumulative dose
-        cohort <- addCumulativeDose(cohort, cohortInfo, units)
+          # add daily dose to gaps
+          cohortInfo <- addGapDailyDose(cohortInfo, cdm, eraJoinMode)
+
+          # add cumulative dose
+          cohort <- addCumulativeDose(cohort, cohortInfo, units)
+        }
       }
     }
   }
@@ -355,6 +358,7 @@ addInfo <- function(cohort,
       )) %>%
       CDMConnector::computeQuery()
   }
+  return(cohort)
 }
 
 addInitialDailyDose <- function(cohort,
@@ -461,10 +465,11 @@ addNumberEras <- function(cohort, cohortInfo, gapEra, numberEras) {
       )) %>%
       CDMConnector::computeQuery()
   }
+  return(cohort)
 }
 
 addCumulativeDose <- function(cohort, cohortInfo) {
-  cohort <- cohort %>%
+  cohort %>%
     dplyr::left_join(
       cohortInfo %>%
         dplyr::mutate(
