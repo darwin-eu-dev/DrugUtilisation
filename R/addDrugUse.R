@@ -195,14 +195,14 @@ addDrugUse <- function(cohort,
     dplyr::select("cohort_definition_id", "concept_id" = "drug_concept_id")
 
   # consistency with cohortSet
-  cs <- CDMConnector::cohortSet(cohort)
-  parameters <- checkConsistentCohortSet(
-    cs, conceptSetList, gapEra, imputeDuration, durationRange,
-    missing(gapEra), missing(imputeDuration), missing(durationRange)
-  )
-  gapEra <- parameters$gapEra
-  imputeDuration <- parameters$imputeDuration
-  durationRange <- parameters$durationRange
+  # cs <- CDMConnector::cohortSet(cohort)
+  # parameters <- checkConsistentCohortSet(
+  #   cs, conceptSetList, gapEra, imputeDuration, durationRange,
+  #   missing(gapEra), missing(imputeDuration), missing(durationRange)
+  # )
+  # gapEra <- parameters$gapEra
+  # imputeDuration <- parameters$imputeDuration
+  # durationRange <- parameters$durationRange
   if (length(conceptSetList) > 1) {
     cli::cli_abort("Only one concept set is allowed")
   }
