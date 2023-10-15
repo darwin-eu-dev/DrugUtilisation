@@ -167,22 +167,6 @@ addDrugUse <- function(cohort,
   # get conceptSet
   conceptSet <- DrugUtilisation:::conceptSetFromConceptSetList(conceptSetList)
 
-  # check unit
-  units <- conceptSet %>%
-    dplyr::rename("drug_concept_id" = "concept_id") %>%
-    dplyr::left_join(
-      DrugUtilisation:::drugStrengthPattern(
-        cdm = cdm, ingredientConceptId = ingredientConceptId, pattern = FALSE,
-        patternDetails = FALSE, unit = TRUE, route = FALSE, formula = FALSE,
-        ingredient = FALSE
-      ) %>%
-        dplyr::collect(),
-      by = "drug_concept_id"
-    ) %>%
-    dplyr::filter(!is.na(.data$unit)) %>%
-    dplyr::pull("unit") %>%
-    unique()
-
   conceptSet <- conceptSet %>%
     dplyr::select("cohort_definition_id", "concept_id" = "drug_concept_id")
 
@@ -193,12 +177,24 @@ addDrugUse <- function(cohort,
   # save original reference
   originalCohort <- cohort
 
+  stem <- paste0(sample(letters, 5), collapse = "")
+  writePrefix <- attr(cdm, "write_prefix")
+  if ("prefix" %in% names(writePrefix)) {
+    writePrefix["prefix"] <- paste0(writePrefix["prefix"], stem, "_")
+  } else {
+    writePrefix["prefix"] <- stem
+  }
+  attr(cdm, "write_prefix") <- writePrefix
+
   # unique cohort entries
   cohort <- cohort %>%
     dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
     dplyr::distinct() %>%
-    DrugUtilisation:::addDuration(duration) %>%
-    CDMConnector::computeQuery()
+    addDuration(duration) %>%
+    CDMConnector::computeQuery(
+      name = "duration", temporary = FALSE,
+      schema = attr(cdm, "write_schema"), overwrite = TRUE
+    )
 
   if (initialDailyDose | numberExposures | cumulativeDose | numberEras |
       initialQuantity | cumulativeQuantity) {
@@ -236,6 +232,13 @@ addDrugUse <- function(cohort,
           end = "drug_exposure_end_date"
         ) %>%
           computeTable(cdm)
+
+        # get distinct units to cover
+        units <- cohortInfo %>%
+          dplyr::select("units") %>%
+          dplyr::distinct() %>%
+          dplyr::filter(!is.na(.data$units)) %>%
+          dplyr::pull()
 
         cohort <- cohort %>%
           addInitialDailyDose(cohortInfo, initialDailyDose, sameIndexMode, units)
@@ -278,11 +281,9 @@ addDrugUse <- function(cohort,
       cohort,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
-    CDMConnector::computeQuery() %>%
-    PatientProfiles::addAttributes(originalCohort)
+    CDMConnector::computeQuery()
 
-  # add attributes back to the cohort
-  cohort <- PatientProfiles::addAttributes(cohort, originalCohort)
+  CDMConnector::dropTable(cdm, dplyr::everything())
 
   return(cohort)
 }
@@ -366,44 +367,36 @@ addInitialDailyDose <- function(cohort,
                                 initialDailyDose,
                                 sameIndexMode,
                                 units) {
-  sameIndexMode <- tolower(sameIndexMode)
   if (initialDailyDose) {
-    cohortInfo <- cohortInfo %>%
-      dplyr::group_by(
-        .data$subject_id, .data$cohort_start_date,
-        .data$cohort_end_date, .data$unit
-      ) %>%
-      dplyr::filter(
-        .data$drug_exposure_start_date == min(
-          .data$drug_exposure_start_date,
-          na.rm = TRUE
-        ) &
-          .data$drug_exposure_start_date <= .data$cohort_start_date &
-          .data$drug_exposure_end_date >= .data$cohort_start_date
-      )
-    if (sameIndexMode == "sum") {
-      cohortInfo <- cohortInfo %>%
-        dplyr::summarise(
-          initial_daily_dose = sum(.data$daily_dose, na.rm = TRUE),
-          .groups = "drop"
-        )
-    } else if (sameIndexMode == "min") {
-      cohortInfo <- cohortInfo %>%
-        dplyr::summarise(
-          initial_daily_dose = min(.data$daily_dose, na.rm = TRUE),
-          .groups = "drop"
-        )
-    } else {
-      cohortInfo <- cohortInfo %>%
-        dplyr::summarise(
-          initial_daily_dose = max(.data$daily_dose, na.rm = TRUE),
-          .groups = "drop"
-        )
-    }
     if (length(units) == 0) {
       cohortInfo <- cohortInfo %>%
         dplyr::mutate("initial_daily_dose" = NA)
     } else {
+      cohortInfo <- cohortInfo %>%
+        dplyr::group_by(
+          .data$subject_id, .data$cohort_start_date,
+          .data$cohort_end_date, .data$unit
+        ) %>%
+        dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_start_date)
+      if (sameIndexMode == "sum") {
+        cohortInfo <- cohortInfo %>%
+          dplyr::summarise(
+            initial_daily_dose = sum(.data$daily_dose, na.rm = TRUE),
+            .groups = "drop"
+          )
+      } else if (sameIndexMode == "min") {
+        cohortInfo <- cohortInfo %>%
+          dplyr::summarise(
+            initial_daily_dose = min(.data$daily_dose, na.rm = TRUE),
+            .groups = "drop"
+          )
+      } else {
+        cohortInfo <- cohortInfo %>%
+          dplyr::summarise(
+            initial_daily_dose = max(.data$daily_dose, na.rm = TRUE),
+            .groups = "drop"
+          )
+      }
       for (u in units) {
         cohortInfo <- cohortInfo %>%
           dplyr::mutate(
