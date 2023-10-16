@@ -151,7 +151,7 @@ addDrugUse <- function(cohort,
   }
 
   # initial checks
-  DrugUtilisation:::checkInputs(
+  checkInputs(
     cohort = cohort, cdm = cdm, ingredientConceptId = ingredientConceptId,
     conceptSetList = conceptSetList, initialDailyDose = initialDailyDose,
     numberExposures = numberExposures, duration = duration,
@@ -165,10 +165,10 @@ addDrugUse <- function(cohort,
   )
 
   # get conceptSet
-  conceptSet <- DrugUtilisation:::conceptSetFromConceptSetList(conceptSetList)
+  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
 
   conceptSet <- conceptSet %>%
-    dplyr::select("cohort_definition_id", "concept_id" = "drug_concept_id")
+    dplyr::select("cohort_definition_id", "concept_id")
 
   if (length(conceptSetList) > 1) {
     cli::cli_abort("Only one concept set is allowed")
@@ -178,13 +178,13 @@ addDrugUse <- function(cohort,
   originalCohort <- cohort
 
   stem <- paste0(sample(letters, 5), collapse = "")
-  writePrefix <- attr(cdm, "write_prefix")
-  if ("prefix" %in% names(writePrefix)) {
-    writePrefix["prefix"] <- paste0(writePrefix["prefix"], stem, "_")
+  writeSchema <- attr(cdm, "write_schema")
+  if ("prefix" %in% names(writeSchema)) {
+    writeSchema["prefix"] <- paste0(writeSchema["prefix"], stem, "_")
   } else {
-    writePrefix["prefix"] <- stem
+    writeSchema["prefix"] <- paste0(stem, "_")
   }
-  attr(cdm, "write_prefix") <- writePrefix
+  attr(cdm, "write_schema") <- writeSchema
 
   # unique cohort entries
   cohort <- cohort %>%
@@ -192,8 +192,7 @@ addDrugUse <- function(cohort,
     dplyr::distinct() %>%
     addDuration(duration) %>%
     CDMConnector::computeQuery(
-      name = "duration", temporary = FALSE,
-      schema = attr(cdm, "write_schema"), overwrite = TRUE
+      temporary = FALSE, schema = attr(cdm, "write_schema"), overwrite = TRUE
     )
 
   if (initialDailyDose | numberExposures | cumulativeDose | numberEras |
@@ -203,7 +202,7 @@ addDrugUse <- function(cohort,
     cohortInfo <- initialSubset(cdm, cohort, conceptSet)
 
     cohort <- cohort %>%
-      addInfo(cohortInfo, numberExposures, initialQuantity, cumulativeQuantity)
+      addInfo(cohortInfo, numberExposures, initialQuantity, cumulativeQuantity, cdm)
 
     if (initialDailyDose | cumulativeDose | numberEras) {
       # correct duration
@@ -212,8 +211,19 @@ addDrugUse <- function(cohort,
         "drug_exposure_start_date", "drug_exposure_end_date"
       )
 
+      # duration misisngness
+      durationMissing <- list(
+        "count" = attr(cohortInfo, "numberImputations"),
+        "percentage" = 100 * attr(cohortInfo, "numberImputations") / (
+          cohortInfo %>%
+            dplyr::ungroup() %>%
+            dplyr::summarise(n = as.numeric(dplyr::n())) %>%
+            dplyr::pull("n")
+        )
+      )
+
       # add number eras
-      cohort <- addNumberEras(cohort, cohortInfo, gapEra, numberEras)
+      cohort <- addNumberEras(cohort, cohortInfo, gapEra, numberEras, cdm)
 
       if (initialDailyDose | cumulativeDose) {
 
@@ -231,45 +241,34 @@ addDrugUse <- function(cohort,
           start = "drug_exposure_start_date",
           end = "drug_exposure_end_date"
         ) %>%
-          computeTable(cdm)
+          CDMConnector::computeQuery(
+            temporary = FALSE, schema = attr(cdm, "write_schema"),
+            overwrite = TRUE
+          )
+
+        dailyDoseMissing <- list(
+          "count" = attr(cohortInfo, "numberImputations"),
+          "percentage" = 100 * attr(cohortInfo, "numberImputations") / (
+            cohortInfo %>%
+              dplyr::ungroup() %>%
+              dplyr::summarise(n = as.numeric(dplyr::n())) %>%
+              dplyr::pull("n")
+          )
+        )
 
         # get distinct units to cover
         units <- cohortInfo %>%
-          dplyr::select("units") %>%
+          dplyr::select("unit") %>%
           dplyr::distinct() %>%
-          dplyr::filter(!is.na(.data$units)) %>%
+          dplyr::filter(!is.na(.data$unit)) %>%
           dplyr::pull()
 
         cohort <- cohort %>%
-          addInitialDailyDose(cohortInfo, initialDailyDose, sameIndexMode, units)
+          addInitialDailyDose(cohortInfo, initialDailyDose, sameIndexMode, units, cdm)
 
         if (cumulativeDose) {
-          # split the exposures in subexposures inside each cohort
-          cohortInfo <- splitSubexposures(cohortInfo, cdm)
-
-          # add the overlapping flag
-          cohortInfo <- addOverlappingFlag(cohortInfo)
-
-          # add the type of subexposure
-          cohortInfo <- addTypeSubexposure(cohortInfo, gapEra)
-
-          # add era_id
-          cohortInfo <- addEraId(cohortInfo)
-
-          # add continuous_exposure_id
-          cohortInfo <- addContinuousExposureId(cohortInfo)
-
-          # solve same index day overlapping
-          cohortInfo <- solveSameIndexOverlap(cohortInfo, cdm, sameIndexMode)
-
-          # solve not same index overlapping
-          cohortInfo <- solveOverlap(cohortInfo, cdm, overlapMode)
-
-          # add daily dose to gaps
-          cohortInfo <- addGapDailyDose(cohortInfo, cdm, eraJoinMode)
-
           # add cumulative dose
-          cohort <- addCumulativeDose(cohort, cohortInfo, units)
+          cohort <- addCumulativeDose(cohort, cohortInfo, cdm, gapEra, sameIndexMode, overlapMode, eraJoinMode, units)
         }
       }
     }
@@ -283,7 +282,19 @@ addDrugUse <- function(cohort,
     ) %>%
     CDMConnector::computeQuery()
 
-  CDMConnector::dropTable(cdm, dplyr::everything())
+  if (initialDailyDose | cumulativeDose | numberEras) {
+    attr(cohort, "drug_use_missing_duration") <- c(
+      durationMissing, list("method" = imputeDuration)
+    )
+  }
+
+  if (initialDailyDose | cumulativeDose) {
+    attr(cohort, "drug_use_missing_dose") <- c(
+      dailyDoseMissing, list("method" = imputeDailyDose)
+    )
+  }
+
+  CDMConnector::dropTable(cdm = cdm, name = dplyr::everything())
 
   return(cohort)
 }
@@ -302,7 +313,8 @@ addInfo <- function(cohort,
                     cohortInfo,
                     numberExposures,
                     initialQuantity,
-                    cumulativeQuantity) {
+                    cumulativeQuantity,
+                    cdm) {
   if (numberExposures | cumulativeQuantity) {
     cohort <- cohort %>%
       dplyr::left_join(
@@ -320,15 +332,13 @@ addInfo <- function(cohort,
           "subject_id", "cohort_start_date", "cohort_end_date"
         ),
       ) %>%
-      dplyr::mutate(
-        number_exposures = dplyr::if_else(
-          is.na(.data$number_exposures), 0, .data$number_exposures
-        ),
-        cumulative_quantity = dplyr::if_else(
-          is.na(.data$cumulative_quantity), 0, .data$cumulative_quantity
-        )
-      ) %>%
-      CDMConnector::computeQuery()
+      dplyr::mutate(number_exposures = dplyr::if_else(
+        is.na(.data$number_exposures), 0, .data$number_exposures
+      )) %>%
+      CDMConnector::computeQuery(
+        temporary = FALSE, schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
   }
   if (initialQuantity) {
     cohort <- cohort %>%
@@ -339,12 +349,7 @@ addInfo <- function(cohort,
             .data$cohort_end_date
           ) %>%
           dplyr::filter(
-            .data$drug_exposure_start_date == min(
-              .data$drug_exposure_start_date,
-              na.rm = TRUE
-            ) &
-              .data$drug_exposure_start_date <= .data$cohort_start_date &
-              .data$drug_exposure_end_date >= .data$cohort_start_date
+            .data$drug_exposure_start_date <= .data$cohort_start_date
           ) %>%
           dplyr::summarise(
             initial_quantity = sum(.data$quantity, na.rm = TRUE),
@@ -354,10 +359,10 @@ addInfo <- function(cohort,
           "subject_id", "cohort_start_date", "cohort_end_date"
         ),
       ) %>%
-      dplyr::mutate(initial_quantity = dplyr::if_else(
-        is.na(.data$initial_quantity), 0, .data$initial_quantity
-      )) %>%
-      CDMConnector::computeQuery()
+      CDMConnector::computeQuery(
+        temporary = FALSE, schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
   }
   return(cohort)
 }
@@ -366,7 +371,8 @@ addInitialDailyDose <- function(cohort,
                                 cohortInfo,
                                 initialDailyDose,
                                 sameIndexMode,
-                                units) {
+                                units,
+                                cdm) {
   if (initialDailyDose) {
     if (length(units) == 0) {
       cohortInfo <- cohortInfo %>%
@@ -377,7 +383,9 @@ addInitialDailyDose <- function(cohort,
           .data$subject_id, .data$cohort_start_date,
           .data$cohort_end_date, .data$unit
         ) %>%
-        dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_start_date)
+        dplyr::filter(
+          .data$drug_exposure_start_date <= .data$cohort_start_date
+        )
       if (sameIndexMode == "sum") {
         cohortInfo <- cohortInfo %>%
           dplyr::summarise(
@@ -413,16 +421,15 @@ addInitialDailyDose <- function(cohort,
         cohortInfo %>% dplyr::select(-"unit"),
         by = c("subject_id", "cohort_start_date", "cohort_end_date")
       ) %>%
-      dplyr::mutate(dplyr::across(
-        dplyr::starts_with("initial_daily_dose"),
-        ~ dplyr::if_else(is.na(.x), 0, .x)
-      )) %>%
-      CDMConnector::computeQuery()
+      CDMConnector::computeQuery(
+        temporary = FALSE, schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
   }
   return(cohort)
 }
 
-addNumberEras <- function(cohort, cohortInfo, gapEra, numberEras) {
+addNumberEras <- function(cohort, cohortInfo, gapEra, numberEras, cdm) {
   if (numberEras) {
     cohort <- cohort %>%
       dplyr::left_join(
@@ -447,43 +454,93 @@ addNumberEras <- function(cohort, cohortInfo, gapEra, numberEras) {
             .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
           ) %>%
           dbplyr::window_order(.data$date_event, .data$value) %>%
-          dplyr::mutate(id = cumsum(.data$value)) %>%
+          dplyr::filter(cumsum(.data$value) == 0) %>%
           dplyr::summarise(
-            number_eras = sum(.data$id == 0, na.rm = TRUE), .groups = "drop"
+            number_eras = dplyr::n(), .groups = "drop"
           ),
         by = c("subject_id", "cohort_start_date", "cohort_end_date")
       ) %>%
       dplyr::mutate(number_eras = dplyr::if_else(
         is.na(.data$number_eras), 0, .data$number_eras
       )) %>%
-      CDMConnector::computeQuery()
+      CDMConnector::computeQuery(
+        temporary = FALSE, schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
   }
   return(cohort)
 }
 
-addCumulativeDose <- function(cohort, cohortInfo) {
+addCumulativeDose <- function(cohort,
+                              cohortInfo,
+                              cdm,
+                              gapEra,
+                              sameIndexMode,
+                              overlapMode,
+                              eraJoinMode,
+                              units) {
+  if (length(units) == 0) {
+    cumDose <- cohortInfo %>%
+      dplyr::select(
+        "subject_id", "cohort_start_date", "cohort_end_date"
+      ) %>%
+      dplyr::distinct() %>%
+      dplyr::mutate("cumulative_dose" = as.numeric(NA))
+  } else {
+    # split the exposures in subexposures inside each cohort
+    cohortInfo <- splitSubexposures(cohortInfo, cdm)
+
+    # add the overlapping flag
+    cohortInfo <- addOverlappingFlag(cohortInfo)
+
+    # add the type of subexposure
+    cohortInfo <- addTypeSubexposure(cohortInfo, gapEra)
+
+    # solve same index day overlapping
+    cohortInfo <- solveSameIndexOverlap(cohortInfo, cdm, sameIndexMode)
+
+    # solve not same index overlapping
+    cohortInfo <- solveOverlap(cohortInfo, cdm, overlapMode)
+
+    # add daily dose to gaps
+    cohortInfo <- addGapDailyDose(cohortInfo, cdm, eraJoinMode)
+
+    # add cumulative dose
+    cumDose <- cohortInfo %>%
+      dplyr::mutate(
+        exposed_dose = .data$daily_dose * .data$subexposed_days
+      ) %>%
+      dplyr::group_by(
+        .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+        .data$unit
+      ) %>%
+      dplyr::summarise(
+        cumulative_dose = sum(
+          .data$exposed_dose[.data$considered_subexposure == "yes"],
+          na.rm = TRUE
+        ),
+        .groups = "drop"
+      )
+    for (u in units) {
+      cumDose <- cumDose %>%
+        dplyr::mutate(
+          !!paste0("cumulative_dose_", u) := dplyr::if_else(
+            .data$unit == .env$u, .data$cumulative_dose, NA
+          )
+        )
+    }
+    cumDose <- cumDose %>% dplyr::select(-"cumulative_dose", -"unit")
+  }
+
   cohort %>%
     dplyr::left_join(
-      cohortInfo %>%
-        dplyr::mutate(
-          exposed_dose = .data$daily_dose * .data$subexposed_days
-        ) %>%
-        dplyr::group_by(
-          .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
-        ) %>%
-        dplyr::summarise(
-          cumulative_dose = sum(
-            .data$exposed_dose[.data$considered_subexposure == "yes"],
-            na.rm = TRUE
-          ),
-          .groups = "drop"
-        ),
+      cumDose,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
-    dplyr::mutate(cumulative_dose = dplyr::if_else(
-      is.na(.data$cumulative_dose), 0, .data$cumulative_dose
-    )) %>%
-    CDMConnector::computeQuery()
+    CDMConnector::computeQuery(
+      temporary = FALSE, schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
 }
 
 #' @noRd
@@ -511,7 +568,10 @@ initialSubset <- function(cdm, dusCohort, conceptSet) {
     )) %>%
     dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_end_date) %>%
     dplyr::filter(.data$drug_exposure_end_date >= .data$cohort_start_date) %>%
-    computeTable(cdm)
+    CDMConnector::computeQuery(
+      temporary = FALSE, schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
 }
 
 #' @noRd
@@ -572,7 +632,10 @@ splitSubexposures <- function(x, cdm) {
     tidyr::pivot_wider(names_from = "date_type", values_from = "date_event") %>%
     dplyr::select(-"id2") %>%
     dplyr::ungroup() %>%
-    computeTable(cdm)
+    CDMConnector::computeQuery(
+      temporary = FALSE, schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
 
   x_intervals <- x_intervals %>%
     dplyr::filter(is.na(.data$subexposure_start_date)) %>%
@@ -611,7 +674,10 @@ splitSubexposures <- function(x, cdm) {
     dplyr::mutate(subexposed_days = !!CDMConnector::datediff(
       "subexposure_start_date", "subexposure_end_date"
     ) + 1) %>%
-    computeTable(cdm)
+    CDMConnector::computeQuery(
+      temporary = FALSE, schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
 
   # we join the exposures with the overlapping periods and we only consider the
   # exposures that contribute to each overlapping period
@@ -634,7 +700,10 @@ splitSubexposures <- function(x, cdm) {
         "subexposed_days"
       )
     ) %>%
-    computeTable(cdm)
+    CDMConnector::computeQuery(
+      temporary = FALSE, schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
 
   return(x_intervals)
 }
@@ -644,7 +713,7 @@ addOverlappingFlag <- function(x) {
   x <- x %>%
     dplyr::group_by(
       .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
-      .data$subexposure_id
+      .data$subexposure_id, .data$unit
     ) %>%
     dplyr::mutate(overlapping = dplyr::n()) %>%
     dplyr::ungroup()
@@ -655,7 +724,8 @@ addOverlappingFlag <- function(x) {
 addTypeSubexposure <- function(x, gapEra) {
   x <- x %>%
     dplyr::group_by(
-      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+      .data$unit
     ) %>%
     dplyr::mutate(
       type_subexposure = dplyr::case_when(
@@ -667,48 +737,9 @@ addTypeSubexposure <- function(x, gapEra) {
           "gap",
         TRUE ~ "unexposed"
       )
-    )
-  return(x)
-}
-
-#' @noRd
-addEraId <- function(x) {
-  x <- x %>%
-    dplyr::mutate(era_id = dplyr::if_else(
-      .data$type_subexposure == "unexposed" & .data$subexposure_id > 1,
-      1,
-      0
-    )) %>%
-    dbplyr::window_order(.data$subexposure_start_date) %>%
-    dplyr::mutate(era_id = cumsum(as.numeric(.data$era_id))) %>%
-    dplyr::mutate(era_id = dplyr::if_else(
-      .data$type_subexposure == "unexposed",
-      as.numeric(NA),
-      .data$era_id + 1
-    )) %>%
-    dbplyr::window_order()
-  return(x)
-}
-
-#' @noRd
-addContinuousExposureId <- function(x) {
-  x <- x %>%
-    dplyr::mutate(continuous_exposure_id = dplyr::if_else(
-      .data$type_subexposure != "exposed" & .data$subexposure_id > 1,
-      1,
-      0
-    )) %>%
-    dbplyr::window_order(.data$subexposure_start_date) %>%
-    dplyr::mutate(continuous_exposure_id = cumsum(as.numeric(
-      .data$continuous_exposure_id
-    ))) %>%
-    dplyr::mutate(continuous_exposure_id = dplyr::if_else(
-      .data$type_subexposure != "exposed",
-      as.numeric(NA),
-      .data$continuous_exposure_id + 1
-    )) %>%
-    dplyr::ungroup() %>%
-    dbplyr::window_order()
+    ) %>%
+    dplyr::filter(.data$type_subexposure != "unexposed") %>%
+    dplyr::ungroup()
   return(x)
 }
 
@@ -717,8 +748,8 @@ solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
   sameIndexMode <- tolower(sameIndexMode)
   x_same_index <- x %>%
     dplyr::group_by(
-      .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
-      .data$drug_exposure_start_date
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+      .data$subexposure_id, .data$drug_exposure_start_date, .data$unit
     ) %>%
     dplyr::filter(dplyr::n() > 1)
   if (sameIndexMode == "minimum") {
@@ -735,9 +766,7 @@ solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
         by = colnames(x_same_index)
       ) %>%
       dplyr::mutate(considered_subexposure = dplyr::if_else(
-        is.na(.data$considered_subexposure),
-        "no",
-        "yes"
+        is.na(.data$considered_subexposure), "no", "yes"
       ))
   } else if (sameIndexMode == "maximum") {
     x_same_index <- x_same_index %>%
@@ -763,25 +792,27 @@ solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
       dplyr::filter(
         .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
       ) %>%
-      dplyr::union_all(
-        x_same_index %>%
-          dplyr::filter(
-            .data$drug_exposure_id > min(.data$drug_exposure_id, na.rm = TRUE)
-          ) %>%
-          dplyr::mutate(daily_dose = 0)
-      ) %>%
+      # dplyr::union_all(
+      #   x_same_index %>%
+      #     dplyr::filter(
+      #       .data$drug_exposure_id > min(.data$drug_exposure_id, na.rm = TRUE)
+      #     ) %>%
+      #     dplyr::mutate(daily_dose = 0)
+      # ) %>%
       dplyr::mutate(considered_subexposure = "yes")
   }
   x <- x %>%
-    dplyr::anti_join(
-      x_same_index,
-      by = c(
-        "subject_id", "cohort_start_date", "cohort_end_date", "subexposure_id",
-        "drug_exposure_start_date"
-      )
+    dplyr::group_by(
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+      .data$subexposure_id, .data$drug_exposure_start_date, .data$unit
     ) %>%
+    dplyr::filter(dplyr::n() == 1) %>%
+    dplyr::ungroup() %>%
     dplyr::union_all(x_same_index %>% dplyr::ungroup()) %>%
-    computeTable(cdm)
+    CDMConnector::computeQuery(
+      temporary = FALSE, schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
 
   return(x)
 }
@@ -791,7 +822,8 @@ solveOverlap <- function(x, cdm, overlapMode) {
   overlapMode <- tolower(overlapMode)
   x_overlap <- x %>%
     dplyr::group_by(
-      .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+      .data$subexposure_id, .data$unit
     ) %>%
     dplyr::filter(
       is.na(.data$considered_subexposure) |
@@ -878,21 +910,31 @@ solveOverlap <- function(x, cdm, overlapMode) {
     }
     x_overlap <- x_overlap %>%
       dplyr::ungroup() %>%
-      computeTable(cdm)
+      CDMConnector::computeQuery(
+        temporary = FALSE, schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
     x <- x %>%
-      dplyr::anti_join(
-        x_overlap,
-        by = c(
-          "subject_id", "cohort_start_date", "subexposure_id", "drug_exposure_id"
-        )
+      dplyr::group_by(
+        .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
+        .data$subexposure_id, .data$unit
       ) %>%
+      dplyr::filter(
+        is.na(.data$considered_subexposure) |
+          .data$considered_subexposure == "yes"
+      ) %>%
+      dplyr::filter(dplyr::n() == 1) %>%
       dplyr::mutate(considered_subexposure = dplyr::if_else(
         .data$type_subexposure == "exposed" & is.na(.data$considered_subexposure),
         "yes",
         .data$considered_subexposure
       )) %>%
+      dplyr::ungroup() %>%
       dplyr::union_all(x_overlap) %>%
-      computeTable(cdm)
+      CDMConnector::computeQuery(
+        temporary = FALSE, schema = attr(cdm, "write_schema"),
+        overwrite = TRUE
+      )
   }
   return(x)
 }
@@ -902,24 +944,29 @@ addGapDailyDose <- function(x, cdm, eraJoinMode) {
   eraJoinMode <- tolower(eraJoinMode)
   x_gaps_dose <- x %>%
     dplyr::filter(.data$type_subexposure == "gap")
+  if (x_gaps_dose %>% dplyr::tally() %>% dplyr::pull() == 0) {
+    return(x)
+  }
   if (eraJoinMode == "zero") {
-    x_gaps_dose <- x_gaps_dose %>%
-      dplyr::mutate(daily_dose = as.numeric(0))
+    x %>%
+      dplyr::filter(.data$type_subexposure != "gap") %>%
+      return()
   } else if (eraJoinMode == "previous") {
     x_gaps_dose <- x_gaps_dose %>%
-      dplyr::select(-"daily_dose") %>%
+      dplyr::select(-"daily_dose", -"unit") %>%
       dplyr::inner_join(
         x %>%
           dplyr::mutate(subexposure_id = .data$subexposure_id + 1) %>%
           dplyr::filter(.data$considered_subexposure == "yes") %>%
           dplyr::group_by(
-            .data$subject_id, .data$cohort_start_date, .data$subexposure_id
+            .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
+            .data$unit
           ) %>%
           dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
           dplyr::ungroup() %>%
           dplyr::select(
             "subject_id", "cohort_start_date", "cohort_end_date",
-            "subexposure_id", "daily_dose"
+            "subexposure_id", "daily_dose", "unit"
           ) %>%
           dplyr::distinct(),
         by = c(
@@ -929,19 +976,20 @@ addGapDailyDose <- function(x, cdm, eraJoinMode) {
       )
   } else if (eraJoinMode == "subsequent") {
     x_gaps_dose <- x_gaps_dose %>%
-      dplyr::select(-"daily_dose") %>%
+      dplyr::select(-"daily_dose", -"unit") %>%
       dplyr::inner_join(
         x %>%
           dplyr::mutate(subexposure_id = .data$subexposure_id - 1) %>%
           dplyr::filter(.data$considered_subexposure == "yes") %>%
           dplyr::group_by(
-            .data$subject_id, .data$cohort_start_date, .data$subexposure_id
+            .data$subject_id, .data$cohort_start_date, .data$subexposure_id,
+            .data$unit
           ) %>%
           dplyr::mutate(daily_dose = sum(.data$daily_dose, na.rm = TRUE)) %>%
           dplyr::ungroup() %>%
           dplyr::select(
             "subject_id", "cohort_start_date", "cohort_end_date",
-            "subexposure_id", "daily_dose"
+            "subexposure_id", "daily_dose", "unit"
           ) %>%
           dplyr::distinct(),
         by = c(
@@ -951,228 +999,14 @@ addGapDailyDose <- function(x, cdm, eraJoinMode) {
       )
   }
   x <- x %>%
-    dplyr::anti_join(
-      x_gaps_dose,
-      by = c(
-        "subject_id", "cohort_start_date", "cohort_end_date",
-        "subexposure_id"
-      )
-    ) %>%
+    dplyr::filter(.data$type_subexposure != "gap") %>%
     dplyr::union_all(
       x_gaps_dose %>% dplyr::mutate(considered_subexposure = "yes")
     ) %>%
-    computeTable(cdm)
-  return(x)
-}
-
-#' @noRd
-summariseCohort <- function(x, cdm) {
-  x <- x %>%
-    dplyr::mutate(exposed_dose = .data$daily_dose * .data$subexposed_days) %>%
-    computeTable(cdm) %>%
-    dplyr::group_by(
-      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
-    ) %>%
-    dplyr::summarise(
-      gap_days = sum(
-        .data$subexposed_days[.data$type_subexposure == "gap"],
-        na.rm = TRUE
-      ),
-      unexposed_days = sum(
-        .data$subexposed_days[.data$type_subexposure == "unexposed"],
-        na.rm = TRUE
-      ),
-      not_considered_days = sum(
-        .data$subexposed_days[
-          .data$type_subexposure == "exposed" &
-            .data$considered_subexposure == "no"
-        ],
-        na.rm = TRUE
-      ),
-      start_first_era = min(
-        .data$subexposure_start_date[.data$era_id == 1],
-        na.rm = TRUE
-      ),
-      end_first_era = max(
-        .data$subexposure_end_date[.data$era_id == 1],
-        na.rm = TRUE
-      ),
-      number_exposures = dplyr::n_distinct(.data$drug_exposure_id),
-      number_subexposures = max(.data$subexposure_id, na.rm = TRUE),
-      number_continuous_exposures = max(
-        .data$continuous_exposure_id,
-        na.rm = TRUE
-      ),
-      number_eras = max(.data$era_id, na.rm = TRUE),
-      number_gaps = dplyr::n_distinct(
-        .data$subexposure_id[.data$type_subexposure == "gap"]
-      ),
-      number_unexposed_periods = sum(
-        dplyr::if_else(.data$type_subexposure == "unexposed", 1, 0),
-        na.rm = TRUE
-      ),
-      number_subexposures_overlap = dplyr::n_distinct(
-        .data$subexposure_id[.data$overlapping > 1]
-      ),
-      number_eras_overlap = dplyr::n_distinct(
-        .data$era_id[.data$overlapping > 1]
-      ),
-      number_continuous_exposure_overlap = dplyr::n_distinct(
-        .data$continuous_exposure_id[.data$overlapping > 1]
-      ),
-      cumulative_dose = sum(
-        .data$exposed_dose[.data$considered_subexposure == "yes"],
-        na.rm = TRUE
-      ),
-      initial_daily_dose = sum(
-        .data$daily_dose[
-          .data$subexposure_id == 1 & .data$considered_subexposure == "yes"
-        ],
-        na.rm = TRUE
-      ),
-      cumulative_gap_dose = sum(
-        .data$exposed_dose[.data$type_subexposure == "gap"],
-        na.rm = TRUE
-      ),
-      cumulative_not_considered_dose = sum(
-        .data$exposed_dose[.data$considered_subexposure == "no"],
-        na.rm = TRUE
-      ),
-      sum_all_exposed_dose = sum(
-        .data$exposed_dose[.data$type_subexposure == "exposed"],
-        na.rm = TRUE
-      ),
-      sum_all_exposed_days = sum(
-        .data$subexposed_days[.data$type_subexposure == "exposed"],
-        na.rm = TRUE
-      ),
-      .groups = "drop"
-    ) %>%
-    computeTable(cdm) %>%
-    # replace NA
-    dplyr::mutate(
-      gap_days = dplyr::if_else(
-        is.na(.data$gap_days),
-        0,
-        .data$gap_days
-      ),
-      unexposed_days = dplyr::if_else(
-        is.na(.data$unexposed_days),
-        0,
-        .data$unexposed_days
-      ),
-      not_considered_days = dplyr::if_else(
-        is.na(.data$not_considered_days),
-        0,
-        .data$not_considered_days
-      ),
-      number_exposures = dplyr::if_else(
-        is.na(.data$number_exposures),
-        0,
-        .data$number_exposures
-      ),
-      number_subexposures = dplyr::if_else(
-        is.na(.data$number_subexposures),
-        0,
-        .data$number_subexposures
-      ),
-      number_continuous_exposures = dplyr::if_else(
-        is.na(.data$number_continuous_exposures),
-        0,
-        .data$number_continuous_exposures
-      ),
-      number_eras = dplyr::if_else(
-        is.na(.data$number_eras),
-        0,
-        .data$number_eras
-      ),
-      number_gaps = dplyr::if_else(
-        is.na(.data$number_gaps),
-        0,
-        .data$number_gaps
-      ),
-      number_unexposed_periods = dplyr::if_else(
-        is.na(.data$number_unexposed_periods),
-        0,
-        .data$number_unexposed_periods
-      ),
-      number_subexposures_overlap = dplyr::if_else(
-        is.na(.data$number_subexposures_overlap),
-        0,
-        .data$number_subexposures_overlap
-      ),
-      number_eras_overlap = dplyr::if_else(
-        is.na(.data$number_eras_overlap),
-        0,
-        .data$number_eras_overlap
-      ),
-      number_continuous_exposure_overlap = dplyr::if_else(
-        is.na(.data$number_continuous_exposure_overlap),
-        0,
-        .data$number_continuous_exposure_overlap
-      ),
-      cumulative_dose = dplyr::if_else(
-        is.na(.data$cumulative_dose),
-        0,
-        .data$cumulative_dose
-      ),
-      initial_daily_dose = dplyr::if_else(
-        is.na(.data$initial_daily_dose),
-        0,
-        .data$initial_daily_dose
-      ),
-      cumulative_gap_dose = dplyr::if_else(
-        is.na(.data$cumulative_gap_dose),
-        0,
-        .data$cumulative_gap_dose
-      ),
-      cumulative_not_considered_dose = dplyr::if_else(
-        is.na(.data$cumulative_not_considered_dose),
-        0,
-        .data$cumulative_not_considered_dose
-      )
-    ) %>%
-    # end replace NA
-    dplyr::mutate(duration = !!CDMConnector::datediff(
-      "cohort_start_date", "cohort_end_date"
-    ) + 1) %>%
-    dplyr::mutate(
-      exposed_days =
-        .data$duration - .data$unexposed_days - .data$gap_days
-    ) %>%
-    dplyr::mutate(
-      number_subexposures_no_overlap =
-        .data$number_subexposures - .data$number_subexposures_overlap
-    ) %>%
-    dplyr::mutate(
-      number_eras_no_overlap =
-        .data$number_eras - .data$number_eras_overlap
-    ) %>%
-    dplyr::mutate(
-      number_continuous_exposures_no_overlap =
-        .data$number_continuous_exposures - .data$number_continuous_exposure_overlap
-    ) %>%
-    dplyr::mutate(proportion_gap_dose = dplyr::if_else(
-      .data$cumulative_dose == 0,
-      as.numeric(NA),
-      .data$cumulative_gap_dose / .data$cumulative_dose
-    )) %>%
-    dplyr::mutate(proportion_not_considered_dose = dplyr::if_else(
-      .data$cumulative_dose == 0,
-      as.numeric(NA),
-      .data$cumulative_not_considered_dose / .data$cumulative_dose
-    )) %>%
-    dplyr::mutate(first_era_days = dplyr::if_else(
-      is.na(.data$start_first_era),
-      0,
-      !!CDMConnector::datediff(
-        "start_first_era",
-        "end_first_era"
-      ) + 1
-    )) %>%
-    dplyr::select(-"start_first_era", -"end_first_era") %>%
-    computeTable(cdm)
-
+    CDMConnector::computeQuery(
+      temporary = FALSE, schema = attr(cdm, "write_schema"),
+      overwrite = TRUE
+    )
   return(x)
 }
 

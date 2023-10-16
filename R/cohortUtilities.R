@@ -513,10 +513,11 @@ imputeVariable <- function(x, column, impute, range, start, end, imputeRound = F
           .data$impute == 1, .env$impute, .data[[column]]
         ))
     }
-    x <- x %>%
-      dplyr::select(-"impute")
-    attr(x, "numberImputations") <- numberImputations
   }
+  x <- x %>%
+    dplyr::select(-"impute")
+
+  attr(x, "numberImputations") <- numberImputations
 
   return(x)
 }

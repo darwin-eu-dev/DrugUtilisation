@@ -78,7 +78,7 @@ summariseIndication <- function(cohort,
   result <- PatientProfiles::summariseResult(
     table = cohort, group = list("cohort_name" = "cohort_name"),
     strata = strata, variables = list(binary = indicationVariables),
-    functions = list(binary = c("count")),# to add percentage
+    functions = list(binary = c("count", "percentage")),
     minCellCount = minCellCount
   ) %>%
     dplyr::mutate(
