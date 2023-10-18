@@ -222,7 +222,7 @@ test_that("priorUseWashout", {
   cdm <- generateDrugUtilisationCohortSet(
     cdm = cdm,
     name = "bp_cohorts_test",
-    conceptSetList = list("bp_conceptList" = 1539462),
+    conceptSet = list("bp_conceptList" = 1539462),
     limit = "First",
     priorObservation = 180,
     gapEra = 30,
@@ -274,7 +274,7 @@ test_that("test missing end date or out of durationRange", {
     name = "test_missing",
     durationRange = c(1, Inf),
     imputeDuration = 1,
-    conceptSetList = acetaminophen
+    conceptSet = acetaminophen
   )
 
 
@@ -292,7 +292,7 @@ test_that("test missing end date or out of durationRange", {
     name = "test_missing",
     durationRange = c(1, 10),
     imputeDuration = 10,
-    conceptSetList = acetaminophen
+    conceptSet = acetaminophen
   )
 
   # check the number is correct with missingEndDate
@@ -332,7 +332,7 @@ test_that("test missing end date or out of durationRange", {
     name = "test_both",
     durationRange = c(1, 2),
     imputeDuration = "mean",
-    conceptSetList = acetaminophen
+    conceptSet = acetaminophen
   )
 
   # non-missing durations: 2,2,3 --> mean, mode and median are all 2 (floor())

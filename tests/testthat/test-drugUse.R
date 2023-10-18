@@ -1,4 +1,42 @@
 
+test_that("test flags", {
+  skip_on_cran()
+  cdm <- mockDrugUtilisation()
+  x <- tidyr::expand_grid(
+    duration = c(TRUE, FALSE), quantity = c(TRUE, FALSE), dose = c(TRUE, FALSE)
+  )
+  columnsDuration <- c("duration", "impute_duration_count")
+  columnsQuantity <- c("cumulative_quantity", "initial_quantity")
+  columnsDose <- c(
+    "impute_daily_dose_count", "initial_daily_dose_milligram",
+    "cumulative_dose_milligram"
+  )
+  for (k in seq_len(nrow(x))) {
+    xx <- cdm$cohort1 %>%
+      addDrugUse(
+        ingredientConceptId = 1539403, duration = x$duration[k],
+        quantity = x$quantity[k], dose = x$dose[k]
+      ) %>%
+      expect_no_error()
+    expect_true(all(c("number_exposures", "number_eras") %in% colnames(xx)))
+    if (x$duration[k]) {
+      expect_true(all(columnsDuration %in% colnames(xx)))
+    } else {
+      expect_false(any(columnsDuration %in% colnames(xx)))
+    }
+    if (x$quantity[k]) {
+      expect_true(all(columnsQuantity %in% colnames(xx)))
+    } else {
+      expect_false(any(columnsQuantity %in% colnames(xx)))
+    }
+    if (x$dose[k]) {
+      expect_true(all(columnsDose %in% colnames(xx)))
+    } else {
+      expect_false(any(columnsDose %in% colnames(xx)))
+    }
+  }
+})
+
 test_that("test overlapMode", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(

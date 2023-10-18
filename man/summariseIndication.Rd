@@ -20,7 +20,7 @@ summariseIndication(
 \item{strata}{Stratification list}
 
 \item{minCellCount}{Minimum counts that a group can have. Cohorts with
-less counts than this value are obscured. By default: 5.}
+less counts than this value are obscured.}
 }
 \value{
 A Tibble with 4 columns: cohort_definition_id, variable, estimate and

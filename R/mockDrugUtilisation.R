@@ -30,6 +30,8 @@
 #' @param condition_occurrence A condition_occurrence tibble, if NULL a mock one
 #' is created
 #' @param observation A observation tibble, if NULL a mock one is created
+#' @param concept_relationship A concept_relationship tibble, if NULL a mock one
+#' is created.
 #' @param extraTables Extra tibbles to be instantiated that are not cohorts or
 #' cdm tables
 #' @param ... Cohorts can be added to the cdm reference, cohort1 and cohort2

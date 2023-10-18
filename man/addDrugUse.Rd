@@ -2,22 +2,16 @@
 % Please edit documentation in R/addDrugUse.R
 \name{addDrugUse}
 \alias{addDrugUse}
-\title{Add new columns with dose related information to the cohort}
+\title{Add new columns with drug use related information}
 \usage{
 addDrugUse(
   cohort,
   cdm = attr(cohort, "cdm_reference"),
   ingredientConceptId,
-  conceptSetList = NULL,
-  initialDailyDose = TRUE,
-  numberExposures = TRUE,
+  conceptSet = NULL,
   duration = TRUE,
-  cumulativeDose = TRUE,
-  numberEras = TRUE,
-  initialQuantity = TRUE,
-  cumulativeQuantity = TRUE,
-  imputeDurationCount = TRUE,
-  imputeDailyDoseCount = TRUE,
+  quantity = TRUE,
+  dose = TRUE,
   gapEra = 30,
   eraJoinMode = "zero",
   overlapMode = "sum",
@@ -36,28 +30,14 @@ addDrugUse(
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
 
-\item{conceptSetList}{List of concepts to be included. If NULL all the descendants
-of ingredient concept id will be used. By default: NULL.}
+\item{conceptSet}{List of concepts to be included. If NULL all the
+descendants of ingredient concept id will be used.}
 
-\item{initialDailyDose}{Whether initial dose should be displayed}
+\item{duration}{Whether to add duration related columns.}
 
-\item{numberExposures}{Whether number exposures should be displayed}
+\item{quantity}{Whether to add quantity related columns.}
 
-\item{duration}{Whether duration should be displayed}
-
-\item{cumulativeDose}{Whether cumulative dose should be displayed}
-
-\item{numberEras}{Whether the number of eras should be displayed}
-
-\item{initialQuantity}{Whether initial quantity should be displayed}
-
-\item{cumulativeQuantity}{Whether cumulative quantity should be displayed.}
-
-\item{imputeDurationCount}{Whether to add a column with the number of imputed
-exposures duration.}
-
-\item{imputeDailyDoseCount}{Whether to add a column with the number of
-imputed exposures daily dose.}
+\item{dose}{Whether to add dose related columns.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era.}
@@ -115,27 +95,20 @@ equal or smaller than the second one. It is only required if imputeDuration
 \item{dailyDoseRange}{Range between the daily_dose must be comprised. It
 should be a numeric vector of length two, with no NAs and the first value
 should be equal or smaller than the second one. It is only required if
-imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
-NULL.}
+imputeDailyDose = TRUE. If NULL no restrictions are applied.}
 }
 \value{
-The function returns the dose information for all the individuals of
-dusCohortName.
+The same cohort with the added columns.
 }
 \description{
-Add new columns with dose related information to the cohort
+Add new columns with drug use related information
 }
 \examples{
 \donttest{
 library(DrugUtilisation)
 library(CodelistGenerator)
 
-concept_relationship <- dplyr::tibble(
-  concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
-  concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
-  relationship_id = c(rep("RxNorm has dose form", 4))
-)
-cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
+cdm <- mockDrugUtilisation()
 cdm <- generateDrugUtilisationCohortSet(
   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 )

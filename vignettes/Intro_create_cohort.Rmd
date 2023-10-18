@@ -139,7 +139,7 @@ Now let's try function DrugUtilisation::generateDrugUtilisationCohortSet() to ge
 ```{r, message=FALSE, warning=FALSE}
 cdm2 <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_alleras",
-  conceptSetList = conceptSet_ingredient
+  conceptSet = conceptSet_ingredient
 )
 cdm2$dus_alleras
 
@@ -156,7 +156,7 @@ The parameter *durationRange* specifies the range within which the duration must
 ```{r, message=FALSE, warning=FALSE}
 cdm3 <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_step2_0_inf",
-  conceptSetList = conceptSet_ingredient,
+  conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
   durationRange = c(0, Inf) # default as c(1, Inf)
 )
@@ -173,7 +173,7 @@ The *gapEra* parameter defines the number of days between two continuous drug ex
 ```{r, message=FALSE, warning=FALSE}
 cdm4 <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_step3_alleras",
-  conceptSetList = conceptSet_ingredient,
+  conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
   durationRange = c(0, Inf),
   gapEra = 30 # default as 0
@@ -190,7 +190,7 @@ The *priorUseWashout* parameter specifiesthe number of prior days without exposu
 ```{r, message=FALSE, warning=FALSE}
 cdm5 <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_alleras_step4",
-  conceptSetList = conceptSet_ingredient,
+  conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
   durationRange = c(0, Inf),
   gapEra = 30,
@@ -208,7 +208,7 @@ The parameter *priorObservation* defines the minimum number of days of prior obs
 ```{r, message=FALSE, warning=FALSE}
 cdm6 <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_alleras_step5",
-  conceptSetList = conceptSet_ingredient,
+  conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
   durationRange = c(0, Inf),
   gapEra = 30,
@@ -226,7 +226,7 @@ The *cohortDateRange* parameter defines the range for the cohort_start_date and 
 ```{r, message=FALSE, warning=FALSE}
 cdm7 <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_alleras_step67",
-  conceptSetList = conceptSet_ingredient,
+  conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
   durationRange = c(0, Inf),
   gapEra = 30,
@@ -246,7 +246,7 @@ Change the *limit* parameter from *All* to *First* and observe how it impacts th
 ```{r, message=FALSE, warning=FALSE}
 cdm8 <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_step8_firstera",
-  conceptSetList = conceptSet_ingredient,
+  conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
   durationRange = c(0, Inf),
   gapEra = 30,
@@ -264,7 +264,7 @@ The parameter *limit* only allows *All* and *First*. The *First* value represent
 ```{r}
 cdm8 <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_step8_firstever",
-  conceptSetList = conceptSet_ingredient,
+  conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
   durationRange = c(0, Inf),
   gapEra = 0,

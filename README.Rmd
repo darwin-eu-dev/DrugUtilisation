@@ -93,7 +93,7 @@ To generate the cohort of drug use we will use `generateDrugUtilisationCohortSet
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm,
   name = "dus_cohort",
-  conceptSetList = conceptList,
+  conceptSet = conceptList,
   limit = "first",
   priorObservation = 365,
   gapEra = 30,

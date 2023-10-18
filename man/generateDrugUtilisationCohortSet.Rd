@@ -7,7 +7,7 @@
 generateDrugUtilisationCohortSet(
   cdm,
   name,
-  conceptSetList,
+  conceptSet,
   durationRange = c(1, Inf),
   imputeDuration = "none",
   gapEra = 0,
@@ -22,20 +22,20 @@ generateDrugUtilisationCohortSet(
 
 \item{name}{Name of the GeneratedCohortSet}
 
-\item{conceptSetList}{Named list of concept sets.}
+\item{conceptSet}{Named list of concept sets.}
 
 \item{durationRange}{Range between the duration must be comprised. It should
 be a numeric vector of length two, with no NAs and the first value should be
 equal or smaller than the second one. It is only required if imputeDuration
-= TRUE. If NULL no restrictions are applied. By default: NULL.}
+= TRUE. If NULL no restrictions are applied.}
 
 \item{imputeDuration}{Whether/how the duration should be imputed
 "none", "median", "mean", "mode", or it can be a count}
 
 \item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era. By default: 0.}
+considered in the same era.}
 
-\item{priorUseWashout}{Prior days without exposure. By default: NULL.}
+\item{priorUseWashout}{Prior days without exposure.}
 
 \item{priorObservation}{Minimum number of days of prior observation
 required for the incident eras to be considered. If NULL its is not required
@@ -48,8 +48,7 @@ two options:
 "all" we summarise the output will be a summary of the exposed eras of
 each individual. Each individual can contribute multiple times.
 "first" we only consider the first observable era of each individual that fulfills the criteria provided
-in previous parameters. In this case each individual can not contribute with multiple rows.
-By default: "all".}
+in previous parameters. In this case each individual can not contribute with multiple rows.}
 }
 \value{
 The function returns the 'cdm' object with the created tables as
@@ -71,7 +70,7 @@ druglist <- getDrugIngredientCodes(cdm, c("acetaminophen", "metformin"))
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm,
   name = "drug_cohorts",
-  conceptSetList = druglist,
+  conceptSet = druglist,
   priorObservation = 365
 )
 

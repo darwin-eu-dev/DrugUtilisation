@@ -18,7 +18,7 @@
 #'
 #' @param cdm A cdm_reference object.
 #' @param name Name of the GeneratedCohortSet
-#' @param conceptSetList Named list of concept sets.
+#' @param conceptSet Named list of concept sets.
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
 #' equal or smaller than the second one. It is only required if imputeDuration
@@ -56,7 +56,7 @@
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm,
 #'   name = "drug_cohorts",
-#'   conceptSetList = druglist,
+#'   conceptSet = druglist,
 #'   priorObservation = 365
 #' )
 #'
@@ -71,7 +71,7 @@
 #'
 generateDrugUtilisationCohortSet <- function(cdm,
                                              name,
-                                             conceptSetList,
+                                             conceptSet,
                                              durationRange = c(1, Inf),
                                              imputeDuration = "none",
                                              gapEra = 0,
@@ -80,7 +80,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              cohortDateRange = as.Date(c(NA, NA)),
                                              limit = "all") {
   checkInputs(
-    cdm = cdm, name = name, conceptSetList = conceptSetList,
+    cdm = cdm, name = name, conceptSet = conceptSet,
     limit = limit, priorObservation = priorObservation, gapEra = gapEra,
     priorUseWashout = priorUseWashout, cohortDateRange = cohortDateRange,
     imputeDuration = imputeDuration, durationRange = durationRange
@@ -94,7 +94,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   }
 
   # get conceptSet
-  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
+  conceptSet <- conceptSetFromConceptSetList(conceptSet)
 
   # generate cohort set
   cohortSetRef <- attr(conceptSet, "cohort_set") %>%
