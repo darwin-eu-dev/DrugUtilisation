@@ -90,10 +90,8 @@ test_that("test overlapMode", {
     dailyDoseRange = c(0, Inf)
   )
 
-  c(
-    "cdm_reference", "cohort_attrition", "cohort_set", "drug_use_missing_dose",
-    "drug_use_missing_duration"
-  ) %in% names(attributes(x)) %>%
+  c("cdm_reference", "cohort_attrition", "cohort_set") %in%
+    names(attributes(x)) %>%
     all() %>%
     expect_true()
   expect_true(all(variables %in% colnames(x)))
@@ -265,8 +263,9 @@ test_that("test gapEra and eraJoinMode", {
   )
 
   variables <- c(
-    "number_exposures", "number_eras", "initial_daily_dose", "duration",
-    "cumulative_dose", "initial_quantity", "cumulative_quantity"
+    "number_exposures", "number_eras", "initial_daily_dose_milligram",
+    "duration", "cumulative_dose_milligram", "initial_quantity",
+    "cumulative_quantity"
   )
 
   # overall functionality
@@ -450,8 +449,9 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
   )
 
   variables <- c(
-    "number_exposures", "number_eras", "initial_daily_dose", "duration",
-    "cumulative_dose", "initial_quantity", "cumulative_quantity"
+    "number_exposures", "number_eras", "initial_daily_dose_milligram",
+    "duration", "cumulative_dose_milligram", "initial_quantity",
+    "cumulative_quantity"
   )
 
   # overall functionality
@@ -468,12 +468,12 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(4, 2, 0, 61, 1600, 0, 61)
+  value_cohort_1 <- c(4, 2, NA, 61, 1600, NA, 61)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(subject_id == 2)
   for (k in 1:length(value_cohort_1)) {
-    expect_true(xx[[variables[k]]] == value_cohort_1[k])
+    expect_equal(xx[[variables[k]]], value_cohort_1[k])
   }
 
   parameters <- dplyr::tibble(
@@ -492,7 +492,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
   )
   expected_result <- dplyr::tibble(
     number_eras = c(2, 2, 1, 2, 1, 1, 1, 1),
-    cumulative_dose = c(1600, 610, 1410, 1050, 1720, 900, 810, 1720)
+    cumulative_dose_milligram = c(1600, 610, 1410, 1050, 1720, 900, 810, 1720)
   )
 
   for (k in 1:nrow(parameters)) {
@@ -513,7 +513,7 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       dplyr::collect() %>%
       dplyr::filter(subject_id == 2)
     expect_true(result$number_eras == expected_result$number_eras[k])
-    expect_true(result$cumulative_dose == expected_result$cumulative_dose[k])
+    expect_true(result$cumulative_dose_milligram == expected_result$cumulative_dose_milligram[k])
   }
 })
 
@@ -905,7 +905,7 @@ test_that("check all estimates", {
         cohort_end_date = as.Date(c(
           "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
         )),
-        initial_dose = c(1, 2, 3, 6),
+        initial_daily_dose = c(1, 2, 3, 6),
         cumulative_dose = c(5, 6, 9, 7),
         piscina = c(TRUE, FALSE, TRUE, FALSE),
         cara = c("a", "b", "b", "a")
@@ -920,19 +920,17 @@ test_that("check all estimates", {
     res <- summariseDrugUse(
       cdm[["dose_table"]],
       cdm = cdm,
-      drugUseVariables = c("initial_dose", "cumulative_dose"),
       drugUseEstimates = all_estimates[k]
     ) %>%
       dplyr::filter(.data$group_name == "cohort_name")
-    expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
-    expect_true(res$estimate_type[res$variable == c("initial_dose")] == all_estimates[k])
+    expect_true(nrow(res[res$variable == c("initial_daily_dose"), ]) == 1)
+    expect_true(res$estimate_type[res$variable == c("initial_daily_dose")] == all_estimates[k])
     expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
     expect_true(res$estimate_type[res$variable == c("cumulative_dose")] == all_estimates[k])
   }
   res <- summariseDrugUse(
     cdm[["dose_table"]],
     cdm = cdm,
-    drugUseVariables = c("initial_dose", "cumulative_dose"),
     drugUseEstimates = all_estimates
   )
 
@@ -962,7 +960,8 @@ test_that("check all variables", {
     addDrugUse(cdm, 1125315) %>%
     summariseDrugUse(cdm)
   expect_true(all(c(
-    "initial_daily_dose", "number_exposures", "duration", "cumulative_dose",
-    "number_eras", "initial_quantity", "cumulative_quantity"
+    "initial_daily_dose", "number_exposures", "duration",
+    "cumulative_dose", "number_eras", "initial_quantity",
+    "cumulative_quantity"
   ) %in% result$variable))
 })

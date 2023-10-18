@@ -20,17 +20,15 @@
 #' @param cdm cdm_reference created with CDMConnector::cdmFromCon
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
-#' @param conceptSetList List of concepts to be included. If NULL all the descendants
-#' of ingredient concept id will be used. By default: NULL.
+#' @param conceptSetList List of concepts to be included. If NULL all the
+#' descendants of ingredient concept id will be used.
 #' @param initialDailyDose Whether initial dose should be displayed
 #' @param numberExposures Whether number exposures should be displayed
-#' @param duration Whether duration should be displayed
-#' @param cumulativeDose Whether cumulative dose should be displayed
-#' @param numberEras Whether the number of eras should be displayed
-#' @param initialQuantity Whether initial quantity should be displayed
-#' @param cumulativeQuantity Whether cumulative quantity should be displayed
+#' @param duration Whether to add duration related columns.
+#' @param quantity Whether to add quantity related columns.
+#' @param dose Whether to add dose related columns.
 #' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era. By default: 180.
+#' considered in the same era.
 #' @param eraJoinMode How two different continuous exposures are joined in an
 #' era. There are four options:
 #' "zero" the exposures are joined considering that the period between both
@@ -47,7 +45,6 @@
 #' both continuous exposures the subject is treated with the daily dose of the
 #' subsequent subexposure. The time between both exposures contributes to the
 #' total exposed time.
-#' By default: "previous".
 #' @param overlapMode How the overlapping between two exposures that do not
 #' start on the same day is solved inside a subexposure. There are five possible
 #'  options:
@@ -60,7 +57,6 @@
 #' the subexposure.
 #' "sum" the considered daily_dose is the sum of all the exposures present in
 #' the subexposure.
-#' By default: "previous".
 #' @param sameIndexMode How the overlapping between two exposures that start on
 #' the same day is solved inside a subexposure. There are five possible options:
 #' "minimum" the considered daily_dose is the minimum of all of the exposures in
@@ -69,25 +65,20 @@
 #' the subexposure.
 #' "sum" the considered daily_dose is the sum of all the exposures present in
 #' the subexposure.
-#' By default: "sum".
 #' @param imputeDuration Whether/how the duration should be imputed
-#' "none", "median", "mean", "mode"
-#' . By default: "none"
+#' "none", "median", "mean", "mode" or a number
 #' @param imputeDailyDose Whether/how the daily_dose should be imputed
-#' "none", "median", "mean", "mode"
-#' . By default: "none"
+#' "none", "median", "mean", "mode" or a number
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
 #' equal or smaller than the second one. It is only required if imputeDuration
-#' = TRUE. If NULL no restrictions are applied. By default: NULL.
+#' = TRUE. If NULL no restrictions are applied.
 #' @param dailyDoseRange Range between the daily_dose must be comprised. It
 #' should be a numeric vector of length two, with no NAs and the first value
 #' should be equal or smaller than the second one. It is only required if
-#' imputeDailyDose = TRUE. If NULL no restrictions are applied. By default:
-#' NULL.
+#' imputeDailyDose = TRUE. If NULL no restrictions are applied.
 #'
-#' @return The function returns the dose information for all the individuals of
-#' dusCohortName.
+#' @return The same cohort with the added columns.
 #'
 #' @export
 #'
@@ -96,12 +87,7 @@
 #' library(DrugUtilisation)
 #' library(CodelistGenerator)
 #'
-#' concept_relationship <- dplyr::tibble(
-#'   concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
-#'   concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
-#'   relationship_id = c(rep("RxNorm has dose form", 4))
-#' )
-#' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
+#' cdm <- mockDrugUtilisation()
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 #' )
@@ -113,13 +99,9 @@ addDrugUse <- function(cohort,
                        cdm = attr(cohort, "cdm_reference"),
                        ingredientConceptId,
                        conceptSetList = NULL,
-                       initialDailyDose = TRUE,
-                       numberExposures = TRUE,
                        duration = TRUE,
-                       cumulativeDose = TRUE,
-                       numberEras = TRUE,
-                       initialQuantity = TRUE,
-                       cumulativeQuantity = TRUE,
+                       quantity = TRUE,
+                       dose = TRUE,
                        gapEra = 30,
                        eraJoinMode = "zero",
                        overlapMode = "sum",
@@ -128,7 +110,10 @@ addDrugUse <- function(cohort,
                        imputeDailyDose = "none",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
-  vars <- c("eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration", "imputeDailyDose")
+  vars <- c(
+    "eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration",
+    "imputeDailyDose"
+  )
   for (char in vars) {
     if (is.character(get(char))) {
       assign(char, tolower(get(char)))
@@ -153,15 +138,11 @@ addDrugUse <- function(cohort,
   # initial checks
   checkInputs(
     cohort = cohort, cdm = cdm, ingredientConceptId = ingredientConceptId,
-    conceptSetList = conceptSetList, initialDailyDose = initialDailyDose,
-    numberExposures = numberExposures, duration = duration,
-    cumulativeDose = cumulativeDose, numberEras = numberEras,
-    gapEra = gapEra, eraJoinMode = eraJoinMode,
-    initialQuantity = initialQuantity, cumulativeQuantity = cumulativeQuantity,
+    conceptSetList = conceptSetList, duration = duration, quantity = quantity,
+    dose = dose, gapEra = gapEra, eraJoinMode = eraJoinMode,
     overlapMode = overlapMode, sameIndexMode = sameIndexMode,
-    imputeDuration = imputeDuration,
-    imputeDailyDose = imputeDailyDose, durationRange = durationRange,
-    dailyDoseRange = dailyDoseRange
+    imputeDuration = imputeDuration, imputeDailyDose = imputeDailyDose,
+    durationRange = durationRange, dailyDoseRange = dailyDoseRange
   )
 
   # get conceptSet
@@ -196,7 +177,7 @@ addDrugUse <- function(cohort,
     )
 
   if (initialDailyDose | numberExposures | cumulativeDose | numberEras |
-      initialQuantity | cumulativeQuantity) {
+      initialQuantity | cumulativeQuantity | imputeDurationCount) {
     # subset drug_exposure and only get the drug concept ids that we are
     # interested in.
     cohortInfo <- initialSubset(cdm, cohort, conceptSet)
@@ -204,28 +185,33 @@ addDrugUse <- function(cohort,
     cohort <- cohort %>%
       addInfo(cohortInfo, numberExposures, initialQuantity, cumulativeQuantity, cdm)
 
-    if (initialDailyDose | cumulativeDose | numberEras) {
+    if (initialDailyDose | cumulativeDose | numberEras| imputeDurationCount) {
       # correct duration
-      cohortInfo <- correctDuration(
-        cohortInfo, imputeDuration, durationRange, cdm,
-        "drug_exposure_start_date", "drug_exposure_end_date"
-      )
+      cohortInfo <- cohortInfo %>%
+        dplyr::mutate(duration = !!CDMConnector::datediff(
+          start = "drug_exposure_start_date", end = "drug_exposure_end_date"
+        ) + 1) %>%
+        rowsToImpute("duration", durationRange)
 
-      # duration misisngness
-      durationMissing <- list(
-        "count" = attr(cohortInfo, "numberImputations"),
-        "percentage" = 100 * attr(cohortInfo, "numberImputations") / (
-          cohortInfo %>%
-            dplyr::ungroup() %>%
-            dplyr::summarise(n = as.numeric(dplyr::n())) %>%
-            dplyr::pull("n")
+      cohort <- cohort %>%
+        addImputeCount(cohortInfo, imputeDurationCount, "impute_duration_count")
+
+      cohortInfo <- cohortInfo %>%
+        solveImputation("duration", imputeDuration, TRUE) %>%
+        dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
+        dplyr::mutate(drug_exposure_end_date = !!CDMConnector::dateadd(
+          date = "drug_exposure_start_date", number = "days_to_add"
+        )) %>%
+        dplyr::select(-c("duration", "days_to_add")) %>%
+        CDMConnector::computeQuery(
+          temporary = FALSE, schema = attr(cdm, "write_schema"),
+          overwrite = TRUE
         )
-      )
 
       # add number eras
       cohort <- addNumberEras(cohort, cohortInfo, gapEra, numberEras, cdm)
 
-      if (initialDailyDose | cumulativeDose) {
+      if (initialDailyDose | cumulativeDose | imputeDailyDoseCount) {
 
         # add daily dose
         cohortInfo <- cohortInfo %>%
@@ -234,27 +220,17 @@ addDrugUse <- function(cohort,
           dplyr::distinct()
 
         # impute daily dose
-        cohortInfo <- imputeVariable(
-          cohortInfo, "daily_dose",
-          impute = imputeDailyDose,
-          range = dailyDoseRange,
-          start = "drug_exposure_start_date",
-          end = "drug_exposure_end_date"
-        ) %>%
+        cohortInfo <- cohortInfo %>% rowsToImpute("daily_dose", dailyDoseRange)
+
+        cohort <- cohort %>%
+          addImputeCount(cohortInfo, imputeDailyDoseCount, "impute_daily_dose_count")
+
+        cohortInfo <- cohortInfo %>%
+          solveImputation("daily_dose", imputeDailyDose) %>%
           CDMConnector::computeQuery(
             temporary = FALSE, schema = attr(cdm, "write_schema"),
             overwrite = TRUE
           )
-
-        dailyDoseMissing <- list(
-          "count" = attr(cohortInfo, "numberImputations"),
-          "percentage" = 100 * attr(cohortInfo, "numberImputations") / (
-            cohortInfo %>%
-              dplyr::ungroup() %>%
-              dplyr::summarise(n = as.numeric(dplyr::n())) %>%
-              dplyr::pull("n")
-          )
-        )
 
         # get distinct units to cover
         units <- cohortInfo %>%
@@ -281,18 +257,6 @@ addDrugUse <- function(cohort,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
     CDMConnector::computeQuery()
-
-  if (initialDailyDose | cumulativeDose | numberEras) {
-    attr(cohort, "drug_use_missing_duration") <- c(
-      durationMissing, list("method" = imputeDuration)
-    )
-  }
-
-  if (initialDailyDose | cumulativeDose) {
-    attr(cohort, "drug_use_missing_dose") <- c(
-      dailyDoseMissing, list("method" = imputeDailyDose)
-    )
-  }
 
   CDMConnector::dropTable(cdm = cdm, name = dplyr::everything())
 
@@ -447,7 +411,7 @@ addNumberEras <- function(cohort, cohortInfo, gapEra, numberEras, cdm) {
               ) %>%
               dplyr::mutate(
                 value = 1,
-                date_event = !!CDMConnector::dateadd("date_event", gapEra)
+                date_event = !!CDMConnector::dateadd("date_event", gapEra + 1)
               )
           ) %>%
           dplyr::group_by(
@@ -724,8 +688,7 @@ addOverlappingFlag <- function(x) {
 addTypeSubexposure <- function(x, gapEra) {
   x <- x %>%
     dplyr::group_by(
-      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date,
-      .data$unit
+      .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
     ) %>%
     dplyr::mutate(
       type_subexposure = dplyr::case_when(
@@ -948,9 +911,10 @@ addGapDailyDose <- function(x, cdm, eraJoinMode) {
     return(x)
   }
   if (eraJoinMode == "zero") {
-    x %>%
-      dplyr::filter(.data$type_subexposure != "gap") %>%
-      return()
+    return(
+      x %>%
+        dplyr::filter(.data$type_subexposure != "gap")
+    )
   } else if (eraJoinMode == "previous") {
     x_gaps_dose <- x_gaps_dose %>%
       dplyr::select(-"daily_dose", -"unit") %>%
@@ -1040,4 +1004,25 @@ getVariables <- function(initialDailyDose,
     "subject_id", "cohort_start_date", "cohort_end_date", variables
   )
   return(variables)
+}
+
+addImputeCount <- function(cohort, cohortInfo, imputeCount, label) {
+  if (imputeCount) {
+    cohort <- cohort %>%
+      dplyr::left_join(
+        cohortInfo %>%
+          dplyr::group_by(
+            .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
+          ) %>%
+          dplyr::summarise(
+            !!label := sum(.data$impute, na.rm = TRUE),
+            .groups = "drop"
+          ),
+        by = c("subject_id", "cohort_start_date", "cohort_end_date")
+      ) %>%
+      dplyr::mutate(!!label := dplyr::if_else(
+        is.na(.data[[label]]), 0, .data[[label]]
+      ))
+  }
+  return(cohort)
 }

@@ -9,8 +9,7 @@ summariseIndication(
   cohort,
   cdm = attr(cohort, "cdm_reference"),
   strata = list(),
-  indicationVariables = indicationColumns(cohort),
-  minCellCount = 1
+  minCellCount = 5
 )
 }
 \arguments{
@@ -19,8 +18,6 @@ summariseIndication(
 \item{cdm}{cdm_reference created by CDMConnector}
 
 \item{strata}{Stratification list}
-
-\item{indicationVariables}{Variables that point to an indication column}
 
 \item{minCellCount}{Minimum counts that a group can have. Cohorts with
 less counts than this value are obscured. By default: 5.}

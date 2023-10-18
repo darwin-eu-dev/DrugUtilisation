@@ -249,21 +249,19 @@ test_that("priorUseWashout", {
   )
 })
 
-
-
 test_that("test missing end date or out of durationRange", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
-      drug_exposure_id = 1:5,
-      person_id = c(1, 1, 1, 1, 1),
-      drug_concept_id = sample(c(1125360, 2905077, 43135274), 5, replace = T),
+      drug_exposure_id = 1:4,
+      person_id = 1,
+      drug_concept_id = sample(c(1125360, 2905077, 43135274), 4, replace = T),
       drug_exposure_start_date = as.Date(
-        c(NA, "2020-04-01", "2020-06-01", "2021-02-12", "2021-03-01"), "%Y-%m-%d"
+        c("2020-04-01", "2020-06-01", "2021-02-12", "2021-03-01"), "%Y-%m-%d"
       ),
       drug_exposure_end_date = as.Date(
-        c(NA, "2020-04-02", "2020-09-11", NA, NA), "%Y-%m-%d"
+        c("2020-04-02", "2020-09-11", NA, NA), "%Y-%m-%d"
       ),
       drug_type_concept_id = 38000177,
       quantity = 1
@@ -297,7 +295,6 @@ test_that("test missing end date or out of durationRange", {
     conceptSetList = acetaminophen
   )
 
-  expect_true(attr(cdm2$test_missing, "numberImputation") == 4)
   # check the number is correct with missingEndDate
   expect_true(cdm2[["test_missing"]] %>%
     dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%

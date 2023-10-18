@@ -28,44 +28,44 @@
 #'
 #' @examples
 #' \donttest{
-# library(DrugUtilisation)
-# library(PatientProfiles)
-# library(CodelistGenerator)
-#
-# concept_relationship <- dplyr::tibble(
-# concept_id_1 = c(2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,
-#                  29050773, 1125360, 15033297, 15030327, 15033427, 15036327, 15394662,
-#                  43135274, 11253605, 431352774, 431359274, 112530, 1539465, 29050772,
-#                  431352074, 15394062, 43135277, 15033327, 11253603, 15516980, 5034327,
-#                  1539462, 15033528, 15394636, 15176980, 1539463, 431395274, 15186980,
-#                  15316978),
-# concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
-#                  2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
-#                  19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
-#                  19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
-#                  19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
-#                  35604394, 702776 ),
-# relationship_id = c(rep("RxNorm has dose form", 37))
-# )
-# cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
-# cdm <- generateDrugUtilisationCohortSet(
-#   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
-# )
-# cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#   addDrugUse(cdm, 1125315)
-# result <- summariseDrugUse(cdm[["dus_cohort"]], cdm)
-# print(result)
-#
-# cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#   addSex(cdm) %>%
-#   addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
-# result <- summariseDrugUse(
-#   cdm[["dus_cohort"]], cdm, strata = list(
-#    "age_group" = "age_group", "sex" = "sex",
-#    "age_group and sex" = c("age_group", "sex")
-#   )
-# )
-# print(result)
+#' library(DrugUtilisation)
+#' library(PatientProfiles)
+#' library(CodelistGenerator)
+#'
+#' concept_relationship <- dplyr::tibble(
+#' concept_id_1 = c(2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,
+#'                  29050773, 1125360, 15033297, 15030327, 15033427, 15036327, 15394662,
+#'                  43135274, 11253605, 431352774, 431359274, 112530, 1539465, 29050772,
+#'                  431352074, 15394062, 43135277, 15033327, 11253603, 15516980, 5034327,
+#'                  1539462, 15033528, 15394636, 15176980, 1539463, 431395274, 15186980,
+#'                  15316978),
+#' concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
+#'                  2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
+#'                  19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
+#'                  19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
+#'                  19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
+#'                  35604394, 702776 ),
+#' relationship_id = c(rep("RxNorm has dose form", 37))
+#' )
+#' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+#' )
+#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
+#'   addDrugUse(cdm, 1125315)
+#' result <- summariseDrugUse(cdm[["dus_cohort"]], cdm)
+#' print(result)
+#'
+#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
+#'   addSex(cdm) %>%
+#'   addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+#'
+#' summariseDrugUse(
+#'   cdm[["dus_cohort"]], cdm, strata = list(
+#'    "age_group" = "age_group", "sex" = "sex",
+#'    "age_group and sex" = c("age_group", "sex")
+#'   )
+#' )
 #' }
 #'
 summariseDrugUse<- function(cohort,
@@ -79,15 +79,11 @@ summariseDrugUse<- function(cohort,
   # check inputs
   checkInputs(
     cohort = cohort, cdm = cdm, strata = strata,
-    drugUseVariables = drugUseVariables, drugUseEstimates = drugUseEstimates,
-    minCellCount = minCellCount
+    drugUseEstimates = drugUseEstimates, minCellCount = minCellCount
   )
 
   # update cohort_names
-  cohort <- cohort %>%
-    dplyr::left_join(
-      CDMConnector::cohortSet(cohort), by = "cohort_definition_id", copy = TRUE
-    )
+  cohort <- cohort %>% PatientProfiles::addCohortName()
 
   # summarise drug use columns
   result <- PatientProfiles::summariseResult(
@@ -97,12 +93,12 @@ summariseDrugUse<- function(cohort,
     minCellCount = minCellCount
   ) %>%
     dplyr::mutate(
-      "variable_label" = dplyr::case_when(
+      "variable_level" = dplyr::case_when(
         substr(.data$variable, 1, 18) == "initial_daily_dose" ~
           substr(.data$variable, 19, nchar(.data$variable)),
         substr(.data$variable, 1, 15) == "cumulative_dose" ~
           substr(.data$variable, 16, nchar(.data$variable)),
-        TRUE ~ .data$variable_label
+        TRUE ~ .data$variable_level
       ),
       "variable" = dplyr::case_when(
         substr(.data$variable, 1, 18) == "initial_daily_dose" ~
@@ -124,41 +120,13 @@ summariseDrugUse<- function(cohort,
 #'
 #' @return Name of the drug use columns
 #'
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' library(DrugUtilisation)
-#' library(CodelistGenerator)
-#'
-#'concept_relationship <- dplyr::tibble(
-#'concept_id_1 = c(2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,
-#'                 29050773, 1125360, 15033297, 15030327, 15033427, 15036327, 15394662,
-#'                 43135274, 11253605, 431352774, 431359274, 112530, 1539465, 29050772,
-#'                 431352074, 15394062, 43135277, 15033327, 11253603, 15516980, 5034327,
-#'                 1539462, 15033528, 15394636, 15176980, 1539463, 431395274, 15186980,
-#'                 15316978),
-#'concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
-#'                 2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
-#'                 19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
-#'                 19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
-#'                 19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
-#'                 35604394, 702776 ),
-#'                 relationship_id = c(rep("RxNorm has dose form", 37)))
-#' cdm <- mockDrugUtilisation(extraTables = list("concept_relationship" = concept_relationship))
-#' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
-#' cdm <- generateDrugUtilisationCohortSet(
-#' cdm, "dus", acetaminophen)
-#' cdm[["dus"]] <- cdm[["dus"]] %>%   addDrugUse(cdm, 1125315, acetaminophen)
-#' drugUseColumns(cdm[["dus"]])
-#' }
+#' @noRd
 #'
 drugUseColumns <- function(cohort) {
-  checkInputs(cohort = cohort)
   cohort %>%
     dplyr::select(
       dplyr::any_of(c(
-        "number_exposures", "duration", "cumulative_dose", "number_eras",
+        "number_exposures", "duration", "cumulative_quantity", "number_eras",
         "initial_quantity"
       )),
       dplyr::starts_with("initial_daily_dose"),

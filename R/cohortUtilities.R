@@ -454,13 +454,31 @@ applyLimit <- function(cohort, cdm, limit) {
   return(cohort)
 }
 
+correctDuration <- function(x,
+                            imputeDuration,
+                            durationRange,
+                            cdm,
+                            start = "cohort_start_date",
+                            end = "cohort_end_date") {
+
+  x %>%
+    dplyr::mutate(
+      duration = !!CDMConnector::datediff(start = start, end = end) + 1
+    ) %>%
+    rowsToImpute("duration", durationRange) %>%
+    solveImputation("duration", imputeDuration, TRUE) %>%
+    dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
+    dplyr::mutate(
+      !!end := !!CDMConnector::dateadd(date = start, number = "days_to_add")
+    ) %>%
+    dplyr::select(-c("duration", "days_to_add")) %>%
+    computeTable(cdm)
+}
+
 #' Impute or eliminate values under a certain conditions
 #' @noRd
-imputeVariable <- function(x, column, impute, range, start, end, imputeRound = FALSE) {
+rowsToImpute <- function(x, column, range) {
   # identify NA
-  if(is.character(impute)){
-    impute <- tolower(impute)
-  }
   x <- x %>%
     dplyr::mutate(impute = dplyr::if_else(
       is.na(.data[[column]]), 1, 0
@@ -481,84 +499,41 @@ imputeVariable <- function(x, column, impute, range, start, end, imputeRound = F
       ))
   }
 
-  numberImputations <- x %>%
-    dplyr::filter(.data$impute == 1) %>%
-    dplyr::summarise(n = as.numeric(dplyr::n())) %>%
-    dplyr::pull()
-
-  if (numberImputations > 0) {
-    # if impute is false then all values with impute = 1 are not considered
-    if (impute == "none") {
-      x <- x %>%
-        dplyr::filter(.data$impute == 0)
-    } else {
-      if (is.character(impute)) {
-        values <- x %>%
-          dplyr::filter(.data$impute == 0) %>%
-          dplyr::pull(dplyr::all_of(column))
-        impute <- switch(impute,
-          "median" = stats::median(values),
-          "mean" = mean(values),
-          "mode" = unique(values)[which.max(tabulate(match(
-            values,
-            unique(values)
-          )))]
-        )
-        if (imputeRound) {
-          impute <- round(impute)
-        }
-      }
-      x <- x %>%
-        dplyr::mutate(!!column := dplyr::if_else(
-          .data$impute == 1, .env$impute, .data[[column]]
-        ))
-    }
-  }
-  x <- x %>%
-    dplyr::select(-"impute")
-
-  attr(x, "numberImputations") <- numberImputations
-
   return(x)
 }
 
-
-#' @noRd
-correctDuration <- function(x,
-                            imputeDuration,
-                            durationRange,
-                            cdm,
-                            start = "cohort_start_date",
-                            end = "cohort_end_date") {
-  # compute the number of days exposed according to:
-  # duration = end - start + 1
-  x <- x %>%
-    dplyr::mutate(
-      duration = !!CDMConnector::datediff(start = start, end = end) + 1
-    )
-
-  # impute or eliminate the exposures that duration does not fulfill the given requirements
-  # conditions (<daysExposedRange[1]; >daysExposedRange[2])
-  x <- imputeVariable(
-    x = x,
-    column = "duration",
-    impute = imputeDuration,
-    range = durationRange,
-    start = start,
-    end = end,
-    imputeRound = TRUE
-  )
-
-  numberImputations <- attr(x, "numberImputations")
-
-  x <- x %>%
-    dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
-    dplyr::mutate(!!end := as.Date(
-      !!CDMConnector::dateadd(date = start, number = "days_to_add")
-    )) %>%
-    dplyr::select(-c("duration", "days_to_add")) %>%
-    computeTable(cdm)
-  attr(x, "numberImputations") <- numberImputations
-
+solveImputation <- function(x, column, method, toRound = FALSE) {
+  if (method == "none") {
+    x <- x %>%
+      dplyr::filter(.data$impute == 0)
+  } else {
+    imp <- x %>%
+      dplyr::filter(.data$impute == 0)
+    if (method == "median") {
+      imp <- imp %>%
+        dplyr::summarise("x" = stats::median(.data[[column]], na.rm = TRUE)) %>%
+        dplyr::pull("x")
+    } else if (method == "mean") {
+      imp <- imp %>%
+        dplyr::summarise("x" = mean(.data[[column]], na.rm = TRUE)) %>%
+        dplyr::pull("x")
+    } else if (method == "mode") {
+      imp <- imp %>%
+        dplyr::group_by(.data[[column]]) %>%
+        dplyr::summarise(count = as.numeric(dplyr::n()), .groups = "drop") %>%
+        dplyr::filter(.data$count == max(.data$count, na.rm = TRUE)) %>%
+        dplyr::select("x" = dplyr::all_of(column)) %>%
+        dplyr::pull() %>%
+        mean()
+    } else {
+      imp <- as.numeric(method)
+    }
+    if (toRound) imp <- round(imp)
+    x <- x %>%
+      dplyr::mutate(!!column := dplyr::if_else(
+        .data$impute == 1, .env$imp, .data[[column]]
+      ))
+  }
+  x <- x %>% dplyr::select(-"impute")
   return(x)
 }

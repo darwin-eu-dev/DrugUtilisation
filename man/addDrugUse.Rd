@@ -16,6 +16,8 @@ addDrugUse(
   numberEras = TRUE,
   initialQuantity = TRUE,
   cumulativeQuantity = TRUE,
+  imputeDurationCount = TRUE,
+  imputeDailyDoseCount = TRUE,
   gapEra = 30,
   eraJoinMode = "zero",
   overlapMode = "sum",
@@ -49,10 +51,16 @@ of ingredient concept id will be used. By default: NULL.}
 
 \item{initialQuantity}{Whether initial quantity should be displayed}
 
-\item{cumulativeQuantity}{Whether cumulative quantity should be displayed}
+\item{cumulativeQuantity}{Whether cumulative quantity should be displayed.}
+
+\item{imputeDurationCount}{Whether to add a column with the number of imputed
+exposures duration.}
+
+\item{imputeDailyDoseCount}{Whether to add a column with the number of
+imputed exposures daily dose.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era. By default: 180.}
+considered in the same era.}
 
 \item{eraJoinMode}{How two different continuous exposures are joined in an
 era. There are four options:
@@ -69,8 +77,7 @@ total exposed time.
 "subsequent" the exposures are joined considering that the period between
 both continuous exposures the subject is treated with the daily dose of the
 subsequent subexposure. The time between both exposures contributes to the
-total exposed time.
-By default: "previous".}
+total exposed time.}
 
 \item{overlapMode}{How the overlapping between two exposures that do not
 start on the same day is solved inside a subexposure. There are five possible
@@ -83,8 +90,7 @@ the subexposure.
 "maximum" the considered daily_dose is the maximum of all of the exposures in
 the subexposure.
 "sum" the considered daily_dose is the sum of all the exposures present in
-the subexposure.
-By default: "previous".}
+the subexposure.}
 
 \item{sameIndexMode}{How the overlapping between two exposures that start on
 the same day is solved inside a subexposure. There are five possible options:
@@ -93,21 +99,18 @@ the subexposure.
 "maximum" the considered daily_dose is the maximum of all of the exposures in
 the subexposure.
 "sum" the considered daily_dose is the sum of all the exposures present in
-the subexposure.
-By default: "sum".}
+the subexposure.}
 
 \item{imputeDuration}{Whether/how the duration should be imputed
-"none", "median", "mean", "mode"
-. By default: "none"}
+"none", "median", "mean", "mode" or a number}
 
 \item{imputeDailyDose}{Whether/how the daily_dose should be imputed
-"none", "median", "mean", "mode"
-. By default: "none"}
+"none", "median", "mean", "mode" or a number}
 
 \item{durationRange}{Range between the duration must be comprised. It should
 be a numeric vector of length two, with no NAs and the first value should be
 equal or smaller than the second one. It is only required if imputeDuration
-= TRUE. If NULL no restrictions are applied. By default: NULL.}
+= TRUE. If NULL no restrictions are applied.}
 
 \item{dailyDoseRange}{Range between the daily_dose must be comprised. It
 should be a numeric vector of length two, with no NAs and the first value

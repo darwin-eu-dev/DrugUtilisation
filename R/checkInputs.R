@@ -392,7 +392,7 @@ checkCohort <- function(cohort) {
 }
 
 checkStrata <- function(strata, cohort) {
-  errorMessage <- "strata must be a named list of columns in cohort"
+  errorMessage <- "strata must be a list of columns in cohort"
   if (!is.list(strata)) {
     cli::cli_abort(errorMessage)
   }
@@ -412,16 +412,6 @@ checkMinCellCount <- function(minCellCount) {
 
 checkOffset <- function(offset) {
   checkmate::assertIntegerish(offset, lower = 0, any.missing = F, len = 1)
-}
-
-checkDrugUseVariables <- function(drugUseVariables, cohort) {
-  errorMessage <- "drugUseVariables must contain columns of cohort"
-  if (!is.character(drugUseVariables)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!all(drugUseVariables %in% colnames(cohort))) {
-    cli::cli_abort(errorMessage)
-  }
 }
 
 checkInitialDailyDose <- function(initialDailyDose, cohort) {
@@ -774,4 +764,26 @@ checkConsistentCohortSet <- function(cs,
     durationRange = durationRange
   )
   return(parameters)
+}
+
+checkImputeDurationCount <- function(imputeDurationCount) {
+  error <- "imputeDurationCount should be TRUE or FALSE"
+  if (length(imputeDurationCount) != 1) {
+    cli::cli_abort(error)
+  }
+  if (!(imputeDurationCount %in% c(TRUE, FALSE))) {
+    cli::cli_abort(error)
+  }
+  invisible(imputeDurationCount)
+}
+
+checkImputeDailyDoseCount <- function(imputeDailyDoseCount) {
+  error <- "imputeDailyDoseCount should be TRUE or FALSE"
+  if (length(imputeDailyDoseCount) != 1) {
+    cli::cli_abort(error)
+  }
+  if (!(imputeDailyDoseCount %in% c(TRUE, FALSE))) {
+    cli::cli_abort(error)
+  }
+  invisible(imputeDailyDoseCount)
 }
