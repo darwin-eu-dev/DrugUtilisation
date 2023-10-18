@@ -18,16 +18,16 @@
 #'
 #' @param cdm A cdm_reference object.
 #' @param name Name of the GeneratedCohortSet
-#' @param conceptSetList Named list of concept sets.
+#' @param conceptSet Named list of concept sets.
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
 #' equal or smaller than the second one. It is only required if imputeDuration
-#' = TRUE. If NULL no restrictions are applied. By default: NULL.
+#' = TRUE. If NULL no restrictions are applied.
 #' @param imputeDuration Whether/how the duration should be imputed
 #' "none", "median", "mean", "mode", or it can be a count
 #' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era. By default: 0.
-#' @param priorUseWashout Prior days without exposure. By default: NULL.
+#' considered in the same era.
+#' @param priorUseWashout Prior days without exposure.
 #' @param priorObservation Minimum number of days of prior observation
 #' required for the incident eras to be considered. If NULL its is not required
 #' to be within observation_period.
@@ -38,7 +38,6 @@
 #' each individual. Each individual can contribute multiple times.
 #' "first" we only consider the first observable era of each individual that fulfills the criteria provided
 #' in previous parameters. In this case each individual can not contribute with multiple rows.
-#' By default: "all".
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
 #'
@@ -57,7 +56,7 @@
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm,
 #'   name = "drug_cohorts",
-#'   conceptSetList = druglist,
+#'   conceptSet = druglist,
 #'   priorObservation = 365
 #' )
 #'
@@ -72,7 +71,7 @@
 #'
 generateDrugUtilisationCohortSet <- function(cdm,
                                              name,
-                                             conceptSetList,
+                                             conceptSet,
                                              durationRange = c(1, Inf),
                                              imputeDuration = "none",
                                              gapEra = 0,
@@ -81,7 +80,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              cohortDateRange = as.Date(c(NA, NA)),
                                              limit = "all") {
   checkInputs(
-    cdm = cdm, name = name, conceptSetList = conceptSetList,
+    cdm = cdm, name = name, conceptSet = conceptSet,
     limit = limit, priorObservation = priorObservation, gapEra = gapEra,
     priorUseWashout = priorUseWashout, cohortDateRange = cohortDateRange,
     imputeDuration = imputeDuration, durationRange = durationRange
@@ -95,7 +94,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   }
 
   # get conceptSet
-  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
+  conceptSet <- conceptSetFromConceptSetList(conceptSet)
 
   # generate cohort set
   cohortSetRef <- attr(conceptSet, "cohort_set") %>%
