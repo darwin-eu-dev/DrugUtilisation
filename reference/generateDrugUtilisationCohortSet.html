@@ -53,7 +53,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generateDrugUtilisationCohortSet</span><span class="op">(</span></span>
 <span>  <span class="va">cdm</span>,</span>
 <span>  <span class="va">name</span>,</span>
-<span>  <span class="va">conceptSetList</span>,</span>
+<span>  <span class="va">conceptSet</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -74,7 +74,7 @@
 <dd><p>Name of the GeneratedCohortSet</p></dd>
 
 
-<dt>conceptSetList</dt>
+<dt>conceptSet</dt>
 <dd><p>Named list of concept sets.</p></dd>
 
 
@@ -82,7 +82,7 @@
 <dd><p>Range between the duration must be comprised. It should
 be a numeric vector of length two, with no NAs and the first value should be
 equal or smaller than the second one. It is only required if imputeDuration
-= TRUE. If NULL no restrictions are applied. By default: NULL.</p></dd>
+= TRUE. If NULL no restrictions are applied.</p></dd>
 
 
 <dt>imputeDuration</dt>
@@ -92,11 +92,11 @@ equal or smaller than the second one. It is only required if imputeDuration
 
 <dt>gapEra</dt>
 <dd><p>Number of days between two continuous exposures to be
-considered in the same era. By default: 0.</p></dd>
+considered in the same era.</p></dd>
 
 
 <dt>priorUseWashout</dt>
-<dd><p>Prior days without exposure. By default: NULL.</p></dd>
+<dd><p>Prior days without exposure.</p></dd>
 
 
 <dt>priorObservation</dt>
@@ -115,8 +115,7 @@ two options:
 "all" we summarise the output will be a summary of the exposed eras of
 each individual. Each individual can contribute multiple times.
 "first" we only consider the first observable era of each individual that fulfills the criteria provided
-in previous parameters. In this case each individual can not contribute with multiple rows.
-By default: "all".</p></dd>
+in previous parameters. In this case each individual can not contribute with multiple rows.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -141,7 +140,7 @@ references of the object.</p>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">generateDrugUtilisationCohortSet</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span></span>
 <span class="r-in"><span>  name <span class="op">=</span> <span class="st">"drug_cohorts"</span>,</span></span>
-<span class="r-in"><span>  conceptSetList <span class="op">=</span> <span class="va">druglist</span>,</span></span>
+<span class="r-in"><span>  conceptSet <span class="op">=</span> <span class="va">druglist</span>,</span></span>
 <span class="r-in"><span>  priorObservation <span class="op">=</span> <span class="fl">365</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>

@@ -176,16 +176,16 @@ they are using the same concept code.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         21 2010-02-18        2010-07-31     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         99 2020-01-31        2022-02-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         48 1973-11-26        2006-01-10     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         77 1967-10-10        1967-12-11     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1          8 2020-04-22        2021-11-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         59 2020-11-09        2021-03-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         89 2017-05-28        2018-11-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         94 2002-12-23        2004-09-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1          4 2004-11-18        2010-04-28     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         33 2021-01-09        2021-03-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          1 1996-12-22        2001-09-25     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         57 2021-02-19        2021-03-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         66 2017-11-24        2019-11-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         12 2019-03-06        2022-03-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         20 2001-09-16        2014-10-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         36 2013-05-27        2022-12-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         68 2021-08-21        2022-11-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1          5 1978-07-01        1995-01-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         16 2019-04-02        2020-08-17     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         26 2018-06-25        2020-10-21     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The count of the cohort can be assessed using cohortCount() from
 CDMConnector</p>
@@ -222,15 +222,15 @@ is different:</p>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          1 1996-12-22        1998-03-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         57 2021-02-19        2021-02-27     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         66 2017-11-24        2018-02-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         41 2005-07-25        2005-12-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         58 2005-03-29        2007-08-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         73 2009-10-02        2009-12-16     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         16 2019-04-02        2020-06-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         26 2018-06-25        2019-11-09     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         87 2019-06-24        2022-02-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         95 2016-04-09        2021-11-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         16 2019-04-02        2020-06-06     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         26 2018-06-25        2019-11-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         87 2019-06-24        2022-02-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         95 2016-04-09        2021-11-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         57 2021-02-19        2021-02-27     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         66 2017-11-24        2018-02-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         41 2005-07-25        2005-12-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         58 2005-03-29        2007-08-15     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         73 2009-10-02        2009-12-16     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The <em>requiredObservation</em> parameter is a numeric vector of
 length 2, that defines the number of days of required observation time
@@ -250,16 +250,16 @@ Let’s check it now to see how reducing required observation affect the
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         48 1973-11-26        2006-01-10     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         77 1967-10-10        1967-12-11     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          8 2020-04-22        2021-11-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         59 2020-11-09        2021-03-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         89 2017-05-28        2018-11-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         94 2002-12-23        2004-09-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1          4 2004-11-18        2010-04-28     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         33 2021-01-09        2021-03-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         56 2009-05-13        2014-10-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         14 1966-03-30        1990-10-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         87 2019-06-24        2022-11-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         95 2016-04-09        2022-05-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         57 2021-02-19        2021-03-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         41 2005-07-25        2006-11-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         58 2005-03-29        2012-07-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         73 2009-10-02        2011-08-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         10 2021-08-16        2022-03-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         18 2001-01-11        2004-09-26     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         29 2021-05-27        2021-06-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         34 2008-12-23        2016-12-13     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
@@ -285,7 +285,7 @@ you can set. We first use default settings:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_alleras"</span>,</span>
-<span>  conceptSetList <span class="op">=</span> <span class="va">conceptSet_ingredient</span></span>
+<span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">cdm2</span><span class="op">$</span><span class="va">dus_alleras</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.dus_alleras&gt; [?? x 4]</span></span></span>
@@ -293,8 +293,8 @@ you can set. We first use default settings:</p>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         89 2018-08-26        2018-11-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         57 2020-09-14        2020-11-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         29 2020-10-11        2021-02-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         29 2020-10-11        2021-02-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         57 2020-09-14        2020-11-26     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         21 1995-07-02        2002-05-12     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        100 2022-10-20        2022-10-24     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1          8 2018-09-21        2021-01-18     </span></span>
@@ -335,7 +335,7 @@ using <em>imputeDuration</em>. It can ne set as: “none”, “median”,
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_step2_0_inf"</span>,</span>
-<span>  conceptSetList <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
+<span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span> <span class="co"># default as c(1, Inf)</span></span>
 <span><span class="op">)</span></span>
@@ -366,7 +366,7 @@ gaps are joined.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_step3_alleras"</span>,</span>
-<span>  conceptSetList <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
+<span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">30</span> <span class="co"># default as 0</span></span>
@@ -398,7 +398,7 @@ cohort.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_alleras_step4"</span>,</span>
-<span>  conceptSetList <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
+<span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">30</span>,</span>
@@ -431,7 +431,7 @@ cohort.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_alleras_step5"</span>,</span>
-<span>  conceptSetList <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
+<span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">30</span>,</span>
@@ -463,7 +463,7 @@ dates.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_alleras_step67"</span>,</span>
-<span>  conceptSetList <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
+<span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">30</span>,</span>
@@ -498,7 +498,7 @@ first record that fulfills all criteria.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_step8_firstera"</span>,</span>
-<span>  conceptSetList <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
+<span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">30</span>,</span>
@@ -533,7 +533,7 @@ the first ever drug era:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_step8_firstever"</span>,</span>
-<span>  conceptSetList <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
+<span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">0</span>,</span>

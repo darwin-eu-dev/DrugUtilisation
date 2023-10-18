@@ -53,7 +53,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">summariseCharacteristicsFromCodelist</span><span class="op">(</span></span>
 <span>  <span class="va">cohort</span>,</span>
 <span>  <span class="va">cdm</span>,</span>
-<span>  <span class="va">conceptSetList</span>,</span>
+<span>  <span class="va">conceptSet</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">366</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">31</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">30</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">365</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">366</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -72,7 +72,7 @@
 <dd><p>cdm_reference</p></dd>
 
 
-<dt>conceptSetList</dt>
+<dt>conceptSet</dt>
 <dd><p>A list of concept sets</p></dd>
 
 
@@ -108,7 +108,7 @@
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">conceptSetList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">conceptSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="st">"acetaminophen"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1125315</span>, <span class="fl">1125360</span>, <span class="fl">2905077</span>, <span class="fl">43135274</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"group A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    <span class="fl">3665501</span>, <span class="fl">378253</span>, <span class="fl">317009</span>, <span class="fl">761948</span>, <span class="fl">1539403</span>, <span class="fl">1503327</span>, <span class="fl">1516980</span>, <span class="fl">4141052</span>,</span></span>
@@ -116,7 +116,7 @@
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">summariseCharacteristicsFromCodelist</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">cdm</span><span class="op">[[</span><span class="st">"cohort1"</span><span class="op">]</span><span class="op">]</span>, <span class="va">cdm</span>, <span class="va">conceptSetList</span>,</span></span>
+<span class="r-in"><span>  <span class="va">cdm</span><span class="op">[[</span><span class="st">"cohort1"</span><span class="op">]</span><span class="op">]</span>, <span class="va">cdm</span>, <span class="va">conceptSet</span>,</span></span>
 <span class="r-in"><span>  window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">365</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> → measurement table not present in the cdm</span>

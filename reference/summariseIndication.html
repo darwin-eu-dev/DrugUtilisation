@@ -60,8 +60,7 @@ cohorts.</p>
 <span>  <span class="va">cohort</span>,</span>
 <span>  cdm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="st">"cdm_reference"</span><span class="op">)</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  indicationVariables <span class="op">=</span> <span class="fu"><a href="indicationColumns.html">indicationColumns</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span>,</span>
-<span>  minCellCount <span class="op">=</span> <span class="fl">1</span></span>
+<span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,13 +78,9 @@ cohorts.</p>
 <dd><p>Stratification list</p></dd>
 
 
-<dt>indicationVariables</dt>
-<dd><p>Variables that point to an indication column</p></dd>
-
-
 <dt>minCellCount</dt>
 <dd><p>Minimum counts that a group can have. Cohorts with
-less counts than this value are obscured. By default: 5.</p></dd>
+less counts than this value are obscured.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -113,23 +108,29 @@ combination.</p>
 <span class="r-in"><span>  <span class="fu"><a href="addIndication.html">addIndication</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"indication_cohorts"</span>, indicationGap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, <span class="fl">365</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">summariseIndication</span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"drug_cohort"</span><span class="op">]</span><span class="op">]</span>, <span class="va">cdm</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Missing values are always removed in SQL aggregation functions.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Use `na.rm = TRUE` to silence this warning</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 11 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 20 × 11</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level   strata_name strata_level variable    variable_level</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cohort_name acetaminophen Overall     Overall      number sub… <span style="color: #BB0000;">NA</span>            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cohort_name acetaminophen Overall     Overall      number rec… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cohort_name acetaminophen Overall     Overall      Indication… Asthma        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cohort_name acetaminophen Overall     Overall      Indication… Asthma        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_name acetaminophen Overall     Overall      Indication… None          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_name acetaminophen Overall     Overall      Indication… None          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> cohort_name acetaminophen Overall     Overall      Indication… Asthma        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> cohort_name acetaminophen Overall     Overall      Indication… Asthma        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> cohort_name acetaminophen Overall     Overall      Indication… None          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> cohort_name acetaminophen Overall     Overall      Indication… None          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> cohort_name acetaminophen Overall     Overall      Indication… Asthma        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> cohort_name acetaminophen Overall     Overall      Indication… Asthma        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">18</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">19</span> cohort_name acetaminophen Overall     Overall      Indication… None          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">20</span> cohort_name acetaminophen Overall     Overall      Indication… None          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: variable_type &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
@@ -142,20 +143,20 @@ combination.</p>
 <span class="r-in"><span>    <span class="st">"age_group"</span> <span class="op">=</span> <span class="st">"age_group"</span>, <span class="st">"age_group and sex"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 66 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 120 × 11</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level   strata_name strata_level variable    variable_level</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cohort_name acetaminophen Overall     Overall      number sub… <span style="color: #BB0000;">NA</span>            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cohort_name acetaminophen Overall     Overall      number rec… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      indication… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 56 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cohort_name acetaminophen Overall     Overall      Indication… Asthma        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cohort_name acetaminophen Overall     Overall      Indication… Asthma        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_name acetaminophen Overall     Overall      Indication… None          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_name acetaminophen Overall     Overall      Indication… None          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      Indication… Headache      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 110 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: variable_type &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>

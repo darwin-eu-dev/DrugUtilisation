@@ -63,6 +63,7 @@
 <span>  drug_exposure <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  condition_occurrence <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  observation <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  concept_relationship <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  extraTables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -117,6 +118,11 @@ is created</p></dd>
 <dd><p>A observation tibble, if NULL a mock one is created</p></dd>
 
 
+<dt>concept_relationship</dt>
+<dd><p>A concept_relationship tibble, if NULL a mock one
+is created.</p></dd>
+
+
 <dt>extraTables</dt>
 <dd><p>Extra tibbles to be instantiated that are not cohorts or
 cdm tables</p></dd>
@@ -144,7 +150,7 @@ will be created if not provided</p></dd>
 <span class="r-in"><span><span class="va">cdm</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> # OMOP CDM reference (tbl_duckdb_connection)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Tables: person, observation_period, visit_occurrence, condition_occurrence, drug_exposure, observation, concept, concept_ancestor, drug_strength, cohort1, cohort2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Tables: person, observation_period, visit_occurrence, condition_occurrence, drug_exposure, observation, concept, concept_relationship, concept_ancestor, drug_strength, cohort1, cohort2</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
