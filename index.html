@@ -147,7 +147,7 @@
 </h2>
 <p>DrugUtilisation contains functions to instantiate and characterize the cohorts used in a Drug Utilisation Study in the OMOP common data model. Main functionalities are:</p>
 <ul>
-<li><p>Create DrugUsilisation cohorts</p></li>
+<li><p>Create DrugUtilisation cohorts</p></li>
 <li><p>Add indications to this cohort</p></li>
 <li><p>Add the dosage of a certain ingredient (subseted for a list of drugs)</p></li>
 <li><p>Calculate the daily dose</p></li>
@@ -176,11 +176,10 @@
 <p>Or we can build our own list using other packages (e.g. CodelistGenerator)</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CodelistGenerator/" class="external-link">CodelistGenerator</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: package 'CodelistGenerator' was built under R version 4.2.3</span></span>
 <span><span class="va">conceptList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"acetaminophen"</span><span class="op">)</span></span>
 <span><span class="va">conceptList</span></span>
 <span><span class="co">#&gt; $`Ingredient: acetaminophen (1125315)`</span></span>
-<span><span class="co">#&gt; [1]  1125315 43135274  2905077  1125360</span></span></code></pre></div>
+<span><span class="co">#&gt; [1]  1125315  1125360  2905077 43135274</span></span></code></pre></div>
 <p>To generate the cohort of drug use we will use <code>generateDrugUtilisationCohortSet</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span></span>
@@ -206,7 +205,6 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: package 'dplyr' was built under R version 4.2.3</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
 <span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
@@ -273,49 +271,49 @@
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 16</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.9.0 [root@Darwin 23.0.0:R 4.2.3/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id         &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ subject_id                   &lt;dbl&gt; 81, 47, 96, 75, 91, 93, 46, 88, 8, 54, 9,…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date            &lt;date&gt; 1995-09-13, 1963-12-22, 2011-05-25, 2010…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date              &lt;date&gt; 1997-11-17, 1965-09-16, 2013-01-23, 2011…</span></span>
-<span><span class="co">#&gt; $ indication_gap_0_headache    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ subject_id                   &lt;dbl&gt; 36, 81, 97, 42, 8, 46, 87, 95, 29, 47, 93…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date            &lt;date&gt; 2018-06-17, 1995-09-13, 1991-02-09, 2002…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date              &lt;date&gt; 2018-10-24, 1997-11-17, 1991-10-07, 2007…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_influenza   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_0_headache    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_none        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_30_headache   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_30_influenza  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_none       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_headache  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_influenza &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_30_none       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_influenza &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_headache  &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_unknown     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_unknown    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ indication_gap_30_unknown    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span></code></pre></div>
 <p>We can combine the indications in a single column using the <code><a href="reference/indicationToStrata.html">indicationToStrata()</a></code> function. This column can be used as stratification of the results if needed:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/indicationToStrata.html">indicationToStrata</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 19</span></span>
-<span><span class="co">#&gt; Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]</span></span>
+<span><span class="co">#&gt; Database: DuckDB 0.9.0 [root@Darwin 23.0.0:R 4.2.3/:memory:]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id         &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ subject_id                   &lt;dbl&gt; 81, 47, 96, 75, 91, 93, 46, 88, 8, 54, 9,…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date            &lt;date&gt; 1995-09-13, 1963-12-22, 2011-05-25, 2010…</span></span>
-<span><span class="co">#&gt; $ cohort_end_date              &lt;date&gt; 1997-11-17, 1965-09-16, 2013-01-23, 2011…</span></span>
-<span><span class="co">#&gt; $ indication_gap_0_headache    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ subject_id                   &lt;dbl&gt; 36, 81, 97, 42, 8, 46, 87, 95, 29, 47, 93…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date            &lt;date&gt; 2018-06-17, 1995-09-13, 1991-02-09, 2002…</span></span>
+<span><span class="co">#&gt; $ cohort_end_date              &lt;date&gt; 2018-10-24, 1997-11-17, 1991-10-07, 2007…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_influenza   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_0_headache    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_none        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_30_headache   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_30_influenza  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_none       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_headache  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_influenza &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_30_none       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_influenza &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_headache  &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0_unknown     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_30_unknown    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_30_unknown    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
+<span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_0             &lt;chr&gt; "None", "None", "None", "None", "None", "…</span></span>
 <span><span class="co">#&gt; $ indication_gap_30            &lt;chr&gt; "None", "None", "None", "None", "None", "…</span></span>
-<span><span class="co">#&gt; $ indication_gap_365           &lt;chr&gt; "None", "None", "None", "None", "None", "…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ indication_gap_365           &lt;chr&gt; "Headache", "None", "Unknown", "None", "N…</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="st">"indication_gap_365"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -356,7 +354,7 @@
 <span><span class="co">#&gt; $ variable_level &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
 <span><span class="co">#&gt; $ variable_type  &lt;chr&gt; NA, NA, "binary", "binary", "binary", "binary", "binary…</span></span>
 <span><span class="co">#&gt; $ estimate_type  &lt;chr&gt; "count", "count", "count", "count", "count", "count", "…</span></span>
-<span><span class="co">#&gt; $ estimate       &lt;chr&gt; "35", "35", "0", "0", "35", "0", "0", "34", "2", "3", "…</span></span>
+<span><span class="co">#&gt; $ estimate       &lt;chr&gt; "35", "35", "0", "0", "35", "0", "0", "34", "3", "2", "…</span></span>
 <span><span class="co">#&gt; $ cdm_name       &lt;chr&gt; "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MO…</span></span>
 <span><span class="co">#&gt; $ result_type    &lt;chr&gt; "Summary indication", "Summary indication", "Summary in…</span></span></code></pre></div>
 </div>
@@ -398,7 +396,7 @@
 <span><span class="co">#&gt; $ variable_level &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
 <span><span class="co">#&gt; $ variable_type  &lt;chr&gt; NA, NA, "binary", "binary", "binary", "binary", "binary…</span></span>
 <span><span class="co">#&gt; $ estimate_type  &lt;chr&gt; "count", "count", "count", "count", "count", "count", "…</span></span>
-<span><span class="co">#&gt; $ estimate       &lt;chr&gt; "35", "35", "0", "0", "35", "0", "0", "34", "2", "3", "…</span></span>
+<span><span class="co">#&gt; $ estimate       &lt;chr&gt; "35", "35", "0", "0", "35", "0", "0", "34", "3", "2", "…</span></span>
 <span><span class="co">#&gt; $ cdm_name       &lt;chr&gt; "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MO…</span></span>
 <span><span class="co">#&gt; $ result_type    &lt;chr&gt; "Summary indication", "Summary indication", "Summary in…</span></span></code></pre></div>
 </div>
