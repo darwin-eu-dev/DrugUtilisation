@@ -31,7 +31,7 @@ DrugUtilisation contains functions to instantiate and characterize the
 cohorts used in a Drug Utilisation Study in the OMOP common data model.
 Main functionalities are:
 
-- Create DrugUsilisation cohorts
+- Create DrugUtilisation cohorts
 
 - Add indications to this cohort
 
