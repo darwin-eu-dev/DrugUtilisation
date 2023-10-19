@@ -461,11 +461,19 @@ correctDuration <- function(x,
                             start = "cohort_start_date",
                             end = "cohort_end_date") {
 
-  x %>%
+  x <- x %>%
     dplyr::mutate(
       duration = !!CDMConnector::datediff(start = start, end = end) + 1
     ) %>%
-    rowsToImpute("duration", durationRange) %>%
+    rowsToImpute("duration", durationRange)
+  impute <- x %>%
+    dplyr::summarise(
+      count = sum(.data$impute, na.rm = TRUE),
+      exposures = dplyr::n()
+    ) %>%
+    dplyr::collect()
+  impute <- c(impute$count, 100*impute$count/impute$exposures)
+  x <- x %>%
     solveImputation("duration", imputeDuration, TRUE) %>%
     dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
     dplyr::mutate(
@@ -473,6 +481,8 @@ correctDuration <- function(x,
     ) %>%
     dplyr::select(-c("duration", "days_to_add")) %>%
     computeTable(cdm)
+  attr(x, "impute") <- impute
+  return(x)
 }
 
 #' Impute or eliminate values under a certain conditions

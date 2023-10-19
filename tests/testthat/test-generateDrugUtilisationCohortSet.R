@@ -111,7 +111,7 @@ test_that("basic functionality drug_conceptId", {
   # check first era
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
-    gapEra = 1, limit = "First"
+    gapEra = 1, limit = "first"
   )
   expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
   expect_true(
@@ -122,7 +122,7 @@ test_that("basic functionality drug_conceptId", {
   )
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
-    gapEra = 40, limit = "First"
+    gapEra = 40, limit = "first"
   )
   expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
   expect_true(
