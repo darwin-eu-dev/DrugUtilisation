@@ -326,7 +326,8 @@ addInitialDailyDose <- function(cohort,
                                 cdm) {
   if (length(units) == 0) {
     cohortInfo <- cohortInfo %>%
-      dplyr::mutate("initial_daily_dose" = NA)
+      dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
+      dplyr::mutate("initial_daily_dose" = as.numeric(NA))
   } else {
     cohortInfo <- cohortInfo %>%
       dplyr::group_by(
@@ -364,11 +365,11 @@ addInitialDailyDose <- function(cohort,
         )
     }
     cohortInfo <- cohortInfo %>%
-      dplyr::select(-"initial_daily_dose")
+      dplyr::select(-"initial_daily_dose", -"unit")
   }
   cohort <- cohort %>%
     dplyr::left_join(
-      cohortInfo %>% dplyr::select(-"unit"),
+      cohortInfo,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
     CDMConnector::computeQuery(
