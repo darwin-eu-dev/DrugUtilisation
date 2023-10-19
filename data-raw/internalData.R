@@ -91,6 +91,38 @@ routes <- readr::read_csv(
 ) %>%
   dplyr::select("dose_form_concept_id" = "source_concept_id", "route")
 
+patternsWithFormula <- readr::read_csv(
+  here::here("data-raw", "pattern_drug_strength.csv"),
+  col_types = list(
+    pattern_id = "numeric",
+    amount_numeric = "numeric",
+    amount_unit = "character",
+    amount_unit_concept_id = "numeric",
+    numerator_numeric = "numeric",
+    numerator_unit = "character",
+    numerator_unit_concept_id = "numeric",
+    denominator_numeric = "numeric",
+    denominator_unit = "character",
+    denominator_unit_concept_id = "numeric",
+    valid = "logical",
+    pattern_name = "character",
+    unit = "character"
+  )
+) %>%
+  dplyr::inner_join(formulas, by = "pattern_id") %>%
+  dplyr::filter(!is.na(.data$formula_id)) %>%
+  dplyr::mutate(
+    amount = dplyr::if_else(.data$amount_numeric == 1, "number", "NA"),
+    numerator = dplyr::if_else(.data$numerator_numeric == 1, "number", "NA"),
+    denominator = dplyr::if_else(.data$denominator_numeric == 1, "number", "NA")
+  ) %>%
+  dplyr::select(
+    "amount", "amount_unit", "numerator", "numerator_unit", "denominator",
+    "denominator_unit", "route", "formula_id"
+  )
+
+usethis::use_data(patternsWithFormula, internal = FALSE, overwrite = TRUE)
+
 # add all rows in patternfile for the "any" dose patterns with all the possibilities
 allRoutes <- routes %>%
   dplyr::select("route") %>%
