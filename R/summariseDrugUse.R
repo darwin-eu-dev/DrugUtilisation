@@ -68,7 +68,7 @@ summariseDrugUse<- function(cohort,
   )
 
   # update cohort_names
-  cohort <- cohort %>% PatientProfiles::addCohortName()
+  cohort <- cohort %>% PatientProfiles::addCohortName() %>% dplyr::collect()
 
   # summarise drug use columns
   result <- PatientProfiles::summariseResult(
