@@ -344,3 +344,34 @@ test_that("test missing end date or out of durationRange", {
     dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
     dplyr::pull(cohort_end_date) == as.Date("2021-02-13"))
 })
+
+
+
+test_that("check cohort_set order", {
+  skip_on_cran()
+  cdm <- mockDrugUtilisation(
+    connectionDetails
+    )
+
+  acetaminophen <- list(acetaminophen = c(1125360, 2905077, 43135274))
+
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    conceptSet = acetaminophen,
+    name = "test_order",
+    durationRange = c(1, Inf),
+    imputeDuration = 1,
+    gapEra = 0,
+    priorUseWashout = 0,
+    priorObservation = 0,
+    cohortDateRange = as.Date(c("2020-01-01", "2020-06-01")),
+    limit = "all"
+  )
+
+  expect_true(all(order(colnames(attributes(cdm$test_order)$cohort_set)[-c(1:2)]) ==
+    order(c(
+      "duration_range_min", "duration_range_max", "impute_duration", "gap_era",
+      "prior_use_washout", "prior_observation", "cohort_date_range_start",
+      "cohort_date_range_end", "limit"
+    ))))
+})

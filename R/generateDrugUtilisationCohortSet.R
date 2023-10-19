@@ -99,17 +99,17 @@ generateDrugUtilisationCohortSet <- function(cdm,
   # generate cohort set
   cohortSetRef <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
-      limit = .env$limit,
+      duration_range_min = as.character(.env$durationRange[1]),
+      duration_range_max = as.character(.env$durationRange[2]),
+      impute_duration = as.character(.env$imputeDuration),
+      gap_era = as.character(.env$gapEra),
+      prior_use_washout = as.character(.env$priorUseWashout),
       prior_observation = as.character(dplyr::coalesce(
         .env$priorObservation, as.numeric(NA)
       )),
-      gap_era = as.character(.env$gapEra),
-      prior_use_washout = as.character(.env$priorUseWashout),
       cohort_date_range_start = as.character(.env$cohortDateRange[1]),
       cohort_date_range_end = as.character(.env$cohortDateRange[2]),
-      impute_duration = as.character(.env$imputeDuration),
-      duration_range_min = as.character(.env$durationRange[1]),
-      duration_range_max = as.character(.env$durationRange[2])
+      limit = .env$limit
     ) %>%
     insertTable(cdm, paste0(name, "_set"))
 
