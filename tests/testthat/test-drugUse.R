@@ -5,10 +5,10 @@ test_that("test flags", {
   x <- tidyr::expand_grid(
     duration = c(TRUE, FALSE), quantity = c(TRUE, FALSE), dose = c(TRUE, FALSE)
   )
-  columnsDuration <- c("duration", "impute_duration_count")
+  columnsDuration <- c("duration", "impute_duration_percentage")
   columnsQuantity <- c("cumulative_quantity", "initial_quantity")
   columnsDose <- c(
-    "impute_daily_dose_count", "initial_daily_dose_milligram",
+    "impute_daily_dose_percentage", "initial_daily_dose_milligram",
     "cumulative_dose_milligram"
   )
   for (k in seq_len(nrow(x))) {
@@ -1000,8 +1000,8 @@ test_that("check all variables", {
     expect_no_error()
   expect_true(all(c(
     "number subjects", "number records", "duration", "number_exposures",
-    "cumulative_quantity", "initial_quantity", "impute_duration_count",
-    "number_eras", "impute_daily_dose_count", "initial_daily_dose_milligram",
+    "cumulative_quantity", "initial_quantity", "impute_duration_percentage",
+    "number_eras", "impute_daily_dose_percentage", "initial_daily_dose_milligram",
     "cumulative_dose_milligram"
   ) %in% result$variable))
 })
