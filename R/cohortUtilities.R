@@ -472,7 +472,7 @@ correctDuration <- function(x,
       exposures = dplyr::n()
     ) %>%
     dplyr::collect()
-  impute <- c(impute$count, 100*inpute$count/impute$exposures)
+  impute <- c(impute$count, 100*impute$count/impute$exposures)
   x <- x %>%
     solveImputation("duration", imputeDuration, TRUE) %>%
     dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
