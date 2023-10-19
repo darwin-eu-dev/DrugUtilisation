@@ -40,16 +40,16 @@ checkCdm <- function(cdm) {
   }
 }
 
-checkConceptSetList <- function(conceptSetList) {
-  errorMessage <- "conceptSetList must be a uniquely named list of integerish,
+checkConceptSet <- function(conceptSet) {
+  errorMessage <- "conceptSet must be a uniquely named list of integerish,
   no NA are allowed"
-  if (!is.list(conceptSetList)) {
+  if (!is.list(conceptSet)) {
     cli::cli_abort(errorMessage)
   }
-  if (!all(sapply(conceptSetList, is.numeric))) {
+  if (!all(sapply(conceptSet, is.numeric))) {
     cli::cli_abort(errorMessage)
   }
-  x <- unlist(conceptSetList)
+  x <- unlist(conceptSet)
   if (any(is.na(x))) {
     cli::cli_abort(errorMessage)
   }
@@ -148,7 +148,7 @@ checkImputeDailyDose <- function(imputeDailyDose) {
   if (is.character(imputeDailyDose)) {
     checkmate::assertChoice(
       imputeDailyDose,
-      c("eliminate", "median", "mean", "quantile25", "quantile75")
+      c("none", "median", "mean", "mode")
     )
   } else {
     checkmate::assertCount(
@@ -392,7 +392,7 @@ checkCohort <- function(cohort) {
 }
 
 checkStrata <- function(strata, cohort) {
-  errorMessage <- "strata must be a named list of columns in cohort"
+  errorMessage <- "strata must be a list of columns in cohort"
   if (!is.list(strata)) {
     cli::cli_abort(errorMessage)
   }
@@ -412,16 +412,6 @@ checkMinCellCount <- function(minCellCount) {
 
 checkOffset <- function(offset) {
   checkmate::assertIntegerish(offset, lower = 0, any.missing = F, len = 1)
-}
-
-checkDrugUseVariables <- function(drugUseVariables, cohort) {
-  errorMessage <- "drugUseVariables must contain columns of cohort"
-  if (!is.character(drugUseVariables)) {
-    cli::cli_abort(errorMessage)
-  }
-  if (!all(drugUseVariables %in% colnames(cohort))) {
-    cli::cli_abort(errorMessage)
-  }
 }
 
 checkInitialDailyDose <- function(initialDailyDose, cohort) {
@@ -446,9 +436,21 @@ checkDuration <- function(duration, cohort) {
   if (!is.logical(duration) | length(duration) != 1) {
     cli::cli_warn("duration must be TRUE or FALSE")
   }
-  if (duration & "duration" %in% colnames(cohort)) {
-    cli::cli_warn("`duration` column will be overwrite")
+  invisible(duration)
+}
+
+checkDose <- function(dose, cohort) {
+  if (!is.logical(dose) | length(dose) != 1) {
+    cli::cli_warn("dose must be TRUE or FALSE")
   }
+  invisible(dose)
+}
+
+checkQuantity <- function(quantity, cohort) {
+  if (!is.logical(quantity) | length(quantity) != 1) {
+    cli::cli_warn("quantity must be TRUE or FALSE")
+  }
+  invisible(quantity)
 }
 
 checkCumulativeDose <- function(cumulativeDose, cohort) {
@@ -692,86 +694,24 @@ isInteger <- function(integer) {
   }
 }
 
-checkConsistentCohortSet <- function(cs,
-                                     conceptSetList,
-                                     gapEra,
-                                     imputeDuration,
-                                     durationRange,
-                                     missingGapEra,
-                                     missingImputeDuration,
-                                     missingDurationRange) {
-  expectedColnames <- c(
-    "cohort_definition_id", "cohort_name", "limit",
-    "prior_observation", "gap_era", "prior_use_washout",
-    "cohort_date_range_start", "cohort_date_range_end",
-    "impute_duration", "duration_range_min", "duration_range_max"
-  )
-  if (
-    length(colnames(cs)) == length(expectedColnames) &
-      all(expectedColnames %in% colnames(cs))
-  ) {
-    notPresent <- names(conceptSetList)[!(
-      names(conceptSetList) %in% cs$cohort_name
-    )]
-    if (length(notPresent) > 0) {
-      cli::cli_warn(paste0(
-        "Different names in conceptSetList (",
-        paste0(notPresent, collapse = ", "), ") than in the created cohortSet."
-      ))
-    }
-    if (missingGapEra == TRUE) {
-      if (length(unique(cs$gap_era)) > 1) {
-        cli::cli_abort(
-          "More than one gapEra found in cohortSet, please specify gapEra"
-        )
-      }
-      gapEra <- as.numeric(unique(cs$gap_era))
-    } else {
-      if (!all(cs$gap_era == as.character(gapEra))) {
-        cli::cli_warn(glue::glue_collapse(
-          "gapEra is different than at the cohort creation stage (input: {gapEra}, cohortSet: {cs$gap_era})."
-        ))
-      }
-    }
-    if (missingImputeDuration == TRUE) {
-      if (length(unique(cs$impute_duration)) > 1) {
-        cli::cli_abort(
-          "More than one imputeDuration found in cohortSet, please specify imputeDuration"
-        )
-      }
-      imputeDuration <- as.numeric(unique(cs$impute_duration))
-    } else {
-      if (as.character(tolower(imputeDuration)) != tolower(cs$impute_duration)) {
-        cli::cli_warn(glue::glue(
-          "imputeDuration is different than at the cohort creation stage (input: {imputeDuration}, cohortSet: {cs$impute_duration})."
-        ))
-      }
-    }
-    if (missingDurationRange == TRUE) {
-      if (length(unique(cs$duration_range_min)) > 1 | length(unique(cs$duration_range_max)) > 1) {
-        cli::cli_abort(
-          "More than one durationRange found in cohortSet, please specify durationRange"
-        )
-      }
-      durationRange <- as.numeric(c(
-        unique(cs$duration_range_min), unique(cs$duration_range_max)
-      ))
-    } else {
-      if (!identical(
-        as.character(durationRange),
-        c(cs$duration_range_min, cs$duration_range_max)
-      )) {
-        cli::cli_warn(glue::glue_collapse(
-          "durationRange is different than at the cohort creation stage (input: {durationRange}, cohortSet: {c(cs$duration_range_min, cs$duration_range_max)})"
-        ))
-      }
-    }
-  } else {
-    cli::cli_warn("targetCohortName was not generated by DrugUtilisation package")
+checkImputeDurationCount <- function(imputeDurationCount) {
+  error <- "imputeDurationCount should be TRUE or FALSE"
+  if (length(imputeDurationCount) != 1) {
+    cli::cli_abort(error)
   }
-  parameters <- list(
-    gapEra = gapEra, imputeDuration = imputeDuration,
-    durationRange = durationRange
-  )
-  return(parameters)
+  if (!(imputeDurationCount %in% c(TRUE, FALSE))) {
+    cli::cli_abort(error)
+  }
+  invisible(imputeDurationCount)
+}
+
+checkImputeDailyDoseCount <- function(imputeDailyDoseCount) {
+  error <- "imputeDailyDoseCount should be TRUE or FALSE"
+  if (length(imputeDailyDoseCount) != 1) {
+    cli::cli_abort(error)
+  }
+  if (!(imputeDailyDoseCount %in% c(TRUE, FALSE))) {
+    cli::cli_abort(error)
+  }
+  invisible(imputeDailyDoseCount)
 }

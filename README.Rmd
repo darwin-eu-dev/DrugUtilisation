@@ -40,7 +40,7 @@ knitr::opts_chunk$set(
 
 DrugUtilisation contains functions to instantiate and characterize the cohorts used in a Drug Utilisation Study in the OMOP common data model. Main functionalities are:
 
-- Create DrugUsilisation cohorts
+- Create DrugUtilisation cohorts
 
 - Add indications to this cohort
 
@@ -93,12 +93,12 @@ To generate the cohort of drug use we will use `generateDrugUtilisationCohortSet
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm,
   name = "dus_cohort",
-  conceptSetList = conceptList,
-  summariseMode = "FirstEra", 
-  daysPriorObservation = 365,
+  conceptSet = conceptList,
+  limit = "first",
+  priorObservation = 365,
   gapEra = 30,
   priorUseWashout = 0,
-  imputeDuration = "eliminate", 
+  imputeDuration = "none", 
   durationRange = c(0, Inf)
 )
 ```
@@ -260,7 +260,10 @@ summariseCharacteristics(
 You can summarise the patient characteristics with `summariseLargeScaleCharacteristics` function:
 
 ```{r}
-DrugUtilisation::summariseLargeScaleCharacteristics(
-  x, cdm, tablesToCharacterize = c("drug_exposure", "condition_occurrence")
+summariseLargeScaleCharacteristics(
+  cohort = x, 
+  window = list(c(-Inf, Inf)), 
+  eventInWindow = "condition_occurrence", 
+  episodeInWindow = "drug_exposure"
 )
 ```

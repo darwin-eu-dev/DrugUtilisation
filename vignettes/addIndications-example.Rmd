@@ -68,7 +68,7 @@ Next, we can create a drug utilization cohort by using the conceptList with the 
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm,
   name = "acetaminophen_users",
-  conceptSetList = conceptList,
+  conceptSet = conceptList,
   limit = "All",
   gapEra = 30,
   priorUseWashout = 0
