@@ -121,8 +121,10 @@ generateDrugUtilisationCohortSet <- function(cdm,
   if (cohort %>% dplyr::tally() %>% dplyr::pull("n") > 0) {
     # correct duration
     cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
-    reason1 <- paste(
-      "Duration imputation; affected rows:", attr(cohort, "numberImputations")
+    imputeCounts <- attr(cohort, "impute")
+    reason1 <- paste0(
+      "Duration imputation; affected rows: ", imputeCounts[1], " (",
+      round(imputeCounts[2]), "%)"
     )
     attrition <- computeCohortAttrition(
       cohort, cdm, attrition, reason1,
