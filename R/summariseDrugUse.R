@@ -80,9 +80,9 @@ summariseDrugUse<- function(cohort,
     dplyr::mutate(
       "variable_level" = dplyr::case_when(
         substr(.data$variable, 1, 18) == "initial_daily_dose" ~
-          substr(.data$variable, 19, nchar(.data$variable)),
+          substr(.data$variable, 20, nchar(.data$variable)),
         substr(.data$variable, 1, 15) == "cumulative_dose" ~
-          substr(.data$variable, 16, nchar(.data$variable)),
+          substr(.data$variable, 17, nchar(.data$variable)),
         TRUE ~ .data$variable_level
       ),
       "variable" = dplyr::case_when(
