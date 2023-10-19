@@ -176,16 +176,16 @@ they are using the same concept code.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          1 1996-12-22        2001-09-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         57 2021-02-19        2021-03-10     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         66 2017-11-24        2019-11-09     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         41 2005-07-25        2006-11-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         58 2005-03-29        2012-07-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         73 2009-10-02        2011-08-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         12 2019-03-06        2022-03-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         20 2001-09-16        2014-10-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         36 2013-05-27        2022-12-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         68 2021-08-21        2022-11-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         21 2010-02-18        2010-07-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         99 2020-01-31        2022-02-26     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          8 2020-04-22        2021-11-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         59 2020-11-09        2021-03-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         54 2016-04-09        2021-02-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         96 2016-05-19        2018-11-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         11 2021-02-26        2022-04-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         83 2017-10-12        2022-06-22     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         48 1973-11-26        2006-01-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         77 1967-10-10        1967-12-11     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The count of the cohort can be assessed using cohortCount() from
 CDMConnector</p>
@@ -221,16 +221,16 @@ is different:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         48 1973-11-26        1993-11-23     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         77 1967-10-10        1967-10-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          8 2020-04-22        2021-05-29     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         59 2020-11-09        2021-01-27     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         89 2017-05-28        2018-08-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         94 2002-12-23        2004-03-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         14 1966-03-30        1983-11-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         17 2008-01-04        2008-06-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         65 2003-01-28        2006-03-22     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         54 2016-04-09        2020-01-04     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          1 1996-12-22        1998-03-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         12 2019-03-06        2021-12-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         20 2001-09-16        2004-07-15     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         36 2013-05-27        2016-12-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         68 2021-08-21        2022-03-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1          5 1978-07-01        1981-04-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         16 2019-04-02        2020-06-06     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         26 2018-06-25        2019-11-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         10 2021-08-16        2021-12-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         18 2001-01-11        2004-06-05     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The <em>requiredObservation</em> parameter is a numeric vector of
 length 2, that defines the number of days of required observation time
@@ -250,16 +250,16 @@ Let’s check it now to see how reducing required observation affect the
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          1 1996-12-22        2001-09-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         57 2021-02-19        2021-03-10     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         66 2017-11-24        2019-11-09     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         41 2005-07-25        2006-11-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         58 2005-03-29        2012-07-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         73 2009-10-02        2011-08-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         12 2019-03-06        2022-03-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         20 2001-09-16        2014-10-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         36 2013-05-27        2022-12-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         68 2021-08-21        2022-11-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         21 2010-02-18        2010-07-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         99 2020-01-31        2022-02-26     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          4 2004-11-18        2010-04-28     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         33 2021-01-09        2021-03-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         56 2009-05-13        2014-10-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         48 1973-11-26        2006-01-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         77 1967-10-10        1967-12-11     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1          8 2020-04-22        2021-11-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         59 2020-11-09        2021-03-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         89 2017-05-28        2018-11-06     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
@@ -292,16 +292,16 @@ you can set. We first use default settings:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         89 2018-08-26        2018-11-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         29 2020-10-11        2021-02-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         57 2020-09-14        2020-11-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         21 1995-07-02        2002-05-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        100 2022-10-20        2022-10-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1          8 2018-09-21        2021-01-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         19 2022-05-26        2022-05-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         82 2014-05-07        2017-08-03     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         89 2016-12-24        2017-02-04     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         94 2002-12-09        2003-01-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         57 2020-09-14        2020-11-26     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         89 2018-08-26        2018-11-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         29 2020-10-11        2021-02-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         27 2019-02-26        2020-06-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         57 2020-06-19        2020-08-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         77 1966-12-10        1967-02-03     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         80 2022-08-31        2022-09-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         84 2010-08-15        2017-05-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         90 2001-06-18        2005-07-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1          8 2018-09-21        2021-01-18     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm2</span><span class="op">$</span><span class="va">dus_alleras</span><span class="op">)</span></span>
@@ -311,17 +311,16 @@ you can set. We first use default settings:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1             53              48</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm2</span><span class="op">$</span><span class="va">dus_alleras</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 <span style="color: #949494;">"</span>Qualifying initial records<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 <span style="color: #949494;">"</span>Duration imputation; affec…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             53 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>                                 5                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             53 <span style="color: #949494;">"</span>prior use wahout of 0 days<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             53 <span style="color: #949494;">"</span>at least 0 prior observati…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             53 <span style="color: #949494;">"</span>cohort_start_date &gt;= NA<span style="color: #949494;">"</span>                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             53 <span style="color: #949494;">"</span>cohort_end_date &lt;= NA<span style="color: #949494;">"</span>                     0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>             53 <span style="color: #949494;">"</span>limit: all applied<span style="color: #949494;">"</span>                        0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 Qualifying initial records                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Duration imputation; affect…                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             53 Join eras                                   5                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             53 prior use wahout of 0 days                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             53 at least 0 prior observation                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             53 cohort_start_date &gt;= NA                     0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             53 cohort_end_date &lt;= NA                       0                 0</span></span></code></pre></div>
 <div class="section level4">
 <h4 id="imputeduration-and-durationrange">imputeDuration and durationRange<a class="anchor" aria-label="anchor" href="#imputeduration-and-durationrange"></a>
 </h4>
@@ -341,17 +340,16 @@ using <em>imputeDuration</em>. It can ne set as: “none”, “median”,
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm3</span><span class="op">$</span><span class="va">dus_step2_0_inf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 <span style="color: #949494;">"</span>Qualifying initial records<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 <span style="color: #949494;">"</span>Duration imputation; affec…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             53 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>                                 5                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             53 <span style="color: #949494;">"</span>prior use wahout of 0 days<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             53 <span style="color: #949494;">"</span>at least 0 prior observati…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             53 <span style="color: #949494;">"</span>cohort_start_date &gt;= NA<span style="color: #949494;">"</span>                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             53 <span style="color: #949494;">"</span>cohort_end_date &lt;= NA<span style="color: #949494;">"</span>                     0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>             53 <span style="color: #949494;">"</span>limit: all applied<span style="color: #949494;">"</span>                        0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 Qualifying initial records                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Duration imputation; affect…                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             53 Join eras                                   5                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             53 prior use wahout of 0 days                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             53 at least 0 prior observation                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             53 cohort_start_date &gt;= NA                     0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             53 cohort_end_date &lt;= NA                       0                 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="gapera">gapEra<a class="anchor" aria-label="anchor" href="#gapera"></a>
@@ -373,17 +371,16 @@ gaps are joined.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm4</span><span class="op">$</span><span class="va">dus_step3_alleras</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 <span style="color: #949494;">"</span>Qualifying initial records<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 <span style="color: #949494;">"</span>Duration imputation; affec…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>                                 7                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 <span style="color: #949494;">"</span>prior use wahout of 0 days<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             51 <span style="color: #949494;">"</span>at least 0 prior observati…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             51 <span style="color: #949494;">"</span>cohort_start_date &gt;= NA<span style="color: #949494;">"</span>                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             51 <span style="color: #949494;">"</span>cohort_end_date &lt;= NA<span style="color: #949494;">"</span>                     0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>             51 <span style="color: #949494;">"</span>limit: all applied<span style="color: #949494;">"</span>                        0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 Qualifying initial records                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Duration imputation; affect…                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 Join eras                                   7                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 prior use wahout of 0 days                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             51 at least 0 prior observation                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             51 cohort_start_date &gt;= NA                     0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             51 cohort_end_date &lt;= NA                       0                 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="priorusewashout">priorUseWashout<a class="anchor" aria-label="anchor" href="#priorusewashout"></a>
@@ -406,17 +403,16 @@ cohort.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm5</span><span class="op">$</span><span class="va">dus_alleras_step4</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             51 <span style="color: #949494;">"</span>limit: all applied<span style="color: #949494;">"</span>                        0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 <span style="color: #949494;">"</span>Qualifying initial records<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             58 <span style="color: #949494;">"</span>Duration imputation; affec…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>                                 7                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             51 <span style="color: #949494;">"</span>prior use wahout of 30 day…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             51 <span style="color: #949494;">"</span>at least 0 prior observati…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             51 <span style="color: #949494;">"</span>cohort_start_date &gt;= NA<span style="color: #949494;">"</span>                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>             51 <span style="color: #949494;">"</span>cohort_end_date &lt;= NA<span style="color: #949494;">"</span>                     0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 Qualifying initial records                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Duration imputation; affect…                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 Join eras                                   7                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 prior use wahout of 30 days                 0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             51 at least 0 prior observation                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             51 cohort_start_date &gt;= NA                     0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             51 cohort_end_date &lt;= NA                       0                 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="priorobservation">priorObservation<a class="anchor" aria-label="anchor" href="#priorobservation"></a>
@@ -440,17 +436,16 @@ cohort.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm6</span><span class="op">$</span><span class="va">dus_alleras_step5</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 <span style="color: #949494;">"</span>Qualifying initial records<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 <span style="color: #949494;">"</span>Duration imputation; affec…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>                                 7                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 <span style="color: #949494;">"</span>prior use wahout of 30 day…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             48 <span style="color: #949494;">"</span>at least 30 prior observat…                3                 2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             48 <span style="color: #949494;">"</span>cohort_start_date &gt;= NA<span style="color: #949494;">"</span>                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             48 <span style="color: #949494;">"</span>cohort_end_date &lt;= NA<span style="color: #949494;">"</span>                     0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>             48 <span style="color: #949494;">"</span>limit: all applied<span style="color: #949494;">"</span>                        0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 Qualifying initial records                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Duration imputation; affect…                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 Join eras                                   7                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 prior use wahout of 30 days                 0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             48 at least 30 prior observati…                3                 2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             48 cohort_start_date &gt;= NA                     0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             48 cohort_end_date &lt;= NA                       0                 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="cohortdaterange">cohortDateRange<a class="anchor" aria-label="anchor" href="#cohortdaterange"></a>
@@ -474,17 +469,16 @@ dates.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm7</span><span class="op">$</span><span class="va">dus_alleras_step67</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 <span style="color: #949494;">"</span>Qualifying initial records<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 <span style="color: #949494;">"</span>Duration imputation; affec…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>                                 7                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 <span style="color: #949494;">"</span>prior use wahout of 30 day…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             48 <span style="color: #949494;">"</span>at least 30 prior observat…                3                 2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             34 <span style="color: #949494;">"</span>cohort_start_date &gt;= 2010-…               14                14</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>              4 <span style="color: #949494;">"</span>cohort_end_date &lt;= 2011-01…               30                28</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>              4 <span style="color: #949494;">"</span>limit: All applied<span style="color: #949494;">"</span>                        0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 Qualifying initial records                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Duration imputation; affect…                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 Join eras                                   7                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 prior use wahout of 30 days                 0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             48 at least 30 prior observati…                3                 2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             34 cohort_start_date &gt;= 2010-0…               14                14</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>              4 cohort_end_date &lt;= 2011-01-…               30                28</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="limit-first-era-that-fulfills-the-criteria">limit: First era that fulfills the criteria<a class="anchor" aria-label="anchor" href="#limit-first-era-that-fulfills-the-criteria"></a>
@@ -512,14 +506,14 @@ first record that fulfills all criteria.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 <span style="color: #949494;">"</span>Qualifying initial records<span style="color: #949494;">"</span>                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 <span style="color: #949494;">"</span>Duration imputation; affec…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 <span style="color: #949494;">"</span>Join eras<span style="color: #949494;">"</span>                                 7                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 <span style="color: #949494;">"</span>prior use wahout of 30 day…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             48 <span style="color: #949494;">"</span>at least 30 prior observat…                3                 2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             34 <span style="color: #949494;">"</span>cohort_start_date &gt;= 2010-…               14                14</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>              4 <span style="color: #949494;">"</span>cohort_end_date &lt;= 2011-01…               30                28</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>              4 <span style="color: #949494;">"</span>limit: First applied<span style="color: #949494;">"</span>                      0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 Qualifying initial records                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Duration imputation; affect…                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 Join eras                                   7                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 prior use wahout of 30 days                 0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             48 at least 30 prior observati…                3                 2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             34 cohort_start_date &gt;= 2010-0…               14                14</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>              4 cohort_end_date &lt;= 2011-01-…               30                28</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>              4 Limit to first era                          0                 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="limit-first-ever-era">limit: First ever era<a class="anchor" aria-label="anchor" href="#limit-first-ever-era"></a>
