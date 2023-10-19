@@ -32,13 +32,15 @@
 #' seeFormulas()
 #' }
 #'
-#'
 seeFormulas <- function() {
-  cli::cli_inform("Currenly 4 different formualas are applied:")
-  cli::cli_inform("**formula_id** formula")
-  cli::cli_inform("  formula_id = 1: quantity * numerator / days_exposed")
-  cli::cli_inform("  formula_id = 2: quantity * amount / days_exposed")
-  cli::cli_inform("  formula_id = 3: 24 * numerator / denominator")
-  cli::cli_inform("  formula_id = 4: 24 * numerator")
+  mes <- c(
+    "Currenly 4 different formualas are applied:",
+    cli::style_bold("formula_id          ", cli::col_silver("formula")),
+    paste0("     1         ", cli::col_silver("quantity * numerator / days exposed")),
+    paste0("     2         ", cli::col_silver("quantity * amount / days exposed")),
+    paste0("     3         ", cli::col_silver("24 * numerator / denominator")),
+    paste0("     4         ", cli::col_silver("24 * numerator"))
+  )
+  cat(mes, sep = "\n")
   invisible(TRUE)
 }

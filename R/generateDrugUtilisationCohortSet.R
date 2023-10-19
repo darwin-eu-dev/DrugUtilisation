@@ -79,6 +79,8 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              priorObservation = 0,
                                              cohortDateRange = as.Date(c(NA, NA)),
                                              limit = "all") {
+  if (is.character(imputeDuration)) imputeDuration <- tolower(imputeDuration)
+  if (is.character(limit)) limit <- tolower(limit)
   checkInputs(
     cdm = cdm, name = name, conceptSet = conceptSet,
     limit = limit, priorObservation = priorObservation, gapEra = gapEra,

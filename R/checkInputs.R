@@ -85,8 +85,6 @@ checkLimit <- function(limit) {
   errorMessage <- "limit must be a choice between: 'all' and 'first'"
   if (!is.character(limit) | length(limit) > 1) {
     cli::cli_abort(errorMessage)
-  } else{
-    limit <- tolower(limit)
   }
   if (!(limit %in% c("all", "first"))) {
     cli::cli_abort(errorMessage)
