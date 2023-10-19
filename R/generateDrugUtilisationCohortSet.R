@@ -177,11 +177,14 @@ generateDrugUtilisationCohortSet <- function(cdm,
     )
 
     # apply limit
-    cohort <- applyLimit(cohort, cdm, limit)
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste("limit:", limit, "applied"),
-      cohortSet = cohortSetRef
-    )
+    if (limit == "first") {
+      cohort <- applyLimit(cohort, cdm, limit)
+      attrition <- computeCohortAttrition(
+        cohort, cdm, attrition, "Limit to first era",
+        cohortSet = cohortSetRef
+      )
+    }
+
   }
 
   # create the cohort references
