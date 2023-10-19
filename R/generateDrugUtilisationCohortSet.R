@@ -215,7 +215,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   )
 
   # add cdm_reference as attribute
-  attr(cdm[[name]], "cdm_reference") <- cdm
+  attr(cdm[[name]], "cdm_reference") <- NULL
 
   return(cdm)
 }
