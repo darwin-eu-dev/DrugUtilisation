@@ -996,10 +996,12 @@ test_that("check all variables", {
 
   result <- cdm[["dus"]] %>%
     addDrugUse(cdm, 1125315) %>%
-    summariseDrugUse(cdm)
+    summariseDrugUse(cdm) %>%
+    expect_no_error()
   expect_true(all(c(
-    "initial_daily_dose", "number_exposures", "duration",
-    "cumulative_dose", "number_eras", "initial_quantity",
-    "cumulative_quantity"
+    "number subjects", "number records", "duration", "number_exposures",
+    "cumulative_quantity", "initial_quantity", "impute_duration_count",
+    "number_eras", "impute_daily_dose_count", "initial_daily_dose_milligram",
+    "cumulative_dose_milligram"
   ) %in% result$variable))
 })
