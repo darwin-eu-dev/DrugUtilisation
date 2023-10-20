@@ -1002,10 +1002,7 @@ addImpute <- function(cohort, cohortInfo, imputeCount, label) {
             .groups = "drop"
           ),
         by = c("subject_id", "cohort_start_date", "cohort_end_date")
-      ) %>%
-      dplyr::mutate(!!label := dplyr::if_else(
-        is.na(.data[[label]]), 0, .data[[label]]
-      ))
+      )
   }
   return(cohort)
 }
