@@ -43,7 +43,6 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/Intro_create_cohort.html">Use DrugUtilisation to create cohort</a>
     <a class="dropdown-item" href="../articles/addIndications-example.html">Add indications to Drug Utilisation Cohort</a>
-    <a class="dropdown-item" href="../articles/my-vignette.html">my-vignette</a>
   </div>
 </li>
       </ul>
@@ -178,14 +177,14 @@ they are using the same concept code.</p>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         87 2019-06-24        2022-11-05     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         95 2016-04-09        2022-05-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         66 2017-11-24        2019-11-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         57 2021-02-19        2021-03-10     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         41 2005-07-25        2006-11-18     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         58 2005-03-29        2012-07-14     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         73 2009-10-02        2011-08-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         81 1990-02-18        2005-03-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         92 2012-12-12        2013-05-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         97 1990-06-26        1993-01-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         10 2021-08-16        2022-03-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1          5 1978-07-01        1995-01-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         81 1990-02-18        2005-03-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         92 2012-12-12        2013-05-15     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         97 1990-06-26        1993-01-20     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The count of the cohort can be assessed using cohortCount() from
 CDMConnector</p>
@@ -221,16 +220,16 @@ is different:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         87 2019-06-24        2022-02-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         95 2016-04-09        2021-11-10     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         66 2017-11-24        2018-02-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         12 2019-03-06        2021-12-09     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         20 2001-09-16        2004-07-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         36 2013-05-27        2016-12-31     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         68 2021-08-21        2022-03-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1          5 1978-07-01        1981-04-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         81 1990-02-18        1990-10-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         92 2012-12-12        2013-01-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         21 2010-02-18        2010-07-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         99 2020-01-31        2021-10-17     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          8 2020-04-22        2021-05-29     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         59 2020-11-09        2021-01-27     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         14 1966-03-30        1983-11-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         17 2008-01-04        2008-06-15     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         65 2003-01-28        2006-03-22     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         48 1973-11-26        1993-11-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         77 1967-10-10        1967-10-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         89 2017-05-28        2018-08-07     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The <em>requiredObservation</em> parameter is a numeric vector of
 length 2, that defines the number of days of required observation time
@@ -250,16 +249,16 @@ Let’s check it now to see how reducing required observation affect the
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          1 1996-12-22        2001-09-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         57 2021-02-19        2021-03-10     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         66 2017-11-24        2019-11-09     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         41 2005-07-25        2006-11-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         58 2005-03-29        2012-07-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         73 2009-10-02        2011-08-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         12 2019-03-06        2022-03-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         20 2001-09-16        2014-10-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         36 2013-05-27        2022-12-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         68 2021-08-21        2022-11-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         87 2019-06-24        2022-11-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         95 2016-04-09        2022-05-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         57 2021-02-19        2021-03-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         66 2017-11-24        2019-11-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         41 2005-07-25        2006-11-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         58 2005-03-29        2012-07-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         73 2009-10-02        2011-08-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         12 2019-03-06        2022-03-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         20 2001-09-16        2014-10-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         36 2013-05-27        2022-12-19     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
@@ -293,15 +292,15 @@ you can set. We first use default settings:</p>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         57 2020-09-14        2020-11-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         29 2020-10-11        2021-02-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         89 2018-08-26        2018-11-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         89 2018-08-26        2018-11-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         29 2020-10-11        2021-02-07     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         27 2019-02-26        2020-06-10     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         57 2020-06-19        2020-08-21     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         77 1966-12-10        1967-02-03     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         80 2022-08-31        2022-09-07     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         84 2010-08-15        2017-05-13     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         90 2001-06-18        2005-07-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         23 1998-10-24        2002-12-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         37 2000-07-01        2002-07-22     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm2</span><span class="op">$</span><span class="va">dus_alleras</span><span class="op">)</span></span>
