@@ -73,7 +73,12 @@ addIndication <- function(x,
   ind <- addCohortIndication(ind, cdm, indicationCohortName, indicationGap)
 
   # add unknown indications
-  ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap)
+  ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap) %>%
+    dplyr::select(
+      "subject_id", "cohort_start_date", dplyr::starts_with(
+        paste0("indication_gap_", tolower(as.character(indicationGap)))
+      )
+    )
 
   # add the indication columns to the original table
   result <- x %>%
