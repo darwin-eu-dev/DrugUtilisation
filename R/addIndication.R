@@ -75,7 +75,7 @@ addIndication <- function(x,
   # add unknown indications
   ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap) %>%
     dplyr::select(
-      "subject_id", dplyr::all_of(indicationDate), dplyr::starts_with(
+      "subject_id", "cohort_start_date", dplyr::starts_with(
         paste0("indication_gap_", tolower(as.character(indicationGap)))
       )
     )
