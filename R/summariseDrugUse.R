@@ -58,7 +58,7 @@ summariseDrugUse<- function(cohort,
                             strata = list(),
                             drugUseEstimates = c(
                               "min", "q05", "q25", "median", "q75", "q95",
-                              "max", "missing"
+                              "max", "mean", "sd", "missing"
                             ),
                             minCellCount = 5) {
   # check inputs
