@@ -53,7 +53,8 @@
 <span>  <span class="va">cohort</span>,</span>
 <span>  cdm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="st">"cdm_reference"</span><span class="op">)</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  drugUseEstimates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"min"</span>, <span class="st">"q05"</span>, <span class="st">"q25"</span>, <span class="st">"median"</span>, <span class="st">"q75"</span>, <span class="st">"q95"</span>, <span class="st">"max"</span>, <span class="st">"missing"</span><span class="op">)</span>,</span>
+<span>  drugUseEstimates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"min"</span>, <span class="st">"q05"</span>, <span class="st">"q25"</span>, <span class="st">"median"</span>, <span class="st">"q75"</span>, <span class="st">"q95"</span>, <span class="st">"max"</span>, <span class="st">"mean"</span>, <span class="st">"sd"</span>,</span>
+<span>    <span class="st">"missing"</span><span class="op">)</span>,</span>
 <span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -112,7 +113,7 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by warning in `base::max()`:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> no non-missing arguments to max; returning -Inf</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 83 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 101 × 11</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level   strata_name strata_level variable    variable_level</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cohort_name acetaminophen Overall     Overall      number sub… <span style="color: #BB0000;">NA</span>            </span>
@@ -124,8 +125,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      duration    missing       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 73 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 91 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: variable_type &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
@@ -191,7 +192,7 @@
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Caused by warning in `base::max()`:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> no non-missing arguments to max; returning -Inf</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Run `dplyr::last_dplyr_warnings()` to see the 3 remaining warnings.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 830 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,010 × 11</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level   strata_name strata_level variable    variable_level</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cohort_name acetaminophen Overall     Overall      number sub… <span style="color: #BB0000;">NA</span>            </span>
@@ -203,8 +204,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      duration    missing       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 820 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1,000 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: variable_type &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
