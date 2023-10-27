@@ -86,66 +86,66 @@ Now having the conceptSet, we can proceed to generate cohort. There are two func
 First, let's use generateConceptCohortSet to get the asthma cohort using the *conceptSet_code*, it will also give the same output if changed to *conceptSet_json_1* or *conceptSet_json_2*, as they are using the same concept code. 
 
 ```{r, message=FALSE, warning=FALSE}
-cdm1 <- generateConceptCohortSet(cdm,
+cdm <- generateConceptCohortSet(cdm,
   conceptSet = conceptSet_code,
   name = "asthma_1",
   end = "observation_period_end_date",
   requiredObservation = c(10, 10),
   overwrite = TRUE
 )
-cdm1$asthma_1
+cdm$asthma_1
 ```
 The count of the cohort can be assessed using cohortCount() from CDMConnector
 ```{r, message=FALSE, warning=FALSE}
-cohortCount(cdm1$asthma_1)
+cohortCount(cdm$asthma_1)
 ```
 Cohort attrition can be assessed using cohortAttrition() from CDMConnector
 ```{r, message=FALSE, warning=FALSE}
-cohortAttrition(cdm1$asthma_1)
+cohortAttrition(cdm$asthma_1)
 ```
 
 The *end* parameter set how the cohort end date is defined. Now it is changed to event end date to demonstrate the difference from previous observation period end date. See that now the cohort_end_date is different:
 ```{r, message=FALSE, warning=FALSE}
-cdm1 <- generateConceptCohortSet(cdm,
+cdm <- generateConceptCohortSet(cdm,
   conceptSet = conceptSet_code,
   name = "asthma_2",
   end = "event_end_date",
   requiredObservation = c(10, 10),
   overwrite = TRUE
 )
-cdm1$asthma_2
+cdm$asthma_2
 ```
 
 The *requiredObservation* parameter is a numeric vector of length 2, that defines the number of days of
 required observation time prior to index and post index for an event to be included in the cohort. Let's check it now to see how reducing required observation affect the *asthma_1* cohort.
 
 ```{r, message=FALSE, warning=FALSE}
-cdm1 <- generateConceptCohortSet(cdm,
+cdm <- generateConceptCohortSet(cdm,
   conceptSet = conceptSet_code,
   name = "asthma_3",
   end = "observation_period_end_date",
   requiredObservation = c(1, 1),
   overwrite = TRUE
 )
-cdm1$asthma_3
+cdm$asthma_3
 
-cohortCount(cdm1$asthma_3)
+cohortCount(cdm$asthma_3)
 
-cohortAttrition(cdm1$asthma_3)
+cohortAttrition(cdm$asthma_3)
 ```
 
 ## generateDrugUtilisationCohortSet()
 Now let's try function DrugUtilisation::generateDrugUtilisationCohortSet() to get the drug cohort for ingredient simvastatin. This function has a lot more options you can set. We first use default settings:
 ```{r, message=FALSE, warning=FALSE}
-cdm2 <- generateDrugUtilisationCohortSet(cdm,
+cdm <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_alleras",
   conceptSet = conceptSet_ingredient
 )
-cdm2$dus_alleras
+cdm$dus_alleras
 
-cohortCount(cdm2$dus_alleras)
+cohortCount(cdm$dus_alleras)
 
-cohortAttrition(cdm2$dus_alleras) %>% select(number_records, reason, excluded_records, excluded_subjects)
+cohortAttrition(cdm$dus_alleras) %>% select(number_records, reason, excluded_records, excluded_subjects)
 
 ```
 
@@ -154,14 +154,14 @@ cohortAttrition(cdm2$dus_alleras) %>% select(number_records, reason, excluded_re
 The parameter *durationRange* specifies the range within which the duration must fall, where duration = end date - start date + 1. Default as c(1, Inf). It should be a numeric vector of length two, with no NAs and the first value should be equal or smaller than the second one. Duration values outside of *durationRange* will be imputed using *imputeDuration*. It can ne set as: "none", "median", "mean", "mode" or an integer (count).
 
 ```{r, message=FALSE, warning=FALSE}
-cdm3 <- generateDrugUtilisationCohortSet(cdm,
+cdm <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_step2_0_inf",
   conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
   durationRange = c(0, Inf) # default as c(1, Inf)
 )
 
-cohortAttrition(cdm3$dus_step2_0_inf) %>% select(number_records, reason, excluded_records, excluded_subjects)
+cohortAttrition(cdm$dus_step2_0_inf) %>% select(number_records, reason, excluded_records, excluded_subjects)
 
 ```
 
@@ -171,7 +171,7 @@ cohortAttrition(cdm3$dus_step2_0_inf) %>% select(number_records, reason, exclude
 The *gapEra* parameter defines the number of days between two continuous drug exposures to be considered as a same era. Now let's change it from 0 to a larger number. From the *dus_step3_alleras* cohort attrition, we can see that when joining era at **STEP 3**, it resulted in less records, compared to the *dus_step2_0_inf* cohort, as exposures with less than 30 days gaps are joined.
 
 ```{r, message=FALSE, warning=FALSE}
-cdm4 <- generateDrugUtilisationCohortSet(cdm,
+cdm <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_step3_alleras",
   conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
@@ -179,7 +179,7 @@ cdm4 <- generateDrugUtilisationCohortSet(cdm,
   gapEra = 30 # default as 0
 )
 
-cohortAttrition(cdm4$dus_step3_alleras) %>% select(number_records, reason, excluded_records, excluded_subjects)
+cohortAttrition(cdm$dus_step3_alleras) %>% select(number_records, reason, excluded_records, excluded_subjects)
 
 ```
 
@@ -188,7 +188,7 @@ cohortAttrition(cdm4$dus_step3_alleras) %>% select(number_records, reason, exclu
 The *priorUseWashout* parameter specifiesthe number of prior days without exposure (often termed a 'washout') that are required. By default, it is set to NULL, meaning no washout period is necessary. In the example provided, we observe a reduction in the number of records in **STEP 4** for cohort *dus_alleras_step4* due to the washout period required, compared to the *dus_step3_alleras* cohort.
 
 ```{r, message=FALSE, warning=FALSE}
-cdm5 <- generateDrugUtilisationCohortSet(cdm,
+cdm <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_alleras_step4",
   conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
@@ -197,7 +197,7 @@ cdm5 <- generateDrugUtilisationCohortSet(cdm,
   priorUseWashout = 30
 )
 
-cohortAttrition(cdm5$dus_alleras_step4) %>% select(number_records, reason, excluded_records, excluded_subjects)
+cohortAttrition(cdm$dus_alleras_step4) %>% select(number_records, reason, excluded_records, excluded_subjects)
 
 ```
 
@@ -206,7 +206,7 @@ cohortAttrition(cdm5$dus_alleras_step4) %>% select(number_records, reason, exclu
 The parameter *priorObservation* defines the minimum number of days of prior observation necessary for drug eras to be taken into account. If set to NULL, the drug eras are not required to fall within the observation_period. In this example, there is a noticeable decrease in the number of records for *dus_alleras_step5* cohort in **STEP 5** when compared to the *dus_alleras_step4* cohort.
 
 ```{r, message=FALSE, warning=FALSE}
-cdm6 <- generateDrugUtilisationCohortSet(cdm,
+cdm <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_alleras_step5",
   conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
@@ -216,7 +216,7 @@ cdm6 <- generateDrugUtilisationCohortSet(cdm,
   priorObservation = 30
 )
 
-cohortAttrition(cdm6$dus_alleras_step5) %>% select(number_records, reason, excluded_records, excluded_subjects)
+cohortAttrition(cdm$dus_alleras_step5) %>% select(number_records, reason, excluded_records, excluded_subjects)
 
 ```
 
@@ -224,7 +224,7 @@ cohortAttrition(cdm6$dus_alleras_step5) %>% select(number_records, reason, exclu
 
 The *cohortDateRange* parameter defines the range for the cohort_start_date and cohort_end_date. In the following example, one can observe a reduction in **STEP 6** and **STEP 7** due to the constraints imposed on the cohort start and end dates.
 ```{r, message=FALSE, warning=FALSE}
-cdm7 <- generateDrugUtilisationCohortSet(cdm,
+cdm <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_alleras_step67",
   conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
@@ -236,7 +236,7 @@ cdm7 <- generateDrugUtilisationCohortSet(cdm,
   limi = "All"
 )
 
-cohortAttrition(cdm7$dus_alleras_step67) %>% select(number_records, reason, excluded_records, excluded_subjects)
+cohortAttrition(cdm$dus_alleras_step67) %>% select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 ### limit: First era that fulfills the criteria
@@ -244,7 +244,7 @@ cohortAttrition(cdm7$dus_alleras_step67) %>% select(number_records, reason, excl
 Change the *limit* parameter from *All* to *First* and observe how it impacts the attrition of the *dus_step8_firstera cohort* in comparison to the *dus_alleras_step67* cohort. The number of records decreased at **STEP 8** because of the *First* limit. It gets the first record that fulfills all criteria.
 
 ```{r, message=FALSE, warning=FALSE}
-cdm8 <- generateDrugUtilisationCohortSet(cdm,
+cdm <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_step8_firstera",
   conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
@@ -256,13 +256,13 @@ cdm8 <- generateDrugUtilisationCohortSet(cdm,
   limit = "First"
 )
 
-cohortAttrition(cdm8$dus_step8_firstera) %>% select(number_records, reason, excluded_records, excluded_subjects)
+cohortAttrition(cdm$dus_step8_firstera) %>% select(number_records, reason, excluded_records, excluded_subjects)
 
 ```
 ### limit: First ever era
 The parameter *limit* only allows *All* and *First*. The *First* value represents the first era that meets the criteria set by the parameters prior to *limit*. However, if the goal is to get the first-ever era, this can be achieved using this function too. Setting the following parameter will result in the first ever drug era:
 ```{r}
-cdm8 <- generateDrugUtilisationCohortSet(cdm,
+cdm <- generateDrugUtilisationCohortSet(cdm,
   name = "dus_step8_firstever",
   conceptSet = conceptSet_ingredient,
   imputeDuration = "none",
