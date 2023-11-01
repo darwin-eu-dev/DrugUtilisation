@@ -163,33 +163,33 @@ using the <em>conceptSet_code</em>, it will also give the same output if
 changed to <em>conceptSet_json_1</em> or <em>conceptSet_json_2</em>, as
 they are using the same concept code.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_code</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"asthma_1"</span>,</span>
 <span>  end <span class="op">=</span> <span class="st">"observation_period_end_date"</span>,</span>
 <span>  requiredObservation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_1</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.asthma_1&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_1</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;asthma_1&gt; [?? x 4]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1015-azure:R 4.3.2/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          8 2020-04-22        2021-11-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         59 2020-11-09        2021-03-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          4 2004-11-18        2010-04-28     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         33 2021-01-09        2021-03-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         56 2009-05-13        2014-10-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         54 2016-04-09        2021-02-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         96 2016-05-19        2018-11-10     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         21 2010-02-18        2010-07-31     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         99 2020-01-31        2022-02-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         48 1973-11-26        2006-01-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         48 1973-11-26        2006-01-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         77 1967-10-10        1967-12-11     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         89 2017-05-28        2018-11-06     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         94 2002-12-23        2004-09-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1          4 2004-11-18        2010-04-28     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         33 2021-01-09        2021-03-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         56 2009-05-13        2014-10-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         54 2016-04-09        2021-02-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         96 2016-05-19        2018-11-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         21 2010-02-18        2010-07-31     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The count of the cohort can be assessed using cohortCount() from
 CDMConnector</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 3</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -197,7 +197,7 @@ CDMConnector</p>
 <p>Cohort attrition can be assessed using cohortAttrition() from
 CDMConnector</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects reason_id reason          </span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
@@ -208,28 +208,28 @@ Now it is changed to event end date to demonstrate the difference from
 previous observation period end date. See that now the cohort_end_date
 is different:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_code</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"asthma_2"</span>,</span>
 <span>  end <span class="op">=</span> <span class="st">"event_end_date"</span>,</span>
 <span>  requiredObservation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_2</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.asthma_2&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_2</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;asthma_2&gt; [?? x 4]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1015-azure:R 4.3.2/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         14 1966-03-30        1983-11-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         17 2008-01-04        2008-06-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         65 2003-01-28        2006-03-22     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         11 2021-02-26        2021-10-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         83 2017-10-12        2021-02-27     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         21 2010-02-18        2010-07-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         99 2020-01-31        2021-10-17     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         48 1973-11-26        1993-11-23     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         77 1967-10-10        1967-10-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1          8 2020-04-22        2021-05-29     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          1 1996-12-22        1998-03-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         57 2021-02-19        2021-02-27     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         66 2017-11-24        2018-02-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         41 2005-07-25        2005-12-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         58 2005-03-29        2007-08-15     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         73 2009-10-02        2009-12-16     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         12 2019-03-06        2021-12-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         20 2001-09-16        2004-07-15     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         36 2013-05-27        2016-12-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         68 2021-08-21        2022-03-05     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The <em>requiredObservation</em> parameter is a numeric vector of
 length 2, that defines the number of days of required observation time
@@ -237,37 +237,37 @@ prior to index and post index for an event to be included in the cohort.
 Let’s check it now to see how reducing required observation affect the
 <em>asthma_1</em> cohort.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_code</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"asthma_3"</span>,</span>
 <span>  end <span class="op">=</span> <span class="st">"observation_period_end_date"</span>,</span>
 <span>  requiredObservation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_3</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.asthma_3&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_3</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;asthma_3&gt; [?? x 4]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1015-azure:R 4.3.2/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         87 2019-06-24        2022-11-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         95 2016-04-09        2022-05-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         24 2022-06-06        2022-07-04     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         81 1990-02-18        2005-03-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         92 2012-12-12        2013-05-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         97 1990-06-26        1993-01-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         10 2021-08-16        2022-03-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         18 2001-01-11        2004-09-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         29 2021-05-27        2021-06-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         34 2008-12-23        2016-12-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         21 2010-02-18        2010-07-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         99 2020-01-31        2022-02-26     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         54 2016-04-09        2021-02-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         96 2016-05-19        2018-11-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         50 2017-03-10        2017-06-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         48 1973-11-26        2006-01-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         77 1967-10-10        1967-12-11     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1          8 2020-04-22        2021-11-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         59 2020-11-09        2021-03-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         89 2017-05-28        2018-11-06     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 3</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1             48              48</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm1</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects reason_id reason          </span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
@@ -282,34 +282,34 @@ DrugUtilisation::generateDrugUtilisationCohortSet() to get the drug
 cohort for ingredient simvastatin. This function has a lot more options
 you can set. We first use default settings:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_alleras"</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">cdm2</span><span class="op">$</span><span class="va">dus_alleras</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;main.dus_alleras&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1014-azure:R 4.3.1/:memory:]</span></span></span>
+<span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_alleras</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;dus_alleras&gt; [?? x 4]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.1 [unknown@Linux 6.2.0-1015-azure:R 4.3.2/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         89 2018-08-26        2018-11-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         57 2020-09-14        2020-11-26     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         29 2020-10-11        2021-02-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         57 2020-09-14        2020-11-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         21 1995-07-02        2002-05-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        100 2022-10-20        2022-10-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1          8 2018-09-21        2021-01-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         19 2022-05-26        2022-05-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         82 2014-05-07        2017-08-03     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         89 2016-12-24        2017-02-04     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         94 2002-12-09        2003-01-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         89 2018-08-26        2018-11-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         27 2019-02-26        2020-06-10     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         57 2020-06-19        2020-08-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         77 1966-12-10        1967-02-03     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         80 2022-08-31        2022-09-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         84 2010-08-15        2017-05-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         90 2001-06-18        2005-07-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1          5 1986-08-21        1989-03-05     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm2</span><span class="op">$</span><span class="va">dus_alleras</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_alleras</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 3</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1             53              48</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm2</span><span class="op">$</span><span class="va">dus_alleras</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_alleras</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -331,14 +331,14 @@ one. Duration values outside of <em>durationRange</em> will be imputed
 using <em>imputeDuration</em>. It can ne set as: “none”, “median”,
 “mean”, “mode” or an integer (count).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_step2_0_inf"</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span> <span class="co"># default as c(1, Inf)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm3</span><span class="op">$</span><span class="va">dus_step2_0_inf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_step2_0_inf</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -361,7 +361,7 @@ cohort attrition, we can see that when joining era at <strong>STEP
 <em>dus_step2_0_inf</em> cohort, as exposures with less than 30 days
 gaps are joined.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_step3_alleras"</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
@@ -369,7 +369,7 @@ gaps are joined.</p>
 <span>  gapEra <span class="op">=</span> <span class="fl">30</span> <span class="co"># default as 0</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm4</span><span class="op">$</span><span class="va">dus_step3_alleras</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_step3_alleras</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -392,7 +392,7 @@ the example provided, we observe a reduction in the number of records in
 washout period required, compared to the <em>dus_step3_alleras</em>
 cohort.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_alleras_step4"</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
@@ -401,7 +401,7 @@ cohort.</p>
 <span>  priorUseWashout <span class="op">=</span> <span class="fl">30</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm5</span><span class="op">$</span><span class="va">dus_alleras_step4</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_alleras_step4</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -424,7 +424,7 @@ in the number of records for <em>dus_alleras_step5</em> cohort in
 <strong>STEP 5</strong> when compared to the <em>dus_alleras_step4</em>
 cohort.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm6</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_alleras_step5"</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
@@ -434,7 +434,7 @@ cohort.</p>
 <span>  priorObservation <span class="op">=</span> <span class="fl">30</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm6</span><span class="op">$</span><span class="va">dus_alleras_step5</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_alleras_step5</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -455,7 +455,7 @@ observe a reduction in <strong>STEP 6</strong> and <strong>STEP
 7</strong> due to the constraints imposed on the cohort start and end
 dates.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_alleras_step67"</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
@@ -467,17 +467,17 @@ dates.</p>
 <span>  limi <span class="op">=</span> <span class="st">"All"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm7</span><span class="op">$</span><span class="va">dus_alleras_step67</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_alleras_step67</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>              4 cohort_end_date &lt;= 2011-01-…               30                28</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Qualifying initial records                  0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             58 Duration imputation; affect…                0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 Join eras                                   7                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             51 prior use wahout of 30 days                 0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             48 at least 30 prior observati…                3                 2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>             34 cohort_start_date &gt;= 2010-0…               14                14</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>             58 Qualifying initial records                  0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>             58 Duration imputation; affect…                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>             51 Join eras                                   7                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>             51 prior use wahout of 30 days                 0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>             48 at least 30 prior observati…                3                 2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>             34 cohort_start_date &gt;= 2010-0…               14                14</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>              4 cohort_end_date &lt;= 2011-01-…               30                28</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="limit-first-era-that-fulfills-the-criteria">limit: First era that fulfills the criteria<a class="anchor" aria-label="anchor" href="#limit-first-era-that-fulfills-the-criteria"></a>
@@ -489,7 +489,7 @@ dates.</p>
 <strong>STEP 8</strong> because of the <em>First</em> limit. It gets the
 first record that fulfills all criteria.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_step8_firstera"</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
@@ -501,7 +501,7 @@ first record that fulfills all criteria.</p>
 <span>  limit <span class="op">=</span> <span class="st">"First"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm8</span><span class="op">$</span><span class="va">dus_step8_firstera</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cohortAttrition.html" class="external-link">cohortAttrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_step8_firstera</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
@@ -524,7 +524,7 @@ However, if the goal is to get the first-ever era, this can be achieved
 using this function too. Setting the following parameter will result in
 the first ever drug era:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm8</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"dus_step8_firstever"</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="va">conceptSet_ingredient</span>,</span>
 <span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
