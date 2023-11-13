@@ -58,7 +58,7 @@ summariseDrugUse<- function(cohort,
                             strata = list(),
                             drugUseEstimates = c(
                               "min", "q05", "q25", "median", "q75", "q95",
-                              "max", "missing"
+                              "max", "mean", "sd", "missing"
                             ),
                             minCellCount = 5) {
   # check inputs
@@ -112,7 +112,7 @@ drugUseColumns <- function(cohort) {
     dplyr::select(
       dplyr::any_of(c(
         "number_exposures", "duration", "cumulative_quantity", "number_eras",
-        "initial_quantity", "impute_daily_dose_count", "impute_duration_count"
+        "initial_quantity", "impute_daily_dose_percentage", "impute_duration_percentage"
       )),
       dplyr::starts_with("initial_daily_dose"),
       dplyr::starts_with("cumulative_dose")

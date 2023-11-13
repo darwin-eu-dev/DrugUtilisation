@@ -100,7 +100,7 @@ addDrugUse <- function(cohort,
                        duration = TRUE,
                        quantity = TRUE,
                        dose = TRUE,
-                       gapEra = 30,
+                       gapEra = 0,
                        eraJoinMode = "zero",
                        overlapMode = "sum",
                        sameIndexMode = "sum",
@@ -189,7 +189,7 @@ addDrugUse <- function(cohort,
     rowsToImpute("duration", durationRange)
 
   cohort <- cohort %>%
-    addImputeCount(cohortInfo, duration, "impute_duration_count")
+    addImpute(cohortInfo, duration, "impute_duration_percentage")
 
   cohortInfo <- cohortInfo %>%
     solveImputation("duration", imputeDuration, TRUE) %>%
@@ -217,7 +217,7 @@ addDrugUse <- function(cohort,
     cohortInfo <- cohortInfo %>% rowsToImpute("daily_dose", dailyDoseRange)
 
     cohort <- cohort %>%
-      addImputeCount(cohortInfo, TRUE, "impute_daily_dose_count")
+      addImpute(cohortInfo, TRUE, "impute_daily_dose_percentage")
 
     cohortInfo <- cohortInfo %>%
       solveImputation("daily_dose", imputeDailyDose) %>%
@@ -989,7 +989,7 @@ getVariables <- function(initialDailyDose,
   return(variables)
 }
 
-addImputeCount <- function(cohort, cohortInfo, imputeCount, label) {
+addImpute <- function(cohort, cohortInfo, imputeCount, label) {
   if (imputeCount) {
     cohort <- cohort %>%
       dplyr::left_join(
@@ -998,14 +998,11 @@ addImputeCount <- function(cohort, cohortInfo, imputeCount, label) {
             .data$subject_id, .data$cohort_start_date, .data$cohort_end_date
           ) %>%
           dplyr::summarise(
-            !!label := sum(.data$impute, na.rm = TRUE),
+            !!label := 100 * sum(.data$impute, na.rm = TRUE) / dplyr::n(),
             .groups = "drop"
           ),
         by = c("subject_id", "cohort_start_date", "cohort_end_date")
-      ) %>%
-      dplyr::mutate(!!label := dplyr::if_else(
-        is.na(.data[[label]]), 0, .data[[label]]
-      ))
+      )
   }
   return(cohort)
 }

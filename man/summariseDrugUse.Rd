@@ -8,7 +8,8 @@ summariseDrugUse(
   cohort,
   cdm = attr(cohort, "cdm_reference"),
   strata = list(),
-  drugUseEstimates = c("min", "q05", "q25", "median", "q75", "q95", "max", "missing"),
+  drugUseEstimates = c("min", "q05", "q25", "median", "q75", "q95", "max", "mean", "sd",
+    "missing"),
   minCellCount = 5
 )
 }

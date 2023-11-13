@@ -12,7 +12,7 @@ addDrugUse(
   duration = TRUE,
   quantity = TRUE,
   dose = TRUE,
-  gapEra = 30,
+  gapEra = 0,
   eraJoinMode = "zero",
   overlapMode = "sum",
   sameIndexMode = "sum",
