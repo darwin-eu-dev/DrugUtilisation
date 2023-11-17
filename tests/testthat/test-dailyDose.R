@@ -95,13 +95,19 @@ test_that("functionality of addDailyDose function",{
 
 
   expect_true(
-    daily_dose %>% dplyr::anti_join(
-      daily_dose %>%
-        dplyr::left_join(cdm[["drug_strength"]], by = "drug_concept_id") %>%
-        dplyr::filter(numerator_unit_concept_id %in% c(8576, 8587, 9551, 9655) || is.na(numerator_unit_concept_id)) %>%
-        dplyr::filter(denominator_unit_concept_id %in% c(8576, 8587, 45744809, 8505) || is.na(denominator_unit_concept_id)) %>%
-        dplyr::filter(amount_unit_concept_id %in% c(8718, 9655, 9551, 8576, 8587) || is.na(amount_unit_concept_id))
-    ) %>%
+    daily_dose %>%
+      dplyr::anti_join(
+        daily_dose %>%
+          dplyr::left_join(cdm[["drug_strength"]], by = "drug_concept_id") %>%
+          dplyr::filter(numerator_unit_concept_id %in% c(8576, 8587, 9551, 9655) || is.na(numerator_unit_concept_id)) %>%
+          dplyr::filter(denominator_unit_concept_id %in% c(8576, 8587, 45744809, 8505) || is.na(denominator_unit_concept_id)) %>%
+          dplyr::filter(amount_unit_concept_id %in% c(8718, 9655, 9551, 8576, 8587) || is.na(amount_unit_concept_id)),
+        by = c(
+          "drug_exposure_id", "person_id", "drug_concept_id",
+          "drug_exposure_start_date", "drug_exposure_end_date",
+          "drug_type_concept_id", "quantity", "daily_dose", "unit", "route"
+        )
+      ) %>%
       dplyr::filter(!is.na(daily_dose)) %>%
       dplyr::tally() %>%
       dplyr::pull() == 0

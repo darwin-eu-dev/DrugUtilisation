@@ -17,6 +17,7 @@ mockDrugUtilisation(
   drug_exposure = NULL,
   condition_occurrence = NULL,
   observation = NULL,
+  concept_relationship = NULL,
   extraTables = list(),
   ...
 )
@@ -46,6 +47,9 @@ created}
 is created}
 
 \item{observation}{A observation tibble, if NULL a mock one is created}
+
+\item{concept_relationship}{A concept_relationship tibble, if NULL a mock one
+is created.}
 
 \item{extraTables}{Extra tibbles to be instantiated that are not cohorts or
 cdm tables}

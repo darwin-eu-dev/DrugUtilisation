@@ -25,7 +25,7 @@ PatientProfiles::summariseLargeScaleCharacteristics
 #'
 #' @param cohort Cohort to summarise
 #' @param cdm cdm_reference
-#' @param conceptSetList A list of concept sets
+#' @param conceptSet A list of concept sets
 #' @param strata Stratification list
 #' @param window Windows to characterize
 #' @param overlap Whether we consider episodes (overlap = TRUE) or incident
@@ -43,7 +43,7 @@ PatientProfiles::summariseLargeScaleCharacteristics
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' conceptSetList <- list(
+#' conceptSet <- list(
 #'   "acetaminophen" = c(1125315, 1125360, 2905077, 43135274),
 #'   "group A" = c(
 #'     3665501, 378253, 317009, 761948, 1539403, 1503327, 1516980, 4141052,
@@ -51,14 +51,14 @@ PatientProfiles::summariseLargeScaleCharacteristics
 #'   )
 #' )
 #' summariseCharacteristicsFromCodelist(
-#'   cdm[["cohort1"]], cdm, conceptSetList,
+#'   cdm[["cohort1"]], cdm, conceptSet,
 #'   window = list(c(-365, -1), c(0, 0), c(1, 365))
 #' )
 #' }
 #'
 summariseCharacteristicsFromCodelist <- function(cohort,
                                                  cdm,
-                                                 conceptSetList,
+                                                 conceptSet,
                                                  strata = list(),
                                                  window = list(
                                                    c(-Inf, -366), c(-365, -31),
@@ -70,7 +70,7 @@ summariseCharacteristicsFromCodelist <- function(cohort,
                                                  minCellCount = 5) {
   # check initial inputs
   checkInputs(
-    cohort = cohort, cdm = cdm, conceptSetList = conceptSetList,
+    cohort = cohort, cdm = cdm, conceptSet = conceptSet,
     strata = strata, window = window, overlap = overlap,
     minCellCount = minCellCount
   )
@@ -82,7 +82,7 @@ summariseCharacteristicsFromCodelist <- function(cohort,
   cohortSet <- CDMConnector::cohortSet(cohort)
 
   # create codelist
-  codelist <- codelistFromConceptSetList(conceptSetList)
+  codelist <- codelistFromConceptSetList(conceptSet)
 
   # identify domains
   codelist <- addDomain(codelist, cdm)
@@ -122,8 +122,8 @@ summariseCharacteristicsFromCodelist <- function(cohort,
   return(result)
 }
 
-codelistFromConceptSetList <- function(conceptSetList) {
-  conceptSetList %>%
+codelistFromConceptSetList <- function(conceptSet) {
+  conceptSet %>%
     lapply(dplyr::as_tibble) %>%
     dplyr::bind_rows(.id = "concept_set_name") %>%
     dplyr::rename("concept_id" = "value")

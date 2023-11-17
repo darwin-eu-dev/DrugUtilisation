@@ -18,16 +18,16 @@
 #'
 #' @param cdm A cdm_reference object.
 #' @param name Name of the GeneratedCohortSet
-#' @param conceptSetList Named list of concept sets.
+#' @param conceptSet Named list of concept sets.
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
 #' equal or smaller than the second one. It is only required if imputeDuration
-#' = TRUE. If NULL no restrictions are applied. By default: NULL.
+#' = TRUE. If NULL no restrictions are applied.
 #' @param imputeDuration Whether/how the duration should be imputed
 #' "none", "median", "mean", "mode", or it can be a count
 #' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era. By default: 0.
-#' @param priorUseWashout Prior days without exposure. By default: NULL.
+#' considered in the same era.
+#' @param priorUseWashout Prior days without exposure.
 #' @param priorObservation Minimum number of days of prior observation
 #' required for the incident eras to be considered. If NULL its is not required
 #' to be within observation_period.
@@ -38,7 +38,6 @@
 #' each individual. Each individual can contribute multiple times.
 #' "first" we only consider the first observable era of each individual that fulfills the criteria provided
 #' in previous parameters. In this case each individual can not contribute with multiple rows.
-#' By default: "all".
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
 #'
@@ -57,7 +56,7 @@
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm,
 #'   name = "drug_cohorts",
-#'   conceptSetList = druglist,
+#'   conceptSet = druglist,
 #'   priorObservation = 365
 #' )
 #'
@@ -72,7 +71,7 @@
 #'
 generateDrugUtilisationCohortSet <- function(cdm,
                                              name,
-                                             conceptSetList,
+                                             conceptSet,
                                              durationRange = c(1, Inf),
                                              imputeDuration = "none",
                                              gapEra = 0,
@@ -80,30 +79,39 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              priorObservation = 0,
                                              cohortDateRange = as.Date(c(NA, NA)),
                                              limit = "all") {
+  if (is.character(imputeDuration)) imputeDuration <- tolower(imputeDuration)
+  if (is.character(limit)) limit <- tolower(limit)
   checkInputs(
-    cdm = cdm, name = name, conceptSetList = conceptSetList,
+    cdm = cdm, name = name, conceptSet = conceptSet,
     limit = limit, priorObservation = priorObservation, gapEra = gapEra,
     priorUseWashout = priorUseWashout, cohortDateRange = cohortDateRange,
     imputeDuration = imputeDuration, durationRange = durationRange
   )
 
+  character <- c("imputeDuration")
+  for (char in character) {
+    if (is.character(eval(parse(text = char)))) {
+      is.character(eval(parse(text = paste0(char, " <- tolower(", char, ")"))))
+    }
+  }
+
   # get conceptSet
-  conceptSet <- conceptSetFromConceptSetList(conceptSetList)
+  conceptSet <- conceptSetFromConceptSetList(conceptSet)
 
   # generate cohort set
   cohortSetRef <- attr(conceptSet, "cohort_set") %>%
     dplyr::mutate(
-      limit = .env$limit,
+      duration_range_min = as.character(.env$durationRange[1]),
+      duration_range_max = as.character(.env$durationRange[2]),
+      impute_duration = as.character(.env$imputeDuration),
+      gap_era = as.character(.env$gapEra),
+      prior_use_washout = as.character(.env$priorUseWashout),
       prior_observation = as.character(dplyr::coalesce(
         .env$priorObservation, as.numeric(NA)
       )),
-      gap_era = as.character(.env$gapEra),
-      prior_use_washout = as.character(.env$priorUseWashout),
       cohort_date_range_start = as.character(.env$cohortDateRange[1]),
       cohort_date_range_end = as.character(.env$cohortDateRange[2]),
-      impute_duration = as.character(.env$imputeDuration),
-      duration_range_min = as.character(.env$durationRange[1]),
-      duration_range_max = as.character(.env$durationRange[2])
+      limit = .env$limit
     ) %>%
     insertTable(cdm, paste0(name, "_set"))
 
@@ -115,8 +123,10 @@ generateDrugUtilisationCohortSet <- function(cdm,
   if (cohort %>% dplyr::tally() %>% dplyr::pull("n") > 0) {
     # correct duration
     cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
-    reason1 <- paste(
-      "Duration imputation; affected rows:", attr(cohort, "numberImputations")
+    imputeCounts <- attr(cohort, "impute")
+    reason1 <- paste0(
+      "Duration imputation; affected rows: ", imputeCounts[1], " (",
+      round(imputeCounts[2]), "%)"
     )
     attrition <- computeCohortAttrition(
       cohort, cdm, attrition, reason1,
@@ -169,11 +179,14 @@ generateDrugUtilisationCohortSet <- function(cdm,
     )
 
     # apply limit
-    cohort <- applyLimit(cohort, cdm, limit)
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste("limit:", limit, "applied"),
-      cohortSet = cohortSetRef
-    )
+    if (limit == "first") {
+      cohort <- applyLimit(cohort, cdm, limit)
+      attrition <- computeCohortAttrition(
+        cohort, cdm, attrition, "Limit to first era",
+        cohortSet = cohortSetRef
+      )
+    }
+
   }
 
   # create the cohort references
@@ -207,9 +220,6 @@ generateDrugUtilisationCohortSet <- function(cdm,
     cohortAttritionRef = cohortAttritionRef,
     cohortCountRef = cohortCountRef
   )
-
-  # add cdm_reference as attribute
-  attr(cdm[[name]], "cdm_reference") <- cdm
 
   return(cdm)
 }

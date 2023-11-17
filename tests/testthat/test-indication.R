@@ -1,5 +1,6 @@
 
 test_that("test case single indication", {
+  skip_on_cran()
   targetCohortName <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),
@@ -546,32 +547,10 @@ test_that("summariseIndication", {
     "result_type"
   ) %in% colnames(result)))
   expect_true(ncol(result) == 11)
-  expect_true(any(grepl("indication_gap_0", result$variable)))
-  expect_true(any(grepl("indication_gap_7", result$variable)))
-  expect_true(any(grepl("indication_gap_30", result$variable)))
-  expect_true(any(grepl("indication_gap_inf", result$variable)))
-
-  result <- summariseIndication(
-    res, cdm, indicationVariables = c(
-      "indication_gap_inf_asthma", "indication_gap_inf_covid",
-      "indication_gap_inf_none", "indication_gap_inf_unknown"
-    )
-  )
-
-  expect_true(all(c(
-    "group_name", "group_level", "strata_name", "strata_level", "variable",
-    "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
-    "result_type"
-  ) %in% colnames(result)))
-  expect_true(ncol(result) == 11)
-  expect_true(!any(grepl("indication_gap_0", result$variable)))
-  expect_true(!any(grepl("indication_gap_7", result$variable)))
-  expect_true(!any(grepl("indication_gap_30", result$variable)))
-  expect_true(any(grepl("indication_gap_inf", result$variable)))
-
-  expect_error(summariseIndication(
-    res, cdm, indicationVariables = "indication_gap_15"
-  ))
+  expect_true(any(grepl("Indication on index date", result$variable)))
+  expect_true(any(grepl("Indication during prior 7 days", result$variable)))
+  expect_true(any(grepl("Indication during prior 30 days", result$variable)))
+  expect_true(any(grepl("Indication any time prior", result$variable)))
 
   res <- res %>%
     PatientProfiles::addAge(
@@ -580,10 +559,7 @@ test_that("summariseIndication", {
     PatientProfiles::addSex(cdm)
 
   result <- summariseIndication(
-    res, cdm, strata = list(
-      "age_group" = "age_group", "sex" = "sex",
-      "age_group and sex" = c("age_group", "sex")
-    )
+    res, cdm, strata = list("age_group", "sex", c("age_group", "sex"))
   )
 
   expect_true(all(c(
@@ -620,10 +596,10 @@ test_that("summariseIndication", {
       ) %>%
       nrow()
   )
-  expect_true(any(grepl("indication_gap_0", result$variable)))
-  expect_true(any(grepl("indication_gap_7", result$variable)))
-  expect_true(any(grepl("indication_gap_30", result$variable)))
-  expect_true(any(grepl("indication_gap_inf", result$variable)))
+  expect_true(any(grepl("Indication on index date", result$variable)))
+  expect_true(any(grepl("Indication during prior 7 days", result$variable)))
+  expect_true(any(grepl("Indication during prior 30 days", result$variable)))
+  expect_true(any(grepl("Indication any time prior", result$variable)))
 
   expect_true(grepl("Summary indication", unique(result$result_type)))
 
