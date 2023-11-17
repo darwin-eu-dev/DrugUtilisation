@@ -134,7 +134,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
     cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
     attrition <- computeCohortAttrition(
       cohort, cdm, attrition, paste0(
-        "prior use wahout of ", priorUseWashout, " days"
+        "prior use washout of ", priorUseWashout, " days"
       ),
       cohortSet = cohortSetRef
     )

@@ -62,7 +62,7 @@
 #' the subexposure.
 #' By default: "previous".
 #' @param sameIndexMode How the overlapping between two exposures that start on
-#' the same day is solved inside a subexposure. There are five possible options:
+#' the same day is solved inside a subexposure. There are three possible options:
 #' "minimum" the considered daily_dose is the minimum of all of the exposures in
 #' the subexposure.
 #' "maximum" the considered daily_dose is the maximum of all of the exposures in
