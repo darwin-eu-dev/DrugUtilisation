@@ -2,9 +2,11 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  Intro_create_cohort: Intro_create_cohort.html
   addIndications-example: addIndications-example.html
-last_built: 2023-11-01T18:15Z
+  benchmarkDusCapr: benchmarkDusCapr.html
+  introCreateCohort: introCreateCohort.html
+  routePatternDose: routePatternDose.html
+last_built: 2023-11-20T11:00Z
 urls:
   reference: https://darwin-eu-dev.github.io/DrugUtilisation/reference
   article: https://darwin-eu-dev.github.io/DrugUtilisation/articles
