@@ -1,0 +1,202 @@
+---
+title: "DrugUtilisation vs CapR"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{DrugUtilisation vs CapR}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+  
+```{r , include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+## Creating different numbers of cohorts using DrugUtilisation
+
+generateDrugUtilisationCohortSet function from DrugUtilisation is used here. Example with duckdb shown in this vignette, but the actual computing time comparison from postgres database is provided in the end.
+
+First connect to database
+```{r setup, eval = FALSE}
+library(DrugUtilisation)
+library(CodelistGenerator)
+library(Capr)
+library(CDMConnector)
+library(dplyr)
+library(tictoc)
+
+db_name <- Sys.getenv("...")
+host <- Sys.getenv("...")
+user <- Sys.getenv("...")
+password <- Sys.getenv("...")
+port <- Sys.getenv("...")
+
+
+db <- dbConnect(RPostgres::Postgres(),
+  dbname = db_name,
+  port = port,
+  host = host,
+  user = user,
+  password = password
+)
+
+# The name of the schema that contains the OMOP CDM with patient-level data
+cdm_database_schema <- "..."
+
+# The name of the schema where results tables will be created
+results_database_schema <- "..."
+
+stem_table <- "..."
+
+
+# cretae cdm object
+cdm <- CDMConnector::cdm_from_con(
+  con = db,
+  cdm_schema = cdm_database_schema,
+  write_schema = results_database_schema
+)
+
+```
+
+A function to benchmark this is provided.
+```{r, eval = FALSE}
+
+benchmarkGenerateDrugUtilisationCohortSet <- function(
+    cdm,
+    name = "test",
+    conceptSet,
+    durationRange = c(1, Inf),
+    imputeDuration = "none",
+    gapEra = 0,
+    priorUseWashout = 0,
+    priorObservation = 0,
+    cohortDateRange = as.Date(c(NA, NA)),
+    limit = "all",
+    numberOfCohort = c(1:20)) {
+  
+  time_record <- list()
+  
+  for (j in numberOfCohort)
+  {
+
+    conceptSetList <- conceptSet[c(1:j)]
+
+    name <- paste0("atc_dus_", j)
+
+    tic()
+
+
+    cdm <- generateDrugUtilisationCohortSet(
+      cdm = cdm,
+      name = name,
+      conceptSet = conceptSet,
+      durationRange = durationRange,
+      imputeDuration = imputeDuration,
+      gapEra = gapEra,
+      priorUseWashout = priorUseWashout,
+      priorObservation = priorObservation,
+      cohortDateRange = cohortDateRange,
+      limit = limit
+    )
+
+    cohort_count(cdm[[name]])
+    
+    t <- toc(quiet = TRUE)
+  
+    time_record[[paste0("DUs number of cohorts", j)]] <-c("timeTaken" = as.numeric(t$toc - t$tic))
+  
+
+  }
+  
+
+  return(time_record)
+}
+```
+
+Now we create ingredient code using CodelistGenerator to get the code for cohort generation
+```{r, eval = FALSE}
+atcCodes <- getATCCodes(cdm, level = "ATC 1st")
+
+ingredientCodes <- getDrugIngredientCodes(cdm)
+
+time_record_cprdgold_dus <- benchmarkGenerateDrugUtilisationCohortSet(cdm,
+  numberOfCohort = c(1:12,
+  conceptSet = ingredientCodes
+)
+
+```
+
+Now create benachmarking function using Capr
+
+
+```{r, eval = FALSE}
+
+
+benchmarkCapr <- function(cdm,
+                          conceptSetList = atcCodes,
+                          numberOfCohort = c(1:20),
+                          observationWindow = continuousObservation(priorDays = 365),
+                          qualifiedLimit = "All",
+                          studyStartDate = as.Date("2015-01-01"),
+                          studyEndDate = as.Date("2022-12-31"),
+                          persistenceWindow = 0) {
+  time_record <- list()
+
+  for (j in numberOfCohort)
+  {
+    conceptSetList <- conceptSetList[c(1:j)]
+    
+    atc_test <- lapply(seq_along(conceptSetList), function(i) {
+      cs(conceptSetList[[i]], name = names(conceptSetList)[[i]])
+    })
+
+    ch <- lapply(atc_test, function(x) {
+      cohort(
+        entry = entry(
+          drugExposure(x),
+          observationWindow = observationWindow,
+          qualifiedLimit = qualifiedLimit
+        ),
+        exit = exit(
+          endStrategy = drugExit(
+            conceptSet = x,
+            persistenceWindow = persistenceWindow
+          )
+        ),
+        era = era(studyStartDate = studyStartDate, studyEndDate = studyEndDate)
+      )
+    })
+    
+    names(ch) <- paste0("cohort_", seq_along(ch))
+    
+    tic()
+
+    
+    cdm <- generateCohortSet(cdm = cdm,
+                             cohortSet = ch, 
+                             name = paste0("capr_cohorts_", j),
+                             overwrite = TRUE)
+  
+    
+    t <- toc(quiet = TRUE)
+
+    time_record[[paste0("CapR number of cohorts", j)]] <-c("timeTaken" = as.numeric(t$toc - t$tic))
+  
+  }
+  
+  
+  return(time_record)
+  
+}
+
+time_record_cprdgold_capr <- benchmarkCapr(
+  cdm = cdm,
+  numberOfCohort = c(1:20),
+  conceptSetList = ingredientCodes)
+
+```
+
