@@ -175,7 +175,7 @@ patternTable <- function(cdm) {
   # counts concepts and ingredients
   pattern <- drugStrengthPattern %>%
     dplyr::group_by(
-      .data$pattern_id, .data$formula_name, .data$pattern_file_id
+      .data$pattern_id, .data$formula_name
     ) %>%
     dplyr::summarise(
       number_concepts = as.numeric(dplyr::n_distinct(.data$drug_concept_id)),
@@ -190,58 +190,42 @@ patternTable <- function(cdm) {
       cdm[["drug_exposure"]] %>%
         dplyr::left_join(drugStrengthPattern, by = "drug_concept_id") %>%
         dplyr::group_by(
-          .data$pattern_id, .data$formula_name, .data$pattern_file_id
+          .data$pattern_id, .data$formula_name
         ) %>%
         dplyr::summarise(
           number_records = as.numeric(dplyr::n()), .groups = "drop"
         ) %>%
         dplyr::collect(),
-      by = c("pattern_id", "formula_name", "pattern_file_id")
+      by = c("pattern_id", "formula_name")
     ) %>%
     dplyr::mutate(number_records = dplyr::if_else(
       is.na(.data$number_records), 0, .data$number_records
     )) %>%
-    dplyr::arrange(.data$pattern_file_id) %>%
-    dplyr::left_join(patterns, by = c("pattern_id", "pattern_file_id"))
+    dplyr::arrange(.data$pattern_id) %>%
+    dplyr::left_join(
+      patterns %>% dplyr::select(-"unit"), by = c("pattern_id", "formula_name")
+    )
 
   # not present / new patterns
   newPattern <- pattern %>%
-    dplyr::filter(is.na(.data$pattern_file_id)) %>%
+    dplyr::filter(is.na(.data$pattern_id)) %>%
     dplyr::mutate(validity = dplyr::if_else(
       is.na(.data$amount_numeric) & is.na(.data$amount_unit_concept_id) &
         is.na(.data$numerator_numeric) &
         is.na(.data$numerator_unit_concept_id) &
         is.na(.data$denominator_numeric) &
         is.na(.data$denominator_unit_concept_id),
-      "no pattern", "new pattern"
+      "no pattern", "no formula for this pattern"
     ))
-
-  # new patterns
-  newNewPattern <- newPattern %>%
-    dplyr::filter(.data$validity == "new pattern")
-  if (nrow(newNewPattern) > 0) {
-    cli::cli_alert_info(
-      "This cdm contains non standard patterns please inform the mantainer of
-      the package or open an issue in
-      https://github.com/darwin-eu/DrugUtilisation so your new patterns could
-      be supported"
-    )
-  }
 
   # join supported and non supported patterns
   pattern <- pattern %>%
-    dplyr::filter(!is.na(.data$pattern_file_id)) %>%
-    dplyr::mutate(validity = dplyr::if_else(
-      is.na(.data$pattern_id),
-      "pattern with no formula",
-      dplyr::if_else(
-        is.na(.data$formula_name), "pattern wrong route", "pattern with formula"
-      )
-    )) %>%
+    dplyr::filter(!is.na(.data$pattern_id)) %>%
+    dplyr::mutate(validity = "pattern with formula") %>%
     dplyr::union_all(newPattern) %>%
     dplyr::relocate(dplyr::starts_with("number")) %>%
     dplyr::relocate(
-      c("pattern_file_id", "pattern_id", "formula_name", "validity")
+      c("pattern_id", "formula_name", "validity")
     )
 
   return(pattern)
