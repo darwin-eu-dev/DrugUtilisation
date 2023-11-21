@@ -14,33 +14,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Patterns and routes valid to compute daily dose
+#' Patterns valid to compute daily dose with the associated formula.
 #'
-#' @format A data frame with eight variables: \code{amount}, \code{amount_unit},
-#'   \code{numerator}, \code{numerator_unit}, \code{denominator},
-#'   \code{denominator_unit}, \code{route} and \code{formula_id}. See the
-#'   formulas using seeFormulas.
+#' @format A data frame with eight variables: \code{pattern_id}, \code{amount},
+#'   \code{amount_unit}, \code{numerator}, \code{numerator_unit},
+#'   \code{denominator}, \code{denominator_unit}, \code{formula_name} and
+#'   \code{formula}.
 "patternsWithFormula"
 
-#' Formulas applied to compute daily dose.
-#'
-#' @export
-#'
-#' @examples
-#' \donttest{
-#' library(DrugUtilisation)
-#' seeFormulas()
-#' }
-#'
-seeFormulas <- function() {
-  mes <- c(
-    "Currenly 4 different formualas are applied:",
-    cli::style_bold("formula_id          ", cli::col_silver("formula")),
-    paste0("     1         ", cli::col_silver("quantity * numerator / days exposed")),
-    paste0("     2         ", cli::col_silver("quantity * amount / days exposed")),
-    paste0("     3         ", cli::col_silver("24 * numerator / denominator")),
-    paste0("     4         ", cli::col_silver("24 * numerator"))
-  )
-  cat(mes, sep = "\n")
-  invisible(TRUE)
-}
+# #' Formulas applied to compute daily dose.
+# #'
+# #' @export
+# #'
+# #' @examples
+# #' \donttest{
+# #' library(DrugUtilisation)
+# #' seeFormulas()
+# #' }
+# #'
+# seeFormulas <- function() {
+#   mes <- c(
+#     "Currenly 4 different formualas are applied:",
+#     paste0(cli::style_bold("concentration formulation:   "), cli::col_silver("quantity * numerator / days exposed")),
+#     paste0(cli::style_bold("fixed amount formulation:    "), cli::col_silver("quantity * amount / days exposed")),
+#     paste0(cli::style_bold("time based with denominator: "), cli::col_silver("if (denominator>24) {numerator * 24 / denominator} else {numerator}")),
+#     paste0(cli::style_bold("time based no denominator:   "), cli::col_silver("24 * numerator"))
+#   )
+#   cat(mes, sep = "\n")
+#   invisible(TRUE)
+# }

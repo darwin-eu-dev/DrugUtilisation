@@ -210,7 +210,7 @@ addDrugUse <- function(cohort,
     # add daily dose
     cohortInfo <- cohortInfo %>%
       addDailyDose(ingredientConceptId = ingredientConceptId) %>%
-      dplyr::select(-"quantity", -"route") %>%
+      dplyr::select(-"quantity") %>%
       dplyr::distinct()
 
     # impute daily dose

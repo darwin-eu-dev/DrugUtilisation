@@ -32,119 +32,69 @@ domainInformation <- readr::read_csv(
   here::here("data-raw", "domain_information.csv"), show_col_types = FALSE
 )
 
-# add the current pattern file (of patterns for which we can calculate dose)
-patterns <- readr::read_csv(
-  here::here("data-raw", "pattern_drug_strength.csv"),
-  col_types = list(
-    pattern_id = "numeric",
-    amount_numeric = "numeric",
-    amount_unit = "character",
-    amount_unit_concept_id = "numeric",
-    numerator_numeric = "numeric",
-    numerator_unit = "character",
-    numerator_unit_concept_id = "numeric",
-    denominator_numeric = "numeric",
-    denominator_unit = "character",
-    denominator_unit_concept_id = "numeric",
-    valid = "logical",
-    pattern_name = "character",
-    unit = "character"
-  )
-) %>%
-  dplyr::select(-c(
-    "valid", "pattern_name", "amount_unit", "numerator_unit",
-    "denominator_unit", "unit"
-  ))
-
 formulas <- readr::read_csv(
   here::here("data-raw", "pattern_assessment_for_dose_final.csv"),
   col_types = list(
+    pattern_id = "numeric",
+    amount = "character",
+    amount_unit = "character",
+    amount_unit_concept_id = "numeric",
     numerator = "character",
     numerator_unit = "character",
     numerator_unit_concept_id = "numeric",
     denominator = "character",
     denominator_unit = "character",
     denominator_unit_concept_id = "numeric",
-    pattern_meaning = "character",
-    formula_id = "numeric",
-    pattern_meaning = "character",
-    route = "character",
+    formula_name = "character",
     unit = "character"
   )
 ) %>%
-  dplyr::select("pattern_id", "route", "formula_id", "unit")
+  dplyr::mutate(
+    amount_numeric = dplyr::if_else(!is.na(.data$amount), 1, 0),
+    numerator_numeric = dplyr::if_else(!is.na(.data$numerator), 1, 0),
+    denominator_numeric = dplyr::if_else(!is.na(.data$denominator), 1, 0)
+  ) |>
+  dplyr::select(-c("amount", "numerator", "denominator"))
+
 
 routes <- readr::read_csv(
-  here::here("data-raw", "doseform_final.csv"),
+  here::here("data-raw", "dose_form_final.csv"),
   comment = "",
   col_types = list(
     route = "character",
-    source_concept_id = "numeric",
-    source_code_id = "character",
-    source_name = "character",
-    class = "character",
-    concept = "character",
-    domain = "character",
-    validity = "character",
-    vocabulary = "character"
+    id = "numeric"
   )
 ) %>%
-  dplyr::select("dose_form_concept_id" = "source_concept_id", "route")
+  dplyr::select("dose_form_concept_id" = "id", "route")
 
-patternsWithFormula <- readr::read_csv(
-  here::here("data-raw", "pattern_drug_strength.csv"),
-  col_types = list(
-    pattern_id = "numeric",
-    amount_numeric = "numeric",
-    amount_unit = "character",
-    amount_unit_concept_id = "numeric",
-    numerator_numeric = "numeric",
-    numerator_unit = "character",
-    numerator_unit_concept_id = "numeric",
-    denominator_numeric = "numeric",
-    denominator_unit = "character",
-    denominator_unit_concept_id = "numeric",
-    valid = "logical",
-    pattern_name = "character",
-    unit = "character"
-  )
-) %>%
-  dplyr::inner_join(formulas, by = "pattern_id") %>%
-  dplyr::filter(!is.na(.data$formula_id)) %>%
+patternsWithFormula <- formulas %>%
   dplyr::mutate(
-    amount = dplyr::if_else(.data$amount_numeric == 1, "number", "NA"),
-    numerator = dplyr::if_else(.data$numerator_numeric == 1, "number", "NA"),
-    denominator = dplyr::if_else(.data$denominator_numeric == 1, "number", "NA")
+    amount = dplyr::if_else(.data$amount_numeric == 1, "number", NA_character_),
+    numerator = dplyr::if_else(.data$numerator_numeric == 1, "number", NA_character_),
+    denominator = dplyr::if_else(.data$denominator_numeric == 1, "number", NA_character_)
   ) %>%
   dplyr::select(
-    "amount", "amount_unit", "numerator", "numerator_unit", "denominator",
-    "denominator_unit", "route", "formula_id"
+    "pattern_id", "amount", "amount_unit", "numerator", "numerator_unit",
+    "denominator", "denominator_unit", "formula_name"
+  ) %>%
+  dplyr::left_join(
+    dplyr::tibble(
+      formula_name = c("concentration formulation", "fixed amount formulation", "time based with denominator", "time based no denominator"),
+      formula = c("quantity * numerator / days exposed", "quantity * amount / days exposed", "if (denominator>24) {numerator * 24 / denominator} else {numerator}", "24 * numerator")
+    ),
+    by = "formula_name"
   )
 
 usethis::use_data(patternsWithFormula, internal = FALSE, overwrite = TRUE)
 
-# add all rows in patternfile for the "any" dose patterns with all the possibilities
-allRoutes <- routes %>%
-  dplyr::select("route") %>%
-  dplyr::distinct() %>%
-  dplyr::pull()
-
-formulasAny <- formulas %>%
-  dplyr::filter(.data$route == "any")
-for(route in allRoutes) {
-  formulas <- formulas %>%
-    dplyr::union_all(
-      formulasAny %>%
-        dplyr::mutate("route" = .env$route)
-    )
-}
-formulas <- formulas %>%
-  dplyr::filter(.data$route != "any") %>%
-  dplyr::arrange(.data$pattern_id)
-
+patterns <- formulas %>%
+  dplyr::select(
+    "pattern_id", "amount_numeric", "amount_unit_concept_id",
+    "numerator_numeric", "numerator_unit_concept_id", "denominator_numeric",
+    "denominator_unit_concept_id", "formula_name", "unit"
+  )
 
 usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,
-  patterns, formulas, routes, internal = TRUE, overwrite = TRUE
+  patterns, routes, internal = TRUE, overwrite = TRUE
 )
-
