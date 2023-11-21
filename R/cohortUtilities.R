@@ -521,7 +521,9 @@ solveImputation <- function(x, column, method, toRound = FALSE) {
       dplyr::filter(.data$impute == 0)
     if (method == "median") {
       imp <- imp %>%
-        dplyr::summarise("x" = stats::median(.data[[column]], na.rm = TRUE)) %>%
+        dplyr::summarise(dplyr::across(dplyr::all_of(column),
+                                       ~ stats::median(., na.rm = TRUE),
+                                       .names = "x")) %>%
         dplyr::pull("x")
     } else if (method == "mean") {
       imp <- imp %>%
