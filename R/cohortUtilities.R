@@ -372,11 +372,11 @@ requirePriorObservation <- function(x, cdm, priorObservation) {
       dplyr::mutate(duration = !!CDMConnector::datediff(
         "cohort_start_date", "cohort_end_date"
       )) %>%
-      dplyr::mutate(cohort_end_date = dplyr::if_else(
+      dplyr::mutate(cohort_end_date = as.Date(dplyr::if_else(
         .data$future_observation < .data$duration,
         !!CDMConnector::dateadd("cohort_start_date", "future_observation"),
         .data$cohort_end_date
-      )) %>%
+      ))) %>%
       dplyr::select(-"future_observation", -"duration") %>%
       computeTable(cdm)
     xNew <- PatientProfiles::addAttributes(xNew, x)
@@ -477,7 +477,7 @@ correctDuration <- function(x,
     solveImputation("duration", imputeDuration, TRUE) %>%
     dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
     dplyr::mutate(
-      !!end := !!CDMConnector::dateadd(date = start, number = "days_to_add")
+      !!end := as.Date(!!CDMConnector::dateadd(date = start, number = "days_to_add"))
     ) %>%
     dplyr::select(-c("duration", "days_to_add")) %>%
     computeTable(cdm)
@@ -521,7 +521,9 @@ solveImputation <- function(x, column, method, toRound = FALSE) {
       dplyr::filter(.data$impute == 0)
     if (method == "median") {
       imp <- imp %>%
-        dplyr::summarise("x" = stats::median(.data[[column]], na.rm = TRUE)) %>%
+        dplyr::summarise(dplyr::across(dplyr::all_of(column),
+                                       ~ stats::median(., na.rm = TRUE),
+                                       .names = "x")) %>%
         dplyr::pull("x")
     } else if (method == "mean") {
       imp <- imp %>%

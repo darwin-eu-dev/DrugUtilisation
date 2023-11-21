@@ -89,13 +89,13 @@ the subexposure.}
 
 \item{durationRange}{Range between the duration must be comprised. It should
 be a numeric vector of length two, with no NAs and the first value should be
-equal or smaller than the second one. It is only required if imputeDuration
-= TRUE. If NULL no restrictions are applied.}
+equal or smaller than the second one. It must not be NULL if imputeDuration
+is not "none". If NULL no restrictions are applied.}
 
 \item{dailyDoseRange}{Range between the daily_dose must be comprised. It
 should be a numeric vector of length two, with no NAs and the first value
-should be equal or smaller than the second one. It is only required if
-imputeDailyDose = TRUE. If NULL no restrictions are applied.}
+should be equal or smaller than the second one. It must not be NULL if
+imputeDailyDose is not "none". If NULL no restrictions are applied.}
 }
 \value{
 The same cohort with the added columns.

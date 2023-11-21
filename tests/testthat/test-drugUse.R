@@ -1,4 +1,3 @@
-
 test_that("test flags", {
   skip_on_cran()
   cdm <- mockDrugUtilisation()
@@ -99,7 +98,7 @@ test_that("test overlapMode", {
     "cumulative_dose_milligram", "initial_quantity", "cumulative_quantity"
   )
 
-  #check no error without cdm object specified
+  # check no error without cdm object specified
   expect_no_error(x <- addDrugUse(
     cohort = cdm[["cohort1"]],
     ingredientConceptId = 1,
@@ -239,7 +238,6 @@ test_that("test overlapMode", {
   for (k in 1:length(value_cohort_1)) {
     expect_true(xx[[variables[k]]] == value_cohort_1[k])
   }
-
 })
 
 test_that("test gapEra and eraJoinMode", {
@@ -605,7 +603,8 @@ test_that("test splitSubexposures", {
     ))
   )
   cdm <- mockDrugUtilisation(
-    connectionDetails, extraTables = list("cohort1" = x)
+    connectionDetails,
+    extraTables = list("cohort1" = x)
   )
   y <- splitSubexposures(cdm[["cohort1"]], cdm) %>% dplyr::collect()
 
@@ -852,7 +851,6 @@ test_that("test empty targetCohortName", {
     durationRange = c(1, Inf),
     dailyDoseRange = c(100, Inf)
   ))
-
 })
 
 test_that("expected errors on inputs", {
@@ -926,7 +924,7 @@ test_that("check output format", {
 
 test_that("check all estimates", {
   all_estimates <- c(
-    "min", "max", "mean", "median", #"iqr", "range",
+    "min", "max", "mean", "median", # "iqr", "range",
     "q05", "q10", "q15", "q20",
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "sd"
@@ -934,7 +932,7 @@ test_that("check all estimates", {
   cdm <- mockDrugUtilisation(
     connectionDetails,
     extraTables = list(
-      dose_table= dplyr::tibble(
+      dose_table = dplyr::tibble(
         cohort_definition_id = c(1, 1, 1, 1),
         subject_id = c(1, 1, 2, 1),
         cohort_start_date = as.Date(c(
@@ -977,19 +975,20 @@ test_that("check all estimates", {
 
 test_that("check all variables", {
   all_estimates <- c(
-    "min", "max", "mean", "median", #"iqr", "range",
+    "min", "max", "mean", "median", # "iqr", "range",
     "q05", "q10", "q15", "q20",
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "sd"
   )
   cdm <- mockDrugUtilisation(connectionDetails,
-                             extraTables = list(
-                               "concept_relationship" = dplyr::tibble(
-                                 concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
-                                 concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
-                                 relationship_id = c(rep("RxNorm has dose form", 4))
-                               )
-                             ))
+    extraTables = list(
+      "concept_relationship" = dplyr::tibble(
+        concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
+        relationship_id = c(rep("RxNorm has dose form", 4))
+      )
+    )
+  )
   cdm <- generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = c(1125315, 43135274, 2905077, 1125360))
   )
@@ -1005,3 +1004,65 @@ test_that("check all variables", {
     "cumulative_dose_milligram"
   ) %in% result$variable))
 })
+
+
+test_that("test impute duration percentage", {
+  conceptList <- list(`Ingredient: acetaminophen (1125315)` =
+                        c(1125315, 43135274, 2905077, 1125360))
+
+  cdm <- mockDrugUtilisation(numberIndividual  = 200)
+
+  cdm$drug_exposure <- cdm$drug_exposure %>%
+    dplyr::mutate(drug_exposure_end_date = dplyr::if_else(person_id == 14, NA, drug_exposure_end_date))
+
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm  = cdm,
+    name = "acetaminophen_example3",
+    conceptSet = conceptList,
+    imputeDuration = "mean"
+  )
+
+  expect_true(cdm$acetaminophen_example3 %>%
+    addDrugUse(
+      ingredientConceptId = 1125315,
+      duration = TRUE,
+      quantity = FALSE,
+      dose     = FALSE,
+      imputeDuration = "mean"
+    ) %>%
+    dplyr::filter(subject_id == 14) %>%
+    dplyr::pull(impute_duration_percentage) == 100)
+
+
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:4,
+      person_id = c(1, 1, 1, 1),
+      drug_concept_id = c(1539462, 1539463, 1539403, 1539403),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2001-02-01", "2001-02-17", "2001-04-10"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        NA,  "2001-02-15", "2001-03-19", "2001-05-10"
+      )),
+      quantity = c(1,2,3,4)
+    ),
+    cohort1 = dplyr::tibble(cohort_definition_id = 1, subject_id = 1,
+                            cohort_start_date = as.Date("1990-01-01"),
+                            cohort_end_date = as.Date("2020-01-01"))
+  )
+
+  cdm$cohort1 <- cdm$cohort1 %>% addDrugUse(
+    cdm = cdm,
+    ingredientConceptId = 1539403,
+    conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
+      imputeDuration = "median")
+
+
+  expect_true(cdm$cohort1 %>%
+                dplyr::filter(subject_id == 1) %>%
+                dplyr::pull(impute_duration_percentage) == 25)
+
+})
+

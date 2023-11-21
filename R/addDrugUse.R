@@ -69,12 +69,12 @@
 #' "none", "median", "mean", "mode" or a number
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
-#' equal or smaller than the second one. It is only required if imputeDuration
-#' = TRUE. If NULL no restrictions are applied.
+#' equal or smaller than the second one. It must not be NULL if imputeDuration
+#' is not "none". If NULL no restrictions are applied.
 #' @param dailyDoseRange Range between the daily_dose must be comprised. It
 #' should be a numeric vector of length two, with no NAs and the first value
-#' should be equal or smaller than the second one. It is only required if
-#' imputeDailyDose = TRUE. If NULL no restrictions are applied.
+#' should be equal or smaller than the second one. It must not be NULL if
+#' imputeDailyDose is not "none". If NULL no restrictions are applied.
 #'
 #' @return The same cohort with the added columns.
 #'
@@ -508,13 +508,13 @@ initialSubset <- function(cdm, dusCohort, conceptSet) {
       by = "drug_concept_id",
       copy = TRUE
     ) %>%
-    dplyr::mutate(drug_exposure_end_date = dplyr::if_else(
-      is.na(.data$drug_exposure_end_date),
-      .data$drug_exposure_start_date,
-      .data$drug_exposure_end_date
-    )) %>%
-    dplyr::filter(.data$drug_exposure_start_date <= .data$cohort_end_date) %>%
-    dplyr::filter(.data$drug_exposure_end_date >= .data$cohort_start_date) %>%
+    dplyr::filter(
+      (is.na(.data$drug_exposure_end_date) &
+         (.data$drug_exposure_start_date <= .data$cohort_end_date)) |
+        (!is.na(.data$drug_exposure_end_date) &
+           ((.data$drug_exposure_end_date >= .data$cohort_start_date) &
+           (.data$drug_exposure_start_date <= .data$cohort_end_date)))
+    ) %>%
     CDMConnector::computeQuery(
       temporary = FALSE, schema = attr(cdm, "write_schema"),
       overwrite = TRUE
