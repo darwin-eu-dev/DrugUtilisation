@@ -263,8 +263,7 @@ emptyCohort <- function(cdm) {
       subject_id = "BIGINT",
       cohort_start_date = "DATE",
       cohort_end_date = "DATE"
-    ),
-    temporary = TRUE
+    )
   )
   ref <- dplyr::tbl(attr(cdm, "dbcon"), name)
   attr(ref, "cdm_reference") <- cdm
