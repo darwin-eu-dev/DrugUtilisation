@@ -3,17 +3,17 @@
 \docType{data}
 \name{patternsWithFormula}
 \alias{patternsWithFormula}
-\title{Patterns and routes valid to compute daily dose}
+\title{Patterns valid to compute daily dose with the associated formula.}
 \format{
-A data frame with eight variables: \code{amount}, \code{amount_unit},
-\code{numerator}, \code{numerator_unit}, \code{denominator},
-\code{denominator_unit}, \code{route} and \code{formula_id}. See the
-formulas using seeFormulas.
+A data frame with eight variables: \code{pattern_id}, \code{amount},
+\code{amount_unit}, \code{numerator}, \code{numerator_unit},
+\code{denominator}, \code{denominator_unit}, \code{formula_name} and
+\code{formula}.
 }
 \usage{
 patternsWithFormula
 }
 \description{
-Patterns and routes valid to compute daily dose
+Patterns valid to compute daily dose with the associated formula.
 }
 \keyword{datasets}

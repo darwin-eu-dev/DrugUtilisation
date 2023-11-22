@@ -34,7 +34,7 @@ test_that("create patterns, correct output", {
 
  expect_no_error(patternTab <- patternTable(cdm))
  expect_true(all(colnames(patternTab) == c(
-   "pattern_file_id", "pattern_id", "formula_id", "validity", "number_concepts",
+   "pattern_id", "formula_name", "validity", "number_concepts",
    "number_ingredients", "number_records", "amount_numeric",
    "amount_unit_concept_id", "numerator_numeric", "numerator_unit_concept_id",
    "denominator_numeric", "denominator_unit_concept_id"
