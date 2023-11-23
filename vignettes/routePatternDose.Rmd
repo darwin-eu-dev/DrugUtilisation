@@ -12,7 +12,7 @@ editor_options:
 
 ## Adding Routes with `addRoute` Function
 
-To enrich your drug data, the DrugUtilisation package provides the `addRoute` function. This function utilizes an internal CSV file containing all possible routes for various drug dose forms supported by the package. You can access the CSV [here](https://github.com/darwin-eu-dev/DrugUtilisation/blob/main/data-raw/doseform_final.csv).
+To enrich your drug data, the DrugUtilisation package provides the `addRoute` function. This function utilizes an internal CSV file containing all possible routes for various drug dose forms supported by the package. 
 
 The `addRoute` function is designed to seamlessly incorporate route information into your drug table for the supported dose forms. In the example below, a mock database is generated using the `mockDrugUtilisation` function, and the `addRoute` function is applied to demonstrate the process:
 
@@ -45,16 +45,20 @@ The `patternTable` function in the DrugUtilisation package is a powerful tool fo
 
 Moreover, the tibble includes a column indicating potentially valid and invalid combinations.
 
-For detailed information about the patterns, their associated pattern ids, and combinations of `amount_unit`, `numerator_unit`, and `denominator_unit`, you can refer to the data:
-
-- Names of patterns and their associated pattern ids can be found [here](https://github.com/darwin-eu-dev/DrugUtilisation/blob/main/data-raw/pattern_drug_strength.csv).
-- Formulas and their corresponding formula ids, supported for different patterns, are available [here](https://github.com/darwin-eu-dev/DrugUtilisation/blob/main/data-raw/pattern_assessment_for_dose_final.csv).
-
 ```{r, eval = TRUE}
 
 patternTable(cdm)
 
 ```
+
+For detailed information about the patterns, their associated formula, and combinations of `amount_unit`, `numerator_unit`, and `denominator_unit`, you can refer to the data:
+
+```{r, eval = FALSE}
+
+patternsWithFormula
+
+```
+
 
 ## Get daily dose
 
