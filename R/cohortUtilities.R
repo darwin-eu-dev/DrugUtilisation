@@ -254,21 +254,18 @@ getEndName <- function(domain) {
 
 #' @noRd
 emptyCohort <- function(cdm) {
-  name <- CDMConnector::uniqueTableName()
-  DBI::dbCreateTable(
-    attr(cdm, "dbcon"),
-    name,
-    fields = c(
-      cohort_definition_id = "INT",
-      subject_id = "BIGINT",
-      cohort_start_date = "DATE",
-      cohort_end_date = "DATE"
-    ),
-    temporary = TRUE
-  )
-  ref <- dplyr::tbl(attr(cdm, "dbcon"), name)
-  attr(ref, "cdm_reference") <- cdm
-  return(ref)
+  cdm[["observation_period"]] %>%
+    dplyr::filter(
+      .data$observation_period_id < 0 & .data$observation_period_id > 0
+    ) %>%
+    dplyr::mutate("cohort_definition_id" = 1) %>%
+    dplyr::select(
+      "cohort_definition_id",
+      "subject_id" = "person_id",
+      "cohort_start_date" = "observation_period_start_date",
+      "cohort_end_date" = "observation_period_end_date"
+    ) %>%
+    CDMConnector::computeQuery()
 }
 
 #' @noRd
