@@ -255,8 +255,9 @@ getEndName <- function(domain) {
 #' @noRd
 emptyCohort <- function(cdm) {
   cdm[["observation_period"]] %>%
-    dplyr::filter(.data$observation_period_id < 0) %>%
-    dplyr::filter(.data$observation_period_id > 0) %>%
+    dplyr::filter(
+      .data$observation_period_id < 0 & .data$observation_period_id > 0
+    ) %>%
     dplyr::mutate("cohort_definition_id" = 1) %>%
     dplyr::select(
       "cohort_definition_id",
