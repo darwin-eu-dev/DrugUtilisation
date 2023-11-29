@@ -34,9 +34,30 @@ summariseTreatment<- function(cohort,
                               strata = list(),
                               window,
                               tretmentCohortName = NULL,
+                              tretmentCohortId = NULL,
                               tretmentConceptSet = NULL,
                               combination = TRUE,
                               unexposed = TRUE,
                               minCellCount = 5) {
+  # initial checks
+  checkmate::checkClass(cohort, "generated_cohort_set")
+  checkmate::checkList(strata, types = "character")
+  checkmate::checkTRUE(all(unlist(strata) %in% colnames(cohort)))
+  checkmate::checkCharacter(treatmentCohortName, null.ok = TRUE)
+
+  # combination
+  if (combination) {
+    cdm <- CohortConstructor::generateCombinationCohortSet(
+      cdm = cdm,
+      targetCohortName = tretmentCohortName,
+      targetCohortId = tretmentCohortId,
+      mutuallyEclusive = FALSE
+    )
+  }
+
+  # unexposed
+  if (unexposed) {
+    cdm <- CohortConstructor::generateUnexposedCohortSet()
+  }
 
 }
