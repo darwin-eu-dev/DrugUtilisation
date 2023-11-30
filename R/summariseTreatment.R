@@ -23,7 +23,6 @@
 #' interest treatments.
 #' @param tretmentConceptSet Concept set list to summarise.
 #' @param combination Whether to include combination treatments.
-#' @param unexposed Whether to include unexposed option.
 #' @param minCellCount Below this number counts will be suppressed.
 #'
 #' @return A summary of the drug use stratified by cohort_name and strata_name
@@ -36,8 +35,7 @@ summariseTreatment<- function(cohort,
                               tretmentCohortName = NULL,
                               tretmentCohortId = NULL,
                               tretmentConceptSet = NULL,
-                              combination = TRUE,
-                              unexposed = TRUE,
+                              combination = FALSE,
                               minCellCount = 5) {
   # initial checks
   checkmate::checkClass(cohort, "generated_cohort_set")
@@ -47,17 +45,23 @@ summariseTreatment<- function(cohort,
 
   # combination
   if (combination) {
-    cdm <- CohortConstructor::generateCombinationCohortSet(
-      cdm = cdm,
-      targetCohortName = tretmentCohortName,
-      targetCohortId = tretmentCohortId,
-      mutuallyEclusive = FALSE
-    )
+    cli::cli_warn("Combination is not implemented yet")
+    # cdm <- CohortConstructor::generateCombinationCohortSet(
+    #   cdm = cdm,
+    #   targetCohortName = tretmentCohortName,
+    #   targetCohortId = tretmentCohortId,
+    #   mutuallyEclusive = FALSE
+    # )
   }
 
-  # unexposed
-  if (unexposed) {
-    cdm <- CohortConstructor::generateUnexposedCohortSet()
-  }
+  # add cohort intersect
+  cohort %>%
+    PatientProfiles::addCohortIntersectFlag(
+      targetCohortTable = tretmentCohortName,
+      targetCohortId = tretmentCohortId,
+      targetEndDate = NULL,
+      window = window,
+      nameStyle = "{window_name}_{cohort_name}"
+    )
 
 }
