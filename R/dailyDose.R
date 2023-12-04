@@ -192,6 +192,16 @@ applyFormula <- function(drugExposure) {
       daily_dose = dplyr::case_when(
         is.na(.data$quantity) ~
           as.numeric(NA),
+        .data$quantity <= 0 ~
+          as.numeric(NA),
+        .data$days_exposed <= 0 ~
+          as.numeric(NA),
+        .data$denominator_value <= 0 ~
+          as.numeric(NA),
+        .data$numerator_value <= 0 ~
+          as.numeric(NA),
+        .data$amount_value <= 0 ~
+          as.numeric(NA),
         .data$formula_name == "concentration formulation" ~
           .data$numerator_value * .data$quantity / .data$days_exposed,
         .data$formula_name == "fixed amount formulation" ~
@@ -204,8 +214,5 @@ applyFormula <- function(drugExposure) {
           .data$numerator_value * 24,
         .default = as.numeric(NA)
       )
-    ) %>%
-    dplyr::mutate(daily_dose = dplyr::if_else(
-      .data$daily_dose < 0, as.numeric(NA), .data$daily_dose
-    ))
+    )
 }
