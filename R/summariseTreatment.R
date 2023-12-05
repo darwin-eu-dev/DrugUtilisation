@@ -37,6 +37,9 @@ summariseTreatment<- function(cohort,
                               tretmentConceptSet = NULL,
                               combination = FALSE,
                               minCellCount = 5) {
+  if (!is.list(window)) {
+    window <- list(window)
+  }
   # initial checks
   checkmate::checkClass(cohort, "generated_cohort_set")
   checkmate::checkList(strata, types = "character")
@@ -46,22 +49,95 @@ summariseTreatment<- function(cohort,
   # combination
   if (combination) {
     cli::cli_warn("Combination is not implemented yet")
-    # cdm <- CohortConstructor::generateCombinationCohortSet(
-    #   cdm = cdm,
-    #   targetCohortName = tretmentCohortName,
-    #   targetCohortId = tretmentCohortId,
-    #   mutuallyEclusive = FALSE
-    # )
   }
 
-  # add cohort intersect
-  cohort %>%
-    PatientProfiles::addCohortIntersectFlag(
-      targetCohortTable = tretmentCohortName,
-      targetCohortId = tretmentCohortId,
-      targetEndDate = NULL,
-      window = window,
-      nameStyle = "{window_name}_{cohort_name}"
-    )
+  # correct window names
+  if (!is.null(names(window))) {
+    namesWindow <- names(window)
+  } else {
+    namesWindow <- lapply(window, function(x) {
+      paste0(as.character(x[1]), " to ", as.character(x[2]))
+    }) %>%
+      unlist()
+  }
+  names(window) <- paste0("window", seq_along(window))
 
+  # interest variables
+  cohort <- cohort %>%
+    dplyr::select(dplyr::all_of(c(
+      "cohort_definition_id", "subject_id", "cohort_start_date",
+      "cohort_end_date", unique(unname(unlist(strata)))
+    )))
+
+  # add cohort intersect
+  if (!is.null(tretmentCohortName)) {
+    cohort <- cohort %>%
+      PatientProfiles::addCohortIntersectFlag(
+        targetCohortTable = tretmentCohortName,
+        targetCohortId = tretmentCohortId,
+        targetEndDate = NULL,
+        window = window,
+        nameStyle = "{window_name}_{cohort_name}"
+      )
+  }
+
+  # add concept intersect
+  if (!is.null(tretmentConceptSet)) {
+    cohort <- cohort %>%
+      PatientProfiles::addConceptIntersectFlag(
+        conceptSet = tretmentConceptSet,
+        window = window,
+        nameStyle = "{window_name}_{concept_name}"
+      )
+  }
+
+  # create unexposed
+  for (win in seq_along(window)) {
+    cohort <- cohort %>%
+      dplyr::mutate(
+        !!paste0("window", win, "_unexposed") := dplyr::if_else(
+          sum(dplyr::c_across(dplyr::starts_with(!!paste0("window", win)))) > 0,
+          1, 0
+        )
+      )
+  }
+  cohort <- cohort %>%
+    CDMConnector::computeQuery() %>%
+    PatientProfiles::addCohortName()
+
+  # summarise
+  newCols <- colnames(cohort)
+  newCols <- startsWith(newCols, "window")
+  result <- PatientProfiles::summariseResult(
+    table = cohort,
+    group = list("cohort_name"),
+    strata = strata,
+    variables = newCols,
+    functions = c("count", "percentage"),
+    minCellCount = minCellCount
+  )
+  cols <- colnames(result)
+
+  # correct names
+  result <- result %>%
+    dplyr::select(-"variable_level") %>%
+    tidyr::separate_wider_delim(
+      cols = "variable",
+      delim = "_",
+      names = c("new_variable", "new_variable_level"),
+      too_few = "align_start",
+      too_many = "merge",
+      cols_remove = TRUE
+    ) %>%
+    dplyr::rename("variable" = "new_variable") %>%
+    dplyr::left_join(
+      dplyr::tibble(
+        "new_variable_level" = paste0("window", seq_along(window)),
+        "variable_level" = namesWindow
+      ),
+      by = "new_variable_level"
+    ) %>%
+    dplyr::select(dplyr::all_of(cols))
+
+  return(result)
 }
