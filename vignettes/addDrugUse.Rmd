@@ -170,14 +170,7 @@ cdm$acetaminophen_example2 %>%
 Now we have only one record with two exposures for subject number 56. Notice that the number of eras is still 1, since we have defined the same *gapEra* as when the cohort was created. However, if we wanted to specify a different one, we can modify this parameter.
 
 ```{r cols.print=7, message=FALSE, warning=FALSE, }
-cdm <- generateDrugUtilisationCohortSet(
-  cdm = cdm,
-  name = "acetaminophen_example1",
-  conceptSet = conceptList,
-  gapEra = 180
-)
-
-cdm$acetaminophen_example1 %>%
+cdm$acetaminophen_example2 %>%
   addDrugUse(
     ingredientConceptId = 1125315,
     gapEra = 0
@@ -246,7 +239,7 @@ We can modify how the overlapping is done with the *overlapMode* input. In this 
 1. *overlapMode* = "sum" (default): the considered daily dose is the sum of all the exposures.
 
 ```{r, message = FALSE, warning=FALSE}
-cdm$acetaminophen_example1 %>%
+cdm$acetaminophen_example2 %>%
   addDrugUse(
     ingredientConceptId = 1125315,
     duration = FALSE,
@@ -259,7 +252,7 @@ cdm$acetaminophen_example1 %>%
 
 2. *overlapMode* = "previous": the daily dose considered is the one of the earliest exposure. 
 ```{r, message = FALSE, warning=FALSE}
-cdm$acetaminophen_example1 %>%
+cdm$acetaminophen_example2 %>%
   addDrugUse(
     ingredientConceptId = 1125315,
     duration = FALSE,
@@ -272,7 +265,7 @@ cdm$acetaminophen_example1 %>%
 3. *overlapMode* = "subsequent": the daily dose considered is the one of the latest exposure. 
 
 ```{r, message = FALSE, warning=FALSE}
-cdm$acetaminophen_example1 %>%
+cdm$acetaminophen_example2 %>%
   addDrugUse(
     ingredientConceptId = 1125315,
     duration = FALSE,
@@ -287,7 +280,7 @@ cdm$acetaminophen_example1 %>%
 4. *overlapMode* = "minimum": the daily dose considered is the one of the minimum of all the exposures
 
 ```{r, message = FALSE, warning=FALSE}
-cdm$acetaminophen_example1 %>%
+cdm$acetaminophen_example2 %>%
   addDrugUse(
     ingredientConceptId = 1125315,
     duration = FALSE,
@@ -301,7 +294,7 @@ cdm$acetaminophen_example1 %>%
 5. *overlapMode* = "maximum": the daily dose considered is the one of the maximum of all the exposures
 
 ```{r, message = FALSE, warning=FALSE}
-cdm$acetaminophen_example1 %>%
+cdm$acetaminophen_example2 %>%
   addDrugUse(
     ingredientConceptId = 1125315,
     duration = FALSE,
