@@ -142,7 +142,10 @@ summariseTreatment<- function(cohort,
       .data$group_level, .data$strata_name, .data$strata_level,
       .data$new_variable_level
     ) %>%
-    dplyr::select(dplyr::all_of(cols))
+    dplyr::select(dplyr::all_of(cols)) %>%
+    PatientProfiles::addCdmName(cdm = attr(cohort, "cdm_reference")) %>%
+    dplyr::mutate("result_type" = "Summarise treatment") %>%
+    dplyr::relocate(c("cdm_name", "result_type"))
 
   return(result)
 }
@@ -151,6 +154,6 @@ unexposed <- function(cols, w) {
   col <- cols[startsWith(cols, w)]
   sum <- paste0(".data[[\"", col, "\"]]", collapse = " + ")
   paste0("dplyr::if_else(", sum, " > 0, 0, 1)") %>%
-      rlang::parse_exprs() %>%
-      rlang::set_names(paste0(w, "_unexposed"))
+    rlang::parse_exprs() %>%
+    rlang::set_names(paste0(w, "_unexposed"))
 }
