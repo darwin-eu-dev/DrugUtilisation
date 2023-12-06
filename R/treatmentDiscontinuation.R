@@ -19,11 +19,15 @@
 #' @param cohort GeneratedCohortSet object.
 #' @param cohortId cohort_definition_id to target.
 #' @param strata List of columns or combinations of columns to stratify for.
-#' @param censorOnDate ##COPY FROM CS##
-#' @param folloUpDays ##COPY FROM CS##
-#' @param timeGap ##COPY FROM CS##
-#' @param times ##COPY FROM CS##
-#' @param minCellCount ##COPY FROM CS##
+#' @param censorOnDate f not NULL, an individual's follow up will be censored at
+#' the given date
+#' @param folloUpDays Number of days to follow up individuals (lower bound 1,
+#' upper bound Inf)
+#' @param timeGap Days between time points for which to report survival
+#' estimates. First day will be day zero with risk estimates provided for times
+#' up to the end of follow-up, with a gap in days equivalent to timeGap.
+#' @param minCellCount The minimum number of events to reported, below which
+#' results will be obscured. If 0, all results will be reported.
 #'
 #' @export
 #'
@@ -42,21 +46,34 @@
 #'
 treatmentDiscontinuation <- function(cohort,
                                      cohortId = NULL,
-                                     strata = list(),
+                                     strata = NULL,
                                      censorOnDate = NULL,
                                      followUpDays = Inf,
-                                     timeGap = c(1, 7, 30, 365),
-                                     times = NULL,
+                                     timeGap = 100,
                                      minCellCount = 5) {
   cdm <- attr(cohort, "cdm_reference")
   checkInputs(cohort = cohort, cdm = cdm)
   cdm[["drug_cohort"]] <- cohort
-  result <- CohortSurvival::estimateSingleEventSurvival(
-    cdm = cdm, targetCohortTable = "drug_cohort", targetCohortId = cohortId,
-    outcomeCohortTable = "drug_cohort", outcomeCohortId = cohortId,
-    outcomeDateVariable = "cohort_end_date", censorOnDate = censorOnDate,
-    followUpDays = followUpDays, strata = strata, timeGap = timeGap,
-    times = times, minCellCount = minCellCount
-  )
+  if (is.null(cohortId)) {
+    cohortId <- CDMConnector::cohort_set(cdm[["drug_cohort"]]) %>%
+      dplyr::pull("cohort_definition_id")
+  }
+  result <- list()
+  for (ci in cohortId) {
+    result[[ci]] <- suppressMessages(CohortSurvival::estimateSingleEventSurvival(
+      cdm = cdm, targetCohortTable = "drug_cohort", targetCohortId = ci,
+      outcomeCohortTable = "drug_cohort", outcomeCohortId = ci,
+      outcomeDateVariable = "cohort_end_date", censorOnDate = censorOnDate,
+      followUpDays = followUpDays, strata = strata, timeGap = timeGap,
+      minCellCount = minCellCount
+    ))
+  }
+  result <- dplyr::bind_rows(result) %>%
+    dplyr::mutate(
+      "result_type" = "Treatment discontinuation",
+      "variable" = "Prabability to be on treatment",
+      "variable_level" = .data$time
+    ) %>%
+    dplyr::select(-c("time", "analysis_type", "outcome"))
   return(result)
 }
