@@ -21,7 +21,7 @@
 #' @param strata List of columns or combinations of columns to stratify for.
 #' @param censorOnDate f not NULL, an individual's follow up will be censored at
 #' the given date
-#' @param folloUpDays Number of days to follow up individuals (lower bound 1,
+#' @param followUpDays Number of days to follow up individuals (lower bound 1,
 #' upper bound Inf)
 #' @param timeGap Days between time points for which to report survival
 #' estimates. First day will be day zero with risk estimates provided for times

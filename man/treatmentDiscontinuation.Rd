@@ -7,11 +7,10 @@
 treatmentDiscontinuation(
   cohort,
   cohortId = NULL,
-  strata = list(),
+  strata = NULL,
   censorOnDate = NULL,
   followUpDays = Inf,
-  timeGap = c(1, 7, 30, 365),
-  times = NULL,
+  timeGap = 100,
   minCellCount = 5
 )
 }
@@ -22,15 +21,18 @@ treatmentDiscontinuation(
 
 \item{strata}{List of columns or combinations of columns to stratify for.}
 
-\item{censorOnDate}{##COPY FROM CS##}
+\item{censorOnDate}{f not NULL, an individual's follow up will be censored at
+the given date}
 
-\item{timeGap}{##COPY FROM CS##}
+\item{followUpDays}{Number of days to follow up individuals (lower bound 1,
+upper bound Inf)}
 
-\item{times}{##COPY FROM CS##}
+\item{timeGap}{Days between time points for which to report survival
+estimates. First day will be day zero with risk estimates provided for times
+up to the end of follow-up, with a gap in days equivalent to timeGap.}
 
-\item{minCellCount}{##COPY FROM CS##}
-
-\item{folloUpDays}{##COPY FROM CS##}
+\item{minCellCount}{The minimum number of events to reported, below which
+results will be obscured. If 0, all results will be reported.}
 }
 \description{
 Compute the treatment dicontinuation.
