@@ -1,5 +1,6 @@
 
 test_that("test case single indication", {
+  skip_on_cran()
   targetCohortName <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),
@@ -59,18 +60,24 @@ test_that("test case single indication", {
       condition_occurrence = condition_occurrence,
       observation_period = observationPeriod
     )
+  #check it works without cdm object specified
+
+  expect_no_error(cdm[["cohort1"]] %>%
+    addIndication(indicationCohortName = "cohort2", indicationGap = 0,
+      unknownIndicationTable = NULL
+    ))
 
   # check for indication 0
-  res0 <- cdm$cohort1 %>%
+  res0 <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = 0,
       unknownIndicationTable = NULL
     )
-  expect_true(length(setdiff(colnames(res0), colnames(cdm$cohort1))) == 3)
+  expect_true(length(setdiff(colnames(res0), colnames(cdm[["cohort1"]]))) == 3)
   expect_true(all(
     c("indication_gap_0_asthma", "indication_gap_0_covid",
       "indication_gap_0_none") %in%
-      setdiff(colnames(res0), colnames(cdm$cohort1))
+      setdiff(colnames(res0), colnames(cdm[["cohort1"]]))
   ))
 
   res0 <- res0 %>% indicationToStrata()
@@ -87,16 +94,16 @@ test_that("test case single indication", {
   )
 
   # check for indication 1
-  res1 <- cdm$cohort1 %>%
+  res1 <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = 1,
       unknownIndicationTable = NULL
     )
-  expect_true(length(setdiff(colnames(res1), colnames(cdm$cohort1))) == 3)
+  expect_true(length(setdiff(colnames(res1), colnames(cdm[["cohort1"]]))) == 3)
   expect_true(all(
     c("indication_gap_1_asthma", "indication_gap_1_covid",
       "indication_gap_1_none") %in%
-      setdiff(colnames(res1), colnames(cdm$cohort1))
+      setdiff(colnames(res1), colnames(cdm[["cohort1"]]))
   ))
 
   res1 <- res1 %>% indicationToStrata()
@@ -113,48 +120,60 @@ test_that("test case single indication", {
   )
 
   # check for indication 2
-  res2 <- cdm$cohort1 %>%
+  res2 <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = 2,
       unknownIndicationTable = NULL
     )
 
-  expect_true(length(setdiff(colnames(res2), colnames(cdm$cohort1))) == 3)
+  expect_true(length(setdiff(colnames(res2), colnames(cdm[["cohort1"]]))) == 3)
   expect_true(all(
     c("indication_gap_2_asthma", "indication_gap_2_covid",
       "indication_gap_2_none") %in%
-      setdiff(colnames(res2), colnames(cdm$cohort1))
+      setdiff(colnames(res2), colnames(cdm[["cohort1"]]))
   ))
 
   res2 <- res2 %>% indicationToStrata()
 
-  expect_true(identical(
+  expect_true(all(
     res2 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
-      dplyr::pull("indication_gap_2"),
+      dplyr::arrange(
+        .data$subject_id,
+        .data$cohort_start_date,
+        .data$cohort_definition_id,
+        .data$cohort_end_date
+      ) %>%
+      dplyr::pull("indication_gap_2")==
     c("Asthma", "None", "None", "Asthma")
   ))
 
   # check for all indication Gap
-  resinf <- cdm$cohort1 %>%
+  resinf <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = Inf,
       unknownIndicationTable = NULL
     )
-  expect_true(length(setdiff(colnames(resinf), colnames(cdm$cohort1))) == 3)
+  expect_true(length(setdiff(colnames(resinf), colnames(cdm[["cohort1"]]))) == 3)
   expect_true(all(
     c("indication_gap_inf_asthma", "indication_gap_inf_covid",
       "indication_gap_inf_none") %in%
-      setdiff(colnames(resinf), colnames(cdm$cohort1))
+      setdiff(colnames(resinf), colnames(cdm[["cohort1"]]))
   ))
 
   resinf <- resinf %>% indicationToStrata()
 
-  expect_true(identical(
+  expect_true(any(identical(
+    resinf %>%
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+      dplyr::pull("indication_gap_inf"),
+    c("Asthma", "Covid and Asthma", "None", "Asthma")
+  ),
+  identical(
     resinf %>%
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
       dplyr::pull("indication_gap_inf"),
     c("Asthma", "Asthma and Covid", "None", "Asthma")
+  )
   ))
 
 })
@@ -208,16 +227,16 @@ test_that("test case single indication with unknown indication table", {
   )
 
   # check for indication 0
-  res0 <- cdm$cohort1 %>%
+  res0 <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = 0,
       unknownIndicationTable = "condition_occurrence"
     )
-  expect_true(length(setdiff(colnames(res0), colnames(cdm$cohort1))) == 4)
+  expect_true(length(setdiff(colnames(res0), colnames(cdm[["cohort1"]]))) == 4)
   expect_true(all(
     c("indication_gap_0_asthma", "indication_gap_0_covid",
       "indication_gap_0_none", "indication_gap_0_unknown") %in%
-      setdiff(colnames(res0), colnames(cdm$cohort1))
+      setdiff(colnames(res0), colnames(cdm[["cohort1"]]))
   ))
   res0 <- res0 %>% indicationToStrata()
   expect_true(identical(
@@ -228,16 +247,16 @@ test_that("test case single indication with unknown indication table", {
   ))
 
   # check for indication 1
-  res1 <- cdm$cohort1 %>%
+  res1 <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = 1,
       unknownIndicationTable = "condition_occurrence"
     )
-  expect_true(length(setdiff(colnames(res1), colnames(cdm$cohort1))) == 4)
+  expect_true(length(setdiff(colnames(res1), colnames(cdm[["cohort1"]]))) == 4)
   expect_true(all(
     c("indication_gap_1_asthma", "indication_gap_1_covid",
       "indication_gap_1_none", "indication_gap_1_unknown") %in%
-      setdiff(colnames(res1), colnames(cdm$cohort1))
+      setdiff(colnames(res1), colnames(cdm[["cohort1"]]))
   ))
   res1 <- res1 %>% indicationToStrata()
   expect_true(identical(
@@ -248,16 +267,16 @@ test_that("test case single indication with unknown indication table", {
   ))
 
   # check for indication 6
-  res6 <- cdm$cohort1 %>%
+  res6 <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = 6,
       unknownIndicationTable = "condition_occurrence"
     )
-  expect_true(length(setdiff(colnames(res6), colnames(cdm$cohort1))) == 4)
+  expect_true(length(setdiff(colnames(res6), colnames(cdm[["cohort1"]]))) == 4)
   expect_true(all(
     c("indication_gap_6_asthma", "indication_gap_6_covid",
       "indication_gap_6_none", "indication_gap_6_unknown") %in%
-      setdiff(colnames(res6), colnames(cdm$cohort1))
+      setdiff(colnames(res6), colnames(cdm[["cohort1"]]))
   ))
   res6 <- res6 %>% indicationToStrata()
   expect_true(identical(
@@ -268,12 +287,12 @@ test_that("test case single indication with unknown indication table", {
   ))
 
   # check all gaps simultaniously
-  res016 <- cdm$cohort1 %>%
+  res016 <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 1, 6),
       unknownIndicationTable = "condition_occurrence"
     )
-  expect_true(length(setdiff(colnames(res016), colnames(cdm$cohort1))) == 12)
+  expect_true(length(setdiff(colnames(res016), colnames(cdm[["cohort1"]]))) == 12)
   expect_true(all(
     c("indication_gap_0_asthma", "indication_gap_0_covid",
       "indication_gap_0_none", "indication_gap_0_unknown",
@@ -281,7 +300,7 @@ test_that("test case single indication with unknown indication table", {
       "indication_gap_1_none", "indication_gap_1_unknown",
       "indication_gap_6_asthma", "indication_gap_6_covid",
       "indication_gap_6_none", "indication_gap_6_unknown") %in%
-      setdiff(colnames(res016), colnames(cdm$cohort1))
+      setdiff(colnames(res016), colnames(cdm[["cohort1"]]))
   ))
   res016 <- res016 %>% indicationToStrata()
   expect_true(identical(
@@ -351,35 +370,37 @@ test_that("test indicationDate", {
     )
 
   # original
-  res012inf <- cdm$cohort1 %>%
+  res012inf <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2",
       indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL
-    ) %>%
+    ) %>% dplyr::relocate(indication_gap_inf_asthma) %>%
     indicationToStrata()
-  expect_true(all(
-    setdiff(colnames(res012inf), colnames(cdm$cohort1)) == c(
+  expect_equal(
+    sort(setdiff(colnames(res012inf), colnames(cdm[["cohort1"]]))),
+    sort(c(
       "indication_gap_0", "indication_gap_1", "indication_gap_2",
       "indication_gap_inf"
-    )
-  ))
+    ))
+  )
 
   # change indicationDate
-  cdm$cohort1 <- cdm$cohort1 %>%
+  cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
     dplyr::rename("start_date" = "cohort_start_date")
-  res012infS <- cdm$cohort1 %>%
+  res012infS <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2",
       indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL,
       indicationDate = "start_date"
-    ) %>%
+    ) %>% dplyr::relocate(indication_gap_inf_asthma) %>%
     indicationToStrata()
-  expect_true(all(
-    setdiff(colnames(res012infS), colnames(cdm$cohort1)) == c(
+  expect_equal(
+    sort(setdiff(colnames(res012infS), colnames(cdm[["cohort1"]]))),
+    sort(c(
       "indication_gap_0", "indication_gap_1", "indication_gap_2",
       "indication_gap_inf"
-    )
-  ))
+    ))
+  )
   expect_true(
     setdiff(colnames(res012inf), colnames(res012infS)) == "cohort_start_date"
   )
@@ -458,20 +479,20 @@ test_that("test attributes", {
       condition_occurrence = condition_occurrence
     )
 
-  cdm$cohort1new <- cdm$cohort1 %>%
+  cdm[["cohort1new"]] <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2",
       indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL
     )
   expect_identical(
-    sort(names(attributes(cdm$cohort1))),
-    sort(names(attributes(cdm$cohort1new)))
+    sort(names(attributes(cdm[["cohort1"]]))),
+    sort(names(attributes(cdm[["cohort1new"]])))
   )
 
-  cdm$cohort1new <- cdm$cohort1new %>% indicationToStrata()
+  cdm[["cohort1new"]] <- cdm[["cohort1new"]] %>% indicationToStrata()
   expect_identical(
-    sort(names(attributes(cdm$cohort1))),
-    sort(names(attributes(cdm$cohort1new)))
+    sort(names(attributes(cdm[["cohort1"]]))),
+    sort(names(attributes(cdm[["cohort1new"]])))
   )
 
 })
@@ -512,7 +533,7 @@ test_that("summariseIndication", {
     cohort2 = indicationCohortName, condition_occurrence = condition_occurrence
   )
 
-  res <- cdm$cohort1 %>%
+  res <- cdm[["cohort1"]] %>%
     addIndication(
       cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
       unknownIndicationTable = "condition_occurrence"
@@ -526,32 +547,10 @@ test_that("summariseIndication", {
     "result_type"
   ) %in% colnames(result)))
   expect_true(ncol(result) == 11)
-  expect_true(any(grepl("indication_gap_0", result$variable)))
-  expect_true(any(grepl("indication_gap_7", result$variable)))
-  expect_true(any(grepl("indication_gap_30", result$variable)))
-  expect_true(any(grepl("indication_gap_inf", result$variable)))
-
-  result <- summariseIndication(
-    res, cdm, indicationVariables = c(
-      "indication_gap_inf_asthma", "indication_gap_inf_covid",
-      "indication_gap_inf_none", "indication_gap_inf_unknown"
-    )
-  )
-
-  expect_true(all(c(
-    "group_name", "group_level", "strata_name", "strata_level", "variable",
-    "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
-    "result_type"
-  ) %in% colnames(result)))
-  expect_true(ncol(result) == 11)
-  expect_true(!any(grepl("indication_gap_0", result$variable)))
-  expect_true(!any(grepl("indication_gap_7", result$variable)))
-  expect_true(!any(grepl("indication_gap_30", result$variable)))
-  expect_true(any(grepl("indication_gap_inf", result$variable)))
-
-  expect_error(summariseIndication(
-    res, cdm, indicationVariables = "indication_gap_15"
-  ))
+  expect_true(any(grepl("Indication on index date", result$variable)))
+  expect_true(any(grepl("Indication during prior 7 days", result$variable)))
+  expect_true(any(grepl("Indication during prior 30 days", result$variable)))
+  expect_true(any(grepl("Indication any time prior", result$variable)))
 
   res <- res %>%
     PatientProfiles::addAge(
@@ -560,9 +559,7 @@ test_that("summariseIndication", {
     PatientProfiles::addSex(cdm)
 
   result <- summariseIndication(
-    res, cdm, strata = list(
-      "age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")
-    )
+    res, cdm, strata = list("age_group", "sex", c("age_group", "sex"))
   )
 
   expect_true(all(c(
@@ -575,13 +572,14 @@ test_that("summariseIndication", {
     group_level = c(
       "Overall", CDMConnector::cohortSet(res) %>% dplyr::pull("cohort_name")
     ),
-    strata_name = c("Overall", "age", "sex", "age & sex")
+    strata_name = c("Overall", "age_group", "sex", "age_group and sex")
   ) %>%
     dplyr::inner_join(
       dplyr::tibble(
         strata_name = c(
-          "age", "age", "sex", "sex", "age & sex", "age & sex", "age & sex",
-          "age & sex", "Overall"
+          "age_group", "age_group", "sex", "sex", "age_group and sex",
+          "age_group and sex", "age_group and sex", "age_group and sex",
+          "Overall"
         ),
         strata_level = c(
           "<40", ">=40", "Male", "Female", "<40 and Female", "<40 and Male",
@@ -598,10 +596,10 @@ test_that("summariseIndication", {
       ) %>%
       nrow()
   )
-  expect_true(any(grepl("indication_gap_0", result$variable)))
-  expect_true(any(grepl("indication_gap_7", result$variable)))
-  expect_true(any(grepl("indication_gap_30", result$variable)))
-  expect_true(any(grepl("indication_gap_inf", result$variable)))
+  expect_true(any(grepl("Indication on index date", result$variable)))
+  expect_true(any(grepl("Indication during prior 7 days", result$variable)))
+  expect_true(any(grepl("Indication during prior 30 days", result$variable)))
+  expect_true(any(grepl("Indication any time prior", result$variable)))
 
   expect_true(grepl("Summary indication", unique(result$result_type)))
 

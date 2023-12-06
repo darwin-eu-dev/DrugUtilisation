@@ -1,0 +1,42 @@
+﻿pattern_id,amount,amount_unit,amount_unit_concept_id,numerator,numerator_unit,numerator_unit_concept_id,denominator,denominator_unit,denominator_unit_concept_id,formula_name,unit
+1,NA,NA,NA,numeric,microgram,9655,numeric,hour,8505,time based with denominator,milliequivalent
+2,NA,NA,NA,numeric,milligram,8576,numeric,hour,8505,time based with denominator,milligram
+3,NA,NA,NA,numeric,unit,8510,numeric,hour,8505,time based with denominator,international unit
+4,NA,NA,NA,numeric,microgram,9655,NA,hour,8505,time based no denominator,milligram
+5,NA,NA,NA,numeric,milligram,8576,NA,hour,8505,time based no denominator,milliliter
+6,numeric,international unit,8718,NA,NA,NA,NA,NA,NA,fixed amount formulation,international unit
+7,numeric,microgram,9655,NA,NA,NA,NA,NA,NA,fixed amount formulation,milligram
+8,numeric,milliequivalent,9551,NA,NA,NA,NA,NA,NA,fixed amount formulation,milliequivalent
+9,numeric,milligram,8576,NA,NA,NA,NA,NA,NA,fixed amount formulation,milligram
+10,numeric,milliliter,8587,NA,NA,NA,NA,NA,NA,fixed amount formulation,milliliter
+11,numeric,unit,8510,NA,NA,NA,NA,NA,NA,fixed amount formulation,international unit
+12,NA,NA,NA,numeric,international unit,8718,numeric,milligram,8576,concentration formulation,international unit
+13,NA,NA,NA,numeric,international unit,8718,numeric,milliliter,8587,concentration formulation,international unit
+14,NA,NA,NA,numeric,milliequivalent,9551,numeric,milliliter,8587,concentration formulation,milliequivalent
+15,NA,NA,NA,numeric,milligram,8576,numeric,Actuation,45744809,concentration formulation,milligram
+16,NA,NA,NA,numeric,milligram,8576,numeric,liter,8519,concentration formulation,milligram
+17,NA,NA,NA,numeric,milligram,8576,numeric,milligram,8576,concentration formulation,milligram
+18,NA,NA,NA,numeric,milligram,8576,numeric,milliliter,8587,concentration formulation,milligram
+19,NA,NA,NA,numeric,milligram,8576,numeric,square centimeter,9483,concentration formulation,milligram
+20,NA,NA,NA,numeric,milliliter,8587,numeric,milligram,8576,concentration formulation,milliliter
+21,NA,NA,NA,numeric,milliliter,8587,numeric,milliliter,8587,concentration formulation,milliliter
+22,NA,NA,NA,numeric,unit,8510,numeric,Actuation,45744809,concentration formulation,international unit
+23,NA,NA,NA,numeric,unit,8510,numeric,milligram,8576,concentration formulation,international unit
+24,NA,NA,NA,numeric,unit,8510,numeric,milliliter,8587,concentration formulation,international unit
+25,NA,NA,NA,numeric,unit,8510,numeric,square centimeter,9483,concentration formulation,international unit
+26,NA,NA,NA,numeric,international unit,8718,NA,milligram,8576,concentration formulation,international unit
+27,NA,NA,NA,numeric,international unit,8718,NA,milliliter,8587,concentration formulation,international unit
+28,NA,NA,NA,numeric,mega-international unit,9439,NA,milliliter,8587,concentration formulation,international unit
+29,NA,NA,NA,numeric,milliequivalent,9551,NA,milligram,8576,concentration formulation,milliequivalent
+30,NA,NA,NA,numeric,milliequivalent,9551,NA,milliliter,8587,concentration formulation,milliequivalent
+31,NA,NA,NA,numeric,milligram,8576,NA,Actuation,45744809,concentration formulation,milligram
+32,NA,NA,NA,numeric,milligram,8576,NA,liter,8519,concentration formulation,milligram
+33,NA,NA,NA,numeric,milligram,8576,NA,milligram,8576,concentration formulation,milligram
+34,NA,NA,NA,numeric,milligram,8576,NA,milliliter,8587,concentration formulation,milligram
+35,NA,NA,NA,numeric,milligram,8576,NA,square centimeter,9483,concentration formulation,milligram
+36,NA,NA,NA,numeric,milliliter,8587,NA,milligram,8576,concentration formulation,milliliter
+37,NA,NA,NA,numeric,milliliter,8587,NA,milliliter,8587,concentration formulation,milliliter
+38,NA,NA,NA,numeric,unit,8510,NA,Actuation,45744809,concentration formulation,international unit
+39,NA,NA,NA,numeric,unit,8510,NA,milligram,8576,concentration formulation,international unit
+40,NA,NA,NA,numeric,unit,8510,NA,milliliter,8587,concentration formulation,international unit
+41,NA,NA,NA,numeric,unit,8510,NA,square centimeter,9483,concentration formulation,international unit

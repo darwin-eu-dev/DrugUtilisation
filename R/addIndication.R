@@ -42,12 +42,12 @@
 #' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 #'
-#' cdm$drug_cohort %>%
+#' cdm[["drug_cohort"]] %>%
 #'   addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
 #' }
 #'
 addIndication <- function(x,
-                          cdm,
+                          cdm = attr(x, "cdm_reference"),
                           indicationCohortName,
                           indicationGap = 0,
                           unknownIndicationTable = NULL,
@@ -73,7 +73,12 @@ addIndication <- function(x,
   ind <- addCohortIndication(ind, cdm, indicationCohortName, indicationGap)
 
   # add unknown indications
-  ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap)
+  ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap) %>%
+    dplyr::select(
+      "subject_id", "cohort_start_date", dplyr::starts_with(
+        paste0("indication_gap_", tolower(as.character(indicationGap)))
+      )
+    )
 
   # add the indication columns to the original table
   result <- x %>%
@@ -216,7 +221,7 @@ addNoneIndication <- function(x, gap) {
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm$cohort1 <- cdm$cohort1 %>%
+#' cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
 #'   addIndication(cdm, "cohort2") %>%
 #'   indicationToStrata()
 #' }

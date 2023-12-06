@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# DrugUtilisation <img src='man/figures/hex-HELPWANTED.png' align="right" height="139"/>
+# DrugUtilisation <img src='man/figures/DrugUtilisation.png' align="right" height="139"/>
 
 [![CRANstatus](https://www.r-pkg.org/badges/version/DrugUtilisation)](https://CRAN.R-project.org/package=DrugUtilisation) 
 [![codecov.io](https://codecov.io/github/darwin-eu/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
@@ -40,7 +40,7 @@ knitr::opts_chunk$set(
 
 DrugUtilisation contains functions to instantiate and characterize the cohorts used in a Drug Utilisation Study in the OMOP common data model. Main functionalities are:
 
-- Create DrugUsilisation cohorts
+- Create DrugUtilisation cohorts
 
 - Add indications to this cohort
 
@@ -93,12 +93,12 @@ To generate the cohort of drug use we will use `generateDrugUtilisationCohortSet
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm,
   name = "dus_cohort",
-  conceptSetList = conceptList,
-  summariseMode = "FirstEra", 
-  daysPriorObservation = 365,
+  conceptSet = conceptList,
+  limit = "first",
+  priorObservation = 365,
   gapEra = 30,
   priorUseWashout = 0,
-  imputeDuration = "eliminate", 
+  imputeDuration = "none", 
   durationRange = c(0, Inf)
 )
 ```
@@ -108,7 +108,7 @@ cdm <- generateDrugUtilisationCohortSet(
 The generated cohort will have the `GeneratedCohortSet` as seen in CDMConnector
 
 ```{r}
-class(cdm$dus_cohort)
+class(cdm[["dus_cohort"]])
 ```
 
 Cohort set:
@@ -116,19 +116,19 @@ Cohort set:
 ```{r}
 library(CDMConnector)
 library(dplyr)
-cohortSet(cdm$dus_cohort) %>% glimpse()
+cohortSet(cdm[["dus_cohort"]]) %>% glimpse()
 ```
 
 Cohort count:
 
 ```{r}
-cohortCount(cdm$dus_cohort)
+cohortCount(cdm[["dus_cohort"]])
 ```
 
 Cohort attrition:
 
 ```{r}
-cohortAttrition(cdm$dus_cohort) %>% glimpse()
+cohortAttrition(cdm[["dus_cohort"]]) %>% glimpse()
 ```
 
 ### Indication
@@ -138,13 +138,13 @@ Indications will always be cohorts. An option that the package has is to create 
 ```{r}
 indications <- list(headache = 378253, influenza = 4266367)
 cdm <- generateConceptCohortSet(cdm, indications, "indications_cohort")
-cohortCount(cdm$indications_cohort)
+cohortCount(cdm[["indications_cohort"]])
 ```
 
 Then we can add the indication using the function `addIndication`. That will add a new column for each indication gap and indication. 
 
 ```{r}
-x <- cdm$dus_cohort %>%
+x <- cdm[["dus_cohort"]] %>%
   addIndication(
     cdm = cdm, indicationCohortName = "indications_cohort", indicationGap = c(0, 30, 365), 
     unknownIndicationTable = c("condition_occurrence")
@@ -184,11 +184,11 @@ library(PatientProfiles)
 x <- x %>%
   addAge(cdm, ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
   addSex(cdm)
-summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex")))
+summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex")))
 ```
 
 ```{r}
-summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "age & sex" = c("age_group", "sex"))) %>% glimpse()
+summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex"))) %>% glimpse()
 ```
 
 ### Daily dose
@@ -196,8 +196,8 @@ summariseIndication(x, cdm, strata = list("age" = "age_group", "sex" = "sex", "a
 We can compute daily dose for a certain ingredient from a subset of drug_exposure or the whole drug exposure (can be very computationally expensive).
 
 ```{r}
-#cdm$drug_exposure %>%
-#  addDailyDose(cdm, ingredientConceptId = 1125315) %>%
+#cdm[["drug_exposure"]] %>%
+#  addDailyDose(ingredientConceptId = 1125315) %>%
 #  glimpse()
 ```
 
@@ -261,15 +261,9 @@ You can summarise the patient characteristics with `summariseLargeScaleCharacter
 
 ```{r}
 summariseLargeScaleCharacteristics(
-  x, cdm, tablesToCharacterize = c("drug_exposure", "condition_occurrence")
+  cohort = x, 
+  window = list(c(-Inf, Inf)), 
+  eventInWindow = "condition_occurrence", 
+  episodeInWindow = "drug_exposure"
 )
 ```
-
-## ReportGenerator
-
-This package is included in the `ReportGenerator` environment. See exportable elements:
-
-```{r, eval = FALSE}
-DrugUtilisation::ReportGenerator
-```
-

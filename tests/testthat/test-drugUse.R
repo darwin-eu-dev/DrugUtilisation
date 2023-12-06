@@ -1,3 +1,40 @@
+test_that("test flags", {
+  skip_on_cran()
+  cdm <- mockDrugUtilisation()
+  x <- tidyr::expand_grid(
+    duration = c(TRUE, FALSE), quantity = c(TRUE, FALSE), dose = c(TRUE, FALSE)
+  )
+  columnsDuration <- c("duration", "impute_duration_percentage")
+  columnsQuantity <- c("cumulative_quantity", "initial_quantity")
+  columnsDose <- c(
+    "impute_daily_dose_percentage", "initial_daily_dose_milligram",
+    "cumulative_dose_milligram"
+  )
+  for (k in seq_len(nrow(x))) {
+    xx <- cdm$cohort1 %>%
+      addDrugUse(
+        ingredientConceptId = 1539403, duration = x$duration[k],
+        quantity = x$quantity[k], dose = x$dose[k]
+      ) %>%
+      expect_no_error()
+    expect_true(all(c("number_exposures", "number_eras") %in% colnames(xx)))
+    if (x$duration[k]) {
+      expect_true(all(columnsDuration %in% colnames(xx)))
+    } else {
+      expect_false(any(columnsDuration %in% colnames(xx)))
+    }
+    if (x$quantity[k]) {
+      expect_true(all(columnsQuantity %in% colnames(xx)))
+    } else {
+      expect_false(any(columnsQuantity %in% colnames(xx)))
+    }
+    if (x$dose[k]) {
+      expect_true(all(columnsDose %in% colnames(xx)))
+    } else {
+      expect_false(any(columnsDose %in% colnames(xx)))
+    }
+  }
+})
 
 test_that("test overlapMode", {
   skip_on_cran()
@@ -47,48 +84,56 @@ test_that("test overlapMode", {
       subject_id = c(1, 1, 2),
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    ),
+    extraTables = list(
+      "concept_relationship" = dplyr::tibble(
+        concept_id_1 = c(c(1, 2, 3, 4, 5)),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
+      )
     )
   )
-  # variables <- c(
-  #   "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
-  #   "number_exposures", "number_subexposures", "number_continuous_exposures",
-  #   "number_eras", "number_gaps", "number_unexposed_periods",
-  #   "number_subexposures_overlap", "number_eras_overlap",
-  #   "number_continuous_exposure_overlap", "initial_daily_dose",
-  #   "sum_all_exposed_dose", "sum_all_exposed_days", "duration", "gap_days",
-  #   "number_subexposures_no_overlap", "number_eras_no_overlap",
-  #   "number_continuous_exposures_no_overlap",
-  #   "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
-  # )
   variables <- c(
-    "number_exposures", "number_eras", "initial_daily_dose", "duration",
-    "cumulative_dose", "initial_quantity", "cumulative_quantity"
+    "number_exposures", "number_eras", "initial_daily_dose_milligram", "duration",
+    "cumulative_dose_milligram", "initial_quantity", "cumulative_quantity"
   )
 
+  # check no error without cdm object specified
+  expect_no_error(x <- addDrugUse(
+    cohort = cdm[["cohort1"]],
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
+  ))
+
   # prev
-  suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+  x <- addDrugUse(
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Previous",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
-  ))
+  )
 
-  expect_equal(sort(names(attributes(cdm$cohort1))), sort(names(attributes(x))))
+  c("cdm_reference", "cohort_attrition", "cohort_set") %in%
+    names(attributes(x)) %>%
+    all() %>%
+    expect_true()
   expect_true(all(variables %in% colnames(x)))
 
-  value_cohort_1 <- c(
-    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
-    0, 3, 0, 0,
-    41 * 10 + 20 * 20, 0, 32 * 20 + 30
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(3, 1, 10, 61, 810, 41, 94)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -100,24 +145,19 @@ test_that("test overlapMode", {
 
   # sub
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Subsequent",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
-    0, 3, 0, 0,
-    10 * 9 + 20 * 51 + 30 * 1, 0, 10 * 32 + 20 * 1 + 30 * 0
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(3, 1, 10, 61, 1140, 41, 94)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -129,24 +169,19 @@ test_that("test overlapMode", {
 
   # min
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Minimum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
-    0, 3, 0, 0,
-    10 * 41 + 20 * 20 + 30 * 0, 0, 10 * 0 + 20 * 32 + 30 * 1
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(3, 1, 10, 61, 810, 41, 94)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -158,24 +193,19 @@ test_that("test overlapMode", {
 
   # max
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Maximum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    61, 0, 33, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
-    0, 3, 0, 0,
-    9 * 10 + 51 * 20 + 1 * 30, 0, 32 * 10 + 1 * 20 + 0 * 30
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(3, 1, 10, 61, 1140, 41, 94)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -187,24 +217,19 @@ test_that("test overlapMode", {
 
   # sum
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    61, 0, 0, 61, 3, 5, 1, 1, 0, 0, 2, 1, 1, 10, 41 * 10 + 52 * 20 + 30, 41 + 52 + 1, 61,
-    0, 3, 0, 0,
-    41 * 10 + 52 * 20 + 1 * 30, 0, 0
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 41, 94)
+  value_cohort_1 <- c(3, 1, 10, 61, 1480, 41, 94)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -263,48 +288,38 @@ test_that("test gapEra and eraJoinMode", {
       subject_id = c(1, 1, 2),
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    ),
+    extraTables = list(
+      "concept_relationship" = dplyr::tibble(
+        concept_id_1 = c(1, 2, 3, 4, 5),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
+      )
     )
   )
 
-  # variables <- c(
-  #   "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
-  #   "number_exposures", "number_subexposures", "number_continuous_exposures",
-  #   "number_eras", "number_gaps", "number_unexposed_periods",
-  #   "number_subexposures_overlap", "number_eras_overlap",
-  #   "number_continuous_exposure_overlap", "initial_daily_dose",
-  #   "sum_all_exposed_dose", "sum_all_exposed_days", "duration", "gap_days",
-  #   "number_subexposures_no_overlap", "number_eras_no_overlap",
-  #   "number_continuous_exposures_no_overlap",
-  #   "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
-  # )
   variables <- c(
-    "number_exposures", "number_eras", "initial_daily_dose", "duration",
-    "cumulative_dose", "initial_quantity", "cumulative_quantity"
+    "number_exposures", "number_eras", "initial_daily_dose_milligram",
+    "duration", "cumulative_dose_milligram", "initial_quantity",
+    "cumulative_quantity"
   )
 
   # overall functionality
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 0,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    35, 25, 0, 15, 2, 3, 2,
-    2, 0, 1,
-    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
-    0, 3, 2, 2,
-    15 * 30 + 20 * 20, 0, 0
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 15, 35)
 
+  value_cohort_1 <- c(2, 2, 30, 60, 850, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -316,26 +331,19 @@ test_that("test gapEra and eraJoinMode", {
 
   # gapEra = 24
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 24,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    35, 25, 0, 15, 2, 3, 2,
-    2, 0, 1,
-    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
-    0, 3, 2, 2,
-    15 * 30 + 20 * 20, 0, 0
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 15, 35)
+  value_cohort_1 <- c(2, 2, 30, 60, 850, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -347,26 +355,19 @@ test_that("test gapEra and eraJoinMode", {
 
   # gapEra = 25 & joinMode = Zero
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 25,
     eraJoinMode = "Zero",
     overlapMode = "Sum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    35, 0, 0, 60, 2, 3, 2,
-    1, 1, 0,
-    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
-    25, 3, 1, 2,
-    15 * 30 + 20 * 20, 0, 0
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 15, 35)
+  value_cohort_1 <- c(2, 1, 30, 60, 850, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -378,26 +379,19 @@ test_that("test gapEra and eraJoinMode", {
 
   # gapEra = 25 & joinMode = Previous
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 25,
     eraJoinMode = "Previous",
     overlapMode = "Sum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    35, 0, 0, 60, 2, 3, 2,
-    1, 1, 0,
-    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
-    25, 3, 1, 2,
-    15 * 30 + 20 * 20 + 25 * 30, 25 * 30, 0
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 15, 35)
+  value_cohort_1 <- c(2, 1, 30, 60, 1600, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -409,26 +403,19 @@ test_that("test gapEra and eraJoinMode", {
 
   # gapEra = 25 & joinMode = Subsequent
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 25,
     eraJoinMode = "Subsequent",
     overlapMode = "Sum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    35, 0, 0, 60, 2, 3, 2,
-    1, 1, 0,
-    0, 0, 0, 30, 15 * 30 + 20 * 20, 15 + 20, 60,
-    25, 3, 1, 2,
-    15 * 30 + 20 * 20 + 25 * 20, 25 * 20, 0
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 15, 35)
+  value_cohort_1 <- c(2, 1, 30, 60, 1350, 15, 35)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(
@@ -487,52 +474,42 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       subject_id = c(1, 1, 2),
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    ),
+    extraTables = list(
+      "concept_relationship" = dplyr::tibble(
+        concept_id_1 = c(c(1, 2, 3, 4, 5)),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+        relationship_id = c(rep("RxNorm has dose form", 5))
+      )
     )
   )
 
-  # variables <- c(
-  #   "exposed_days", "unexposed_days", "not_considered_days", "first_era_days",
-  #   "number_exposures", "number_subexposures", "number_continuous_exposures",
-  #   "number_eras", "number_gaps", "number_unexposed_periods",
-  #   "number_subexposures_overlap", "number_eras_overlap",
-  #   "number_continuous_exposure_overlap", "initial_daily_dose",
-  #   "sum_all_exposed_dose", "sum_all_exposed_days", "duration", "gap_days",
-  #   "number_subexposures_no_overlap", "number_eras_no_overlap",
-  #   "number_continuous_exposures_no_overlap",
-  #   "cumulative_dose", "cumulative_gap_dose", "cumulative_not_considered_dose"
-  # )
   variables <- c(
-    "number_exposures", "number_eras", "initial_daily_dose", "duration",
-    "cumulative_dose", "initial_quantity", "cumulative_quantity"
+    "number_exposures", "number_eras", "initial_daily_dose_milligram",
+    "duration", "cumulative_dose_milligram", "initial_quantity",
+    "cumulative_quantity"
   )
 
   # overall functionality
   suppressWarnings(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 0,
     eraJoinMode = "Zero",
     overlapMode = "Sum",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(0, Inf)
   ))
-  value_cohort_1 <- c(
-    28, 33, 0, 27, 4, 7, 2,
-    2, 0, 3,
-    2, 1, 1, 0, 30 * 16 + 40 * 22 + 10 * 22 + 20 * 1, 16 + 22 + 22 + 1, 61,
-    0, 5, 1, 1,
-    30 * 16 + 40 * 22 + 10 * 22 + 20 * 1, 0, 0
-  )[c(5, 8, 14, 17, 22)]
-  value_cohort_1 <- c(value_cohort_1, 0, 61)
+  value_cohort_1 <- c(4, 2, NA, 61, 1600, NA, 61)
   xx <- x %>%
     dplyr::collect() %>%
     dplyr::filter(subject_id == 2)
   for (k in 1:length(value_cohort_1)) {
-    expect_true(xx[[variables[k]]] == value_cohort_1[k])
+    expect_equal(xx[[variables[k]]], value_cohort_1[k])
   }
 
   parameters <- dplyr::tibble(
@@ -550,50 +527,29 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
     gapEra = c(8, 8, 16, 8, 16, 16, 16, 16)
   )
   expected_result <- dplyr::tibble(
-    #first_era_length = c(27, 27, 37, 27, 37, 37, 37, 37),
-    #not_considered_days = c(0, 33, 33, 33, 33, 22, 22, 11),
     number_eras = c(2, 2, 1, 2, 1, 1, 1, 1),
-    #number_gaps = c(0, 0, 1, 0, 1, 1, 1, 1),
-    #unexposed_days = c(33, 33, 24, 33, 24, 24, 24, 24),
-    #gap_days = c(0, 0, 9, 0, 9, 9, 9, 9),
-    cumulative_dose = c(1600, 610, 1410, 1050, 1720, 900, 810, 1720),
-    #cumulative_gap_dose = c(0, 0, 360, 0, 450, 180, 90, 450),
-    #cumulative_not_considered_dose = c(0, 990, 550, 550, 330, 880, 880, 330)
+    cumulative_dose_milligram = c(1600, 610, 1410, 1050, 1720, 900, 810, 1720)
   )
 
   for (k in 1:nrow(parameters)) {
     suppressWarnings(x <- addDrugUse(
-      cohort = cdm$cohort1,
+      cohort = cdm[["cohort1"]],
       cdm = cdm,
       ingredientConceptId = 1,
       gapEra = parameters$gapEra[k],
       eraJoinMode = parameters$eraJoinMode[k],
       overlapMode = parameters$overlapMode[k],
       sameIndexMode = parameters$sameIndexMode[k],
-      imputeDuration = "eliminate",
-      imputeDailyDose = "eliminate",
+      imputeDuration = "none",
+      imputeDailyDose = "none",
       durationRange = c(1, Inf),
       dailyDoseRange = c(0, Inf)
     ))
     result <- x %>%
       dplyr::collect() %>%
       dplyr::filter(subject_id == 2)
-    #expect_true(result$first_era_days == expected_result$first_era_length[k])
-    #expect_true(
-    #  result$not_considered_days == expected_result$not_considered_days[k]
-    #)
     expect_true(result$number_eras == expected_result$number_eras[k])
-    #expect_true(result$number_gaps == expected_result$number_gaps[k])
-    #expect_true(result$unexposed_days == expected_result$unexposed_days[k])
-    #expect_true(result$gap_days == expected_result$gap_days[k])
-    expect_true(result$cumulative_dose == expected_result$cumulative_dose[k])
-    #expect_true(
-    #  result$cumulative_gap_dose == expected_result$cumulative_gap_dose[k]
-    #)
-    #expect_true(
-    #  result$cumulative_not_considered_dose ==
-    #    expected_result$cumulative_not_considered_dose[k]
-    #)
+    expect_true(result$cumulative_dose_milligram == expected_result$cumulative_dose_milligram[k])
   }
 })
 
@@ -647,7 +603,8 @@ test_that("test splitSubexposures", {
     ))
   )
   cdm <- mockDrugUtilisation(
-    connectionDetails, extraTables = list("cohort1" = x)
+    connectionDetails,
+    extraTables = list("cohort1" = x)
   )
   y <- splitSubexposures(cdm[["cohort1"]], cdm) %>% dplyr::collect()
 
@@ -882,19 +839,18 @@ test_that("test empty targetCohortName", {
     dplyr::filter(.data$subject_id < 1)
 
   expect_error(x <- addDrugUse(
-    cohort = cdm$cohort1,
+    cohort = cdm[["cohort1"]],
     cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
     overlapMode = "Previous",
     sameIndexMode = "Sum",
-    imputeDuration = "eliminate",
-    imputeDailyDose = "eliminate",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
     durationRange = c(1, Inf),
     dailyDoseRange = c(100, Inf)
   ))
-
 })
 
 test_that("expected errors on inputs", {
@@ -956,7 +912,7 @@ test_that("check output format", {
       cara = c("a", "b", "b", "a")
     )
   )
-  result <- cdm$cohort %>%
+  result <- cdm[["cohort"]] %>%
     summariseDrugUse(cdm = cdm)
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
   expect_true(all(colnames(result) %in% c(
@@ -968,14 +924,15 @@ test_that("check output format", {
 
 test_that("check all estimates", {
   all_estimates <- c(
-    "min", "max", "mean", "median", "iqr", "range", "q05", "q10", "q15", "q20",
+    "min", "max", "mean", "median", # "iqr", "range",
+    "q05", "q10", "q15", "q20",
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "sd"
   )
   cdm <- mockDrugUtilisation(
     connectionDetails,
     extraTables = list(
-      dose_table= dplyr::tibble(
+      dose_table = dplyr::tibble(
         cohort_definition_id = c(1, 1, 1, 1),
         subject_id = c(1, 1, 2, 1),
         cohort_start_date = as.Date(c(
@@ -984,34 +941,32 @@ test_that("check all estimates", {
         cohort_end_date = as.Date(c(
           "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
         )),
-        initial_dose = c(1, 2, 3, 6),
+        initial_daily_dose = c(1, 2, 3, 6),
         cumulative_dose = c(5, 6, 9, 7),
         piscina = c(TRUE, FALSE, TRUE, FALSE),
         cara = c("a", "b", "b", "a")
       )
     )
   )
-  attr(cdm$dose_table, "cohort_set") <- dplyr::tibble(
+  attr(cdm[["dose_table"]], "cohort_set") <- dplyr::tibble(
     cohort_definition_id = 1, cohort_name = "cohort1"
   )
-  class(cdm$dose_table) <- c("GeneratedCohortSet", class(cdm$dose_table))
+  class(cdm[["dose_table"]]) <- c("GeneratedCohortSet", class(cdm[["dose_table"]]))
   for (k in 1:length(all_estimates)) {
     res <- summariseDrugUse(
-      cdm$dose_table,
+      cdm[["dose_table"]],
       cdm = cdm,
-      drugUseVariables = c("initial_dose", "cumulative_dose"),
       drugUseEstimates = all_estimates[k]
     ) %>%
-      dplyr::filter(.data$group_name == "Cohort name")
-    expect_true(nrow(res[res$variable == c("initial_dose"), ]) == 1)
-    expect_true(res$estimate_type[res$variable == c("initial_dose")] == all_estimates[k])
+      dplyr::filter(.data$group_name == "cohort_name")
+    expect_true(nrow(res[res$variable == c("initial_daily_dose"), ]) == 1)
+    expect_true(res$estimate_type[res$variable == c("initial_daily_dose")] == all_estimates[k])
     expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
     expect_true(res$estimate_type[res$variable == c("cumulative_dose")] == all_estimates[k])
   }
   res <- summariseDrugUse(
-    cdm$dose_table,
+    cdm[["dose_table"]],
     cdm = cdm,
-    drugUseVariables = c("initial_dose", "cumulative_dose"),
     drugUseEstimates = all_estimates
   )
 
@@ -1020,19 +975,94 @@ test_that("check all estimates", {
 
 test_that("check all variables", {
   all_estimates <- c(
-    "min", "max", "mean", "median", "iqr", "range", "q05", "q10", "q15", "q20",
+    "min", "max", "mean", "median", # "iqr", "range",
+    "q05", "q10", "q15", "q20",
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "sd"
   )
-  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- mockDrugUtilisation(connectionDetails,
+    extraTables = list(
+      "concept_relationship" = dplyr::tibble(
+        concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
+        concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
+        relationship_id = c(rep("RxNorm has dose form", 4))
+      )
+    )
+  )
   cdm <- generateDrugUtilisationCohortSet(
     cdm, "dus", list(acetaminophen = c(1125315, 43135274, 2905077, 1125360))
   )
-  result <- cdm$dus %>%
+
+  result <- cdm[["dus"]] %>%
     addDrugUse(cdm, 1125315) %>%
-    summariseDrugUse(cdm, drugUseEstimates = all_estimates)
+    summariseDrugUse(cdm) %>%
+    expect_no_error()
   expect_true(all(c(
-    "initial_daily_dose", "number_exposures", "duration", "cumulative_dose",
-    "number_eras", "initial_quantity", "cumulative_quantity"
+    "number subjects", "number records", "duration", "number_exposures",
+    "cumulative_quantity", "initial_quantity", "impute_duration_percentage",
+    "number_eras", "impute_daily_dose_percentage", "initial_daily_dose_milligram",
+    "cumulative_dose_milligram"
   ) %in% result$variable))
 })
+
+
+test_that("test impute duration percentage", {
+  conceptList <- list(`Ingredient: acetaminophen (1125315)` =
+                        c(1125315, 43135274, 2905077, 1125360))
+
+  cdm <- mockDrugUtilisation(numberIndividual  = 200)
+
+  cdm$drug_exposure <- cdm$drug_exposure %>%
+    dplyr::mutate(drug_exposure_end_date = dplyr::if_else(person_id == 14, NA, drug_exposure_end_date))
+
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm  = cdm,
+    name = "acetaminophen_example3",
+    conceptSet = conceptList,
+    imputeDuration = "mean"
+  )
+
+  expect_true(cdm$acetaminophen_example3 %>%
+    addDrugUse(
+      ingredientConceptId = 1125315,
+      duration = TRUE,
+      quantity = FALSE,
+      dose     = FALSE,
+      imputeDuration = "mean"
+    ) %>%
+    dplyr::filter(subject_id == 14) %>%
+    dplyr::pull(impute_duration_percentage) == 100)
+
+
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:4,
+      person_id = c(1, 1, 1, 1),
+      drug_concept_id = c(1539462, 1539463, 1539403, 1539403),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2001-02-01", "2001-02-17", "2001-04-10"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        NA,  "2001-02-15", "2001-03-19", "2001-05-10"
+      )),
+      quantity = c(1,2,3,4)
+    ),
+    cohort1 = dplyr::tibble(cohort_definition_id = 1, subject_id = 1,
+                            cohort_start_date = as.Date("1990-01-01"),
+                            cohort_end_date = as.Date("2020-01-01"))
+  )
+
+  cdm$cohort1 <- cdm$cohort1 %>% addDrugUse(
+    cdm = cdm,
+    ingredientConceptId = 1539403,
+    conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
+      imputeDuration = "median")
+
+
+  expect_true(cdm$cohort1 %>%
+                dplyr::filter(subject_id == 1) %>%
+                dplyr::pull(impute_duration_percentage) == 25)
+
+})
+

@@ -10,15 +10,19 @@ reference:
 - subtitle: Indication functions
   desc: Indication functions are used to summarise and obtain the indication information
 - contents:
-  - matches("addIndication|indicationToStrata|indicationColumns|summariseIndication")
+  - matches("addIndication|indicationToStrata|summariseIndication")
 - subtitle: Add daily dose
   desc: Tools to compute the daily dose, see when it can be computed
 - contents:
-  - matches("addDailyDose|addPattern|dailyDoseCoverage|patternTable|stratifyByUnit")
+  - matches("addDailyDose|addPattern|addRoute|dailyDoseCoverage|patternTable|stratifyByUnit|patternsWithFormula")
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
-  - matches("addDrugUse|drugUseColumns|summariseDrugUse")
+  - matches("addDrugUse|summariseDrugUse")
+- subtitle: Summarise treatments during certain windows
+  desc: Summarise the use of different treatments during certain windows
+- contents:
+  - matches("summariseTreatment")
 - subtitle: Charcterise a cohort
   desc: Different functions to characterize cohort, these functions may be moved to more focused into characterization packages within DARWIN-EU framework
 - contents:
@@ -26,4 +30,4 @@ reference:
 - subtitle: Complementary functions
   desc: Helpper functions, some of thay may be deprecated in the near future
 - contents:
-  - matches("reportGenerator|readConceptList|mockDrugUtilisation|generateConceptCohortSet")
+  - matches("readConceptList|mockDrugUtilisation|generateConceptCohortSet")

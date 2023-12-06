@@ -1,0 +1,281 @@
+---
+title: "Use DrugUtilisation to create cohort"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Use DrugUtilisation to create cohort}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+  
+```{r , include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Create mock data first
+
+```{r setup,message= FALSE, warning=FALSE}
+library(DrugUtilisation)
+library(CodelistGenerator)
+library(CDMConnector)
+library(dplyr)
+con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
+connectionDetails <- list(
+  con = con,
+  writeSchema = "main",
+  cdmPrefix = NULL,
+  writePrefix = NULL
+)
+cdm <- mockDrugUtilisation(
+  connectionDetails = connectionDetails,
+  numberIndividual = 100
+)
+```
+
+# Get concept code for cohort generation
+To generate a cohort, we will need a concept list, this can be obtained through different ways.
+
+1. Get from json file.
+2. Use concept code directly.
+3. Get ingredient
+4. Get ATC code
+
+To get it from json file, both function readConceptList() and codesFromConceptSet() can be used.
+```{r}
+#get concept from json file using readConceptList from this package or CodelistGenerator
+conceptSet_json_1 <- readConceptList(here::here("inst/Concept"), cdm)
+conceptSet_json_2 <- codesFromConceptSet(here::here("inst/Concept"), cdm)
+
+conceptSet_json_1
+conceptSet_json_2
+```
+Or a list can be created manually with the target codes:
+```{r}
+#get concept using code directly
+conceptSet_code <- list(asthma = 317009)
+conceptSet_code
+```
+If there is a certain ingredient of interest, code can also be obtained by getDrugIngredientCodes() from CodelistGenerator.
+```{r, message=FALSE, warning=FALSE}
+#get concept by ingredient
+conceptSet_ingredient <- getDrugIngredientCodes(cdm, name = "simvastatin")
+conceptSet_ingredient
+```
+ATC code can also be obtained, using getATCCodes() from CodelistGenerator.
+
+```{r, message=FALSE, warning=FALSE}
+#get concept from ATC codes
+conceptSet_ATC <- getATCCodes(cdm, 
+                              level = "ATC 1st", 
+                              name = "ALIMENTARY TRACT AND METABOLISM")
+conceptSet_ATC
+```
+# Create cohort
+Now having the conceptSet, we can proceed to generate cohort. There are two functions in this package to generate cohort:
+  
+  1. generateConceptCohortSet: to generate a cohort for a certain list of concepts, which does not have to be drug. This function is exported from CDMConnector
+2. generateDrugUtilisationCohortSet: to generate a cohort of the drug use
+
+## generateConceptCohortSet()
+
+First, let's use generateConceptCohortSet to get the asthma cohort using the *conceptSet_code*, it will also give the same output if changed to *conceptSet_json_1* or *conceptSet_json_2*, as they are using the same concept code. 
+
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateConceptCohortSet(cdm,
+  conceptSet = conceptSet_code,
+  name = "asthma_1",
+  end = "observation_period_end_date",
+  requiredObservation = c(10, 10),
+  overwrite = TRUE
+)
+cdm$asthma_1
+```
+The count of the cohort can be assessed using cohortCount() from CDMConnector
+```{r, message=FALSE, warning=FALSE}
+cohortCount(cdm$asthma_1)
+```
+Cohort attrition can be assessed using cohortAttrition() from CDMConnector
+```{r, message=FALSE, warning=FALSE}
+cohortAttrition(cdm$asthma_1)
+```
+
+The *end* parameter set how the cohort end date is defined. Now it is changed to event end date to demonstrate the difference from previous observation period end date. See that now the cohort_end_date is different:
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateConceptCohortSet(cdm,
+  conceptSet = conceptSet_code,
+  name = "asthma_2",
+  end = "event_end_date",
+  requiredObservation = c(10, 10),
+  overwrite = TRUE
+)
+cdm$asthma_2
+```
+
+The *requiredObservation* parameter is a numeric vector of length 2, that defines the number of days of
+required observation time prior to index and post index for an event to be included in the cohort. Let's check it now to see how reducing required observation affect the *asthma_1* cohort.
+
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateConceptCohortSet(cdm,
+  conceptSet = conceptSet_code,
+  name = "asthma_3",
+  end = "observation_period_end_date",
+  requiredObservation = c(1, 1),
+  overwrite = TRUE
+)
+cdm$asthma_3
+
+cohortCount(cdm$asthma_3)
+
+cohortAttrition(cdm$asthma_3)
+```
+
+## generateDrugUtilisationCohortSet()
+Now let's try function DrugUtilisation::generateDrugUtilisationCohortSet() to get the drug cohort for ingredient simvastatin. This function has a lot more options you can set. We first use default settings:
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateDrugUtilisationCohortSet(cdm,
+  name = "dus_alleras",
+  conceptSet = conceptSet_ingredient
+)
+cdm$dus_alleras
+
+cohortCount(cdm$dus_alleras)
+
+cohortAttrition(cdm$dus_alleras) %>% select(number_records, reason, excluded_records, excluded_subjects)
+
+```
+
+### imputeDuration and durationRange 
+
+The parameter *durationRange* specifies the range within which the duration must fall, where duration = end date - start date + 1. Default as c(1, Inf). It should be a numeric vector of length two, with no NAs and the first value should be equal or smaller than the second one. Duration values outside of *durationRange* will be imputed using *imputeDuration*. It can ne set as: "none", "median", "mean", "mode" or an integer (count).
+
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateDrugUtilisationCohortSet(cdm,
+  name = "dus_step2_0_inf",
+  conceptSet = conceptSet_ingredient,
+  imputeDuration = "none",
+  durationRange = c(0, Inf) # default as c(1, Inf)
+)
+
+cohortAttrition(cdm$dus_step2_0_inf) %>% select(number_records, reason, excluded_records, excluded_subjects)
+
+```
+
+
+### gapEra
+
+The *gapEra* parameter defines the number of days between two continuous drug exposures to be considered as a same era. Now let's change it from 0 to a larger number. From the *dus_step3_alleras* cohort attrition, we can see that when joining era at **STEP 3**, it resulted in less records, compared to the *dus_step2_0_inf* cohort, as exposures with less than 30 days gaps are joined.
+
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateDrugUtilisationCohortSet(cdm,
+  name = "dus_step3_alleras",
+  conceptSet = conceptSet_ingredient,
+  imputeDuration = "none",
+  durationRange = c(0, Inf),
+  gapEra = 30 # default as 0
+)
+
+cohortAttrition(cdm$dus_step3_alleras) %>% select(number_records, reason, excluded_records, excluded_subjects)
+
+```
+
+### priorUseWashout
+
+The *priorUseWashout* parameter specifiesthe number of prior days without exposure (often termed a 'washout') that are required. By default, it is set to NULL, meaning no washout period is necessary. In the example provided, we observe a reduction in the number of records in **STEP 4** for cohort *dus_alleras_step4* due to the washout period required, compared to the *dus_step3_alleras* cohort.
+
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateDrugUtilisationCohortSet(cdm,
+  name = "dus_alleras_step4",
+  conceptSet = conceptSet_ingredient,
+  imputeDuration = "none",
+  durationRange = c(0, Inf),
+  gapEra = 30,
+  priorUseWashout = 30
+)
+
+cohortAttrition(cdm$dus_alleras_step4) %>% select(number_records, reason, excluded_records, excluded_subjects)
+
+```
+
+### priorObservation
+
+The parameter *priorObservation* defines the minimum number of days of prior observation necessary for drug eras to be taken into account. If set to NULL, the drug eras are not required to fall within the observation_period. In this example, there is a noticeable decrease in the number of records for *dus_alleras_step5* cohort in **STEP 5** when compared to the *dus_alleras_step4* cohort.
+
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateDrugUtilisationCohortSet(cdm,
+  name = "dus_alleras_step5",
+  conceptSet = conceptSet_ingredient,
+  imputeDuration = "none",
+  durationRange = c(0, Inf),
+  gapEra = 30,
+  priorUseWashout = 30,
+  priorObservation = 30
+)
+
+cohortAttrition(cdm$dus_alleras_step5) %>% select(number_records, reason, excluded_records, excluded_subjects)
+
+```
+
+### cohortDateRange
+
+The *cohortDateRange* parameter defines the range for the cohort_start_date and cohort_end_date. In the following example, one can observe a reduction in **STEP 6** and **STEP 7** due to the constraints imposed on the cohort start and end dates.
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateDrugUtilisationCohortSet(cdm,
+  name = "dus_alleras_step67",
+  conceptSet = conceptSet_ingredient,
+  imputeDuration = "none",
+  durationRange = c(0, Inf),
+  gapEra = 30,
+  priorUseWashout = 30,
+  priorObservation = 30,
+  cohortDateRange = as.Date(c("2010-01-01", "2011-01-01")),
+  limi = "All"
+)
+
+cohortAttrition(cdm$dus_alleras_step67) %>% select(number_records, reason, excluded_records, excluded_subjects)
+```
+
+### limit: First era that fulfills the criteria
+
+Change the *limit* parameter from *All* to *First* and observe how it impacts the attrition of the *dus_step8_firstera cohort* in comparison to the *dus_alleras_step67* cohort. The number of records decreased at **STEP 8** because of the *First* limit. It gets the first record that fulfills all criteria.
+
+```{r, message=FALSE, warning=FALSE}
+cdm <- generateDrugUtilisationCohortSet(cdm,
+  name = "dus_step8_firstera",
+  conceptSet = conceptSet_ingredient,
+  imputeDuration = "none",
+  durationRange = c(0, Inf),
+  gapEra = 30,
+  priorUseWashout = 30,
+  priorObservation = 30,
+  cohortDateRange = as.Date(c("2010-01-01", "2011-01-01")),
+  limit = "First"
+)
+
+cohortAttrition(cdm$dus_step8_firstera) %>% select(number_records, reason, excluded_records, excluded_subjects)
+
+```
+### limit: First ever era
+The parameter *limit* only allows *All* and *First*. The *First* value represents the first era that meets the criteria set by the parameters prior to *limit*. However, if the goal is to get the first-ever era, this can be achieved using this function too. Setting the following parameter will result in the first ever drug era:
+```{r}
+cdm <- generateDrugUtilisationCohortSet(cdm,
+  name = "dus_step8_firstever",
+  conceptSet = conceptSet_ingredient,
+  imputeDuration = "none",
+  durationRange = c(0, Inf),
+  gapEra = 0,
+  priorUseWashout = Inf,
+  priorObservation = 0,
+  cohortDateRange = as.Date(c(NA, NA)),
+  limit = "First"
+)
+```
+```{r}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
+Constructing concept sets and generating various cohorts are the initial steps in conducting a drug utilization study. For further guidance on using getting more information like characteristics from these cohorts, please refer to the other vignettes.

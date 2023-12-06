@@ -6,6 +6,9 @@ test_that("test inputs", {
   ))
 
   #check cdm reference in attributes
-  expect_true(!is.null(attr(cdm$indications_cohort,"cdm_reference",exact = TRUE)))
+  expect_true("indications_cohort" %in% names(cdm))
+  expect_true(
+    !is.null(attr(cdm[["indications_cohort"]], "cdm_reference", exact = TRUE))
+  )
 
 })

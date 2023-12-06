@@ -1,0 +1,167 @@
+---
+title: "Guide on using DrugUtilisataion package to compute drug use related information"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Guide on using DrugUtilisataion package to compute drug use related information}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+## Adding Routes with `addRoute` Function
+
+To enrich your drug data, the DrugUtilisation package provides the `addRoute` function. This function utilizes an internal CSV file containing all possible routes for various drug dose forms supported by the package. 
+
+The `addRoute` function is designed to seamlessly incorporate route information into your drug table for the supported dose forms. In the example below, a mock database is generated using the `mockDrugUtilisation` function, and the `addRoute` function is applied to demonstrate the process:
+
+```{r, eval = TRUE}
+library(DrugUtilisation)
+con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
+connectionDetails <- list(
+  con = con,
+  writeSchema = "main",
+  cdmPrefix = NULL,
+  writePrefix = NULL
+)
+cdm <- mockDrugUtilisation(
+  connectionDetails = connectionDetails,
+  numberIndividual = 100
+)
+# Add route information to the drug table
+addRoute(cdm$drug_exposure)
+
+```
+
+
+## Generating Patterns with patternTable Function
+
+The `patternTable` function in the DrugUtilisation package is a powerful tool for deriving patterns from a drug strength table. This function extracts distinct patterns, associating them with `pattern_id` and `formula_id`. The resulting tibble provides valuable insights into the data:
+
+- `number_concepts`: the count of distinct concepts in the patterns.
+- `number_ingredients`: the count of distinct ingredients involved.
+- `number_records`: the overall count of records in the patterns.
+
+Moreover, the tibble includes a column indicating potentially valid and invalid combinations.
+
+```{r, eval = TRUE}
+
+patternTable(cdm)
+
+```
+
+For detailed information about the patterns, their associated formula, and combinations of `amount_unit`, `numerator_unit`, and `denominator_unit`, you can refer to the data:
+
+```{r, eval = FALSE}
+
+patternsWithFormula
+
+```
+
+
+## Get daily dose
+
+Now that we have all the patterns and formulas supported, the computation of daily doses can be performed using the `addDailyDose` function. This function will add to the data with additional columns, including those for quantity, daily dose, unit, and route.
+
+
+```{r, eval=TRUE}
+
+addDailyDose(
+  cdm$drug_exposure,
+  cdm = cdm,
+  ingredientConceptId = 1125315
+)
+```
+
+There is also a function, `dailyDoseCoverage`, to check the coverage of daily dose computation for chosen concept sets and ingredients.
+```{r, eval=TRUE}
+
+suppressWarnings(dailyDoseCoverage(cdm, 1125315))
+
+
+```
+
+## Adding Drug Usage Details to a Cohort with `addDrugUse`
+
+Additional drug usage details, including duration, initial dose, cumulative dose, etc., can be incorporated into a cohort using the `addDrugUse` function.
+
+### Parameters in `addDrugUse` Function
+
+#### `duration` Parameter
+
+The `duration` parameter is a boolean variable (`TRUE`/`FALSE`) determining whether to include the duration column. When set to `TRUE`, the duration is calculated as `cohort_end_date - cohort_start_date + 1`. Additionally, a column named `impute_duration_percentage` is added, reporting the percentage of imputed duration.
+
+To set the imputation method for duration, use the `imputeDuration` parameter, which can take values such as "none," "median," "mean," or "mode." Define the imputation range with the `durationRange` parameter, a numeric vector of length two, where the first value should be equal or smaller than the second one.
+
+#### `quantity` Parameter
+
+The `quantity` parameter, another boolean variable (`TRUE`/`FALSE`), controls the inclusion of quantity-related columns. If set to `TRUE`, columns for initial quantity and cumulative quantity are added.
+
+#### `dose` Parameter
+
+The `dose` parameter, also a boolean variable (`TRUE`/`FALSE`), governs the addition of daily dose-related columns. When set to `TRUE`, columns for initial daily dose and cumulative daily dose are incorporated. Moreover, a column named `impute_daily_dose_percentage` is added, reporting the percentage of imputed daily dose.
+
+Similar to the duration imputation, use the `imputeDuration` parameter to set the method for imputing daily dose, with options like "none," "median," "mean," or "mode." Define the imputation range with the `dailyDoseRange` parameter, a numeric vector of length two.
+
+These parameters offer flexibility in customizing the drug usage details added to the cohort.
+
+An example is provided where these parameters are set to `TRUE`, utilizing the drug ingredient acetaminophen.
+
+```{r, eval=TRUE}
+library(CodelistGenerator)
+cdm <- mockDrugUtilisation()
+cdm <- generateDrugUtilisationCohortSet(
+  cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+)
+cdm[["dus_cohort"]] %>%
+  addDrugUse(cdm,
+             duration = TRUE,
+             quantity = TRUE,
+             dose = TRUE,
+             1125315)
+
+```
+### Parameters for Joining Exposures
+
+Finally, the way continuous exposures are joined can be configured using the following parameters:
+
+#### `gapEra`: This parameter sets the number of days between two continuous exposures to be considered in the same era. 
+      If the previous exposure's end date minus the next exposure's start date is less than or equal to the specified `gapEra`, these two exposures will be joined.
+
+#### `eraJoinMode`: This parameter defines how two different continuous exposures are joined in an era. There are four options:
+    - "zero": Exposures are joined, considering that the period between both continuous exposures means the subject is treated with a daily dose of zero. The time between both exposures contributes to the total exposed time.
+    - "join": Exposures are joined, considering that the period between both continuous exposures means the subject is treated with a daily dose of zero. The time between both exposures does not contribute to the total exposed time.
+    - "previous": Exposures are joined, considering that the period between both continuous exposures means the subject is treated with the daily dose of the previous subexposure. The time between both exposures contributes to the total exposed time.
+    - "subsequent": Exposures are joined, considering that the period between both continuous exposures means the subject is treated with the daily dose of the subsequent subexposure. The time between both exposures contributes to the total exposed time.
+
+#### `overlapMode`: This parameter defines how the overlapping between two exposures that do not start on the same day is resolved inside a subexposure. There are five possible options:
+    - "previous": The considered daily dose is that of the earliest exposure.
+    - "subsequent": The considered daily dose is that of the new exposure that starts in that subexposure.
+    - "minimum": The considered daily dose is the minimum of all the exposures in the subexposure.
+    - "maximum": The considered daily dose is the maximum of all the exposures in the subexposure.
+    - "sum": The considered daily dose is the sum of all the exposures present in the subexposure.
+
+#### `sameIndexMode`: This parameter defines how the overlapping between two exposures that start on the same day is resolved inside a subexposure. There are three possible options:
+    - "minimum": The considered daily dose is the minimum of all the exposures in the subexposure.
+    - "maximum": The considered daily dose is the maximum of all the exposures in the subexposure.
+    - "sum": The considered daily dose is the sum of all the exposures present in the subexposure.
+
+For example, the following settings a maximum gap of 30 days for exposures to be joined. It uses the daily dose of the previous subexposure when joining exposures, employs the minimum daily dose for exposures starting on the same day, and considers the minimum daily dose for exposures that overlap.
+
+    
+```{r, eval=TRUE}
+cdm[["dus_cohort"]] %>%
+  addDrugUse(cdm,
+             ingredientConceptId = 1125315,
+             gapEra = 30,
+             eraJoinMode = "previous",
+             overlapMode = "minimum",
+             sameIndexMode = "minimum")
+
+```
+
+```{r}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+

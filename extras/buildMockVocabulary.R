@@ -30,7 +30,7 @@ cdm <- cdmFromCon(
 )
 
 # keyWord <- "influenza"
-# x <- cdm$concept %>%
+# x <- cdm[["concept"]] %>%
 #   filter(grepl(keyWord, concept_name, ignore.case = T)) %>%
 #   filter(standard_concept == "S")
 # x %>%
@@ -45,9 +45,9 @@ cdm <- cdmFromCon(
 # x %>%
 #   filter(domain_id == "Procedure") %>%
 #   print(n = 200)
-# cdm$concept_ancestor %>%
+# cdm[["concept_ancestor"]] %>%
 #   filter(ancestor_concept_id == 1516976) %>%
-#   left_join(cdm$concept %>% rename(descendant_concept_id = concept_id)) %>%
+#   left_join(cdm[["concept"]] %>% rename(descendant_concept_id = concept_id)) %>%
 #   select("concept_name", "descendant_concept_id") %>%
 #   filter(!grepl("Box", concept_name)) %>%
 #   arrange(descendant_concept_id) %>%
@@ -64,7 +64,7 @@ listCodes <- c(
 # while (prevList != length(listCodes)) {
 #   prevList <- length(listCodes)
 #   listCodes <- c(
-#     cdm$concept_ancestor %>%
+#     cdm[["concept_ancestor"]] %>%
 #       filter(descendant_concept_id %in% listCodes) %>%
 #       pull(ancestor_concept_id),
 #     listCodes
@@ -73,15 +73,15 @@ listCodes <- c(
 #   print(prevList)
 # }
 
-concept <- cdm$concept %>%
+concept <- cdm[["concept"]] %>%
   filter(concept_id %in% listCodes) %>%
   collect()
 
-concept_ancestor <- cdm$concept_ancestor %>%
+concept_ancestor <- cdm[["concept_ancestor"]] %>%
   filter(ancestor_concept_id %in% listCodes & descendant_concept_id %in% listCodes) %>%
   collect()
 
-drug_strength <- cdm$drug_strength %>%
+drug_strength <- cdm[["drug_strength"]] %>%
   filter(drug_concept_id %in% listCodes & ingredient_concept_id %in% listCodes) %>%
   collect()
 

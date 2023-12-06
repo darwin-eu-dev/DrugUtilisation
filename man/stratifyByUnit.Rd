@@ -2,22 +2,22 @@
 % Please edit documentation in R/pattern.R
 \name{stratifyByUnit}
 \alias{stratifyByUnit}
-\title{Function to stratify a conceptSetList by unit}
+\title{Function to stratify a conceptSet by unit}
 \usage{
-stratifyByUnit(conceptSetList, cdm, ingredientConceptId)
+stratifyByUnit(conceptSet, cdm, ingredientConceptId)
 }
 \arguments{
-\item{conceptSetList}{List of concept sets}
+\item{conceptSet}{List of concept sets}
 
 \item{cdm}{cdm reference}
 
 \item{ingredientConceptId}{ConceptId that refers to an ingredient}
 }
 \value{
-The conceptSetList stratified by unit
+The conceptSet stratified by unit
 }
 \description{
-Function to stratify a conceptSetList by unit
+Function to stratify a conceptSet by unit
 }
 \examples{
 \donttest{
