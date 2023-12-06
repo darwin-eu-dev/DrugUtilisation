@@ -34,7 +34,7 @@
 #'
 seeFormulas <- function() {
   mes <- c(
-    "Currenly 4 different formualas are applied:",
+    "Currenly 4 different formulas are applied:",
     cli::style_bold("formula_id          ", cli::col_silver("formula")),
     paste0("     1         ", cli::col_silver("quantity * numerator / days exposed")),
     paste0("     2         ", cli::col_silver("quantity * amount / days exposed")),

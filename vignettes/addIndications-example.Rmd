@@ -31,7 +31,7 @@ knitr::opts_chunk$set(
 
 In this vignette, we demonstrate how to use the addIndications function to establish a binary indicator between the drug utilisation cohort and another concept-based cohort. 
 
-The drug Utilisation package is designed to work with data in the OMOP CDM format, so our first step is to create a reference to the data using the DBI and CDMConnector packages. The connection to a Postgres database would look like:
+The DrugUtilisation package is designed to work with data in the OMOP CDM format, so our first step is to create a reference to the data using the DBI and CDMConnector packages. The connection to a Postgres database would look like:
 
 
 ```{r setup , message= FALSE, warning=FALSE}
@@ -62,7 +62,7 @@ conceptList <- CodelistGenerator::getDrugIngredientCodes(cdm, "acetaminophen")
 conceptList
 ```
 
-Next, we can create a drug utilization cohort by using the conceptList with the "generateDrugUtilisationCohortSet" function. For a better understanding of the arguments and functionaities of "generateDrugUtilisationCohortSet", please refer to the "How to Create a Cohort" vignette.
+Next, we can create a drug utilisation cohort by using the conceptList with the "generateDrugUtilisationCohortSet" function. For a better understanding of the arguments and functionalities of "generateDrugUtilisationCohortSet", please refer to the "Use DrugUtilisation to create a cohort" vignette.
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 cdm <- generateDrugUtilisationCohortSet(
