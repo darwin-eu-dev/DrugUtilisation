@@ -19,9 +19,11 @@
 #' @param cohort Cohort with drug use variables and strata.
 #' @param strata Stratification list.
 #' @param window Window where to summarise the treatments.
-#' @param tretmentCohortName Name of a cohort in the cdm that contains the
+#' @param treatmentCohortName Name of a cohort in the cdm that contains the
 #' interest treatments.
-#' @param tretmentConceptSet Concept set list to summarise.
+#' @param treatmentCohortId Cohort definition id of interest from
+#' treatmentCohortName.
+#' @param treatmentConceptSet Concept set list to summarise.
 #' @param combination Whether to include combination treatments.
 #' @param minCellCount Below this number counts will be suppressed.
 #'
@@ -32,16 +34,16 @@
 summariseTreatment<- function(cohort,
                               strata = list(),
                               window,
-                              tretmentCohortName = NULL,
-                              tretmentCohortId = NULL,
-                              tretmentConceptSet = NULL,
+                              treatmentCohortName = NULL,
+                              treatmentCohortId = NULL,
+                              treatmentConceptSet = NULL,
                               combination = FALSE,
                               minCellCount = 5) {
   if (!is.list(window)) {
     window <- list(window)
   }
   # initial checks
-  checkmate::checkClass(cohort, "generated_cohort_set")
+  #checkmate::checkClass(cohort, "generated_cohort_set")
   checkmate::checkList(strata, types = "character")
   checkmate::checkTRUE(all(unlist(strata) %in% colnames(cohort)))
   checkmate::checkCharacter(treatmentCohortName, null.ok = TRUE)
@@ -70,11 +72,11 @@ summariseTreatment<- function(cohort,
     )))
 
   # add cohort intersect
-  if (!is.null(tretmentCohortName)) {
+  if (!is.null(treatmentCohortName)) {
     cohort <- cohort %>%
       PatientProfiles::addCohortIntersectFlag(
-        targetCohortTable = tretmentCohortName,
-        targetCohortId = tretmentCohortId,
+        targetCohortTable = treatmentCohortName,
+        targetCohortId = treatmentCohortId,
         targetEndDate = NULL,
         window = window,
         nameStyle = "{window_name}_{cohort_name}"
@@ -82,32 +84,28 @@ summariseTreatment<- function(cohort,
   }
 
   # add concept intersect
-  if (!is.null(tretmentConceptSet)) {
+  if (!is.null(treatmentConceptSet)) {
     cohort <- cohort %>%
       PatientProfiles::addConceptIntersectFlag(
-        conceptSet = tretmentConceptSet,
+        conceptSet = treatmentConceptSet,
         window = window,
         nameStyle = "{window_name}_{concept_name}"
       )
   }
 
   # create unexposed
-  for (win in seq_along(window)) {
+  for (win in names(window)) {
     cohort <- cohort %>%
-      dplyr::mutate(
-        !!paste0("window", win, "_unexposed") := dplyr::if_else(
-          sum(dplyr::c_across(dplyr::starts_with(!!paste0("window", win)))) > 0,
-          1, 0
-        )
-      )
+      dplyr::mutate(!!!unexposed(colnames(cohort), win))
   }
   cohort <- cohort %>%
     CDMConnector::computeQuery() %>%
-    PatientProfiles::addCohortName()
+    PatientProfiles::addCohortName() %>%
+    dplyr::collect()
 
   # summarise
   newCols <- colnames(cohort)
-  newCols <- startsWith(newCols, "window")
+  newCols <- newCols[startsWith(newCols, "window")]
   result <- PatientProfiles::summariseResult(
     table = cohort,
     group = list("cohort_name"),
@@ -124,8 +122,8 @@ summariseTreatment<- function(cohort,
     tidyr::separate_wider_delim(
       cols = "variable",
       delim = "_",
-      names = c("new_variable", "new_variable_level"),
-      too_few = "align_start",
+      names = c("new_variable_level", "new_variable"),
+      too_few = "align_end",
       too_many = "merge",
       cols_remove = TRUE
     ) %>%
@@ -137,7 +135,22 @@ summariseTreatment<- function(cohort,
       ),
       by = "new_variable_level"
     ) %>%
+    dplyr::mutate("new_variable_level" = dplyr::if_else(
+      is.na(.data$new_variable_level), "", .data$new_variable_level
+    )) %>%
+    dplyr::arrange(
+      .data$group_level, .data$strata_name, .data$strata_level,
+      .data$new_variable_level
+    ) %>%
     dplyr::select(dplyr::all_of(cols))
 
   return(result)
+}
+
+unexposed <- function(cols, w) {
+  col <- cols[startsWith(cols, w)]
+  sum <- paste0(".data[[\"", col, "\"]]", collapse = " + ")
+  paste0("dplyr::if_else(", sum, " > 0, 0, 1)") %>%
+      rlang::parse_exprs() %>%
+      rlang::set_names(paste0(w, "_unexposed"))
 }
