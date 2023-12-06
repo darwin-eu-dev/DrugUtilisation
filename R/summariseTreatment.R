@@ -42,6 +42,7 @@ summariseTreatment<- function(cohort,
   if (!is.list(window)) {
     window <- list(window)
   }
+  cdm <- attr(cohort, "cdm_reference")
   # initial checks
   #checkmate::checkClass(cohort, "generated_cohort_set")
   checkmate::checkList(strata, types = "character")
@@ -143,7 +144,7 @@ summariseTreatment<- function(cohort,
       .data$new_variable_level
     ) %>%
     dplyr::select(dplyr::all_of(cols)) %>%
-    PatientProfiles::addCdmName(cdm = attr(cohort, "cdm_reference")) %>%
+    PatientProfiles::addCdmName(cdm = cdm) %>%
     dplyr::mutate("result_type" = "Summarise treatment") %>%
     dplyr::relocate(c("cdm_name", "result_type"))
 
