@@ -19,6 +19,10 @@ reference:
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
   - matches("addDrugUse|summariseDrugUse")
+- subtitle: Summarise treatments during certain windows
+  desc: Summarise the use of different treatments during certain windows
+- contents:
+  - matches("summariseTreatment")
 - subtitle: Charcterise a cohort
   desc: Different functions to characterize cohort, these functions may be moved to more focused into characterization packages within DARWIN-EU framework
 - contents:
