@@ -23,6 +23,10 @@ reference:
   desc: Summarise the use of different treatments during certain windows
 - contents:
   - matches("summariseTreatment")
+- subtitle: Treatment discontinuation
+  desc: To assess a survival analysis of the treatment duration
+- contents:
+  - matches("treatmentDiscontinuation")
 - subtitle: Charcterise a cohort
   desc: Different functions to characterize cohort, these functions may be moved to more focused into characterization packages within DARWIN-EU framework
 - contents:
