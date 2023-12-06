@@ -38,7 +38,7 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm = cdm, name = "cohort", conceptSet = list("acetaminophen" = 1214)
+#'   cdm = cdm, name = "cohort", conceptSet = list("acetaminophen" = c(1125315, 1125360, 2905077))
 #' )
 #'
 #' treatmentDiscontinuation(cdm$cohort)
