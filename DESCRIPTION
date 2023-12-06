@@ -75,3 +75,5 @@ LazyData: true
 URL: https://darwin-eu-dev.github.io/DrugUtilisation/
 VignetteBuilder: knitr
 Config/testthat/parallel: true
+Remotes:
+    darwin-eu/CohortSurvival
