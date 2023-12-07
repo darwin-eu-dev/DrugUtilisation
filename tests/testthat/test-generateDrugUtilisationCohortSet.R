@@ -351,7 +351,7 @@ test_that("check cohort_set order", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails
-    )
+  )
 
   acetaminophen <- list(acetaminophen = c(1125360, 2905077, 43135274))
 
@@ -374,4 +374,62 @@ test_that("check cohort_set order", {
       "prior_use_washout", "prior_observation", "cohort_date_range_start",
       "cohort_date_range_end", "limit"
     ))))
+})
+
+
+
+test_that("test impute duration methods", {
+
+  cdm <- mockDrugUtilisation(
+    connectionDetails,
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:4,
+      person_id = c(1, 1, 1, 1),
+      drug_concept_id = c(1539462, 1539463, 1539403, 1539403),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2001-02-01", "2001-02-17", "2001-04-10"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        NA,  "2001-02-15", "2001-03-19", "2001-05-10"
+      ))
+    )
+  )
+
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    name = "missing_end",
+    conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
+    imputeDuration = "median",
+    priorObservation = NULL
+  )
+
+  expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%
+    dplyr::pull("cohort_end_date") == as.Date("2000-01-01") + median(c(15, 31, 31) - 1))
+
+
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    name = "missing_end",
+    conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
+    imputeDuration = "mean",
+    priorObservation = NULL
+  )
+
+  expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%
+                dplyr::pull("cohort_end_date") == as.Date("2000-01-01") +
+                as.integer(round(mean(c(15, 31, 31))) - 1))
+
+
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    name = "missing_end",
+    conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
+    imputeDuration = "mode",
+    priorObservation = NULL
+  )
+
+  expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%
+                dplyr::pull("cohort_end_date") == as.Date("2000-01-01") +
+                31 - 1)
+
 })

@@ -17,7 +17,7 @@
 #' Add a line in the attrition table. If the table does not exist it is created
 #'
 #' @param x A table in the cdm with at lest: 'cohort_definition_id' and
-#' subject_id'
+#' 'subject_id'
 #' @param cdm A cdm reference created using CDMConnector
 #' @param attrition An attrition table. If NULL a new attrition table is created.
 #' @param reason A character with the name of the reason.
@@ -254,21 +254,18 @@ getEndName <- function(domain) {
 
 #' @noRd
 emptyCohort <- function(cdm) {
-  name <- CDMConnector::uniqueTableName()
-  DBI::dbCreateTable(
-    attr(cdm, "dbcon"),
-    name,
-    fields = c(
-      cohort_definition_id = "INT",
-      subject_id = "BIGINT",
-      cohort_start_date = "DATE",
-      cohort_end_date = "DATE"
-    ),
-    temporary = TRUE
-  )
-  ref <- dplyr::tbl(attr(cdm, "dbcon"), name)
-  attr(ref, "cdm_reference") <- cdm
-  return(ref)
+  cdm[["observation_period"]] %>%
+    dplyr::filter(
+      .data$observation_period_id < 0 & .data$observation_period_id > 0
+    ) %>%
+    dplyr::mutate("cohort_definition_id" = 1) %>%
+    dplyr::select(
+      "cohort_definition_id",
+      "subject_id" = "person_id",
+      "cohort_start_date" = "observation_period_start_date",
+      "cohort_end_date" = "observation_period_end_date"
+    ) %>%
+    CDMConnector::computeQuery()
 }
 
 #' @noRd
@@ -372,11 +369,11 @@ requirePriorObservation <- function(x, cdm, priorObservation) {
       dplyr::mutate(duration = !!CDMConnector::datediff(
         "cohort_start_date", "cohort_end_date"
       )) %>%
-      dplyr::mutate(cohort_end_date = dplyr::if_else(
+      dplyr::mutate(cohort_end_date = as.Date(dplyr::if_else(
         .data$future_observation < .data$duration,
         !!CDMConnector::dateadd("cohort_start_date", "future_observation"),
         .data$cohort_end_date
-      )) %>%
+      ))) %>%
       dplyr::select(-"future_observation", -"duration") %>%
       computeTable(cdm)
     xNew <- PatientProfiles::addAttributes(xNew, x)
@@ -477,7 +474,7 @@ correctDuration <- function(x,
     solveImputation("duration", imputeDuration, TRUE) %>%
     dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
     dplyr::mutate(
-      !!end := !!CDMConnector::dateadd(date = start, number = "days_to_add")
+      !!end := as.Date(!!CDMConnector::dateadd(date = start, number = "days_to_add"))
     ) %>%
     dplyr::select(-c("duration", "days_to_add")) %>%
     computeTable(cdm)
@@ -521,7 +518,9 @@ solveImputation <- function(x, column, method, toRound = FALSE) {
       dplyr::filter(.data$impute == 0)
     if (method == "median") {
       imp <- imp %>%
-        dplyr::summarise("x" = stats::median(.data[[column]], na.rm = TRUE)) %>%
+        dplyr::summarise(dplyr::across(dplyr::all_of(column),
+                                       ~ stats::median(., na.rm = TRUE),
+                                       .names = "x")) %>%
         dplyr::pull("x")
     } else if (method == "mean") {
       imp <- imp %>%

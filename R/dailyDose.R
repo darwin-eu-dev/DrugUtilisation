@@ -65,7 +65,7 @@ addDailyDose <- function(drugExposure,
     applyFormula() %>%
     dplyr::select(
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
-      "quantity", "daily_dose", "unit", "route"
+      "quantity", "daily_dose", "unit"
     ) %>%
     CDMConnector::computeQuery()
 
@@ -131,9 +131,10 @@ dailyDoseCoverage <- function(cdm,
     standardUnits() %>%
     applyFormula() %>%
     dplyr::select(
-      "drug_concept_id", "daily_dose", "unit", "route",
+      "drug_concept_id", "daily_dose", "unit", "pattern_id",
       "concept_id" =  "ingredient_concept_id"
     ) %>%
+    addRoute() %>%
     dplyr::left_join(
       cdm[["concept"]] %>%
         dplyr::rename("ingredient_name" = "concept_name") %>%
@@ -147,7 +148,7 @@ dailyDoseCoverage <- function(cdm,
     PatientProfiles::summariseResult(
       group = list("ingredient_name"),
       includeOverallGroup = FALSE,
-      strata = list("route", "unit", c("route", "unit")),
+      strata = list("unit", c("route", "unit"), c("unit", "route", "pattern_id")),
       includeOverallStrata = TRUE,
       variables = "daily_dose",
       functions = c(
@@ -191,22 +192,20 @@ applyFormula <- function(drugExposure) {
       daily_dose = dplyr::case_when(
         is.na(.data$quantity) ~
           as.numeric(NA),
-        .data$quantity <= 0 ~ # TO REMOVE
-          as.numeric(NA),
-        .data$formula_id == 1 ~
+        .data$formula_name == "concentration formulation" ~
           .data$numerator_value * .data$quantity / .data$days_exposed,
-        .data$formula_id == 2 ~
+        .data$formula_name == "fixed amount formulation" ~
           .data$amount_value * .data$quantity / .data$days_exposed,
-        .data$formula_id == 3  & .data$denominator_value > 24 ~
+        .data$formula_name == "time based with denominator" & .data$denominator_value > 24 ~
           .data$numerator_value * 24 / .data$denominator_value,
-        .data$formula_id == 3 & .data$denominator_value <= 24 ~ # WHY?
+        .data$formula_name == "time based with denominator" & .data$denominator_value <= 24 ~
           .data$numerator_value,
-        .data$formula_id == 4 ~
+        .data$formula_name == "time based no denominator" ~
           .data$numerator_value * 24,
         .default = as.numeric(NA)
       )
     ) %>%
     dplyr::mutate(daily_dose = dplyr::if_else(
-      .data$daily_dose <= 0, as.numeric(NA), .data$daily_dose
+      .data$daily_dose < 0, as.numeric(NA), .data$daily_dose
     ))
 }
