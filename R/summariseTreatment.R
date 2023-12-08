@@ -71,6 +71,7 @@ summariseTreatment<- function(cohort,
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date", unique(unname(unlist(strata)))
     )))
+  targetEndDate <- "cohort_end_date"
 
   # add cohort intersect
   if (!is.null(treatmentCohortName)) {
@@ -78,6 +79,7 @@ summariseTreatment<- function(cohort,
       PatientProfiles::addCohortIntersectFlag(
         targetCohortTable = treatmentCohortName,
         targetCohortId = treatmentCohortId,
+        targetEndDate = targetEndDate,
         window = window,
         nameStyle = "{window_name}_{cohort_name}"
       )
@@ -89,6 +91,7 @@ summariseTreatment<- function(cohort,
       PatientProfiles::addConceptIntersectFlag(
         conceptSet = treatmentConceptSet,
         window = window,
+        targetEndDate = targetEndDate,
         nameStyle = "{window_name}_{concept_name}"
       )
   }
