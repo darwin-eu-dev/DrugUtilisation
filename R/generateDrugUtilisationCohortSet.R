@@ -133,21 +133,32 @@ generateDrugUtilisationCohortSet <- function(cdm,
       cohortSet = cohortSetRef
     )
 
-    # eliminate overlap
-    cohort <- unionCohort(cohort, gapEra, cdm)
+    # join overlapping exposures
+    cohort <- unionCohort(cohort, 0, cdm)
     attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, "Join eras",
+      cohort, cdm, attrition, "Join overlapping exposures",
       cohortSet = cohortSetRef
     )
 
+    # join exposures according to gap
+    if (gapEra > 0) {
+      cohort <- unionCohort(cohort, gapEra, cdm)
+      attrition <- computeCohortAttrition(
+        cohort, cdm, attrition, "Join eras",
+        cohortSet = cohortSetRef
+      )
+    }
+
     # require priorUseWashout
-    cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste0(
-        "prior use washout of ", priorUseWashout, " days"
-      ),
-      cohortSet = cohortSetRef
-    )
+    if (priorUseWashout > 0) {
+      cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
+      attrition <- computeCohortAttrition(
+        cohort, cdm, attrition, paste0(
+          "prior use washout of ", priorUseWashout, " days"
+        ),
+        cohortSet = cohortSetRef
+      )
+    }
 
     # require priorObservation
     if (!is.null(priorObservation)) {
@@ -161,22 +172,26 @@ generateDrugUtilisationCohortSet <- function(cdm,
     }
 
     # trim start date
-    cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste0(
-        "cohort_start_date >= ", cohortDateRange[1]
-      ),
-      cohortSet = cohortSetRef
-    )
+    if (!is.na(cohortDateRange[1])) {
+      cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
+      attrition <- computeCohortAttrition(
+        cohort, cdm, attrition, paste0(
+          "cohort_start_date >= ", cohortDateRange[1]
+        ),
+        cohortSet = cohortSetRef
+      )
+    }
 
     # trim end date
-    cohort <- trimEndDate(cohort, cdm, cohortDateRange[2])
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste0(
-        "cohort_end_date <= ", cohortDateRange[2]
-      ),
-      cohortSet = cohortSetRef
-    )
+    if (!is.na(cohortDateRange[2])) {
+      cohort <- trimEndDate(cohort, cdm, cohortDateRange[2])
+      attrition <- computeCohortAttrition(
+        cohort, cdm, attrition, paste0(
+          "cohort_end_date <= ", cohortDateRange[2]
+        ),
+        cohortSet = cohortSetRef
+      )
+    }
 
     # apply limit
     if (limit == "first") {
@@ -196,12 +211,12 @@ generateDrugUtilisationCohortSet <- function(cdm,
       "cohort_end_date"
     ) %>%
     CDMConnector::computeQuery(
-      name = paste0(attr(cdm, "write_prefix"), name),
+      name = name,
       FALSE, attr(cdm, "write_schema"), TRUE
     )
   cohortAttritionRef <- attrition %>%
     CDMConnector::computeQuery(
-      name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),
+      name = paste0(name, "_attrition"),
       FALSE, attr(cdm, "write_schema"), TRUE
     )
   cohortCountRef <- computeCohortCount(
@@ -209,7 +224,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
     cohortSet = cohortSetRef
   ) %>%
     CDMConnector::computeQuery(
-      name = paste0(attr(cdm, "write_prefix"), name, "_count"),
+      name = paste0(name, "_count"),
       FALSE, attr(cdm, "write_schema"), TRUE
     )
 
