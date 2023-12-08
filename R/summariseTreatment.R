@@ -78,7 +78,6 @@ summariseTreatment<- function(cohort,
       PatientProfiles::addCohortIntersectFlag(
         targetCohortTable = treatmentCohortName,
         targetCohortId = treatmentCohortId,
-        targetEndDate = NULL,
         window = window,
         nameStyle = "{window_name}_{cohort_name}"
       )
