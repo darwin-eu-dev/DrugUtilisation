@@ -41,6 +41,7 @@
 <li class="active nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/addDrugUse.html">Use addDrugUse and summariseDrugUse to explore a drug</a>
     <a class="dropdown-item" href="../articles/addIndications-example.html">Add indications to Drug Utilisation Cohort</a>
     <a class="dropdown-item" href="../articles/benchmarkDusCapr.html">DrugUtilisation vs CapR</a>
     <a class="dropdown-item" href="../articles/introCreateCohort.html">Use DrugUtilisation to create cohort</a>
@@ -68,7 +69,7 @@
                         <h4 data-toc-skip class="author">Martí Català,
 Mike Du, Yuchen Guo, Kim López-Güell, and Edward Burn</h4>
             
-            <h4 data-toc-skip class="date">2023-12-06</h4>
+            <h4 data-toc-skip class="date">2023-12-08</h4>
       
       
       <div class="d-none name"><code>addIndications-example.Rmd</code></div>
@@ -82,10 +83,10 @@ Mike Du, Yuchen Guo, Kim López-Güell, and Edward Burn</h4>
 <p>In this vignette, we demonstrate how to use the addIndications
 function to establish a binary indicator between the drug utilisation
 cohort and another concept-based cohort.</p>
-<p>The drug Utilisation package is designed to work with data in the
-OMOP CDM format, so our first step is to create a reference to the data
-using the DBI and CDMConnector packages. The connection to a Postgres
-database would look like:</p>
+<p>The DrugUtilisation package is designed to work with data in the OMOP
+CDM format, so our first step is to create a reference to the data using
+the DBI and CDMConnector packages. The connection to a Postgres database
+would look like:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
@@ -116,11 +117,11 @@ generate a concept list associated with Acetaminophen.</p>
 <span><span class="va">conceptList</span></span>
 <span><span class="co">#&gt; $acetaminophen</span></span>
 <span><span class="co">#&gt; [1]  1125315  1127078  1127433 40229134 40231925 40162522 19133768</span></span></code></pre></div>
-<p>Next, we can create a drug utilization cohort by using the
+<p>Next, we can create a drug utilisation cohort by using the
 conceptList with the “generateDrugUtilisationCohortSet” function. For a
-better understanding of the arguments and functionaities of
-“generateDrugUtilisationCohortSet”, please refer to the “How to Create a
-Cohort” vignette.</p>
+better understanding of the arguments and functionalities of
+“generateDrugUtilisationCohortSet”, please refer to the “Use
+DrugUtilisation to create a cohort” vignette.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span></span>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
@@ -156,8 +157,8 @@ generateConceptCohortSet().</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects cohort_name</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    2           <span style="text-decoration: underline;">2</span>546            <span style="text-decoration: underline;">2</span>546 bronchitis </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1           <span style="text-decoration: underline;">2</span>688            <span style="text-decoration: underline;">2</span>688 sinusitis</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1           <span style="text-decoration: underline;">2</span>688            <span style="text-decoration: underline;">2</span>688 sinusitis  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    2           <span style="text-decoration: underline;">2</span>546            <span style="text-decoration: underline;">2</span>546 bronchitis</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="add-indications">Add indications<a class="anchor" aria-label="anchor" href="#add-indications"></a>
@@ -177,19 +178,19 @@ allow user to specify the tables to look for unknown indication.</p>
 <span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;dbplyr_036&gt; [?? x 16]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.2.0-1016-azure:R 4.3.2//tmp/Rtmpbxq4Lx/file26803854b31e.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.2.0-1016-azure:R 4.3.2//tmp/RtmpicSFjz/file1c79292f249f.duckdb]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         95 1968-12-29        1969-01-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         95 1973-11-04        1973-11-11     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         99 1968-10-21        1968-11-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         99 1980-11-30        1980-12-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         99 1994-04-02        1994-04-16     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        123 1954-01-10        1954-01-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        123 1956-01-11        1956-01-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        123 1972-02-13        1972-02-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        123 2006-08-17        2006-08-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        148 2008-09-09        2008-09-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         78 1968-11-25        1968-12-16     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         78 1991-10-28        1991-11-04     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        141 1987-10-31        1987-11-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        141 1995-07-30        1995-09-28     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        260 1974-03-05        1974-03-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        260 1979-09-06        1979-09-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        260 1990-08-10        1990-09-16     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        300 2005-06-16        2005-06-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        300 2007-08-21        2007-08-28     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        334 1962-11-12        1962-11-26     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: indication_gap_0_bronchitis &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_sinusitis &lt;dbl&gt;, indication_gap_0_none &lt;dbl&gt;,</span></span></span>
@@ -250,10 +251,10 @@ summarized by ageGroup and sex.</p>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number subjects          count         2679             Overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number records           count         13860            Overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Indication on index date count         &lt;5               Overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Indication on index date percentage    <span style="color: #BB0000;">NA</span>               Overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Indication on index date count         2518             Overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Indication on index date percentage    18.1673881673882 Overall    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Indication on index date count         2518             Overall    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Indication on index date percentage    18.1673881673882 Overall    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Indication on index date count         &lt;5               Overall    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Indication on index date percentage    <span style="color: #BB0000;">NA</span>               Overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Indication on index date count         163              Overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Indication on index date percentage    1.17604617604618 Overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Indication on index date count         11178            Overall    </span></span>
