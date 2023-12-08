@@ -141,7 +141,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
     )
 
     # join exposures according to gap
-    if (gap > 0) {
+    if (gapEra > 0) {
       cohort <- unionCohort(cohort, gapEra, cdm)
       attrition <- computeCohortAttrition(
         cohort, cdm, attrition, "Join eras",
