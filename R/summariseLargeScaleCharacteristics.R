@@ -68,6 +68,11 @@ summariseCharacteristicsFromCodelist <- function(cohort,
                                                  ),
                                                  overlap = TRUE,
                                                  minCellCount = 5) {
+  cli::cli_warn(
+    "DrugUtilisation::summariseCharacteristicsFromCodelist() will be deprecated
+    please use PatientProfiles::summariseConceptIntersect() instead"
+  )
+
   # check initial inputs
   checkInputs(
     cohort = cohort, cdm = cdm, conceptSet = conceptSet,
