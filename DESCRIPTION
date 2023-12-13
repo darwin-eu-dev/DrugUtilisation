@@ -51,7 +51,8 @@ Suggests:
     DiagrammeRsvg,
     ggplot2,
     cowplot,
-    plotly
+    plotly,
+    tibble
 Config/testthat/edition: 3
 Imports: 
     CDMConnector (>= 1.1.2),
@@ -67,7 +68,8 @@ Imports:
     cli,
     PatientProfiles (>= 0.4.0),
     magrittr,
-    purrr
+    purrr,
+    tictoc
 Depends: 
     R (>= 2.10)
 LazyData: true
