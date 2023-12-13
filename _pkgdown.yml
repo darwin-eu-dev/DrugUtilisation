@@ -31,3 +31,7 @@ reference:
   desc: Helpper functions, some of thay may be deprecated in the near future
 - contents:
   - matches("readConceptList|mockDrugUtilisation|generateConceptCohortSet")
+- subtitle: Benchmarking function
+  desc: Function to test performance of different functions in DrugUtilisation
+- contents:
+  - matches("benchmarkDUS")
