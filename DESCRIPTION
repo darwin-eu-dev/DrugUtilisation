@@ -26,7 +26,13 @@ Authors@R: c(
     person(
         "Xintong", "Li", email = "xintong.li@ndorms.ox.ac.uk", role = c("ctb"),
         comment = c(ORCID = "0000-0002-6872-5804")
-    ))
+    ),
+    person(
+        "Marta", "Alcalde-Herraiz", 
+        email = "marta.alcaldeherraiz@ndorms.ox.ac.uk", 
+        role = c("ctb"), comment = c(ORCID = "0009-0002-4405-1814")
+    )
+    )
 Description: Summarise patient-level drug utilisation cohorts using data mapped 
     to the Observational Medical Outcomes Partnership (OMOP) common data model. 
     New users and prevalent users cohorts can be generated and their 
