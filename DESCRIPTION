@@ -73,7 +73,8 @@ Imports:
     cli,
     PatientProfiles (>= 0.4.0),
     magrittr,
-    purrr
+    purrr,
+    CohortSurvival
 Depends: 
     R (>= 2.10)
 LazyData: true
