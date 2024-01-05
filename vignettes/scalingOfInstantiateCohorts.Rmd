@@ -1,0 +1,20 @@
+---
+title: "Scaling of instantiate cohorts"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Use DrugUtilisation to create cohort}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r , include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```

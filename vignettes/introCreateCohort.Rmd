@@ -1,6 +1,7 @@
 ---
 title: "Use DrugUtilisation to create cohort"
 author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Use DrugUtilisation to create cohort}
@@ -205,7 +206,7 @@ cohortAttrition(cdm$dus_alleras)
 
 The parameter `durationRange` specifies the range within which the
 duration must fall, where duration will be calculated as:
-<p style="text-align:center;">duration = end date - start date + 1</p>
+<p style="text-align:center;">`duration = cohort_end_date - cohort_start_date + 1`</p>
 The default value is `c(1, Inf)`. See that this parameter must be a
 numeric vector of length two, with no NAs and with the first value equal
 or bigger than the second one. It should be a numeric vector of length

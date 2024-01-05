@@ -126,10 +126,12 @@ cdm[["dus_cohort"]] %>%
 
 Finally, the way continuous exposures are joined can be configured using the following parameters:
 
-#### `gapEra`: This parameter sets the number of days between two continuous exposures to be considered in the same era. 
+#### `gapEra`: 
+This parameter sets the number of days between two continuous exposures to be considered in the same era. 
       If the previous exposure's end date minus the next exposure's start date is less than or equal to the specified `gapEra`, these two exposures will be joined.
 
-#### `eraJoinMode`: This parameter defines how two different continuous exposures are joined in an era. There are four options:
+#### `eraJoinMode`: 
+This parameter defines how two different continuous exposures are joined in an era. There are four options:
     - "zero": Exposures are joined, considering that the period between both continuous exposures means the subject is treated with a daily dose of zero. The time between both exposures contributes to the total exposed time.
     - "join": Exposures are joined, considering that the period between both continuous exposures means the subject is treated with a daily dose of zero. The time between both exposures does not contribute to the total exposed time.
     - "previous": Exposures are joined, considering that the period between both continuous exposures means the subject is treated with the daily dose of the previous subexposure. The time between both exposures contributes to the total exposed time.
