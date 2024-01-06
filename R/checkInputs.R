@@ -284,7 +284,7 @@ checkSameIndexMode <- function(sameIndexMode) {
 
 checkIngredientConceptId <- function(ingredientConceptId, cdm) {
   if (is.null(ingredientConceptId)) {
-    cli::cli_abort("ingredientConceptId ca not be NULL")
+    cli::cli_abort("ingredientConceptId can not be NULL")
   }
   if (!isInteger(ingredientConceptId)) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
