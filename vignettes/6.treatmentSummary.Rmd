@@ -1,0 +1,101 @@
+---
+title: "6. Add treatment summary to a Drug Utilisation cohort"
+author: "Martí Català, Mike Du, Yuchen Guo, Kim López-Güell, and Edward Burn"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{6. Add treatment summary to a Drug Utilisation cohort}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+The DrugUtilisation package incorporates a function to summarise the
+dose table over multiple cohorts: `summariseTreatment()`. In this
+vignette, we will explore the functionalities and usages of this
+function.
+
+## Create mock table
+
+```{r, message = FALSE, warning=FALSE}
+library(DrugUtilisation)
+library(CodelistGenerator)
+library(CDMConnector)
+library(dplyr)
+library(PatientProfiles)
+
+cdm <- mockDrugUtilisation(numberIndividual = 200)
+```
+
+For the following examples, we will use the cohort `cohort1` already
+created in the mock table.
+
+# Summarise dose table with `summariseTreatment()` function
+
+`summariseTreatment()` function creates a standarised tibble summarising
+dose table information over multiple cohorts. There are three mandatory
+arguments:
+
+1.  `cohort`: cohort from the cdm object
+2.  `treatmentCohortName`: name of the cohort's table.
+3.  `window`: list of the windows where to summarise the treatments.
+
+See an example of its usage below:
+```{r, message = FALSE, warning=FALSE}
+summariseTreatment(cohort = cdm$cohort1,
+                   treatmentCohortName = c("cohort1"),
+                   window = list(c(0,0), c(1,30)))
+
+```
+
+## `strata` parameter
+
+We can also stratify our cohort and calculate the estimates within each
+strata group by using the `strata` parameter.
+
+```{r, message = FALSE, warning=FALSE}
+cdm[["cohort1"]] <- cdm[["cohort1"]] %>% 
+  addSex(cdm) %>%
+  addAge(ageGroup = list("<40" = c(0, 39), ">40" = c(40, 150)))
+
+summariseTreatment(cohort = cdm$cohort1,
+                   treatmentCohortName = c("cohort1"),
+                   window = list(c(0,0)),
+                   treatmentCohortId = 3,
+                   strata = list("sex" = "sex", "age" = "age_group")
+                   )
+```
+
+Notice that we have also used the `treatmentCohortId` parameter to
+specify that only want to include cohort_3 in the summarised tibble.
+
+We can also use the parameter `treatmentConceptSet` to specify which concept sets we want to include:
+
+```{r, message = FALSE, warning=FALSE}
+summariseTreatment(cohort = cdm$cohort1,
+                   treatmentCohortName = c("cohort1"),
+                   window = list(c(0,0)),
+                   treatmentConceptSet = list("acetaminophen" = c(32020))
+                   )
+```
+
+## `combination` parameter
+You can also include combinations of different treatments by using the `combination` argument.
+```{r, message = FALSE, warning = FALSE}
+
+```
+
+## `minCellCount` parameter
+Specify the minimum number of individuals that a strata group must have in order to appear in the table. Default is set to 5. 

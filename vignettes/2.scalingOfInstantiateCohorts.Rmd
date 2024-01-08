@@ -1,6 +1,7 @@
 ---
 title: "Scaling of instantiate cohorts"
 author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Use DrugUtilisation to create cohort}

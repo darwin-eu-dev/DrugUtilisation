@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The DrugUtilisation packages includes a range of functions that add
+The DrugUtilisation package includes a range of functions that add
 drug-related information of subjects in OMOP CDM tables and cohort
 tables. In this vignette, we will explore these functions and provide
 valuable examples for its use.

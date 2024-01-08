@@ -1,10 +1,10 @@
 ---
-title: "Use DrugUtilisation to create cohort"
+title: "1. Use DrugUtilisation to create cohort"
 author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Use DrugUtilisation to create cohort}
+  %\VignetteIndexEntry{1. Use DrugUtilisation to create cohort}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
