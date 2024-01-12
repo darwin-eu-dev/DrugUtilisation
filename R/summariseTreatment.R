@@ -30,6 +30,33 @@
 #'
 #' @export
 #'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(PatientProfiles)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+#' )
+#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
+#'   addDrugUse(cdm, 1125315)
+#' result <- summariseDrugUse(cdm[["dus_cohort"]], cdm)
+#' print(result)
+#'
+#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
+#'   addSex(cdm) %>%
+#'   addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+#'
+#' summariseDrugUse(
+#'   cdm[["dus_cohort"]], cdm, strata = list(
+#'    "age_group" = "age_group", "sex" = "sex",
+#'    "age_group and sex" = c("age_group", "sex")
+#'   )
+#' )
+#' }
+#'
 summariseTreatmentFromCohort <- function(cohort,
                                          strata = list(),
                                          window,

@@ -1,10 +1,10 @@
 ---
-title: "6. Add treatment summary to a Drug Utilisation cohort"
-author: "Martí Català, Mike Du, Yuchen Guo, Kim López-Güell, and Edward Burn"
+title: "Add treatment summary to a Drug Utilisation cohort"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{6. Add treatment summary to a Drug Utilisation cohort}
+  %\VignetteIndexEntry{Add treatment summary to a Drug Utilisation cohort}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -72,11 +72,10 @@ And `cohort2` is a cohort with three different treatments:
 cohort_set(cdm$cohort2)
 ```
 
-# Summarise treatment with `summariseTreatmentFromCohort()` function
+# Summarise treatment with summariseTreatmentFromCohort() function
 
 `summariseTreatmentFromCohort()` function creates a standarised tibble
-summarising the treatment information from one cohort over multiple
-cohorts. There are three mandatory arguments:
+summarising the treatment information (already specified in an existing cohort) over multiple cohorts. There are three mandatory arguments:
 
 1.  `cohort`: cohort from the cdm object.
 2.  `treatmentCohortName`: name of the treatment cohort's table.
@@ -92,7 +91,7 @@ summariseTreatmentFromCohort(cohort = cdm$cohort1,
                    window = list(c(0,0), c(1,30)))
 ```
 
-## `strata` parameter
+## strata parameter
 
 We can also stratify our cohort and calculate the estimates within each
 strata group by using the `strata` parameter.
@@ -111,10 +110,10 @@ summariseTreatmentFromCohort(cohort = cdm$cohort1,
 ```
 
 Notice that we have also used the `treatmentCohortId` parameter to
-specify that we only want to explore `albuterol` across the cohorts from
+specify that we only want to explore `albuterol` across the cohorts defined in
 `cohort1`.
 
-## `combination` parameter
+## combination parameter
 
 Soon, you will be able to include combinations of different treatments
 by using the `combination` argument. Unfortunately, it has not been
@@ -137,4 +136,4 @@ before using this function. The following arguments have to be provided:
 3.  `window`: list of the windows where to summarise the treatments.
 
 Unfortunately, is not implemented yet. Stay in the loop for the next
-release\!😉
+release!😉

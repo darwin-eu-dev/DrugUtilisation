@@ -8,7 +8,7 @@ summariseTreatmentFromConceptSet(
   cohort,
   strata = list(),
   window,
-  treatmentConceptSet = NULL,
+  treatmentConceptSet,
   combination = FALSE,
   minCellCount = 5
 )
