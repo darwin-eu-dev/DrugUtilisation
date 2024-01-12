@@ -23,6 +23,35 @@
 #' interest treatments.
 #' @param treatmentCohortId Cohort definition id of interest from
 #' treatmentCohortName.
+#' @param combination Whether to include combination treatments.
+#' @param minCellCount Below this number counts will be suppressed.
+#'
+#' @return A summary of the drug use stratified by cohort_name and strata_name
+#'
+#' @export
+#'
+summariseTreatmentFromCohort <- function(cohort,
+                                         strata = list(),
+                                         window,
+                                         treatmentCohortName,
+                                         treatmentCohortId = NULL,
+                                         combination = FALSE,
+                                         minCellCount = 5){
+  return(summariseTreatment(cohort = cohort,
+                            strata = strata,
+                            window = window,
+                            treatmentCohortName = treatmentCohortName,
+                            treatmentCohortId   = treatmentCohortId,
+                            combination  = combination,
+                            minCellCount = minCellCount))
+
+}
+
+#'This function is used to summarise the dose table over multiple cohorts.
+#'
+#' @param cohort Cohort with drug use variables and strata.
+#' @param strata Stratification list.
+#' @param window Window where to summarise the treatments.
 #' @param treatmentConceptSet Concept set list to summarise.
 #' @param combination Whether to include combination treatments.
 #' @param minCellCount Below this number counts will be suppressed.
@@ -31,7 +60,22 @@
 #'
 #' @export
 #'
-summariseTreatment<- function(cohort,
+summariseTreatmentFromConceptSet <- function(cohort,
+                                         strata = list(),
+                                         window,
+                                         treatmentConceptSet = NULL,
+                                         combination = FALSE,
+                                         minCellCount = 5){
+  return(summariseTreatment(cohort = cohort,
+                            strata = strata,
+                            window = window,
+                            treatmentConceptSet = treatmentConceptSet,
+                            combination  = combination,
+                            minCellCount = minCellCount))
+}
+
+
+summariseTreatment <- function(cohort,
                               strata = list(),
                               window,
                               treatmentCohortName = NULL,

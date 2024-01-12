@@ -4,7 +4,7 @@ author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xinton
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Use DrugUtilisation to create cohort}
+  %\VignetteIndexEntry{Scaling of instantiate cohorts}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
