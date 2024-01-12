@@ -37,3 +37,22 @@ A summary of the drug use stratified by cohort_name and strata_name
 \description{
 This function is used to summarise the dose table over multiple cohorts.
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+library(PatientProfiles)
+library(CodelistGenerator)
+
+cdm <- mockDrugUtilisation()
+cdm$cohort1 <- cdm$cohort1 \%>\%
+  addSex()
+summariseTreatmentFromCohort(cohort = cdm$cohort1,
+                             strata = list("sex" = "sex"),
+                             window = list(c(0,30)),
+                             treatmentCohortName = "cohort2",
+                             treatmentCohortId = c(1,2),
+                             combination = FALSE, # not implemented yet
+                             minCellCount = 0)
+}
+
+}

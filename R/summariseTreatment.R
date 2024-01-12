@@ -37,24 +37,15 @@
 #' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
-#' )
-#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addDrugUse(cdm, 1125315)
-#' result <- summariseDrugUse(cdm[["dus_cohort"]], cdm)
-#' print(result)
-#'
-#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addSex(cdm) %>%
-#'   addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
-#'
-#' summariseDrugUse(
-#'   cdm[["dus_cohort"]], cdm, strata = list(
-#'    "age_group" = "age_group", "sex" = "sex",
-#'    "age_group and sex" = c("age_group", "sex")
-#'   )
-#' )
+#' cdm$cohort1 <- cdm$cohort1 %>%
+#'   addSex()
+#' summariseTreatmentFromCohort(cohort = cdm$cohort1,
+#'                              strata = list("sex" = "sex"),
+#'                              window = list(c(0,30)),
+#'                              treatmentCohortName = "cohort2",
+#'                              treatmentCohortId = c(1,2),
+#'                              combination = FALSE, # not implemented yet
+#'                              minCellCount = 0)
 #' }
 #'
 summariseTreatmentFromCohort <- function(cohort,
@@ -86,6 +77,11 @@ summariseTreatmentFromCohort <- function(cohort,
 #' @return A summary of the drug use stratified by cohort_name and strata_name
 #'
 #' @export
+#'
+#' @examples
+#' \donttest{
+#' # Not implemented yet!
+#' }
 #'
 summariseTreatmentFromConceptSet <- function(cohort,
                                          strata = list(),
