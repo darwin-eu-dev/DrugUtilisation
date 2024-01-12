@@ -63,7 +63,7 @@ summariseTreatmentFromCohort <- function(cohort,
 summariseTreatmentFromConceptSet <- function(cohort,
                                          strata = list(),
                                          window,
-                                         treatmentConceptSet = NULL,
+                                         treatmentConceptSet,
                                          combination = FALSE,
                                          minCellCount = 5){
   return(summariseTreatment(cohort = cohort,
