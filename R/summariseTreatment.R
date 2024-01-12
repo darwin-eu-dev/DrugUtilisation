@@ -88,11 +88,11 @@ summariseTreatmentFromCohort <- function(cohort,
 #' @export
 #'
 summariseTreatmentFromConceptSet <- function(cohort,
-                                         strata = list(),
-                                         window,
-                                         treatmentConceptSet,
-                                         combination = FALSE,
-                                         minCellCount = 5){
+                                             strata = list(),
+                                             window,
+                                             treatmentConceptSet,
+                                             combination = FALSE,
+                                             minCellCount = 5){
   return(summariseTreatment(cohort = cohort,
                             strata = strata,
                             window = window,
@@ -103,13 +103,13 @@ summariseTreatmentFromConceptSet <- function(cohort,
 
 
 summariseTreatment <- function(cohort,
-                              strata = list(),
-                              window,
-                              treatmentCohortName = NULL,
-                              treatmentCohortId = NULL,
-                              treatmentConceptSet = NULL,
-                              combination = FALSE,
-                              minCellCount = 5) {
+                               strata = list(),
+                               window,
+                               treatmentCohortName = NULL,
+                               treatmentCohortId = NULL,
+                               treatmentConceptSet = NULL,
+                               combination = FALSE,
+                               minCellCount = 5) {
   if (!is.list(window)) {
     window <- list(window)
   }
