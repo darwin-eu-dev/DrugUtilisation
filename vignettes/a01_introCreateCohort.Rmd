@@ -83,7 +83,7 @@ conceptSet_ingredient <- getDrugIngredientCodes(cdm, name = "simvastatin")
 conceptSet_ingredient
 ```
 
-## Concept list of an ingredient
+## Concept list from an ATC code
 
 We can also obtain the ATC code by using `getATCCodes()` from
 CodelistGenerator package.
