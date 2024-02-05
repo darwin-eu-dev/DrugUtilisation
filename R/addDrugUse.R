@@ -156,22 +156,15 @@ addDrugUse <- function(cohort,
   # save original reference
   originalCohort <- cohort
 
-  stem <- paste0(sample(letters, 5), collapse = "")
-  writeSchema <- attr(cdm, "write_schema")
-  if ("prefix" %in% names(writeSchema)) {
-    writeSchema["prefix"] <- paste0(writeSchema["prefix"], stem, "_")
-  } else {
-    writeSchema["prefix"] <- paste0(stem, "_")
-  }
-  attr(cdm, "write_schema") <- writeSchema
+  stem <- paste0("tmp_", paste0(sample(letters, 5), collapse = ""), "_")
 
   # unique cohort entries
   cohort <- cohort %>%
     dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
     dplyr::distinct() %>%
     addDuration(duration) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"), overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = paste0(stem, "individuals")
     )
 
   # subset drug_exposure and only get the drug concept ids that we are
@@ -221,9 +214,10 @@ addDrugUse <- function(cohort,
 
     cohortInfo <- cohortInfo %>%
       solveImputation("daily_dose", imputeDailyDose) %>%
-      CDMConnector::computeQuery(
-        temporary = FALSE, schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
+      dplyr::compute(
+        temporary = FALSE,
+        overwrite = TRUE,
+        name = paste0(stem, omopgenerics::uniqueTableName())
       )
 
     # get distinct units to cover
@@ -246,9 +240,9 @@ addDrugUse <- function(cohort,
       cohort,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
-  CDMConnector::dropTable(cdm = cdm, name = dplyr::everything())
+  CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with(stem))
 
   return(cohort)
 }
