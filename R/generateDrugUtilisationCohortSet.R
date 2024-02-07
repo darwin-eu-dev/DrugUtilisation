@@ -115,50 +115,42 @@ generateDrugUtilisationCohortSet <- function(cdm,
 
   if (CohortCount(cdm[[name]]) |> dplyr::pull("number_records") |> sum() > 0) {
 
-    # eliminate overlap
-    cohort <- unionCohort(cohort, gapEra, cdm)
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, "Join eras",
-      cohortSet = cohortSetRef
-    )
-
     # require priorUseWashout
-    cohort <- requirePriorUseWashout(cohort, cdm, priorUseWashout)
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste0(
-        "prior use washout of ", priorUseWashout, " days"
-      ),
-      cohortSet = cohortSetRef
-    )
+    if (priorUseWashout > 0) {
+      res <- ifelse(
+        is.infinite(priorUseWashout), "restrict to first exposure",
+        paste0("require prior use washout of ", priorUseWashout)
+      )
+      cohort <- cohort |> requirePriorUseWashout(priorUseWashout) |>
+        omopgenerics::recordCohortAttrition(reason = res)
+    }
 
     # require priorObservation
-    if (!is.null(priorObservation)) {
-      cohort <- requirePriorObservation(cohort, cdm, priorObservation)
-      attrition <- computeCohortAttrition(
-        cohort, cdm, attrition, paste0(
-          "at least ", priorObservation, " prior observation"
-        ),
-        cohortSet = cohortSetRef
-      )
+    if (priorObservation > 0){
+      res <- paste("require at least", priorObservation, "prior observation")
+      cohort <- cohort |>
+        requirePriorObservation(priorObservation) |>
+        omopgenerics::recordCohortAttrition(reason = res)
     }
 
     # trim start date
-    cohort <- trimStartDate(cohort, cdm, cohortDateRange[1])
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste0(
-        "cohort_start_date >= ", cohortDateRange[1]
-      ),
-      cohortSet = cohortSetRef
-    )
+    if (!is.na(cohortDateRange[1])) {
+      cohort <- cohort |>
+        trimStartDate(cohortDateRange[1]) |>
+        omopgenerics::recordCohortAttrition(
+          paste("restrict cohort_start_date on or after", cohortDateRange[1])
+        )
+    }
+
 
     # trim end date
-    cohort <- trimEndDate(cohort, cdm, cohortDateRange[2])
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, paste0(
-        "cohort_end_date <= ", cohortDateRange[2]
-      ),
-      cohortSet = cohortSetRef
-    )
+    if (!is.na(cohortDateRange[2])) {
+      cohort <- cohort |>
+        trimEndDate(cohortDateRange[2]) |>
+        omopgenerics::recordCohortAttrition(
+          paste("restrict cohort_end_date on or before", cohortDateRange[2])
+        )
+    }
 
     # apply limit
     if (limit == "first") {

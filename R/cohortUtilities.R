@@ -27,11 +27,14 @@ conceptSetFromConceptSetList <- function(conceptSetList, cohortSet) {
 }
 
 #' @noRd
-subsetTables <- function(cdm, conceptSet) {
+subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange) {
+  # insert concepts
   nm <- uniqueTmpName()
   cdm <- omopgenerics::insertTable(
     cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
   )
+
+  # subset table
   cohort <- cdm$drug_exposure |>
     dplyr::select(
       "drug_concept_id",
@@ -40,19 +43,42 @@ subsetTables <- function(cdm, conceptSet) {
       "cohort_end_date" = "drug_exposure_end_date"
     ) |>
     dplyr::inner_join(cdm[[nm]], by = "drug_concept_id") |>
-    dplyr::compute(
-      temporary = FALSE, name = uniqueTmpName(), overwrite = TRUE
-    )
+    dplyr::compute(temporary = FALSE, name = uniqueTmpName(), overwrite = TRUE)
+
+  # require in observation
+  cohort <- cohort |>
+    PatientProfiles::addDemographics(sex = FALSE, age = FALSE) |>
+    dplyr::filter(!is.na(.data$prior_observation)) %>%
+    dplyr::mutate("duration" = as.numeric(
+      !!CDMConnector::datediff("cohort_start_date", "cohort_end_date")
+    )) |>
+    dplyr::mutate("cohort_end_date" = dplyr::if_else(
+      .data$duration > .data$future_observation,
+      as.Date(!!CDMConnector::dateadd(
+        date = "cohort_start_date", number = "future_observation"
+      )),
+      .data$cohort_end_date
+    )) |>
+    dplyr::select(-c("prior_observation", "future_observation", "duration")) |>
+    dplyr::compute(temporary = FALSE, name = uniqueTmpName(), overwrite = TRUE)
+
+  # impute
+  cohort <- correctDuration(cohort, imputeDuration, durationRange)
+
+  # erify
+  cohort <- erify(cohort)
+
   return(cohort)
 }
 
 #' @noRd
-requirePriorUseWashout <- function(cohort, cdm, washout) {
+requirePriorUseWashout <- function(cohort, washout) {
+  name <- attr(cohort, "tbl_name")
   cohort <- cohort %>%
     dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
     dplyr::arrange(.data$cohort_start_date) %>%
     dplyr::mutate(id = dplyr::row_number()) %>%
-    computeTable(cdm)
+    dplyr::compute(name = uniqueTmpName(), temporary = FALSE, overwrite = TRUE)
   cohort <- cohort %>%
     dplyr::left_join(
       cohort %>%
@@ -77,38 +103,36 @@ requirePriorUseWashout <- function(cohort, cdm, washout) {
   }
   cohort <- cohort %>%
     dplyr::select(-c("id", "prior_date", "prior_time")) %>%
-    dbplyr::window_order() %>%
+    dplyr::arrange() %>%
     dplyr::ungroup() %>%
-    computeTable(cdm)
+    dplyr::compute(name = name, temporary = FALSE, overwrite = TRUE)
   return(cohort)
 }
 
 #' @noRd
-trimStartDate <- function(cohort, cdm, startDate) {
-  if (!is.na(startDate)) {
-    cohort <- cohort %>%
-      dplyr::mutate(cohort_start_date = dplyr::if_else(
-        .data$cohort_start_date <= !!startDate,
-        as.Date(!!startDate), as.Date(.data$cohort_start_date)
-      )) %>%
-      dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) %>%
-      computeTable(cdm)
-  }
-  return(cohort)
+trimStartDate <- function(cohort, startDate) {
+  cohort |>
+    dplyr::mutate(cohort_start_date = dplyr::if_else(
+      .data$cohort_start_date <= !!startDate,
+      as.Date(!!startDate), as.Date(.data$cohort_start_date)
+    )) |>
+    dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) |>
+    dplyr::compute(
+      name = attr(cohort, "tbl_name"), temporary = FALSE, overwrite = TRUE
+    )
 }
 
 #' @noRd
-trimEndDate <- function(cohort, cdm, endDate) {
-  if (!is.na(endDate)) {
-    cohort <- cohort %>%
-      dplyr::mutate(cohort_end_date = dplyr::if_else(
-        .data$cohort_end_date >= !!endDate,
-        as.Date(!!endDate), as.Date(.data$cohort_end_date)
-      )) %>%
-      dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) %>%
-      computeTable(cdm)
-  }
-  return(cohort)
+trimEndDate <- function(cohort, endDate) {
+  cohort %>%
+    dplyr::mutate(cohort_end_date = dplyr::if_else(
+      .data$cohort_end_date >= !!endDate,
+      as.Date(!!endDate), as.Date(.data$cohort_end_date)
+    )) %>%
+    dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) |>
+    dplyr::compute(
+      name = attr(cohort, "tbl_name"), temporary = FALSE, overwrite = TRUE
+    )
 }
 
 #' @noRd
@@ -138,78 +162,60 @@ computeTable <- function(x,
 }
 
 #' @noRd
-requirePriorObservation <- function(x, cdm, priorObservation) {
-  if (!is.null(priorObservation)) {
-    xNew <- x %>%
-      PatientProfiles::addDemographics(cdm = cdm, age = FALSE, sex = FALSE) %>%
-      dplyr::filter(.data$prior_observation >= .env$priorObservation) %>%
-      dplyr::select(-"prior_observation") %>%
-      dplyr::mutate(duration = !!CDMConnector::datediff(
-        "cohort_start_date", "cohort_end_date"
-      )) %>%
-      dplyr::mutate(cohort_end_date = as.Date(dplyr::if_else(
-        .data$future_observation < .data$duration,
-        !!CDMConnector::dateadd("cohort_start_date", "future_observation"),
-        .data$cohort_end_date
-      ))) %>%
-      dplyr::select(-"future_observation", -"duration") %>%
-      computeTable(cdm)
-    xNew <- PatientProfiles::addAttributes(xNew, x)
-    return(xNew)
-  } else {
-    return(x)
-  }
+requirePriorObservation <- function(x, priorObservation) {
+  x |>
+    PatientProfiles::addPriorObservation() %>%
+    dplyr::filter(.data$prior_observation >= .env$priorObservation) %>%
+    dplyr::select(-"prior_observation") %>%
+    dplyr::compute(
+      name = attr(x, "tbl_name"), temporary = FALSE, overwrite = TRUE
+    )
 }
 
 #' @noRd
-unionCohort <- function(x, gap, cdm) {
-  xNew <- x %>%
-    dplyr::select(
-      "cohort_definition_id",
-      "subject_id",
-      "date_event" = "cohort_start_date"
-    ) %>%
-    dplyr::mutate(date_id = -1) %>%
-    dplyr::union_all(
-      x %>%
-        dplyr::mutate(
-          date_event = as.Date(!!CDMConnector::dateadd(
-            date = "cohort_end_date",
-            number = gap
-          )),
-          date_id = 1
-        ) %>%
-        dplyr::select(
-          "cohort_definition_id", "subject_id", "date_event", "date_id"
-        )
-    ) %>%
-    dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
-    dbplyr::window_order(.data$date_event, .data$date_id) %>%
+erify <- function(x,
+                  gap = 0,
+                  start = "cohort_start_date",
+                  end = "cohort_end_date",
+                  group = c("cohort_definition_id", "subject_id")) {
+  xstart <- x |>
+    dplyr::select(dplyr::all_of(group, "date_event" = start)) |>
+    dplyr::mutate(date_id = -1)
+  xend <- x |>
+    dplyr::select(dplyr::all_of(group, "date_event" = start)) |>
+    dplyr::mutate(date_id = 1)
+  if (gap > 0) {
+    xend <- xend %>%
+      dplyr::mutate("date_event" = as.Date(!!CDMConnector::dateadd(
+        date = "date_event", number = gap, interval = "day"
+      )))
+  }
+  xNew <- xstart |>
+    dplyr::union_all(xend) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(group))) %>%
+    dplyr::arrange(.data$date_event, .data$date_id) %>%
     dplyr::mutate(cum_id = cumsum(.data$date_id)) %>%
     dplyr::filter(
       .data$cum_id == 0 || (.data$cum_id == -1 && .data$date_id == -1)
     ) %>%
     dplyr::mutate(
-      name = dplyr::if_else(
-        .data$date_id == -1, "cohort_start_date", "cohort_end_date"
-      ),
-      era_id = dplyr::if_else(
-        .data$date_id == -1, 1, 0
-      )
+      name = dplyr::if_else(.data$date_id == -1, .env$start, .env$end),
+      era_id = dplyr::if_else(.data$date_id == -1, 1, 0)
     ) %>%
     dplyr::mutate(era_id = cumsum(as.numeric(.data$era_id))) %>%
     dplyr::ungroup() %>%
-    dbplyr::window_order() %>%
+    dplyr::arrange() %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "era_id", "name", "date_event"
     ) %>%
     tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
-    dplyr::mutate(cohort_end_date = as.Date(!!CDMConnector::dateadd(
-      date = "cohort_end_date",
-      number = -gap
+    dplyr::mutate(!!end := as.Date(!!CDMConnector::dateadd(
+      date = end, number = -gap, interval = "day"
     ))) %>%
-    dplyr::select(-"era_id") %>%
-    computeTable(cdm)
+    dplyr::select(-"era_id") |>
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+    )
   return(xNew)
 }
 
@@ -231,7 +237,6 @@ applyLimit <- function(cohort, cdm, limit) {
 correctDuration <- function(x,
                             imputeDuration,
                             durationRange,
-                            cdm,
                             start = "cohort_start_date",
                             end = "cohort_end_date") {
 
@@ -254,7 +259,9 @@ correctDuration <- function(x,
       !!end := as.Date(!!CDMConnector::dateadd(date = start, number = "days_to_add"))
     ) %>%
     dplyr::select(-c("duration", "days_to_add")) %>%
-    computeTable(cdm)
+    dplyr::compute(
+      temporary = FALSE, name = uniqueTmpName(), overwirte = TRUE
+    )
   attr(x, "impute") <- impute
   return(x)
 }

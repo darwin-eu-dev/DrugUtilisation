@@ -94,8 +94,7 @@ checkLimit <- function(limit) {
 
 checkPriorObservation <- function(priorObservation) {
   checkmate::assertIntegerish(
-    priorObservation,
-    lower = 0, any.missing = F, len = 1, null.ok = T
+    priorObservation, lower = 0, any.missing = F, len = 1,
   )
 }
 
