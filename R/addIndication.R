@@ -86,9 +86,9 @@ addIndication <- function(x,
       ind %>% dplyr::rename(!!indicationDate := "cohort_start_date"),
       by = c("subject_id", indicationDate)
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
-  result <- PatientProfiles::addAttributes(result, x)
+  dropTmpTables(cdm = cdm)
 
   return(result)
 }
@@ -114,7 +114,9 @@ addCohortIndication <- function(ind, cdm, cohortName, gaps) {
       nameStyle = indicationName(gap, "{cohort_name}")
     ) %>%
       addNoneIndication(gap) %>%
-      CDMConnector::computeQuery()
+      dplyr::compute(
+        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+      )
   }
   return(ind)
 }
@@ -165,7 +167,9 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
       }
       xx <- xx %>%
         dplyr::select(-"diff_date", -"unknown_date") %>%
-        CDMConnector::computeQuery()
+        dplyr::compute(
+          temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+        )
       ind <- ind %>%
         dplyr::left_join(xx, by = c("subject_id", "cohort_start_date")) %>%
         dplyr::mutate(dplyr::across(
@@ -187,7 +191,9 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
         dplyr::select(
           "subject_id", "cohort_start_date", dplyr::starts_with("indication")
         ) %>%
-        CDMConnector::computeQuery()
+        dplyr::compute(
+          temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+        )
     }
   }
   return(ind)

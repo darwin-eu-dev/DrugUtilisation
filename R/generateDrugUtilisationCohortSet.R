@@ -88,18 +88,10 @@ generateDrugUtilisationCohortSet <- function(cdm,
     imputeDuration = imputeDuration, durationRange = durationRange
   )
 
-  character <- c("imputeDuration")
-  for (char in character) {
-    if (is.character(eval(parse(text = char)))) {
-      is.character(eval(parse(text = paste0(char, " <- tolower(", char, ")"))))
-    }
-  }
-
   # get conceptSet
-  conceptSet <- conceptSetFromConceptSetList(conceptSet)
-
-  # generate cohort set
-  cohortSetRef <- attr(conceptSet, "cohort_set") %>%
+  cohortSetRef <- dplyr::tibble(cohort_name = names(conceptSetList)) %>%
+    dplyr::mutate(cohort_definition_id = dplyr::row_number()) %>%
+    dplyr::select("cohort_definition_id", "cohort_name") |>
     dplyr::mutate(
       duration_range_min = as.character(.env$durationRange[1]),
       duration_range_max = as.character(.env$durationRange[2]),
@@ -112,26 +104,16 @@ generateDrugUtilisationCohortSet <- function(cdm,
       cohort_date_range_start = as.character(.env$cohortDateRange[1]),
       cohort_date_range_end = as.character(.env$cohortDateRange[2]),
       limit = .env$limit
-    ) %>%
-    insertTable(cdm, paste0(name, "_set"))
+    )
+
+  conceptSet <- conceptSetFromConceptSetList(conceptSet, cohortSet)
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
-  cohort <- subsetTables(cdm, conceptSet, "Drug")
-  attrition <- computeCohortAttrition(cohort, cdm, cohortSet = cohortSetRef)
+  cdm[[name]] <- subsetTables(cdm, conceptSet, imputeDuration, durationRange) |>
+    newCohortTable(cohortSetRef = cohortSetRef)
 
-  if (cohort %>% dplyr::tally() %>% dplyr::pull("n") > 0) {
-    # correct duration
-    cohort <- correctDuration(cohort, imputeDuration, durationRange, cdm)
-    imputeCounts <- attr(cohort, "impute")
-    reason1 <- paste0(
-      "Duration imputation; affected rows: ", imputeCounts[1], " (",
-      round(imputeCounts[2]), "%)"
-    )
-    attrition <- computeCohortAttrition(
-      cohort, cdm, attrition, reason1,
-      cohortSet = cohortSetRef
-    )
+  if (CohortCount(cdm[[name]]) |> dplyr::pull("number_records") |> sum() > 0) {
 
     # eliminate overlap
     cohort <- unionCohort(cohort, gapEra, cdm)

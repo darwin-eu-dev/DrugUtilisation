@@ -14,265 +14,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Add a line in the attrition table. If the table does not exist it is created
-#'
-#' @param x A table in the cdm with at lest: 'cohort_definition_id' and
-#' 'subject_id'
-#' @param cdm A cdm reference created using CDMConnector
-#' @param attrition An attrition table. If NULL a new attrition table is created.
-#' @param reason A character with the name of the reason.
-#'
-#' @return Reference to a table with the cohort attrition
-#'
 #' @noRd
-#'
-computeCohortAttrition <- function(x,
-                                   cdm,
-                                   attrition = NULL,
-                                   reason = "Qualifying initial records",
-                                   cohortSet) {
-  checkInputs(
-    x = x, cdm = cdm, attrition = attrition, reason = reason
-  )
-  attrition <- addAttritionLine(x, cdm, attrition, reason, cohortSet) %>%
-    computeTable(cdm)
-  return(attrition)
-}
-
-#' @noRd
-addAttritionLine <- function(cohort, cdm, attrition, reason, cohortSet) {
-  if (is.null(attrition)) {
-    attrition <- countAttrition(cohort, reason, 1, cohortSet)
-  } else {
-    id <- attrition %>%
-      dplyr::pull("reason_id") %>%
-      max()
-    attrition <- attrition %>%
-      dplyr::union_all(countAttrition(cohort, reason, id + 1, cohortSet)) %>%
-      addExcludedCounts()
-  }
-  return(attrition)
-}
-
-#' @noRd
-countAttrition <- function(cohort, reason, id, cohortSet) {
-  if (id == 1) {
-    num <- 0
-  } else {
-    num <- as.numeric(NA)
-  }
-  attrition <- cohort %>%
-    dplyr::group_by(.data$cohort_definition_id) %>%
-    dplyr::summarise(
-      number_records = dplyr::n(),
-      number_subjects = dplyr::n_distinct(.data$subject_id),
-      .groups = "drop"
-    ) %>%
-    dplyr::right_join(
-      cohortSet %>%
-        dplyr::select("cohort_definition_id"),
-      by = "cohort_definition_id"
-    ) %>%
-    dplyr::mutate(
-      number_records = dplyr::if_else(
-        is.na(.data$number_records), 0, .data$number_records
-      ),
-      number_subjects = dplyr::if_else(
-        is.na(.data$number_subjects), 0, .data$number_subjects
-      ),
-      reason_id = .env$id, reason = .env$reason, excluded_records = .env$num,
-      excluded_subjects = .env$num
-    )
-  return(attrition)
-}
-
-#' @noRd
-addExcludedCounts <- function(attrition) {
-  attrition %>%
-    dplyr::group_by(.data$cohort_definition_id) %>%
-    dbplyr::window_order(.data$reason_id) %>%
-    dplyr::mutate(
-      excluded_records = dplyr::if_else(
-        is.na(.data$excluded_records),
-        dplyr::lag(.data$number_records) - .data$number_records,
-        .data$excluded_records
-      ),
-      excluded_subjects = dplyr::if_else(
-        is.na(.data$excluded_subjects),
-        dplyr::lag(.data$number_subjects) - .data$number_subjects,
-        .data$excluded_subjects
-      )
-    ) %>%
-    dbplyr::window_order() %>%
-    dplyr::ungroup()
-}
-
-#' Computes the cohortCount attribute for a certain table
-#'
-#' @param x A table in the cdm with at lest: 'cohort_definition_id' and
-#' subject_id'
-#' @param cdm A cdm_reference object
-#'
-#' @return A reference to a table in the database with the cohortCount
-#'
-#' @noRd
-#'
-computeCohortCount <- function(x,
-                               cdm,
-                               cohortSet) {
-  checkInputs(x = x, cdm = cdm)
-  return(
-    x %>%
-      dplyr::group_by(.data$cohort_definition_id) %>%
-      dplyr::summarise(
-        number_records = dplyr::n(),
-        number_subjects = dplyr::n_distinct(.data$subject_id),
-        .groups = "drop"
-      ) %>%
-      dplyr::right_join(
-        cohortSet %>%
-          dplyr::select("cohort_definition_id"),
-        by = "cohort_definition_id"
-      ) %>%
-      dplyr::mutate(
-        number_records = dplyr::if_else(
-          is.na(.data$number_records), 0, .data$number_records
-        ),
-        number_subjects = dplyr::if_else(
-          is.na(.data$number_subjects), 0, .data$number_subjects
-        )
-      ) %>%
-      computeTable(cdm)
-  )
-}
-
-#' @noRd
-conceptSetFromConceptSetList <- function(conceptSetList) {
-  cohortSet <- dplyr::tibble(cohort_name = names(conceptSetList)) %>%
-    dplyr::mutate(cohort_definition_id = dplyr::row_number()) %>%
-    dplyr::select("cohort_definition_id", "cohort_name")
-  conceptSet <- purrr::map(conceptSetList, dplyr::as_tibble) %>%
+conceptSetFromConceptSetList <- function(conceptSetList, cohortSet) {
+  purrr::map(conceptSetList, dplyr::as_tibble) %>%
     dplyr::bind_rows(.id = "cohort_name") %>%
-    dplyr::rename("concept_id" = "value") %>%
-    dplyr::inner_join(cohortSet, by = "cohort_name") %>%
+    dplyr::rename("drug_concept_id" = "value") %>%
+    dplyr::inner_join(
+      cohortSet |> dplyr::select("cohort_definition_id", "cohort_name"),
+      by = "cohort_name"
+    ) %>%
     dplyr::select(-"cohort_name")
-  attr(conceptSet, "cohort_set") <- cohortSet
-  return(conceptSet)
 }
 
 #' @noRd
-subsetTables <- function(cdm, conceptSet, domains = NULL) {
-  conceptSet <- cdm[["concept"]] %>%
-    dplyr::select("concept_id", "domain_id") %>%
-    dplyr::right_join(
-      conceptSet %>%
-        dplyr::select("cohort_definition_id", "concept_id"),
-      by = "concept_id",
-      copy = TRUE
-    ) %>%
-    computeTable(cdm)
-  if (is.null(domains)) {
-    domains <- conceptSet %>%
-      dplyr::select("domain_id") %>%
-      dplyr::distinct() %>%
-      dplyr::pull()
-  }
-  cohort <- emptyCohort(cdm)
-  if (!any(domains %in% domainInformation$domain_id)) {
-    cli::cli_warn(paste0(
-      "All concepts domain_id (",
-      paste(domains, collapse = ", "),
-      ") not supported, generated cohort is empty. The supported domain_id are: ",
-      paste(domainInformation$domain_id, collapse = ", "),
-      "."
-    ))
-    return(cohort)
-  }
-  if (length(domains[!(domains %in% domainInformation$domain_id)]) > 0) {
-    cli::cli_warn(paste(
-      "concepts with domain_id:",
-      paste(
-        domains[!(domains %in% domainInformation$domain_id)],
-        collapse = ", "
-      ),
-      "are not going to be instantiated. The supported domain_id are: ",
-      paste(domainInformation$domain_id, collapse = ", "),
-      "."
-    ))
-  }
-  domains <- domains[domains %in% domainInformation$domain_id]
-  for (domain in domains) {
-    if (getTableName(domain) %in% names(cdm)) {
-      concepts <- conceptSet %>%
-        dplyr::filter(.data$domain_id == .env$domain) %>%
-        dplyr::select(-"domain_id")
-      cohort <- cohort %>%
-        dplyr::union_all(
-          concepts %>%
-            dplyr::inner_join(
-              cdm[[getTableName(domain)]] %>%
-                dplyr::select(
-                  "concept_id" = !!getConceptName(domain),
-                  "subject_id" = "person_id",
-                  "cohort_start_date" = !!getStartName(domain),
-                  "cohort_end_date" = !!getEndName(domain)
-                ),
-              by = "concept_id"
-            ) %>%
-            dplyr::select(
-              "cohort_definition_id", "subject_id", "cohort_start_date",
-              "cohort_end_date"
-            )
-        ) %>%
-        computeTable(cdm)
-    } else {
-      cli::cli_warn("{getTableName(domain)} not found in the cdm object")
-    }
-  }
-  return(cohort)
-}
-
-#' @noRd
-getConceptName <- function(domain) {
-  domainInformation$concept_id_name[domainInformation$domain_id == domain]
-}
-
-#' @noRd
-getTableName <- function(domain) {
-  domainInformation$table_name[domainInformation$domain_id == domain]
-}
-
-#' @noRd
-getStartName <- function(domain) {
-  domainInformation$start_name[domainInformation$domain_id == domain]
-}
-
-#' @noRd
-getEndName <- function(domain) {
-  domainInformation$end_name[domainInformation$domain_id == domain]
-}
-
-#' @noRd
-emptyCohort <- function(cdm) {
-  cdm[["observation_period"]] %>%
-    dplyr::filter(
-      .data$observation_period_id < 0 & .data$observation_period_id > 0
-    ) %>%
-    dplyr::mutate("cohort_definition_id" = 1) %>%
+subsetTables <- function(cdm, conceptSet) {
+  nm <- uniqueTmpName()
+  cdm <- omopgenerics::insertTable(
+    cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
+  )
+  cohort <- cdm$drug_exposure |>
     dplyr::select(
-      "cohort_definition_id",
+      "drug_concept_id",
       "subject_id" = "person_id",
-      "cohort_start_date" = "observation_period_start_date",
-      "cohort_end_date" = "observation_period_end_date"
-    ) %>%
-    CDMConnector::computeQuery()
+      "cohort_start_date" = "drug_exposure_start_date",
+      "cohort_end_date" = "drug_exposure_end_date"
+    ) |>
+    dplyr::inner_join(cdm[[nm]], by = "drug_concept_id") |>
+    dplyr::compute(
+      temporary = FALSE, name = uniqueTmpName(), overwrite = TRUE
+    )
+  return(cohort)
 }
 
 #' @noRd
 requirePriorUseWashout <- function(cohort, cdm, washout) {
   cohort <- cohort %>%
     dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
-    dbplyr::window_order(.data$cohort_start_date) %>%
+    dplyr::arrange(.data$cohort_start_date) %>%
     dplyr::mutate(id = dplyr::row_number()) %>%
     computeTable(cdm)
   cohort <- cohort %>%
@@ -432,7 +210,6 @@ unionCohort <- function(x, gap, cdm) {
     ))) %>%
     dplyr::select(-"era_id") %>%
     computeTable(cdm)
-  xNew <- PatientProfiles::addAttributes(xNew, x)
   return(xNew)
 }
 
@@ -545,4 +322,13 @@ solveImputation <- function(x, column, method, toRound = FALSE) {
   }
   x <- x %>% dplyr::select(-"impute")
   return(x)
+}
+
+uniqueTmpName <- function() {
+  i <- getOption("tmp_table_name", 0) + 1
+  options(tmp_table_name = i)
+  sprintf("tmp_%03i", i)
+}
+dropTmpTables <- function(cdm) {
+  omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
 }

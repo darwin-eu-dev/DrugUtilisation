@@ -67,7 +67,9 @@ addDailyDose <- function(drugExposure,
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
       "quantity", "daily_dose", "unit"
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+    )
 
   # add the information back to the initial table
   drugExposure <- drugExposure %>%
@@ -78,7 +80,7 @@ addDailyDose <- function(drugExposure,
         "quantity"
       )
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
   return(drugExposure)
 }
