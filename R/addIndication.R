@@ -132,7 +132,7 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
       CDMConnector::computeQuery()
     if (individualsUnknown %>% dplyr::tally() %>% dplyr::pull() > 0) {
       for (ut in seq_along(unknownTables)) {
-        unknownDate <- PatientProfiles::getStartName(unknownTables[ut])
+        unknownDate <- PatientProfiles::startDateColumn(unknownTables[ut])
         x <- cdm[[unknownTables[ut]]] %>%
           dplyr::select(
             "subject_id" = "person_id", "unknown_date" = !!unknownDate
@@ -260,9 +260,6 @@ indicationToStrata <- function(cohort,
     cohort <- cohort %>%
       dplyr::select(-dplyr::all_of(indicationVariables))
   }
-
-  # add attributes back
-  cohort <- PatientProfiles::addAttributes(cohort, originalCohort)
 
   return(cohort)
 }

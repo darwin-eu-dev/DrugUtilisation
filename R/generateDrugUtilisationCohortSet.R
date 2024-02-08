@@ -29,8 +29,7 @@
 #' considered in the same era.
 #' @param priorUseWashout Prior days without exposure.
 #' @param priorObservation Minimum number of days of prior observation
-#' required for the incident eras to be considered. If NULL its is not required
-#' to be within observation_period.
+#' required for the incident eras to be considered.
 #' @param cohortDateRange Range for cohort_start_date and cohort_end_date
 #' @param limit Choice on how to summarise the exposures. There are
 #' two options:
@@ -89,7 +88,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
   )
 
   # get conceptSet
-  cohortSetRef <- dplyr::tibble(cohort_name = names(conceptSetList)) %>%
+  cohortSet <- dplyr::tibble(cohort_name = names(conceptSet)) %>%
     dplyr::mutate(cohort_definition_id = dplyr::row_number()) %>%
     dplyr::select("cohort_definition_id", "cohort_name") |>
     dplyr::mutate(
@@ -108,92 +107,18 @@ generateDrugUtilisationCohortSet <- function(cdm,
 
   conceptSet <- conceptSetFromConceptSetList(conceptSet, cohortSet)
 
-  # subset drug_exposure and only get the drug concept ids that we are
-  # interested in.
-  cdm[[name]] <- subsetTables(cdm, conceptSet, imputeDuration, durationRange) |>
-    newCohortTable(cohortSetRef = cohortSetRef)
+  cdm[[name]] <- subsetTables(
+    cdm, conceptSet, imputeDuration, durationRange, name
+  ) |>
+    omopgenerics::newCohortTable(cohortSetRef = cohortSet) |>
+    erafyCohort(gapEra) |>
+    requirePriorUseWashout(priorUseWashout) |>
+    requirePriorObservation(priorObservation) |>
+    trimStartDate(cohortDateRange[1]) |>
+    trimEndDate(cohortDateRange[2]) |>
+    applyLimit(limit)
 
-  if (CohortCount(cdm[[name]]) |> dplyr::pull("number_records") |> sum() > 0) {
-
-    # require priorUseWashout
-    if (priorUseWashout > 0) {
-      res <- ifelse(
-        is.infinite(priorUseWashout), "restrict to first exposure",
-        paste0("require prior use washout of ", priorUseWashout)
-      )
-      cohort <- cohort |> requirePriorUseWashout(priorUseWashout) |>
-        omopgenerics::recordCohortAttrition(reason = res)
-    }
-
-    # require priorObservation
-    if (priorObservation > 0){
-      res <- paste("require at least", priorObservation, "prior observation")
-      cohort <- cohort |>
-        requirePriorObservation(priorObservation) |>
-        omopgenerics::recordCohortAttrition(reason = res)
-    }
-
-    # trim start date
-    if (!is.na(cohortDateRange[1])) {
-      cohort <- cohort |>
-        trimStartDate(cohortDateRange[1]) |>
-        omopgenerics::recordCohortAttrition(
-          paste("restrict cohort_start_date on or after", cohortDateRange[1])
-        )
-    }
-
-
-    # trim end date
-    if (!is.na(cohortDateRange[2])) {
-      cohort <- cohort |>
-        trimEndDate(cohortDateRange[2]) |>
-        omopgenerics::recordCohortAttrition(
-          paste("restrict cohort_end_date on or before", cohortDateRange[2])
-        )
-    }
-
-    # apply limit
-    if (limit == "first") {
-      cohort <- applyLimit(cohort, cdm, limit)
-      attrition <- computeCohortAttrition(
-        cohort, cdm, attrition, "Limit to first era",
-        cohortSet = cohortSetRef
-      )
-    }
-
-  }
-
-  # create the cohort references
-  cohortRef <- cohort %>%
-    dplyr::select(
-      "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date"
-    ) %>%
-    CDMConnector::computeQuery(
-      name = paste0(attr(cdm, "write_prefix"), name),
-      FALSE, attr(cdm, "write_schema"), TRUE
-    )
-  cohortAttritionRef <- attrition %>%
-    CDMConnector::computeQuery(
-      name = paste0(attr(cdm, "write_prefix"), name, "_attrition"),
-      FALSE, attr(cdm, "write_schema"), TRUE
-    )
-  cohortCountRef <- computeCohortCount(
-    cohort, cdm,
-    cohortSet = cohortSetRef
-  ) %>%
-    CDMConnector::computeQuery(
-      name = paste0(attr(cdm, "write_prefix"), name, "_count"),
-      FALSE, attr(cdm, "write_schema"), TRUE
-    )
-
-  # create the resultant GeneratedCohortSet
-  cdm[[name]] <- CDMConnector::newGeneratedCohortSet(
-    cohortRef = cohortRef,
-    cohortSetRef = cohortSetRef,
-    cohortAttritionRef = cohortAttritionRef,
-    cohortCountRef = cohortCountRef
-  )
+  dropTmpTables(cdm)
 
   return(cdm)
 }
