@@ -100,7 +100,7 @@ summariseTreatment<- function(cohort,
       dplyr::mutate(!!!unexposed(colnames(cohort), win))
   }
   cohort <- cohort %>%
-    CDMConnector::computeQuery() %>%
+    dplyr::compute() %>%
     PatientProfiles::addCohortName() %>%
     dplyr::collect()
 
@@ -145,7 +145,7 @@ summariseTreatment<- function(cohort,
     ) %>%
     dplyr::select(dplyr::all_of(cols)) %>%
     PatientProfiles::addCdmName(cdm = cdm) %>%
-    dplyr::mutate("result_type" = "Summarise treatment") %>%
+    dplyr::mutate("result_type" = "summarise_treatment") %>%
     dplyr::relocate(c("cdm_name", "result_type"))
 
   return(result)

@@ -82,6 +82,8 @@ addDailyDose <- function(drugExposure,
     ) %>%
     dplyr::compute()
 
+  dropTmpTables(cdm = cdm)
+
   return(drugExposure)
 }
 
@@ -160,9 +162,16 @@ dailyDoseCoverage <- function(cdm,
     ) %>%
     dplyr::filter(
       !(.data$strata_name %in% c("Overall", "route")) |
-        .data$variable != "daily_dose" |
-        .data$estimate_type %in% c("count", "percentage")
-    )
+        .data$variable_name != "daily_dose" |
+        .data$estimate_name %in% c("count", "percentage")
+    ) |>
+    dplyr::mutate(
+      "package_name" = "DrugUtilisation",
+      "package_version" = as.character(utils::packageVersion("DrugUtilisation")),
+      "result_type" = "dose_coverage",
+      "cdm_name" = omopgenerics::cdmName(cdm)
+    ) |>
+    omopgenerics::newSummarisedResult()
 
   return(dailyDoseSummary)
 }

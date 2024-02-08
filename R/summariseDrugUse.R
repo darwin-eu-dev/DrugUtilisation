@@ -78,20 +78,6 @@ summariseDrugUse<- function(cohort,
     minCellCount = minCellCount
   ) %>%
     dplyr::mutate(
-      # "variable_level" = dplyr::case_when(
-      #   substr(.data$variable, 1, 18) == "initial_daily_dose" ~
-      #     substr(.data$variable, 20, nchar(.data$variable)),
-      #   substr(.data$variable, 1, 15) == "cumulative_dose" ~
-      #     substr(.data$variable, 17, nchar(.data$variable)),
-      #   TRUE ~ .data$variable_level
-      # ),
-      # "variable" = dplyr::case_when(
-      #   substr(.data$variable, 1, 18) == "initial_daily_dose" ~
-      #     "initial_daily_dose",
-      #   substr(.data$variable, 1, 15) == "cumulative_dose" ~
-      #     "cumulative_dose",
-      #   TRUE ~ .data$variable
-      # ),
       cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
       result_type = "Summary drug use"
     )

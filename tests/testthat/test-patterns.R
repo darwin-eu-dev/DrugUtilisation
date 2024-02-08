@@ -7,7 +7,9 @@ test_that("create patterns, correct output", {
    numerator_value = c(NA, 20, 10),
    numerator_unit_concept_id = c(NA, 7, 8576),
    denominator_value = c(NA, 100, 100),
-   denominator_unit_concept_id = c(NA, 10, 45744809)
+   denominator_unit_concept_id = c(NA, 10, 45744809),
+   valid_start_date = as.Date("1900-01-01"),
+   valid_end_date = as.Date("2100-01-01")
  )
  concept <- dplyr::tibble(
    concept_name = c(
@@ -19,17 +21,23 @@ test_that("create patterns, correct output", {
      rep("Branded drug", 2), rep("Ingredient", 3), rep("Unit", 8)
    ),
    domain_id = c(rep("Drug", 5), rep("Unit", 8)),
-   concept_id = c(1, 2, 13, 14, 15, 4, 7, 8, 10, 11, 8718, 8576, 45744809)
+   concept_id = c(1, 2, 13, 14, 15, 4, 7, 8, 10, 11, 8718, 8576, 45744809),
+   vocabulary_id = 0,
+   concept_code = 0,
+   valid_start_date = as.Date("1900-01-01"),
+   valid_end_date = as.Date("2100-01-01")
  )
  concept_relationship <- dplyr::tibble(
    concept_id_1 = c(1, 2),
    concept_id_2 = c(19016586, 46275062),
-   relationship_id = c(rep("RxNorm has dose form", 2))
+   relationship_id = c(rep("RxNorm has dose form", 2)),
+   valid_start_date = as.Date("1900-01-01"),
+   valid_end_date = as.Date("2100-01-01")
  )
 
  cdm <- mockDrugUtilisation(
    connectionDetails, drug_strength = drug_strength, concept = concept,
-   extraTables = list("concept_relationship" = concept_relationship)
+   concept_relationship = concept_relationship
  )
 
  expect_no_error(patternTab <- patternTable(cdm))

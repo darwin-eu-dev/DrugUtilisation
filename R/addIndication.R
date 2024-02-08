@@ -129,7 +129,9 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
       dplyr::filter(.data[[indicationName(min(gaps), "none")]] == 1) %>%
       dplyr::select("subject_id", "cohort_start_date") %>%
       dplyr::distinct() %>%
-      CDMConnector::computeQuery()
+      dplyr::compute(
+        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+      )
     if (individualsUnknown %>% dplyr::tally() %>% dplyr::pull() > 0) {
       for (ut in seq_along(unknownTables)) {
         unknownDate <- PatientProfiles::startDateColumn(unknownTables[ut])
@@ -327,7 +329,7 @@ addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binary
   # mantain the number of columns
   x <- x %>%
     dplyr::left_join(toAdd, by = binaryColumns) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
   return(x)
 }

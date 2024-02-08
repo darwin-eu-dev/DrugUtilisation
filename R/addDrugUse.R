@@ -17,7 +17,7 @@
 #' Add new columns with drug use related information
 #'
 #' @param cohort Cohort in the cdm
-#' @param cdm cdm_reference created with CDMConnector::cdmFromCon
+#' @param cdm deprecated
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
 #' @param conceptSet List of concepts to be included. If NULL all the
