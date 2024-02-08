@@ -14,11 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' This function is used to summarise the lasrge scale characteristics of a
-#' cohort table
-#'
-#' `r lifecycle::badge("deprecated")`
-#'
 #' @importFrom PatientProfiles summariseLargeScaleCharacteristics
 #' @export
 PatientProfiles::summariseLargeScaleCharacteristics
@@ -70,20 +65,20 @@ summariseCharacteristicsFromCodelist <- function(cohort,
                                                  ),
                                                  overlap = TRUE,
                                                  minCellCount = lifecycle::deprecated()) {
-  lifecycle::deprecate_warn(
+  lifecycle::deprecate_soft(
     when = "0.5.0",
     what = "summariseCharacteristicsFromCodelist()",
     with = "PatientProfiles::summariseCharacteristics(conceptIntersect)"
   )
 
   if (lifecycle::is_present(minCellCount)) {
-    lifecycle::deprecate_warn(
+    lifecycle::deprecate_soft(
       when = "0.5.0", what = "summariseCharacteristicsFromCodelist(minCellCount = )"
     )
   }
 
   if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_warn(
+    lifecycle::deprecate_soft(
       when = "0.5.0", what = "summariseCharacteristicsFromCodelist(cdm = )"
     )
   }

@@ -94,10 +94,10 @@ summariseTreatment<- function(cohort,
       )
   }
 
-  # create unexposed
+  # create untreated
   for (win in names(window)) {
     cohort <- cohort %>%
-      dplyr::mutate(!!!unexposed(colnames(cohort), win))
+      dplyr::mutate(!!!untreated(colnames(cohort), win))
   }
   cohort <- cohort %>%
     dplyr::compute() %>%
@@ -112,49 +112,50 @@ summariseTreatment<- function(cohort,
     group = list("cohort_name"),
     strata = strata,
     variables = newCols,
-    functions = c("count", "percentage"),
-    minCellCount = minCellCount
+    functions = c("count", "percentage")
   )
   cols <- colnames(result)
 
   # correct names
   result <- result %>%
-    dplyr::select(-"variable_level") %>%
     tidyr::separate_wider_delim(
-      cols = "variable",
+      cols = "variable_name",
       delim = "_",
-      names = c("new_variable_level", "new_variable"),
+      names = c("window_name", "new_variable_name"),
       too_few = "align_end",
       too_many = "merge",
       cols_remove = TRUE
     ) %>%
-    dplyr::rename("variable" = "new_variable") %>%
+    dplyr::rename("variable_name" = "new_variable_name") %>%
+    dplyr::filter(!is.na(.data$window_name)) |>
     dplyr::left_join(
       dplyr::tibble(
-        "new_variable_level" = paste0("window", seq_along(window)),
-        "variable_level" = namesWindow
+        "window_name" = paste0("window", seq_along(window)),
+        "window" = namesWindow
       ),
-      by = "new_variable_level"
+      by = "window_name"
     ) %>%
-    dplyr::mutate("new_variable_level" = dplyr::if_else(
-      is.na(.data$new_variable_level), "", .data$new_variable_level
-    )) %>%
     dplyr::arrange(
       .data$group_level, .data$strata_name, .data$strata_level,
-      .data$new_variable_level
+      .data$window_name, .data$variable_name
     ) %>%
-    dplyr::select(dplyr::all_of(cols)) %>%
+    dplyr::select(-c("window_name", "additional_name", "additional_level")) %>%
+    visOmopResults::uniteAdditional(cols = "window") |>
     PatientProfiles::addCdmName(cdm = cdm) %>%
-    dplyr::mutate("result_type" = "summarise_treatment") %>%
-    dplyr::relocate(c("cdm_name", "result_type"))
+    dplyr::mutate(
+      "result_type" = "summarised_treatment",
+      "package_name" = "DrugUtilisation",
+      "package_version" = as.character(utils::packageVersion("DrugUtilisation"))
+    ) |>
+    omopgenerics::newSummarisedResult()
 
   return(result)
 }
 
-unexposed <- function(cols, w) {
+untreated <- function(cols, w) {
   col <- cols[startsWith(cols, w)]
   sum <- paste0(".data[[\"", col, "\"]]", collapse = " + ")
   paste0("dplyr::if_else(", sum, " > 0, 0, 1)") %>%
     rlang::parse_exprs() %>%
-    rlang::set_names(paste0(w, "_unexposed"))
+    rlang::set_names(paste0(w, "_untreated"))
 }

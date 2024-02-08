@@ -6,7 +6,7 @@
 \usage{
 addIndication(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   indicationCohortName,
   indicationGap = 0,
   unknownIndicationTable = NULL,

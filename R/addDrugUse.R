@@ -661,7 +661,7 @@ addTypeSubexposure <- function(x, gapEra) {
           .data$subexposure_id > 1 &
           .data$subexposure_id < max(.data$subexposure_id, na.rm = TRUE) ~
           "gap",
-        TRUE ~ "unexposed"
+        TRUE ~ "untreated"
       )
     ) %>%
     dplyr::filter(.data$type_subexposure != "unexposed") %>%

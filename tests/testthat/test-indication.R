@@ -47,6 +47,9 @@ test_that("test case single indication", {
     period_type_concept_id = 44814724
   )
   condition_occurrence <- dplyr::tibble(
+    condition_occurrence_id = 1,
+    condition_concept_id = 0,
+    condition_type_concept_id = 0,
     person_id = 1,
     condition_start_date = as.Date("2020-05-31"),
     condition_end_date = as.Date("2020-05-31")

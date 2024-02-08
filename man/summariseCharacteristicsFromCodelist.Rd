@@ -6,13 +6,13 @@
 \usage{
 summariseCharacteristicsFromCodelist(
   cohort,
-  cdm,
+  cdm = lifecycle::deprecated(),
   conceptSet,
   strata = list(),
   window = list(c(-Inf, -366), c(-365, -31), c(-30, -1), c(0, 0), c(1, 30), c(31, 365),
     c(366, Inf)),
   overlap = TRUE,
-  minCellCount = 5
+  minCellCount = lifecycle::deprecated()
 )
 }
 \arguments{

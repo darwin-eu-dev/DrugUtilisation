@@ -47,11 +47,19 @@
 #' }
 #'
 addIndication <- function(x,
-                          cdm = attr(x, "cdm_reference"),
+                          cdm = lifecycle::deprecated(),
                           indicationCohortName,
                           indicationGap = 0,
                           unknownIndicationTable = NULL,
                           indicationDate = "cohort_start_date") {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_soft(
+      when = "0.5.0", what = "addIndication(cdm = )"
+    )
+  }
+
+  cdm <- omopgenerics::cdmReference(x)
+
   # check inputs
   checkInputs(
     x = x, cdm = cdm, indicationCohortName = indicationCohortName,
@@ -70,10 +78,10 @@ addIndication <- function(x,
     dplyr::distinct()
 
   # add indications that are cohorts
-  ind <- addCohortIndication(ind, cdm, indicationCohortName, indicationGap)
+  ind <- addCohortIndication(ind, indicationCohortName, indicationGap)
 
   # add unknown indications
-  ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap) %>%
+  ind <- addUnknownIndication(ind, unknownIndicationTable, indicationGap) %>%
     dplyr::select(
       "subject_id", "cohort_start_date", dplyr::starts_with(
         paste0("indication_gap_", tolower(as.character(indicationGap)))
@@ -107,12 +115,13 @@ indicationName <- function(gap, termination = "") {
 
 #' Add cohort indications
 #' @noRd
-addCohortIndication <- function(ind, cdm, cohortName, gaps) {
+addCohortIndication <- function(ind, cohortName, gaps) {
   for (gap in gaps) {
-    ind <- PatientProfiles::addCohortIntersectFlag(
-      ind, cdm, cohortName, targetEndDate = NULL, window = c(-gap, 0),
-      nameStyle = indicationName(gap, "{cohort_name}")
-    ) %>%
+    ind <- ind |>
+      PatientProfiles::addCohortIntersectFlag(
+        targetCohortTable = cohortName, targetEndDate = NULL,
+        window = c(-gap, 0), nameStyle = indicationName(gap, "{cohort_name}")
+      ) %>%
       addNoneIndication(gap) %>%
       dplyr::compute(
         temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
@@ -123,7 +132,7 @@ addCohortIndication <- function(ind, cdm, cohortName, gaps) {
 
 #' Add unknown indications
 #' @noRd
-addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
+addUnknownIndication <- function(ind, unknownTables, gaps) {
   if (!is.null(unknownTables)) {
     individualsUnknown <- ind %>%
       dplyr::filter(.data[[indicationName(min(gaps), "none")]] == 1) %>%
@@ -133,6 +142,7 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
         temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
       )
     if (individualsUnknown %>% dplyr::tally() %>% dplyr::pull() > 0) {
+      cdm <- omopgenerics::cdmReference(ind)
       for (ut in seq_along(unknownTables)) {
         unknownDate <- PatientProfiles::startDateColumn(unknownTables[ut])
         x <- cdm[[unknownTables[ut]]] %>%
