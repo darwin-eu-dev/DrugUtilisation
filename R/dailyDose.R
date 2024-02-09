@@ -46,6 +46,8 @@ addDailyDose <- function(drugExposure,
     cdm = cdm
   )
 
+  nm <- uniqueTmpName()
+
   # select only pattern_id and unit
   dailyDose <- drugExposure %>%
     dplyr::select(
@@ -67,9 +69,7 @@ addDailyDose <- function(drugExposure,
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
       "quantity", "daily_dose", "unit"
     ) %>%
-    dplyr::compute(
-      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
-    )
+    dplyr::compute(temporary = FALSE, overwrite = TRUE, name = nm)
 
   # add the information back to the initial table
   drugExposure <- drugExposure %>%
@@ -82,7 +82,7 @@ addDailyDose <- function(drugExposure,
     ) %>%
     dplyr::compute()
 
-  dropTmpTables(cdm = cdm)
+  cdm <- omopgenerics::dropTable(cdm = cdm, name = nm)
 
   return(drugExposure)
 }

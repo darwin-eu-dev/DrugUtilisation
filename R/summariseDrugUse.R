@@ -54,17 +54,24 @@
 #' }
 #'
 summariseDrugUse<- function(cohort,
-                            cdm = attr(cohort, "cdm_reference"),
+                            cdm = lifecycle::deprecated(),
                             strata = list(),
                             drugUseEstimates = c(
                               "min", "q05", "q25", "median", "q75", "q95",
                               "max", "mean", "sd", "missing"
                             ),
-                            minCellCount = 5) {
+                            minCellCount = lifecycle::deprecated()) {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_warn(when = "0.5.0", what = "summariseDrugUse(cdm = )")
+  }
+  if (lifecycle::is_present(minCellCount)) {
+    lifecycle::deprecate_warn(when = "0.5.0", what = "summariseDrugUse(minCellCount = )")
+  }
+  cdm <- omopgenerics::cdmReference(cohort)
   # check inputs
   checkInputs(
     cohort = cohort, cdm = cdm, strata = strata,
-    drugUseEstimates = drugUseEstimates, minCellCount = minCellCount
+    drugUseEstimates = drugUseEstimates
   )
 
   # update cohort_names
@@ -74,13 +81,16 @@ summariseDrugUse<- function(cohort,
   result <- PatientProfiles::summariseResult(
     table = cohort, group = list("cohort_name" = "cohort_name"),
     strata = strata, variables = drugUseColumns(cohort),
-    functions = drugUseEstimates,
-    minCellCount = minCellCount
+    functions = drugUseEstimates
   ) %>%
     dplyr::mutate(
-      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      result_type = "Summary drug use"
-    )
+      cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA)),
+      result_type = "summarised_drug_use",
+      package_name = "DrugUtilisation",
+      package_version = as.character(utils::packageVersion("Drugutilisation"))
+    ) |>
+    omopgenerics::newSummarisedResult() |>
+    omopgenerics::suppress(minCellCount = 5)
 
   return(result)
 }

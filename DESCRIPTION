@@ -77,12 +77,11 @@ Imports:
     purrr,
     tictoc,
     omopgenerics (>= 0.0.2),
-    visOmopResults
+    visOmopResults,
+    lifecycle
 Depends: 
     R (>= 2.10)
 LazyData: true
 URL: https://darwin-eu-dev.github.io/DrugUtilisation/
 VignetteBuilder: knitr
 Config/testthat/parallel: true
-Remotes:
-    darwin-eu-dev/PatientProfiles

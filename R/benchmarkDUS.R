@@ -168,7 +168,7 @@ benchmarkDUS <- function(
     dplyr::mutate(time_taken_secs = round(.data$time_taken_secs, 2)) %>%
     dplyr::mutate(time_taken_mins = round(.data$time_taken_secs / 60, 2)) %>%
     dplyr::mutate(time_taken_hours = round(.data$time_taken_mins / 60, 2)) %>%
-    dplyr::mutate(dbms = CDMConnector::dbms(cdm)) %>%
+    #dplyr::mutate(dbms = CDMConnector::dbms(cdm)) %>%
     dplyr::mutate(person_n = cdm$person %>%
                     dplyr::count() %>%
                     dplyr::pull())

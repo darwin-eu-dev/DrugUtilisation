@@ -94,7 +94,7 @@
 #' }
 #'
 addDrugUse <- function(cohort,
-                       cdm = attr(cohort, "cdm_reference"),
+                       cdm = lifecycle::deprecated(),
                        ingredientConceptId,
                        conceptSet = NULL,
                        duration = TRUE,
@@ -108,6 +108,11 @@ addDrugUse <- function(cohort,
                        imputeDailyDose = "none",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_soft("0.5.0", "addDrugUse(cdm = )")
+  }
+  cdm <- omopgenerics::cdmReference(cohort)
+
   vars <- c(
     "eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration",
     "imputeDailyDose"
@@ -147,12 +152,6 @@ addDrugUse <- function(cohort,
     cli::cli_abort("Only one concept set is allowed")
   }
 
-  # get conceptSet
-  conceptSet <- conceptSetFromConceptSetList(conceptSet)
-
-  conceptSet <- conceptSet %>%
-    dplyr::select("cohort_definition_id", "concept_id")
-
   # save original reference
   originalCohort <- cohort
 
@@ -167,7 +166,16 @@ addDrugUse <- function(cohort,
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
-  cohortInfo <- initialSubset(cdm, cohort, conceptSet)
+  conceptSet <- conceptSet |>
+    unlist() |>
+    unname() |>
+    dplyr::as_tibble() |>
+    dplyr::rename("drug_concept_id" = "value")
+  nm <- uniqueTmpName()
+  cdm <- omopgenerics::insertTable(
+    cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
+  )
+  cohortInfo <- initialSubset(cdm, cohort, cdm[[nm]])
 
   cohort <- cohort %>%
     addInfo(cohortInfo, quantity, cdm)
@@ -486,12 +494,7 @@ initialSubset <- function(cdm, dusCohort, conceptSet) {
       "quantity"
     ) %>%
     dplyr::inner_join(dusCohort, by = "subject_id") %>%
-    dplyr::inner_join(
-      conceptSet %>%
-        dplyr::select("drug_concept_id" = "concept_id"),
-      by = "drug_concept_id",
-      copy = TRUE
-    ) %>%
+    dplyr::inner_join(conceptSet, by = "drug_concept_id") %>%
     dplyr::filter(
       (is.na(.data$drug_exposure_end_date) &
          (.data$drug_exposure_start_date <= .data$cohort_end_date)) |
@@ -664,7 +667,7 @@ addTypeSubexposure <- function(x, gapEra) {
         TRUE ~ "untreated"
       )
     ) %>%
-    dplyr::filter(.data$type_subexposure != "unexposed") %>%
+    dplyr::filter(.data$type_subexposure != "untreated") %>%
     dplyr::ungroup()
   return(x)
 }

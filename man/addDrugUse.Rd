@@ -6,7 +6,7 @@
 \usage{
 addDrugUse(
   cohort,
-  cdm = attr(cohort, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   ingredientConceptId,
   conceptSet = NULL,
   duration = TRUE,

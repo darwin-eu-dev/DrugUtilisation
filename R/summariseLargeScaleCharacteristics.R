@@ -33,26 +33,6 @@ PatientProfiles::summariseLargeScaleCharacteristics
 #'
 #' @export
 #'
-#' @examples
-#' \donttest{
-#' library(DrugUtilisation)
-#' library(CodelistGenerator)
-#'
-#' cdm <- mockDrugUtilisation()
-#'
-#' conceptSet <- list(
-#'   "acetaminophen" = c(1125315, 1125360, 2905077, 43135274),
-#'   "group A" = c(
-#'     3665501, 378253, 317009, 761948, 1539403, 1503327, 1516980, 4141052,
-#'     4313306
-#'   )
-#' )
-#' summariseCharacteristicsFromCodelist(
-#'   cdm[["cohort1"]], cdm, conceptSet,
-#'   window = list(c(-365, -1), c(0, 0), c(1, 365))
-#' )
-#' }
-#'
 summariseCharacteristicsFromCodelist <- function(cohort,
                                                  cdm = lifecycle::deprecated(),
                                                  conceptSet,
