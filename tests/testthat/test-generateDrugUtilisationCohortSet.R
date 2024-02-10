@@ -6,7 +6,7 @@ test_that("test inputs", {
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", list(1)))
   expect_no_error(generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1)))
   cdmNew <- generateDrugUtilisationCohortSet(cdm, "dus", list(acetaminophen = 1125360))
-  expect_true("GeneratedCohortSet" %in% class(cdmNew$dus))
+  expect_true("cohort_table" %in% class(cdmNew$dus))
   expect_true(all(colnames(cdmNew$dus) == c(
     "cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date"
   )))
@@ -222,7 +222,7 @@ test_that("priorUseWashout", {
   cdm <- generateDrugUtilisationCohortSet(
     cdm = cdm,
     name = "bp_cohorts_test",
-    conceptSet = list("bp_conceptList" = 1539462),
+    conceptSet = list("bp_concept_list" = 1539462),
     limit = "First",
     priorObservation = 180,
     gapEra = 30,
@@ -345,8 +345,6 @@ test_that("test missing end date or out of durationRange", {
     dplyr::pull(cohort_end_date) == as.Date("2021-02-13"))
 })
 
-
-
 test_that("check cohort_set order", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(
@@ -376,8 +374,6 @@ test_that("check cohort_set order", {
     ))))
 })
 
-
-
 test_that("test impute duration methods", {
 
   cdm <- mockDrugUtilisation(
@@ -391,7 +387,15 @@ test_that("test impute duration methods", {
       )),
       drug_exposure_end_date = as.Date(c(
         NA,  "2001-02-15", "2001-03-19", "2001-05-10"
-      ))
+      )),
+      drug_type_concept_id = 0
+    ),
+    observation_period = dplyr::tibble(
+      observation_period_id = 1,
+      person_id = 1,
+      observation_period_start_date = as.Date("1990-01-01"),
+      observation_period_end_date = as.Date("2010-01-01"),
+      period_type_concept_id = 0
     )
   )
 
@@ -399,33 +403,32 @@ test_that("test impute duration methods", {
     cdm = cdm,
     name = "missing_end",
     conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
-    imputeDuration = "median",
-    priorObservation = NULL
+    imputeDuration = "median"
   )
 
   expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%
     dplyr::pull("cohort_end_date") == as.Date("2000-01-01") + median(c(15, 31, 31) - 1))
 
-
-  cdm <- generateDrugUtilisationCohortSet(
-    cdm = cdm,
-    name = "missing_end",
-    conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
-    imputeDuration = "mean",
-    priorObservation = NULL
+  expect_warning(
+    cdm <- generateDrugUtilisationCohortSet(
+      cdm = cdm,
+      name = "missing_end",
+      conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
+      imputeDuration = "mean"
+    )
   )
 
   expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%
                 dplyr::pull("cohort_end_date") == as.Date("2000-01-01") +
                 as.integer(round(mean(c(15, 31, 31))) - 1))
 
-
-  cdm <- generateDrugUtilisationCohortSet(
-    cdm = cdm,
-    name = "missing_end",
-    conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
-    imputeDuration = "mode",
-    priorObservation = NULL
+  expect_warning(
+    cdm <- generateDrugUtilisationCohortSet(
+      cdm = cdm,
+      name = "missing_end",
+      conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
+      imputeDuration = "mode"
+    )
   )
 
   expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%

@@ -31,7 +31,9 @@ test_that("functionality of addDailyDose function",{
       rep(NA,7), 8718, 8718, 9655, 8576, 44819154, 9551, 8576, 8576, 8576, 8576,
       8587, 8587, 9573, 9573, 8718, 8718, 9439, 9655, 44819154, 9551, 9551,
       8576, 8576, 8576, 8576, 8576, 8587, 8587, 9573, 9573
-    )
+    ),
+    valid_start_date = as.Date("1900-01-01"),
+    valid_end_date = as.Date("2100-01-01")
   )
   conceptsToAdd <- dplyr::tibble(
     concept_id = 1, concept_name = "ingredient 1", domain_id = "Drug",
@@ -76,7 +78,9 @@ test_that("functionality of addDailyDose function",{
                      19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
                      19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
                      35604394, 702776 ),
-    relationship_id = c(rep("RxNorm has dose form", 37))
+    relationship_id = c(rep("RxNorm has dose form", 37)),
+    valid_start_date = as.Date("1900-01-01"),
+    valid_end_date = as.Date("2100-01-01")
   )
 
   cdm <- mockDrugUtilisation(
@@ -204,10 +208,8 @@ test_that("functionality of addDailyDose function",{
 
   coverage <- dailyDoseCoverage(cdm, 1)
 
-  expect_true(all(colnames(coverage) %in% c(
-    "group_name", "group_level", "strata_name", "strata_level", "variable",
-    "variable_level", "variable_type", "estimate_type", "estimate"
-  )))
+  expect_true(inherits(coverage, "summarised_result"))
+  expect_true(inherits(coverage, "dose_coverage"))
 
   #check it works without specifying cdm object
   expect_no_error(addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))

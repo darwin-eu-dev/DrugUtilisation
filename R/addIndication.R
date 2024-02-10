@@ -47,11 +47,19 @@
 #' }
 #'
 addIndication <- function(x,
-                          cdm = attr(x, "cdm_reference"),
+                          cdm = lifecycle::deprecated(),
                           indicationCohortName,
                           indicationGap = 0,
                           unknownIndicationTable = NULL,
                           indicationDate = "cohort_start_date") {
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_soft(
+      when = "0.5.0", what = "addIndication(cdm = )"
+    )
+  }
+
+  cdm <- omopgenerics::cdmReference(x)
+
   # check inputs
   checkInputs(
     x = x, cdm = cdm, indicationCohortName = indicationCohortName,
@@ -70,10 +78,10 @@ addIndication <- function(x,
     dplyr::distinct()
 
   # add indications that are cohorts
-  ind <- addCohortIndication(ind, cdm, indicationCohortName, indicationGap)
+  ind <- addCohortIndication(ind, indicationCohortName, indicationGap)
 
   # add unknown indications
-  ind <- addUnknownIndication(ind, cdm, unknownIndicationTable, indicationGap) %>%
+  ind <- addUnknownIndication(ind, unknownIndicationTable, indicationGap) %>%
     dplyr::select(
       "subject_id", "cohort_start_date", dplyr::starts_with(
         paste0("indication_gap_", tolower(as.character(indicationGap)))
@@ -86,9 +94,9 @@ addIndication <- function(x,
       ind %>% dplyr::rename(!!indicationDate := "cohort_start_date"),
       by = c("subject_id", indicationDate)
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
-  result <- PatientProfiles::addAttributes(result, x)
+  dropTmpTables(cdm = cdm)
 
   return(result)
 }
@@ -107,30 +115,36 @@ indicationName <- function(gap, termination = "") {
 
 #' Add cohort indications
 #' @noRd
-addCohortIndication <- function(ind, cdm, cohortName, gaps) {
+addCohortIndication <- function(ind, cohortName, gaps) {
   for (gap in gaps) {
-    ind <- PatientProfiles::addCohortIntersectFlag(
-      ind, cdm, cohortName, targetEndDate = NULL, window = c(-gap, 0),
-      nameStyle = indicationName(gap, "{cohort_name}")
-    ) %>%
+    ind <- ind |>
+      PatientProfiles::addCohortIntersectFlag(
+        targetCohortTable = cohortName, targetEndDate = NULL,
+        window = c(-gap, 0), nameStyle = indicationName(gap, "{cohort_name}")
+      ) %>%
       addNoneIndication(gap) %>%
-      CDMConnector::computeQuery()
+      dplyr::compute(
+        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+      )
   }
   return(ind)
 }
 
 #' Add unknown indications
 #' @noRd
-addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
+addUnknownIndication <- function(ind, unknownTables, gaps) {
   if (!is.null(unknownTables)) {
     individualsUnknown <- ind %>%
       dplyr::filter(.data[[indicationName(min(gaps), "none")]] == 1) %>%
       dplyr::select("subject_id", "cohort_start_date") %>%
       dplyr::distinct() %>%
-      CDMConnector::computeQuery()
+      dplyr::compute(
+        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+      )
     if (individualsUnknown %>% dplyr::tally() %>% dplyr::pull() > 0) {
+      cdm <- omopgenerics::cdmReference(ind)
       for (ut in seq_along(unknownTables)) {
-        unknownDate <- PatientProfiles::getStartName(unknownTables[ut])
+        unknownDate <- PatientProfiles::startDateColumn(unknownTables[ut])
         x <- cdm[[unknownTables[ut]]] %>%
           dplyr::select(
             "subject_id" = "person_id", "unknown_date" = !!unknownDate
@@ -165,7 +179,9 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
       }
       xx <- xx %>%
         dplyr::select(-"diff_date", -"unknown_date") %>%
-        CDMConnector::computeQuery()
+        dplyr::compute(
+          temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+        )
       ind <- ind %>%
         dplyr::left_join(xx, by = c("subject_id", "cohort_start_date")) %>%
         dplyr::mutate(dplyr::across(
@@ -187,7 +203,9 @@ addUnknownIndication <- function(ind, cdm, unknownTables, gaps) {
         dplyr::select(
           "subject_id", "cohort_start_date", dplyr::starts_with("indication")
         ) %>%
-        CDMConnector::computeQuery()
+        dplyr::compute(
+          temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
+        )
     }
   }
   return(ind)
@@ -255,9 +273,6 @@ indicationToStrata <- function(cohort,
       dplyr::select(-dplyr::all_of(indicationVariables))
   }
 
-  # add attributes back
-  cohort <- PatientProfiles::addAttributes(cohort, originalCohort)
-
   return(cohort)
 }
 
@@ -324,7 +339,7 @@ addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binary
   # mantain the number of columns
   x <- x %>%
     dplyr::left_join(toAdd, by = binaryColumns) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
   return(x)
 }

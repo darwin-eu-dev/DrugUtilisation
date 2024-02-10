@@ -46,6 +46,8 @@ addDailyDose <- function(drugExposure,
     cdm = cdm
   )
 
+  nm <- uniqueTmpName()
+
   # select only pattern_id and unit
   dailyDose <- drugExposure %>%
     dplyr::select(
@@ -67,7 +69,7 @@ addDailyDose <- function(drugExposure,
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
       "quantity", "daily_dose", "unit"
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute(temporary = FALSE, overwrite = TRUE, name = nm)
 
   # add the information back to the initial table
   drugExposure <- drugExposure %>%
@@ -78,7 +80,9 @@ addDailyDose <- function(drugExposure,
         "quantity"
       )
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
+
+  cdm <- omopgenerics::dropTable(cdm = cdm, name = nm)
 
   return(drugExposure)
 }
@@ -158,9 +162,16 @@ dailyDoseCoverage <- function(cdm,
     ) %>%
     dplyr::filter(
       !(.data$strata_name %in% c("Overall", "route")) |
-        .data$variable != "daily_dose" |
-        .data$estimate_type %in% c("count", "percentage")
-    )
+        .data$variable_name != "daily_dose" |
+        .data$estimate_name %in% c("count", "percentage")
+    ) |>
+    dplyr::mutate(
+      "package_name" = "DrugUtilisation",
+      "package_version" = as.character(utils::packageVersion("DrugUtilisation")),
+      "result_type" = "dose_coverage",
+      "cdm_name" = omopgenerics::cdmName(cdm)
+    ) |>
+    omopgenerics::newSummarisedResult()
 
   return(dailyDoseSummary)
 }
@@ -192,6 +203,16 @@ applyFormula <- function(drugExposure) {
       daily_dose = dplyr::case_when(
         is.na(.data$quantity) ~
           as.numeric(NA),
+        .data$quantity <= 0 ~
+          as.numeric(NA),
+        .data$days_exposed <= 0 ~
+          as.numeric(NA),
+        .data$denominator_value <= 0 ~
+          as.numeric(NA),
+        .data$numerator_value <= 0 ~
+          as.numeric(NA),
+        .data$amount_value <= 0 ~
+          as.numeric(NA),
         .data$formula_name == "concentration formulation" ~
           .data$numerator_value * .data$quantity / .data$days_exposed,
         .data$formula_name == "fixed amount formulation" ~
@@ -204,8 +225,5 @@ applyFormula <- function(drugExposure) {
           .data$numerator_value * 24,
         .default = as.numeric(NA)
       )
-    ) %>%
-    dplyr::mutate(daily_dose = dplyr::if_else(
-      .data$daily_dose < 0, as.numeric(NA), .data$daily_dose
-    ))
+    )
 }

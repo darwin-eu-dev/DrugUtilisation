@@ -3,9 +3,7 @@ connection <- function(dbToTest) {
     dbToTest,
     "duckdb" = list(
       con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-      writeSchema = "main",
-      cdmPrefix = NULL,
-      writePrefix = NULL
+      writeSchema = "main"
     ),
     "sql server" = list(
       con = DBI::dbConnect(

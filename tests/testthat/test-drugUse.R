@@ -52,7 +52,8 @@ test_that("test overlapMode", {
         "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
         "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
       )),
-      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22),
+      drug_type_concept_id = 0
     ),
     concept = dplyr::tibble(
       concept_id = c(1, 2, 3, 4, 5, 8576),
@@ -61,10 +62,15 @@ test_that("test overlapMode", {
       vocabulary_id = c(rep("RxNorm", 5), "Unit"),
       standard_concept = "S",
       concept_class_id = c("Ingredient", rep("Drug", 4), "Unit"),
+      concept_code = 0,
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     ),
     concept_ancestor = dplyr::tibble(
       ancestor_concept_id = 1,
-      descendant_concept_id = 2:5
+      descendant_concept_id = 2:5,
+      min_levels_of_separation = 1,
+      max_levels_of_separation = 1
     ),
     drug_strength = dplyr::tibble(
       drug_concept_id = c(2, 3, 4, 5),
@@ -77,7 +83,9 @@ test_that("test overlapMode", {
       numerator_unit_concept_id = as.numeric(NA),
       denominator_value = as.numeric(NA),
       denominator = as.character(NA),
-      denominator_unit_concept_id = as.numeric(NA)
+      denominator_unit_concept_id = as.numeric(NA),
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     ),
     cohort1 = dplyr::tibble(
       cohort_definition_id = 1,
@@ -85,12 +93,19 @@ test_that("test overlapMode", {
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
     ),
-    extraTables = list(
-      "concept_relationship" = dplyr::tibble(
+    observation_period = dplyr::tibble(
+      observation_period_id = 1,
+      person_id = 1:2,
+      observation_period_start_date = as.Date("1900-01-01"),
+      observation_period_end_date = as.Date("2100-01-01"),
+      period_type_concept_id = 0
+    ),
+    concept_relationship = dplyr::tibble(
         concept_id_1 = c(c(1, 2, 3, 4, 5)),
         concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
-        relationship_id = c(rep("RxNorm has dose form", 5))
-      )
+        relationship_id = c(rep("RxNorm has dose form", 5)),
+        valid_start_date = as.Date("1900-01-01"),
+        valid_end_date = as.Date("2100-01-01")
     )
   )
   variables <- c(
@@ -115,7 +130,6 @@ test_that("test overlapMode", {
   # prev
   x <- addDrugUse(
     cohort = cdm[["cohort1"]],
-    cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -146,7 +160,6 @@ test_that("test overlapMode", {
   # sub
   suppressWarnings(x <- addDrugUse(
     cohort = cdm[["cohort1"]],
-    cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -170,7 +183,6 @@ test_that("test overlapMode", {
   # min
   suppressWarnings(x <- addDrugUse(
     cohort = cdm[["cohort1"]],
-    cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -194,7 +206,6 @@ test_that("test overlapMode", {
   # max
   suppressWarnings(x <- addDrugUse(
     cohort = cdm[["cohort1"]],
-    cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -218,7 +229,6 @@ test_that("test overlapMode", {
   # sum
   suppressWarnings(x <- addDrugUse(
     cohort = cdm[["cohort1"]],
-    cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -256,7 +266,8 @@ test_that("test gapEra and eraJoinMode", {
         "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
         "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
       )),
-      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22),
+      drug_type_concept_id = 0
     ),
     drug_strength = dplyr::tibble(
       drug_concept_id = c(2, 3, 4, 5),
@@ -269,7 +280,9 @@ test_that("test gapEra and eraJoinMode", {
       numerator_unit_concept_id = as.numeric(NA),
       denominator_value = as.numeric(NA),
       denominator = as.character(NA),
-      denominator_unit_concept_id = as.numeric(NA)
+      denominator_unit_concept_id = as.numeric(NA),
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     ),
     concept = dplyr::tibble(
       concept_id = c(1, 2, 3, 4, 5, 8576),
@@ -278,10 +291,15 @@ test_that("test gapEra and eraJoinMode", {
       vocabulary_id = c(rep("RxNorm", 5), "Unit"),
       standard_concept = "S",
       concept_class_id = c("Ingredient", rep("Drug", 4), "Unit"),
+      concept_code = 0,
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     ),
     concept_ancestor = dplyr::tibble(
       ancestor_concept_id = 1,
-      descendant_concept_id = 2:5
+      descendant_concept_id = 2:5,
+      min_levels_of_separation = 1,
+      max_levels_of_separation = 1
     ),
     cohort1 = dplyr::tibble(
       cohort_definition_id = 1,
@@ -289,12 +307,20 @@ test_that("test gapEra and eraJoinMode", {
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
     ),
-    extraTables = list(
-      "concept_relationship" = dplyr::tibble(
-        concept_id_1 = c(1, 2, 3, 4, 5),
-        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
-        relationship_id = c(rep("RxNorm has dose form", 5))
-      )
+    concept_relationship = dplyr::tibble(
+      concept_id_1 = c(1, 2, 3, 4, 5),
+      concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+      relationship_id = c(rep("RxNorm has dose form", 5)),
+      concept_code = 0,
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
+    ),
+    observation_period = dplyr::tibble(
+      observation_period_id = 1,
+      person_id = 1:2,
+      observation_period_start_date = as.Date("1900-01-01"),
+      observation_period_end_date = as.Date("2100-01-01"),
+      period_type_concept_id = 0
     )
   )
 
@@ -307,7 +333,6 @@ test_that("test gapEra and eraJoinMode", {
   # overall functionality
   suppressWarnings(x <- addDrugUse(
     cohort = cdm[["cohort1"]],
-    cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 0,
     eraJoinMode = "Previous",
@@ -442,7 +467,8 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
         "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
         "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
       )),
-      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
+      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22),
+      drug_type_concept_id = 0
     ),
     drug_strength = dplyr::tibble(
       drug_concept_id = c(2, 3, 4, 5),
@@ -455,7 +481,16 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       numerator_unit_concept_id = as.numeric(NA),
       denominator_value = as.numeric(NA),
       denominator = as.character(NA),
-      denominator_unit_concept_id = as.numeric(NA)
+      denominator_unit_concept_id = as.numeric(NA),
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
+    ),
+    observation_period = dplyr::tibble(
+      observation_period_id = 1,
+      person_id = 1:2,
+      observation_period_start_date = as.Date("1900-01-01"),
+      observation_period_end_date = as.Date("2100-01-01"),
+      period_type_concept_id = 0
     ),
     concept = dplyr::tibble(
       concept_id = c(1, 2, 3, 4, 5, 8576),
@@ -464,10 +499,15 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       vocabulary_id = c(rep("RxNorm", 5), "Unit"),
       standard_concept = "S",
       concept_class_id = c("Ingredient", rep("Drug", 4), "Unit"),
+      concept_code = 0,
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     ),
     concept_ancestor = dplyr::tibble(
       ancestor_concept_id = 1,
-      descendant_concept_id = 2:5
+      descendant_concept_id = 2:5,
+      min_levels_of_separation = 1,
+      max_levels_of_separation = 1
     ),
     cohort1 = dplyr::tibble(
       cohort_definition_id = 1,
@@ -475,12 +515,12 @@ test_that("test gapEra, eraJoinMode & sameIndexOverlap", {
       cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
       cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
     ),
-    extraTables = list(
-      "concept_relationship" = dplyr::tibble(
-        concept_id_1 = c(c(1, 2, 3, 4, 5)),
-        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
-        relationship_id = c(rep("RxNorm has dose form", 5))
-      )
+    concept_relationship = dplyr::tibble(
+      concept_id_1 = c(c(1, 2, 3, 4, 5)),
+      concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+      relationship_id = c(rep("RxNorm has dose form", 5)),
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     )
   )
 
@@ -602,10 +642,8 @@ test_that("test splitSubexposures", {
       "2000-02-10"
     ))
   )
-  cdm <- mockDrugUtilisation(
-    connectionDetails,
-    extraTables = list("cohort1" = x)
-  )
+  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- omopgenerics::insertTable(cdm = cdm, name = "cohort1", table = x)
   y <- splitSubexposures(cdm[["cohort1"]], cdm) %>% dplyr::collect()
 
   # get first cohort entry
@@ -807,40 +845,13 @@ test_that("test splitSubexposures", {
 
 test_that("test empty targetCohortName", {
   skip_on_cran()
-  cdm <- mockDrugUtilisation(
-    connectionDetails,
-    drug_exposure = dplyr::tibble(
-      drug_exposure_id = 1:9,
-      person_id = c(1, 1, 1, 1, 1, 2, 2, 2, 2),
-      drug_concept_id = c(1, 2, 3, 3, 2, 3, 1, 2, 4),
-      drug_exposure_start_date = as.Date(c(
-        "2000-01-01", "2000-01-10", "2000-02-20", "2001-01-01", "2001-02-10",
-        "2000-01-10", "2000-01-15", "2000-02-15", "2000-01-15"
-      )),
-      drug_exposure_end_date = as.Date(c(
-        "2000-02-10", "2000-03-01", "2000-02-20", "2001-01-15", "2001-03-01",
-        "2000-01-25", "2000-02-05", "2000-02-15", "2000-02-05"
-      )),
-      quantity = c(41, 52, 1, 15, 20, 16, 22, 1, 22)
-    ),
-    drug_strength = dplyr::tibble(
-      drug_concept_id = c(1, 2, 3, 4),
-      ingredient_concept_id = c(1, 1, 1, 1),
-      amount_value = c(10, 20, 30, 40),
-      amount_unit_concept_id = c(8576, 8576, 8576, 8576),
-      numerator_value = as.numeric(NA),
-      numerator_unit_concept_id = as.numeric(NA),
-      denominator_value = as.numeric(NA),
-      denominator_unit_concept_id = as.numeric(NA)
-    )
-  )
+  cdm <- mockDrugUtilisation(connectionDetails)
 
   cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
     dplyr::filter(.data$subject_id < 1)
 
   expect_error(x <- addDrugUse(
     cohort = cdm[["cohort1"]],
-    cdm = cdm,
     ingredientConceptId = 1,
     gapEra = 30,
     eraJoinMode = "Previous",
@@ -869,22 +880,28 @@ test_that("expected errors on inputs", {
         "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
       ))
     ),
-    extraTables = list(
-      dose_table = dplyr::tibble(
-        subject_id = c(1, 1, 2, 1),
-        cohort_start_date = as.Date(c(
-          "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-        )),
-        cohort_end_date = as.Date(c(
-          "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-        )),
-        initial_dose = c(1, 2, 3, 6),
-        cumulative_dose = c(5, 6, 9, 7),
-        piscina = c(TRUE, FALSE, TRUE, FALSE),
-        cara = c("a", "b", "b", "a")
-      )
+    observation_period = dplyr::tibble(
+      person_id = 1:2,
+      observation_period_id = 1:2,
+      observation_period_start_date = as.Date("2000-01-01"),
+      observation_period_end_date = as.Date("2030-01-01"),
+      period_type_concept_id = 0
     )
   )
+  dose_table <- dplyr::tibble(
+    subject_id = c(1, 1, 2, 1),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
+    )),
+    initial_dose = c(1, 2, 3, 6),
+    cumulative_dose = c(5, 6, 9, 7),
+    piscina = c(TRUE, FALSE, TRUE, FALSE),
+    cara = c("a", "b", "b", "a")
+  )
+  cdm <- omopgenerics::insertTable(cdm = cdm, name = "dose_table", table = dose_table)
   # no inputs
   expect_error(result <- summariseDrugUse())
   # only cdm
@@ -910,16 +927,21 @@ test_that("check output format", {
       cumulative_dose = c(5, 6, 9, 7),
       piscina = c(TRUE, FALSE, TRUE, FALSE),
       cara = c("a", "b", "b", "a")
+    ),
+    observation_period = dplyr::tibble(
+      person_id = 1:2,
+      observation_period_id = 1:2,
+      observation_period_start_date = as.Date("2000-01-01"),
+      observation_period_end_date = as.Date("2030-01-01"),
+      period_type_concept_id = 0
     )
   )
   result <- cdm[["cohort"]] %>%
-    summariseDrugUse(cdm = cdm)
+    summariseDrugUse()
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
-  expect_true(all(colnames(result) %in% c(
-    "group_name", "group_level", "strata_name", "strata_level", "variable",
-    "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
-    "result_type"
-  )))
+  expect_true(inherits(result, "omop_result"))
+  expect_true(inherits(result, "summarised_result"))
+  expect_true(inherits(result, "summarised_drug_use"))
 })
 
 test_that("check all estimates", {
@@ -931,46 +953,49 @@ test_that("check all estimates", {
   )
   cdm <- mockDrugUtilisation(
     connectionDetails,
-    extraTables = list(
-      dose_table = dplyr::tibble(
-        cohort_definition_id = c(1, 1, 1, 1),
-        subject_id = c(1, 1, 2, 1),
-        cohort_start_date = as.Date(c(
-          "2020-01-01", "2020-05-01", "2020-04-08", "2020-01-01"
-        )),
-        cohort_end_date = as.Date(c(
-          "2020-01-10", "2020-06-01", "2020-07-18", "2020-01-11"
-        )),
-        initial_daily_dose = c(1, 2, 3, 6),
-        cumulative_dose = c(5, 6, 9, 7),
-        piscina = c(TRUE, FALSE, TRUE, FALSE),
-        cara = c("a", "b", "b", "a")
-      )
+    observation_period = dplyr::tibble(
+      person_id = 1:2,
+      observation_period_id = 1:2,
+      observation_period_start_date = as.Date("2000-01-01"),
+      observation_period_end_date = as.Date("2030-01-01"),
+      period_type_concept_id = 0
     )
   )
-  attr(cdm[["dose_table"]], "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = 1, cohort_name = "cohort1"
+  dose_table <- dplyr::tibble(
+    cohort_definition_id = c(1, 1, 1, 1),
+    subject_id = c(1, 1, 2, 1),
+    cohort_start_date = as.Date(c(
+      "2020-01-01", "2020-05-01", "2020-04-08", "2021-01-01"
+    )),
+    cohort_end_date = as.Date(c(
+      "2020-01-10", "2020-06-01", "2020-07-18", "2021-01-11"
+    )),
+    initial_daily_dose = c(1, 2, 3, 6),
+    cumulative_dose = c(5, 6, 9, 7),
+    piscina = c(TRUE, FALSE, TRUE, FALSE),
+    cara = c("a", "b", "b", "a")
   )
-  class(cdm[["dose_table"]]) <- c("GeneratedCohortSet", class(cdm[["dose_table"]]))
+  cdm <- omopgenerics::insertTable(cdm = cdm, name = "dose_table", table = dose_table)
+  cdm$dose_table <- cdm$dose_table |>
+    omopgenerics::newCohortTable(cohortSetRef = dplyr::tibble(
+      cohort_definition_id = 1, cohort_name = "cohort_1"
+    ))
   for (k in 1:length(all_estimates)) {
     res <- summariseDrugUse(
       cdm[["dose_table"]],
-      cdm = cdm,
       drugUseEstimates = all_estimates[k]
     ) %>%
       dplyr::filter(.data$group_name == "cohort_name")
-    expect_true(nrow(res[res$variable == c("initial_daily_dose"), ]) == 1)
-    expect_true(res$estimate_type[res$variable == c("initial_daily_dose")] == all_estimates[k])
-    expect_true(nrow(res[res$variable == c("cumulative_dose"), ]) == 1)
-    expect_true(res$estimate_type[res$variable == c("cumulative_dose")] == all_estimates[k])
+    expect_true(nrow(res[res$variable_name == c("initial_daily_dose"), ]) == 1)
+    expect_true(res$estimate_name[res$variable_name == c("initial_daily_dose")] == all_estimates[k])
+    expect_true(nrow(res[res$variable_name == c("cumulative_dose"), ]) == 1)
+    expect_true(res$estimate_name[res$variable_name == c("cumulative_dose")] == all_estimates[k])
   }
   res <- summariseDrugUse(
     cdm[["dose_table"]],
     cdm = cdm,
     drugUseEstimates = all_estimates
   )
-
-  expect_true(grepl("Summary drug use", unique(res$result_type)))
 })
 
 test_that("check all variables", {
@@ -980,13 +1005,14 @@ test_that("check all variables", {
     "q25", "q30", "q35", "q40", "q45", "q55", "q60", "q65", "q70",
     "q75", "q80", "q85", "q90", "q95", "sd"
   )
-  cdm <- mockDrugUtilisation(connectionDetails,
-    extraTables = list(
-      "concept_relationship" = dplyr::tibble(
-        concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
-        concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
-        relationship_id = c(rep("RxNorm has dose form", 4))
-      )
+  cdm <- mockDrugUtilisation(
+    connectionDetails = connectionDetails,
+    concept_relationship = dplyr::tibble(
+      concept_id_1 = c(1125315, 43135274, 2905077, 1125360),
+      concept_id_2 = c(19016586, 46275062, 35894935, 19135843),
+      relationship_id = c(rep("RxNorm has dose form", 4)),
+      valid_start_date = as.Date("2000-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     )
   )
   cdm <- generateDrugUtilisationCohortSet(
@@ -994,17 +1020,16 @@ test_that("check all variables", {
   )
 
   result <- cdm[["dus"]] %>%
-    addDrugUse(cdm, 1125315) %>%
-    summariseDrugUse(cdm) %>%
+    addDrugUse(ingredientConceptId = 1125315) %>%
+    summariseDrugUse() %>%
     expect_no_error()
   expect_true(all(c(
     "number subjects", "number records", "duration", "number_exposures",
     "cumulative_quantity", "initial_quantity", "impute_duration_percentage",
     "number_eras", "impute_daily_dose_percentage", "initial_daily_dose_milligram",
     "cumulative_dose_milligram"
-  ) %in% result$variable))
+  ) %in% result$variable_name))
 })
-
 
 test_that("test impute duration percentage", {
   conceptList <- list(`Ingredient: acetaminophen (1125315)` =
@@ -1046,11 +1071,19 @@ test_that("test impute duration percentage", {
       drug_exposure_end_date = as.Date(c(
         NA,  "2001-02-15", "2001-03-19", "2001-05-10"
       )),
-      quantity = c(1,2,3,4)
+      quantity = c(1,2,3,4),
+      drug_type_concept_id = 0
     ),
     cohort1 = dplyr::tibble(cohort_definition_id = 1, subject_id = 1,
                             cohort_start_date = as.Date("1990-01-01"),
-                            cohort_end_date = as.Date("2020-01-01"))
+                            cohort_end_date = as.Date("2020-01-01")),
+    observation_period = dplyr::tibble(
+      observation_period_id = 1,
+      person_id = 1,
+      observation_period_start_date = as.Date("1980-01-01"),
+      observation_period_end_date = as.Date("2030-01-01"),
+      period_type_concept_id = 0
+    )
   )
 
   cdm$cohort1 <- cdm$cohort1 %>% addDrugUse(
@@ -1065,4 +1098,3 @@ test_that("test impute duration percentage", {
                 dplyr::pull(impute_duration_percentage) == 25)
 
 })
-

@@ -170,7 +170,7 @@ patternTable <- function(cdm) {
 
   # drug strength pattern
   drugStrengthPattern <- drugStrengthPattern(cdm = cdm, unit = FALSE) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
   # counts concepts and ingredients
   pattern <- drugStrengthPattern %>%

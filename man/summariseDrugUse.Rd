@@ -6,11 +6,11 @@
 \usage{
 summariseDrugUse(
   cohort,
-  cdm = attr(cohort, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   strata = list(),
   drugUseEstimates = c("min", "q05", "q25", "median", "q75", "q95", "max", "mean", "sd",
     "missing"),
-  minCellCount = 5
+  minCellCount = lifecycle::deprecated()
 )
 }
 \arguments{

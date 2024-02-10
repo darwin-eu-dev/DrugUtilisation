@@ -6,13 +6,13 @@
 \usage{
 summariseCharacteristicsFromCodelist(
   cohort,
-  cdm,
+  cdm = lifecycle::deprecated(),
   conceptSet,
   strata = list(),
   window = list(c(-Inf, -366), c(-365, -31), c(-30, -1), c(0, 0), c(1, 30), c(31, 365),
     c(366, Inf)),
   overlap = TRUE,
-  minCellCount = 5
+  minCellCount = lifecycle::deprecated()
 )
 }
 \arguments{
@@ -36,25 +36,4 @@ A SummarisedResults object that contains the characterization
 }
 \description{
 Summarise a cohort from multipl codelist and windows
-}
-\examples{
-\donttest{
-library(DrugUtilisation)
-library(CodelistGenerator)
-
-cdm <- mockDrugUtilisation()
-
-conceptSet <- list(
-  "acetaminophen" = c(1125315, 1125360, 2905077, 43135274),
-  "group A" = c(
-    3665501, 378253, 317009, 761948, 1539403, 1503327, 1516980, 4141052,
-    4313306
-  )
-)
-summariseCharacteristicsFromCodelist(
-  cdm[["cohort1"]], cdm, conceptSet,
-  window = list(c(-365, -1), c(0, 0), c(1, 365))
-)
-}
-
 }
