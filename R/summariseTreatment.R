@@ -23,6 +23,62 @@
 #' interest treatments.
 #' @param treatmentCohortId Cohort definition id of interest from
 #' treatmentCohortName.
+#' @param combination Whether to include combination treatments.
+#' @param minCellCount Below this number counts will be suppressed.
+#'
+#' @return A summary of the drug use stratified by cohort_name and strata_name
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(PatientProfiles)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+#' )
+#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
+#'   addDrugUse(cdm, 1125315)
+#' result <- summariseDrugUse(cdm[["dus_cohort"]], cdm)
+#' print(result)
+#'
+#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
+#'   addSex(cdm) %>%
+#'   addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+#'
+#' summariseDrugUse(
+#'   cdm[["dus_cohort"]], cdm, strata = list(
+#'    "age_group" = "age_group", "sex" = "sex",
+#'    "age_group and sex" = c("age_group", "sex")
+#'   )
+#' )
+#' }
+#'
+summariseTreatmentFromCohort <- function(cohort,
+                                         strata = list(),
+                                         window,
+                                         treatmentCohortName,
+                                         treatmentCohortId = NULL,
+                                         combination = FALSE,
+                                         minCellCount = 5){
+  return(summariseTreatment(cohort = cohort,
+                            strata = strata,
+                            window = window,
+                            treatmentCohortName = treatmentCohortName,
+                            treatmentCohortId   = treatmentCohortId,
+                            combination  = combination,
+                            minCellCount = minCellCount))
+
+}
+
+#'This function is used to summarise the dose table over multiple cohorts.
+#'
+#' @param cohort Cohort with drug use variables and strata.
+#' @param strata Stratification list.
+#' @param window Window where to summarise the treatments.
 #' @param treatmentConceptSet Concept set list to summarise.
 #' @param combination Whether to include combination treatments.
 #' @param minCellCount Below this number counts will be suppressed.
@@ -31,14 +87,29 @@
 #'
 #' @export
 #'
-summariseTreatment<- function(cohort,
-                              strata = list(),
-                              window,
-                              treatmentCohortName = NULL,
-                              treatmentCohortId = NULL,
-                              treatmentConceptSet = NULL,
-                              combination = FALSE,
-                              minCellCount = 5) {
+summariseTreatmentFromConceptSet <- function(cohort,
+                                             strata = list(),
+                                             window,
+                                             treatmentConceptSet,
+                                             combination = FALSE,
+                                             minCellCount = 5){
+  return(summariseTreatment(cohort = cohort,
+                            strata = strata,
+                            window = window,
+                            treatmentConceptSet = treatmentConceptSet,
+                            combination  = combination,
+                            minCellCount = minCellCount))
+}
+
+
+summariseTreatment <- function(cohort,
+                               strata = list(),
+                               window,
+                               treatmentCohortName = NULL,
+                               treatmentCohortId = NULL,
+                               treatmentConceptSet = NULL,
+                               combination = FALSE,
+                               minCellCount = 5) {
   if (!is.list(window)) {
     window <- list(window)
   }

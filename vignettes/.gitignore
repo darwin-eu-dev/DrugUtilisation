@@ -1,2 +1,6 @@
 *.html
 *.R
+*benchmarkDusCapr.Rmd
+*routePatternDose.Rmd
+
+
