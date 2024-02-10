@@ -87,7 +87,7 @@ summariseDrugUse<- function(cohort,
       cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA)),
       result_type = "summarised_drug_use",
       package_name = "DrugUtilisation",
-      package_version = as.character(utils::packageVersion("Drugutilisation"))
+      package_version = as.character(utils::packageVersion("DrugUtilisation"))
     ) |>
     omopgenerics::newSummarisedResult() |>
     omopgenerics::suppress(minCellCount = 5)
