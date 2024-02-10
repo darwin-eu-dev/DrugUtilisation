@@ -22,43 +22,41 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this vignette we will introduce different ways to create a cohort
-using different functions of DrugUtilisation.
+In this vignette we will introduce different ways to create a drug utilisation
+cohort using DrugUtilisation.
 
-## Create mock data first
+## Create a cdm object
+
+To create a cdm_reference object you will need to use the package CDMConnector. 
+For this vignette we will use mock data contained in the DrugUtilisation 
+package.
 
 ```{r setup, message = FALSE, warning = FALSE}
 library(DrugUtilisation)
 library(CodelistGenerator)
-library(CDMConnector)
 library(dplyr)
+library(CDMConnector)
 
 cdm <- mockDrugUtilisation(numberIndividual = 200)
 ```
 
 # Get the concept code
 
-We will first generate a cohort using a concept list. The concept list
-can be obtained through different ways:
+The first thing that we need is a concept list. The concept list can be obtained
+through different ways:
 
-1.  Get from .json file
+1.  Read from .json file
 2.  Use concept code directly
-3.  Get ingredient
-4.  Get ATC code
+3.  Use CodelistGenerator
 
 ## Concept list from a .json file
 
-To create a cohort with a concept list from a .json file, we can use
-`readConceptList()` function from this package,
-or`codesFromConceptSet()` from CDMConnector package. Let's see an
-example:
+To create a cohort with a concept list from a .json file, use 
+`codesFromConceptSet()` from CodelistGenerator package. Let's see an example:
 
 ```{r}
-conceptSet_json_1 <- readConceptList(here::here("inst/Concept"), cdm) 
-conceptSet_json_2 <- codesFromConceptSet(here::here("inst/Concept"), cdm)
-
-conceptSet_json_1
-conceptSet_json_2
+conceptSet_json <- codesFromConceptSet(here::here("inst/Concept"), cdm)
+conceptSet_json
 ```
 
 ## Concept list listed directly

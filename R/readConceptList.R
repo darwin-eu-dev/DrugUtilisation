@@ -34,6 +34,12 @@
 #' }
 #'
 readConceptList <- function(path, cdm) {
+  lifecycle::deprecate_soft(
+    when = "0.5.0",
+    what = "DrugUtilisation::readConceptList()",
+    with = "CodelistGenerator::codesFromConceptSet()"
+  )
+
   # initial checks
   checkInputs(path = path, cdm = cdm)
 
