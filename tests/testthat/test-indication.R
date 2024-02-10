@@ -47,6 +47,9 @@ test_that("test case single indication", {
     period_type_concept_id = 44814724
   )
   condition_occurrence <- dplyr::tibble(
+    condition_occurrence_id = 1,
+    condition_concept_id = 0,
+    condition_type_concept_id = 0,
     person_id = 1,
     condition_start_date = as.Date("2020-05-31"),
     condition_end_date = as.Date("2020-05-31")
@@ -70,7 +73,7 @@ test_that("test case single indication", {
   # check for indication 0
   res0 <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = 0,
+      indicationCohortName = "cohort2", indicationGap = 0,
       unknownIndicationTable = NULL
     )
   expect_true(length(setdiff(colnames(res0), colnames(cdm[["cohort1"]]))) == 3)
@@ -96,7 +99,7 @@ test_that("test case single indication", {
   # check for indication 1
   res1 <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = 1,
+      indicationCohortName = "cohort2", indicationGap = 1,
       unknownIndicationTable = NULL
     )
   expect_true(length(setdiff(colnames(res1), colnames(cdm[["cohort1"]]))) == 3)
@@ -122,7 +125,7 @@ test_that("test case single indication", {
   # check for indication 2
   res2 <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = 2,
+      indicationCohortName = "cohort2", indicationGap = 2,
       unknownIndicationTable = NULL
     )
 
@@ -150,7 +153,7 @@ test_that("test case single indication", {
   # check for all indication Gap
   resinf <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = Inf,
+      indicationCohortName = "cohort2", indicationGap = Inf,
       unknownIndicationTable = NULL
     )
   expect_true(length(setdiff(colnames(resinf), colnames(cdm[["cohort1"]]))) == 3)
@@ -203,7 +206,10 @@ test_that("test case single indication with unknown indication table", {
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
     condition_start_date = as.Date("2020-05-31"),
-    condition_end_date = as.Date("2020-05-31")
+    condition_end_date = as.Date("2020-05-31"),
+    condition_occurrence_id = 1,
+    condition_concept_id = 0,
+    condition_type_concept_id = 0
   )
   attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
     cohort_definition_id = c(1, 2),
@@ -229,7 +235,7 @@ test_that("test case single indication with unknown indication table", {
   # check for indication 0
   res0 <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = 0,
+      indicationCohortName = "cohort2", indicationGap = 0,
       unknownIndicationTable = "condition_occurrence"
     )
   expect_true(length(setdiff(colnames(res0), colnames(cdm[["cohort1"]]))) == 4)
@@ -249,7 +255,7 @@ test_that("test case single indication with unknown indication table", {
   # check for indication 1
   res1 <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = 1,
+      indicationCohortName = "cohort2", indicationGap = 1,
       unknownIndicationTable = "condition_occurrence"
     )
   expect_true(length(setdiff(colnames(res1), colnames(cdm[["cohort1"]]))) == 4)
@@ -269,7 +275,7 @@ test_that("test case single indication with unknown indication table", {
   # check for indication 6
   res6 <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = 6,
+      indicationCohortName = "cohort2", indicationGap = 6,
       unknownIndicationTable = "condition_occurrence"
     )
   expect_true(length(setdiff(colnames(res6), colnames(cdm[["cohort1"]]))) == 4)
@@ -289,7 +295,7 @@ test_that("test case single indication with unknown indication table", {
   # check all gaps simultaniously
   res016 <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 1, 6),
+      indicationCohortName = "cohort2", indicationGap = c(0, 1, 6),
       unknownIndicationTable = "condition_occurrence"
     )
   expect_true(length(setdiff(colnames(res016), colnames(cdm[["cohort1"]]))) == 12)
@@ -358,7 +364,21 @@ test_that("test indicationDate", {
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
     condition_start_date = as.Date("2020-05-31"),
-    condition_end_date = as.Date("2020-05-31")
+    condition_end_date = as.Date("2020-05-31"),
+    condition_occurrence_id = 1,
+    condition_concept_id = 0,
+    condition_type_concept_id = 0
+  )
+  observationPeriod <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 2, 3),
+    observation_period_start_date = as.Date(c(
+      "2015-01-01", "2016-05-15", "2012-12-30"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2025-01-01", "2026-05-15", "2030-12-30"
+    )),
+    period_type_concept_id = 44814724
   )
 
   cdm <-
@@ -366,13 +386,14 @@ test_that("test indicationDate", {
       connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
-      condition_occurrence = condition_occurrence
+      condition_occurrence = condition_occurrence,
+      observation_period = observationPeriod
     )
 
   # original
   res012inf <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2",
+      indicationCohortName = "cohort2",
       indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL
     ) %>% dplyr::relocate(indication_gap_inf_asthma) %>%
     indicationToStrata()
@@ -389,7 +410,7 @@ test_that("test indicationDate", {
     dplyr::rename("start_date" = "cohort_start_date")
   res012infS <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2",
+      indicationCohortName = "cohort2",
       indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL,
       indicationDate = "start_date"
     ) %>% dplyr::relocate(indication_gap_inf_asthma) %>%
@@ -468,20 +489,34 @@ test_that("test attributes", {
   condition_occurrence <- dplyr::tibble(
     person_id = 1,
     condition_start_date = as.Date("2020-05-31"),
-    condition_end_date = as.Date("2020-05-31")
+    condition_end_date = as.Date("2020-05-31"),
+    condition_occurrence_id = 1,
+    condition_concept_id = 0,
+    condition_type_concept_id = 0
   )
-
+  observationPeriod <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 2, 3),
+    observation_period_start_date = as.Date(c(
+      "2015-01-01", "2016-05-15", "2012-12-30"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2025-01-01", "2026-05-15", "2030-12-30"
+    )),
+    period_type_concept_id = 44814724
+  )
   cdm <-
     mockDrugUtilisation(
       connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
-      condition_occurrence = condition_occurrence
+      condition_occurrence = condition_occurrence,
+      observation_period = observationPeriod
     )
 
   cdm[["cohort1new"]] <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2",
+      indicationCohortName = "cohort2",
       indicationGap = c(0, 1, 2, Inf), unknownIndicationTable = NULL
     )
   expect_identical(
@@ -493,6 +528,10 @@ test_that("test attributes", {
   expect_identical(
     sort(names(attributes(cdm[["cohort1"]]))),
     sort(names(attributes(cdm[["cohort1new"]])))
+  )
+  expect_identical(
+    class(cdm[["cohort1"]])[class(cdm[["cohort1"]]) != "GeneratedCohortSet"],
+    class(cdm[["cohort1new"]])[class(cdm[["cohort1new"]]) != "GeneratedCohortSet"]
   )
 
 })
@@ -518,72 +557,83 @@ test_that("summariseIndication", {
       "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
     ))
   )
-  condition_occurrence <- dplyr::tibble(
-    person_id = 1,
-    condition_start_date = as.Date("2020-05-31"),
-    condition_end_date = as.Date("2020-05-31")
-  )
   attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
     cohort_definition_id = c(1, 2),
     cohort_name = c("asthma", "covid")
   )
-
-  cdm <-mockDrugUtilisation(
-    connectionDetails, cohort1 = targetCohortName,
-    cohort2 = indicationCohortName, condition_occurrence = condition_occurrence
+  condition_occurrence <- dplyr::tibble(
+    person_id = 1,
+    condition_start_date = as.Date("2020-05-31"),
+    condition_end_date = as.Date("2020-05-31"),
+    condition_occurrence_id = 1,
+    condition_concept_id = 0,
+    condition_type_concept_id = 0
   )
+  observationPeriod <- dplyr::tibble(
+    observation_period_id = c(1, 2, 3),
+    person_id = c(1, 2, 3),
+    observation_period_start_date = as.Date(c(
+      "2015-01-01", "2016-05-15", "2012-12-30"
+    )),
+    observation_period_end_date = as.Date(c(
+      "2025-01-01", "2026-05-15", "2030-12-30"
+    )),
+    period_type_concept_id = 44814724
+  )
+  cdm <-
+    mockDrugUtilisation(
+      connectionDetails,
+      cohort1 = targetCohortName,
+      cohort2 = indicationCohortName,
+      condition_occurrence = condition_occurrence,
+      observation_period = observationPeriod
+    )
 
   res <- cdm[["cohort1"]] %>%
     addIndication(
-      cdm = cdm, indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
+      indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
       unknownIndicationTable = "condition_occurrence"
     )
 
-  result <- summariseIndication(res, cdm)
+  result <- summariseIndication(res)
 
-  expect_true(all(c(
-    "group_name", "group_level", "strata_name", "strata_level", "variable",
-    "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
-    "result_type"
-  ) %in% colnames(result)))
-  expect_true(ncol(result) == 11)
-  expect_true(any(grepl("Indication on index date", result$variable)))
-  expect_true(any(grepl("Indication during prior 7 days", result$variable)))
-  expect_true(any(grepl("Indication during prior 30 days", result$variable)))
-  expect_true(any(grepl("Indication any time prior", result$variable)))
+  expect_true(inherits(result, "omop_result"))
+  expect_true(inherits(result, "summarised_result"))
+  expect_true(inherits(result, "summarised_indication"))
+  expect_true(all(colnames(result) == omopgenerics::resultColumns("summarised_result")))
+  expect_true(any(grepl("Indication on index date", result$variable_name)))
+  expect_true(any(grepl("Indication during prior 7 days", result$variable_name)))
+  expect_true(any(grepl("Indication during prior 30 days", result$variable_name)))
+  expect_true(any(grepl("Indication any time prior", result$variable_name)))
 
   res <- res %>%
     PatientProfiles::addAge(
-      cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))
+      ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))
     ) %>%
-    PatientProfiles::addSex(cdm)
+    PatientProfiles::addSex()
 
   result <- summariseIndication(
-    res, cdm, strata = list("age_group", "sex", c("age_group", "sex"))
+    res, strata = list("age_group", "sex", c("age_group", "sex"))
   )
 
-  expect_true(all(c(
-    "group_name", "group_level", "strata_name", "strata_level", "variable",
-    "variable_level", "variable_type", "estimate_type", "estimate", "cdm_name",
-    "result_type"
-  ) %in% colnames(result)))
-  expect_true(ncol(result) == 11)
+  expect_true(inherits(result, "omop_result"))
+  expect_true(inherits(result, "summarised_result"))
+  expect_true(inherits(result, "summarised_indication"))
+  expect_true(all(colnames(result) == omopgenerics::resultColumns("summarised_result")))
   x <- tidyr::expand_grid(
-    group_level = c(
-      "Overall", CDMConnector::cohortSet(res) %>% dplyr::pull("cohort_name")
-    ),
-    strata_name = c("Overall", "age_group", "sex", "age_group and sex")
+    group_level = omopgenerics::settings(res) %>% dplyr::pull("cohort_name"),
+    strata_name = c("overall", "age_group", "sex", "age_group and sex")
   ) %>%
-    dplyr::inner_join(
+    dplyr::left_join(
       dplyr::tibble(
         strata_name = c(
           "age_group", "age_group", "sex", "sex", "age_group and sex",
           "age_group and sex", "age_group and sex", "age_group and sex",
-          "Overall"
+          "overall"
         ),
         strata_level = c(
           "<40", ">=40", "Male", "Female", "<40 and Female", "<40 and Male",
-          ">=40 and Female", ">=40 and Male", "Overall"
+          ">=40 and Female", ">=40 and Male", "overall"
         )
       ),
       by = "strata_name", relationship = "many-to-many"
@@ -596,11 +646,11 @@ test_that("summariseIndication", {
       ) %>%
       nrow()
   )
-  expect_true(any(grepl("Indication on index date", result$variable)))
-  expect_true(any(grepl("Indication during prior 7 days", result$variable)))
-  expect_true(any(grepl("Indication during prior 30 days", result$variable)))
-  expect_true(any(grepl("Indication any time prior", result$variable)))
+  expect_true(any(grepl("Indication on index date", result$variable_name)))
+  expect_true(any(grepl("Indication during prior 7 days", result$variable_name)))
+  expect_true(any(grepl("Indication during prior 30 days", result$variable_name)))
+  expect_true(any(grepl("Indication any time prior", result$variable_name)))
 
-  expect_true(grepl("Summary indication", unique(result$result_type)))
+  expect_true(grepl("summarised_indication", unique(result$result_type)))
 
 })

@@ -38,8 +38,7 @@ considered in the same era.}
 \item{priorUseWashout}{Prior days without exposure.}
 
 \item{priorObservation}{Minimum number of days of prior observation
-required for the incident eras to be considered. If NULL its is not required
-to be within observation_period.}
+required for the incident eras to be considered.}
 
 \item{cohortDateRange}{Range for cohort_start_date and cohort_end_date}
 

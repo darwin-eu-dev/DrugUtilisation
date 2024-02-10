@@ -24,6 +24,4 @@ test_that("test benchmarking function", {
   expect_true("summarise drug use for 4 cohorts" %in% timings$task)
 
   expect_true("add daily dose" %in% timings$task)
-
-  DBI::dbDisconnect(attr(cdm, "dbcon"), shutdown = TRUE)
 })

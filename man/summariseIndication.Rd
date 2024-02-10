@@ -7,9 +7,9 @@ cohorts.}
 \usage{
 summariseIndication(
   cohort,
-  cdm = attr(cohort, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   strata = list(),
-  minCellCount = 5
+  minCellCount = lifecycle::deprecated()
 )
 }
 \arguments{

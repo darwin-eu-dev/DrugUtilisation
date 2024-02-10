@@ -52,9 +52,7 @@
 #'
 mockDrugUtilisation <- function(connectionDetails = list(
                                   con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-                                  writeSchema = "main",
-                                  cdmPrefix = NULL,
-                                  writePrefix = NULL
+                                  writeSchema = "main"
                                 ),
                                 numberIndividuals = 10,
                                 seed = 1,
@@ -133,58 +131,17 @@ mockDrugUtilisation <- function(connectionDetails = list(
     concept_relationship = concept_relationship
   )
 
-  con <- connectionDetails$con
-  writeSchema <- strsplit(connectionDetails[["writeSchema"]], "\\.")[[1]]
-  if (length(writeSchema) == 2) {
-    writeSchema <- c(
-      catlog = writeSchema[1], schema = writeSchema[2],
-      prefix = connectionDetails$writePrefix
-    )
-    cdmSchema <- c(
-      catlog = writeSchema[1], schema = writeSchema[2],
-      prefix = connectionDetails$cdmPrefix
-    )
-  } else {
-    writeSchema <- c(
-      schema = writeSchema[1], prefix = connectionDetails$writePrefix
-    )
-    cdmSchema <- c(
-      schema = writeSchema[1], prefix = connectionDetails$cdmPrefix
-    )
-  }
-
-  for (newTable in names(listTables)) {
-    writeTable(con, cdmSchema, newTable, listTables[[newTable]])
-  }
-  for (nam in names(cohorts)) {
-    writeTable(con, writeSchema, nam, cohorts[[nam]])
-    writeTable(
-      con, writeSchema, paste0(nam, "_set"), attr(cohorts[[nam]], "cohort_set")
-    )
-    writeTable(
-      con, writeSchema, paste0(nam, "_attrition"),
-      attr(cohorts[[nam]], "cohort_attrition")
-    )
-    writeTable(
-      con, writeSchema, paste0(nam, "_count"),
-      attr(cohorts[[nam]], "cohort_count")
-    )
-  }
-
-  cdm <- CDMConnector::cdm_from_con(
-    con,
-    cdm_schema = cdmSchema,
-    write_schema = writeSchema,
-    cohort_tables = names(cohorts),
-    cdm_name = "DUS MOCK"
+  cdm <- omopgenerics::cdmFromTables(
+    tables = c(listTables, extraTables),
+    cdmName = "DUS MOCK",
+    cohortTables = cohorts
   )
 
-  for (newTable in names(extraTables)) {
-    writeTable(con, writeSchema, newTable, extraTables[[newTable]])
-    cdm[[newTable]] <- dplyr::tbl(
-      con, CDMConnector::inSchema(writeSchema, newTable)
-    )
-  }
+  con <- connectionDetails$con
+  writeSchema <- strsplit(connectionDetails[["writeSchema"]], "\\.")[[1]]
+  cdm <- CDMConnector::copyCdmTo(
+    con = con, cdm = cdm, schema = writeSchema, overwrite = TRUE
+  )
 
   return(cdm)
 }
@@ -226,7 +183,9 @@ vocabularyTables <- function(concept, concept_ancestor, drug_strength, concept_r
         19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
         35604394, 702776
       ),
-      relationship_id = c(rep("RxNorm has dose form", 37))
+      relationship_id = c(rep("RxNorm has dose form", 37)),
+      valid_start_date = as.Date("1970-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     )
   }
   list(
@@ -519,11 +478,12 @@ createVisitOccurrence <- function(condition_occurrence, drug_exposure) {
     ) %>%
     dplyr::mutate(
       visit_occurrence_id = dplyr::row_number(),
-      visit_concept_id = 9202
+      visit_concept_id = 9202,
+      visit_type_concept_id = 0
     ) %>%
     dplyr::select(
       "visit_occurrence_id", "person_id", "visit_concept_id",
-      "visit_start_date", "visit_end_date"
+      "visit_start_date", "visit_end_date", "visit_type_concept_id"
     )
 }
 

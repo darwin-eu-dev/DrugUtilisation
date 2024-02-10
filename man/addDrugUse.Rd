@@ -6,7 +6,7 @@
 \usage{
 addDrugUse(
   cohort,
-  cdm = attr(cohort, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   ingredientConceptId,
   conceptSet = NULL,
   duration = TRUE,
@@ -25,7 +25,7 @@ addDrugUse(
 \arguments{
 \item{cohort}{Cohort in the cdm}
 
-\item{cdm}{cdm_reference created with CDMConnector::cdmFromCon}
+\item{cdm}{deprecated}
 
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
