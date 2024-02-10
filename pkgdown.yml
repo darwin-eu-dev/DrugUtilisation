@@ -4,10 +4,9 @@ pkgdown_sha: ~
 articles:
   addDrugUse: addDrugUse.html
   addIndications-example: addIndications-example.html
-  benchmarkDusCapr: benchmarkDusCapr.html
   introCreateCohort: introCreateCohort.html
   routePatternDose: routePatternDose.html
-last_built: 2024-01-06T11:19Z
+last_built: 2024-02-10T09:20Z
 urls:
   reference: https://darwin-eu-dev.github.io/DrugUtilisation/reference
   article: https://darwin-eu-dev.github.io/DrugUtilisation/articles

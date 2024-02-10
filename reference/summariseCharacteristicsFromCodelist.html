@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,6 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/addDrugUse.html">Use addDrugUse and summariseDrugUse to explore a drug</a>
     <a class="dropdown-item" href="../articles/addIndications-example.html">Add indications to Drug Utilisation Cohort</a>
-    <a class="dropdown-item" href="../articles/benchmarkDusCapr.html">DrugUtilisation vs CapR</a>
     <a class="dropdown-item" href="../articles/introCreateCohort.html">Use DrugUtilisation to create cohort</a>
     <a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a>
   </div>
@@ -54,13 +53,13 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">summariseCharacteristicsFromCodelist</span><span class="op">(</span></span>
 <span>  <span class="va">cohort</span>,</span>
-<span>  <span class="va">cdm</span>,</span>
+<span>  cdm <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">conceptSet</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">366</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">31</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">30</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">365</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">366</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  overlap <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span>
+<span>  minCellCount <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -102,49 +101,6 @@
 <p>A SummarisedResults object that contains the characterization</p>
     </div>
 
-    <div class="section level2">
-    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CodelistGenerator/" class="external-link">CodelistGenerator</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">conceptSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"acetaminophen"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1125315</span>, <span class="fl">1125360</span>, <span class="fl">2905077</span>, <span class="fl">43135274</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  <span class="st">"group A"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    <span class="fl">3665501</span>, <span class="fl">378253</span>, <span class="fl">317009</span>, <span class="fl">761948</span>, <span class="fl">1539403</span>, <span class="fl">1503327</span>, <span class="fl">1516980</span>, <span class="fl">4141052</span>,</span></span>
-<span class="r-in"><span>    <span class="fl">4313306</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">summariseCharacteristicsFromCodelist</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">cdm</span><span class="op">[[</span><span class="st">"cohort1"</span><span class="op">]</span><span class="op">]</span>, <span class="va">cdm</span>, <span class="va">conceptSet</span>,</span></span>
-<span class="r-in"><span>  window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">365</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>DrugUtilisation::summariseCharacteristicsFromCodelist() will be deprecated</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> please use PatientProfiles::summariseConceptIntersect() instead</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → measurement table not present in the cdm</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → procedure_occurrence table not present in the cdm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 24 × 12</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level strata_name strata_level window_name variable     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Cohort name cohort_1    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Cohort name cohort_1    Overall     Overall      -365 to -1  group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Cohort name cohort_1    Overall     Overall      -365 to -1  acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Cohort name cohort_3    Overall     Overall      -365 to -1  group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Cohort name cohort_2    Overall     Overall      -365 to -1  acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Cohort name cohort_2    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Cohort name cohort_3    Overall     Overall      -365 to -1  denominator  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Cohort name cohort_3    Overall     Overall      -365 to -1  acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Cohort name cohort_2    Overall     Overall      -365 to -1  group A      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Cohort name cohort_3    Overall     Overall      0 to 0      acetaminophen</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 14 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: variable_type &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate &lt;chr&gt;, cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
-<span class="r-in"><span><span class="co"># }</span></span></span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
-    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

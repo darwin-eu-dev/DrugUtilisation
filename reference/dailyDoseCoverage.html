@@ -14,7 +14,7 @@ concept sets and ingredient"><!-- mathjax --><script src="https://cdnjs.cloudfla
     
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +30,6 @@ concept sets and ingredient"><!-- mathjax --><script src="https://cdnjs.cloudfla
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/addDrugUse.html">Use addDrugUse and summariseDrugUse to explore a drug</a>
     <a class="dropdown-item" href="../articles/addIndications-example.html">Add indications to Drug Utilisation Cohort</a>
-    <a class="dropdown-item" href="../articles/benchmarkDusCapr.html">DrugUtilisation vs CapR</a>
     <a class="dropdown-item" href="../articles/introCreateCohort.html">Use DrugUtilisation to create cohort</a>
     <a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a>
   </div>
@@ -87,21 +86,24 @@ for the selected ingredients and concept sets</p>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">dailyDoseCoverage</span><span class="op">(</span><span class="va">cdm</span>, <span class="fl">1125315</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 73 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    group_name      group_level  strata_name strata_level variable variable_level</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> ingredient_name acetaminoph… Overall     Overall      number … <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> ingredient_name acetaminoph… unit        milligram    number … <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> ingredient_name acetaminoph… unit        milligram    daily_d… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> ingredient_name acetaminoph… unit        milligram    daily_d… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> ingredient_name acetaminoph… unit        milligram    daily_d… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ingredient_name acetaminoph… unit        milligram    daily_d… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ingredient_name acetaminoph… unit        milligram    daily_d… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ingredient_name acetaminoph… unit        milligram    daily_d… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ingredient_name acetaminoph… unit        milligram    daily_d… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ingredient_name acetaminoph… unit        milligram    daily_d… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 63 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 3 more variables: variable_type &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate &lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 84 × 15</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    cdm_name result_type   package_name    package_version group_name group_level</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> DUS MOCK dose_coverage DrugUtilisation 0.5.0           ingredien… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 74 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: strata_name &lt;chr&gt;, strata_level &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   variable_name &lt;chr&gt;, variable_level &lt;chr&gt;, estimate_name &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;, additional_name &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   additional_level &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

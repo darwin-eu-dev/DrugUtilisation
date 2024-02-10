@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,6 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/addDrugUse.html">Use addDrugUse and summariseDrugUse to explore a drug</a>
     <a class="dropdown-item" href="../articles/addIndications-example.html">Add indications to Drug Utilisation Cohort</a>
-    <a class="dropdown-item" href="../articles/benchmarkDusCapr.html">DrugUtilisation vs CapR</a>
     <a class="dropdown-item" href="../articles/introCreateCohort.html">Use DrugUtilisation to create cohort</a>
     <a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a>
   </div>
@@ -54,11 +53,11 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">summariseDrugUse</span><span class="op">(</span></span>
 <span>  <span class="va">cohort</span>,</span>
-<span>  cdm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="st">"cdm_reference"</span><span class="op">)</span>,</span>
+<span>  cdm <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  drugUseEstimates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"min"</span>, <span class="st">"q05"</span>, <span class="st">"q25"</span>, <span class="st">"median"</span>, <span class="st">"q75"</span>, <span class="st">"q95"</span>, <span class="st">"max"</span>, <span class="st">"mean"</span>, <span class="st">"sd"</span>,</span>
 <span>    <span class="st">"missing"</span><span class="op">)</span>,</span>
-<span>  minCellCount <span class="op">=</span> <span class="fl">5</span></span>
+<span>  minCellCount <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -106,26 +105,30 @@
 <span class="r-in"><span>  <span class="fu"><a href="addDrugUse.html">addDrugUse</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="fl">1125315</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">summariseDrugUse</span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span>, <span class="va">cdm</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 101 × 11</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level   strata_name strata_level variable    variable_level</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cohort_name acetaminophen Overall     Overall      number sub… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cohort_name acetaminophen Overall     Overall      number rec… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 101 × 15</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    cdm_name result_type      package_name package_version group_name group_level</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 91 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: variable_type &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: strata_name &lt;chr&gt;, strata_level &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   variable_name &lt;chr&gt;, variable_level &lt;chr&gt;, estimate_name &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;, additional_name &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   additional_level &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html" class="external-link">addSex</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html" class="external-link">addAge</a></span><span class="op">(</span><span class="va">cdm</span>, ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"&lt;40"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span><span class="op">)</span>, <span class="st">"&gt;40"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The `cdm` argument of `addAge()` is deprecated as of PatientProfiles 0.6.0.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The `cdm` argument of `addSex()` is deprecated as of PatientProfiles 0.6.0.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">summariseDrugUse</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span>, <span class="va">cdm</span>, strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -133,22 +136,24 @@
 <span class="r-in"><span>   <span class="st">"age_group and sex"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,010 × 11</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    group_name  group_level   strata_name strata_level variable    variable_level</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> cohort_name acetaminophen Overall     Overall      number sub… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> cohort_name acetaminophen Overall     Overall      number rec… <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> cohort_name acetaminophen Overall     Overall      duration    <span style="color: #BB0000;">NA</span>            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,010 × 15</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    cdm_name result_type      package_name package_version group_name group_level</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.0           cohort_na… acetaminop…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1,000 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 5 more variables: variable_type &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   cdm_name &lt;chr&gt;, result_type &lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: strata_name &lt;chr&gt;, strata_level &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   variable_name &lt;chr&gt;, variable_level &lt;chr&gt;, estimate_name &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;, additional_name &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   additional_level &lt;chr&gt;</span></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

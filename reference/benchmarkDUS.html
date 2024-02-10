@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,6 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/addDrugUse.html">Use addDrugUse and summariseDrugUse to explore a drug</a>
     <a class="dropdown-item" href="../articles/addIndications-example.html">Add indications to Drug Utilisation Cohort</a>
-    <a class="dropdown-item" href="../articles/benchmarkDusCapr.html">DrugUtilisation vs CapR</a>
     <a class="dropdown-item" href="../articles/introCreateCohort.html">Use DrugUtilisation to create cohort</a>
     <a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a>
   </div>
@@ -97,6 +96,10 @@ drug_exposure_start_date and drug_exposure_end_date as columns</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">DrugUtilisation</span><span class="fu">::</span><span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">timings</span> <span class="op">&lt;-</span> <span class="fu">DrugUtilisation</span><span class="fu">::</span><span class="fu">benchmarkDUS</span><span class="op">(</span><span class="va">cdm</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The `cdm` argument of `summariseDrugUse()` is deprecated as of DrugUtilisation</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 0.5.0.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The deprecated feature was likely used in the <span style="color: #0000BB;">DrugUtilisation</span> package.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue to the authors.</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
