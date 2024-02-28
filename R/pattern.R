@@ -70,7 +70,7 @@ drugStrengthPattern <- function(cdm,
   # add info
   nm <- omopgenerics::uniqueTableName(omopgenerics::tmpPrefix())
   cdm <- omopgenerics::insertTable(cdm = cdm, name = nm, table = patterns)
-  cdm[[nm]] <- cdm[[nm]] |> compute()
+  cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
   omopgenerics::dropTable(cdm = cdm, name = nm)
 
   drugStrengthRelated <- drugStrengthRelated %>%
