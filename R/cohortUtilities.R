@@ -34,6 +34,8 @@ subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
     cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
   )
 
+  imputation <- imputeDuration != "none" || !all(durationRange == c(1, Inf))
+
   # subset table
   cohort <- cdm$drug_exposure |>
     dplyr::select(
@@ -43,22 +45,32 @@ subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
       "cohort_end_date" = "drug_exposure_end_date"
     ) |>
     dplyr::inner_join(cdm[[nm]], by = "drug_concept_id") |>
-    dplyr::compute(temporary = FALSE, name = name, overwrite = TRUE)
-
-  # require in observation
+    dplyr::inner_join(
+      cdm$observation_period |>
+        dplyr::select(
+          "subject_id" = "person_id",
+          "observation_period_start_date",
+          "observation_period_end_date"
+        ),
+      by = "subject_id"
+    ) |>
+    dplyr::mutate(
+      "cohort_start_date" = dplyr::if_else(
+        .data$cohort_start_date < .data$observation_period_start_date,
+        .data$observation_period_start_date,
+        .data$cohort_start_date
+      ),
+      "cohort_end_date" = dplyr::if_else(
+        .data$cohort_end_date > .data$observation_period_end_date,
+        .data$observation_period_end_date,
+        .data$cohort_end_date
+      )
+    )
+  if (!imputation) {
+    cohort <- cohort |>
+      dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date)
+  }
   cohort <- cohort |>
-    PatientProfiles::addDemographics(sex = FALSE, age = FALSE) |>
-    dplyr::filter(!is.na(.data$prior_observation)) %>%
-    dplyr::mutate("duration" = as.numeric(
-      !!CDMConnector::datediff("cohort_start_date", "cohort_end_date")
-    )) %>%
-    dplyr::mutate("cohort_end_date" = dplyr::if_else(
-      .data$duration > .data$future_observation,
-      as.Date(!!CDMConnector::dateadd(
-        date = "cohort_start_date", number = "future_observation"
-      )),
-      .data$cohort_end_date
-    )) %>%
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
@@ -66,7 +78,9 @@ subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
     dplyr::compute(temporary = FALSE, name = name, overwrite = TRUE)
 
   # impute
-  cohort <- correctDuration(cohort, imputeDuration, durationRange)
+  if (imputation) {
+    cohort <- correctDuration(cohort, imputeDuration, durationRange)
+  }
 
   # erafy
   if (cohort |> dplyr::tally() |> dplyr::pull() > 0) {
