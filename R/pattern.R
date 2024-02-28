@@ -70,6 +70,9 @@ drugStrengthPattern <- function(cdm,
   # add info
   nm <- omopgenerics::uniqueTableName(omopgenerics::tmpPrefix())
   cdm <- omopgenerics::insertTable(cdm = cdm, name = nm, table = patterns)
+  cdm[[nm]] <- cdm[[nm]] |> compute()
+  omopgenerics::dropTable(cdm = cdm, name = nm)
+
   drugStrengthRelated <- drugStrengthRelated %>%
     dplyr::mutate(
       amount_numeric = dplyr::if_else(!is.na(.data$amount_value), 1, 0),
@@ -89,7 +92,6 @@ drugStrengthPattern <- function(cdm,
       ),
       na_matches = "na"
     )
-  omopgenerics::dropTable(cdm = cdm, name = nm)
 
   # select desired columns
   variables <- c(
