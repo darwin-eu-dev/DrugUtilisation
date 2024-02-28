@@ -61,11 +61,11 @@
 #'
 #' cdm[["drug_cohorts"]]
 #'
-#' cohortSet(cdm[["drug_cohorts"]])
+#' settings(cdm[["drug_cohorts"]])
 #'
 #' cohortCount(cdm[["drug_cohorts"]])
 #'
-#' cohortAttrition(cdm[["drug_cohorts"]])
+#' attrition(cdm[["drug_cohorts"]])
 #' }
 #'
 generateDrugUtilisationCohortSet <- function(cdm,

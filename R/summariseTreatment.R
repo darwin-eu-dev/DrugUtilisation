@@ -115,7 +115,6 @@ summariseTreatment <- function(cohort,
   }
   cdm <- attr(cohort, "cdm_reference")
   # initial checks
-  #checkmate::checkClass(cohort, "generated_cohort_set")
   checkmate::checkList(strata, types = "character")
   checkmate::checkTRUE(all(unlist(strata) %in% colnames(cohort)))
   checkmate::checkCharacter(treatmentCohortName, null.ok = TRUE)

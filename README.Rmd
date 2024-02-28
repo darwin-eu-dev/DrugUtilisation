@@ -116,7 +116,7 @@ Cohort set:
 ```{r}
 library(CDMConnector)
 library(dplyr)
-cohortSet(cdm[["dus_cohort"]]) %>% glimpse()
+settings(cdm[["dus_cohort"]]) %>% glimpse()
 ```
 
 Cohort count:
@@ -128,7 +128,7 @@ cohortCount(cdm[["dus_cohort"]])
 Cohort attrition:
 
 ```{r}
-cohortAttrition(cdm[["dus_cohort"]]) %>% glimpse()
+attrition(cdm[["dus_cohort"]]) %>% glimpse()
 ```
 
 ### Indication
