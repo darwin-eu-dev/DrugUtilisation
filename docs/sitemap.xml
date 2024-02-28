@@ -4,19 +4,28 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/404.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/addDrugUse.html</loc>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a01_introCreateCohort.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/addIndications-example.html</loc>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a02_scalingOfInstantiateCohorts.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/benchmarkDusCapr.html</loc>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a03_addIndications-example.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a04_addDrugInfo.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a05_treatmentDiscontinuation.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a06_treatmentSummary.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a07_characteriseACohort.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/introCreateCohort.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/routePatternDose.html</loc>
@@ -52,7 +61,13 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/DrugUtilisation-package.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateAtcCohortSet.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateDrugUtilisationCohortSet.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateIngredientCohortSet.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/index.html</loc>
@@ -91,6 +106,9 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseIndication.html</loc>
   </url>
   <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatment.html</loc>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromCohort.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromConceptSet.html</loc>
   </url>
 </urlset>

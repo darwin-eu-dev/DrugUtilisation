@@ -6,7 +6,7 @@ reference:
 - subtitle: Generate a drug utilisation cohort set
   desc: Generate a cohort of drug use
 - contents:
-  - matches("generateDrugUtilisationCohortSet")
+  - matches("generateDrugUtilisationCohortSet|generateAtcCohortSet|generateIngredientCohortSet")
 - subtitle: Indication functions
   desc: Indication functions are used to summarise and obtain the indication information
 - contents:

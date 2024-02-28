@@ -203,7 +203,7 @@ addCohortSet <- function(cohort) {
     dplyr::distinct() %>%
     dplyr::mutate("cohort_name" = paste0(
       "cohort_",
-      .data$cohort_definition_id
+      as.character(.data$cohort_definition_id)
     ))
   return(cohort)
 }

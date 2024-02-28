@@ -128,11 +128,11 @@ CDMConnector.
 cohortCount(cdm$asthma_1)
 ```
 
-Cohort attrition can be assessed using `cohortAttrition()` from
+Cohort attrition can be assessed using `attrition()` from
 CDMConnector.
 
 ```{r, message=FALSE, warning=FALSE}
-cohortAttrition(cdm$asthma_1)
+attrition(cdm$asthma_1)
 ```
 
 ### end parameter
@@ -165,7 +165,7 @@ cdm$asthma_3
 
 cohortCount(cdm$asthma_3)
 
-cohortAttrition(cdm$asthma_3)
+attrition(cdm$asthma_3)
 ```
 
 ## Use generateDrugUtilisationCohortSet() to generate a cohort
@@ -182,7 +182,7 @@ cdm$simvastin_1
 
 cohortCount(cdm$simvastin_1)
 
-cohortAttrition(cdm$simvastin_1)
+attrition(cdm$simvastin_1)
 ```
 
 ### imputeDuration and durationRange parameters
@@ -205,7 +205,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   durationRange = c(0, Inf) # default as c(1, Inf)
 )
 
-cohortAttrition(cdm$simvastin_2)
+attrition(cdm$simvastin_2)
 ```
 
 ### gapEra paratemer
@@ -223,7 +223,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   gapEra = 30 # default as 0
 )
 
-cohortAttrition(cdm$simvastin_3) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_3) %>% select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 From the **simvastin_3** cohort attrition, we can see that when
@@ -247,7 +247,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   priorUseWashout = 30
 )
 
-cohortAttrition(cdm$simvastin_4) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_4) %>% select(number_records, reason, excluded_records, excluded_subjects)
 
 ```
 
@@ -269,7 +269,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   priorObservation = 30
 )
 
-cohortAttrition(cdm$simvastin_5) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_5) %>% select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 ### cohortDateRange parameter
@@ -289,7 +289,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   cohortDateRange = as.Date(c("2010-01-01", "2011-01-01"))
 )
 
-cohortAttrition(cdm$simvastin_6) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_6) %>% select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 ### limit parameter
@@ -313,7 +313,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   limit = "First"
 )
 
-cohortAttrition(cdm$simvastin_7) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_7) %>% select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 If we just wanted to get the first-ever era, we can also use this
