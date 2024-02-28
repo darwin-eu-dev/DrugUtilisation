@@ -16,8 +16,7 @@ generateAtcCohortSet(
   cohortDateRange = as.Date(c(NA, NA)),
   limit = "all",
   level = c("ATC 1st"),
-  doseForm = NULL,
-  withConceptDetails = FALSE
+  doseForm = NULL
 )
 }
 \arguments{
@@ -58,11 +57,6 @@ in previous parameters. In this case each individual can not contribute with mul
 \item{doseForm}{Only descendants codes with the specified dose form
 will be returned. If NULL, descendant codes will be returned regardless
 of dose form.}
-
-\item{withConceptDetails}{If FALSE, each item in the list of results, one per
-ATC group, will contain a vector of concept IDs for each ingredient. If
-TRUE each item in the list of results will contain a tibble with additional
-information on the identified concepts.}
 }
 \value{
 The function returns the 'cdm' object with the created cohorts as
@@ -73,7 +67,11 @@ Generates a cohort of the drug use of a certain list of concepts.
 }
 \examples{
 \donttest{
-cdm <- DrugUtilisation::mockDrugUtilisation()
-cdm <- generateAtcCohortSet(cdm,  name =  "test")
+library(DrugUtilisation)
+cdm <- mockDrugUtilisation()
+cdm <- generateAtcCohortSet(cdm, name =  "test")
+cdm
+cdm$test
+settings(cdm$test)
 }
 }

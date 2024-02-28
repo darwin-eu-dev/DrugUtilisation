@@ -42,17 +42,17 @@
 #' @param doseForm Only descendants codes with the specified dose form
 #' will be returned. If NULL, descendant codes will be returned regardless
 #' of dose form.
-#' @param withConceptDetails If FALSE, each item in the list of results, one per
-#' ATC group, will contain a vector of concept IDs for each ingredient. If
-#' TRUE each item in the list of results will contain a tibble with additional
-#' information on the identified concepts.
 #' @return The function returns the 'cdm' object with the created cohorts as
 #' references of the object.
 #' @export
 #' @examples
 #' \donttest{
-#' cdm <- DrugUtilisation::mockDrugUtilisation()
-#' cdm <- generateAtcCohortSet(cdm,  name =  "test")
+#' library(DrugUtilisation)
+#' cdm <- mockDrugUtilisation()
+#' cdm <- generateAtcCohortSet(cdm, name =  "test")
+#' cdm
+#' cdm$test
+#' settings(cdm$test)
 #' }
 generateAtcCohortSet <- function(cdm,
                                  name,
@@ -65,27 +65,32 @@ generateAtcCohortSet <- function(cdm,
                                  cohortDateRange = as.Date(c(NA, NA)),
                                  limit = "all",
                                  level = c("ATC 1st"),
-                                 doseForm = NULL,
-                                 withConceptDetails = FALSE) {
+                                 doseForm = NULL) {
   conceptSet <- CodelistGenerator::getATCCodes(cdm,
     name = atcName,
-    level,
-    doseForm,
-    withConceptDetails
+    level = level,
+    doseForm = doseForm,
+    withConceptDetails = FALSE
   )
 
   cdm <- DrugUtilisation::generateDrugUtilisationCohortSet(
-    cdm,
-    name,
-    conceptSet,
-    durationRange,
-    imputeDuration,
-    gapEra,
-    priorUseWashout,
-    priorObservation,
-    cohortDateRange,
-    limit
+    cdm = cdm,
+    name = name,
+    conceptSet = conceptSet,
+    durationRange = durationRange,
+    imputeDuration = imputeDuration,
+    gapEra = gapEra,
+    priorUseWashout = priorUseWashout,
+    priorObservation = priorObservation,
+    cohortDateRange = cohortDateRange,
+    limit = limit
   )
+
+  cdm[[name]] <- cdm[[name]] |>
+    omopgenerics::newCohortTable(
+      cohortSetRef = settings(cdm[[name]]) |>
+        dplyr::mutate("dose_form" = paste0(.env$doseForm, collapse = " "))
+    )
 
   return(cdm)
 }

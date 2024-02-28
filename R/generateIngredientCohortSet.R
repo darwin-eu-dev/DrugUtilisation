@@ -47,10 +47,6 @@
 #' two with the first element the minimum number of ingredients allowed and
 #' the second the maximum. A value of c(2, 2) would restrict to only concepts
 #' associated with two ingredients.
-#' @param withConceptDetails If FALSE, each item in the list of results (one per
-#' ingredient) will contain a vector of concept IDs for each ingredient. If
-#' TRUE each item in the list of results will contain a tibble with additional
-#' information on the identified concepts.
 #' @return The function returns the 'cdm' object with the created cohorts as
 #' references of the object.
 #'
@@ -58,15 +54,16 @@
 #'
 #' @examples
 #' \donttest{
-#'  cdm <- DrugUtilisation::mockDrugUtilisation()
-#'  cdm <- generateIngredientCohortSet(cdm,
-#'  ingredient = "acetaminophen",
-#'  name = "test")
+#' library(DrugUtilisation)
+#' cdm <- mockDrugUtilisation()
+#' cdm <- generateIngredientCohortSet(
+#'   cdm = cdm,
+#'   ingredient = "acetaminophen",
+#'   name = "test"
+#' )
+#' cdm
 #' }
-
 #'
-#'
-
 generateIngredientCohortSet <- function(cdm,
                                         name,
                                         ingredient = NULL,
@@ -78,27 +75,38 @@ generateIngredientCohortSet <- function(cdm,
                                         cohortDateRange = as.Date(c(NA, NA)),
                                         limit = "all",
                                         doseForm = NULL,
-                                        ingredientRange = c(1, Inf),
-                                        withConceptDetails = FALSE) {
+                                        ingredientRange = c(1, Inf)) {
 
-  conceptSet <- CodelistGenerator::getDrugIngredientCodes(cdm,
-                                                          name = ingredient,
-                                                          doseForm,
-                                                          ingredientRange,
-                                                          withConceptDetails)
+  conceptSet <- CodelistGenerator::getDrugIngredientCodes(
+    cdm = cdm,
+    name = ingredient,
+    doseForm = doseForm,
+    ingredientRange = ingredientRange,
+    withConceptDetails = FALSE
+  )
 
   cdm <- DrugUtilisation::generateDrugUtilisationCohortSet(
-    cdm,
-    name,
-    conceptSet,
-    durationRange,
-    imputeDuration,
-    gapEra,
-    priorUseWashout,
-    priorObservation,
-    cohortDateRange,
-    limit
+    cdm = cdm,
+    name = name,
+    conceptSet = conceptSet,
+    durationRange = durationRange,
+    imputeDuration = imputeDuration,
+    gapEra = gapEra,
+    priorUseWashout = priorUseWashout,
+    priorObservation = priorObservation,
+    cohortDateRange = cohortDateRange,
+    limit = limit
   )
+
+  cdm[[name]] <- cdm[[name]] |>
+    omopgenerics::newCohortTable(
+      cohortSetRef = settings(cdm[[name]]) |>
+        dplyr::mutate(
+          "dose_form" = paste0(.env$doseForm, collapse = " + "),
+          "ingredient_range_min" = as.character(ingredientRange[1]),
+          "ingredient_range_max" = as.character(ingredientRange[2])
+        )
+    )
 
   return(cdm)
 }
