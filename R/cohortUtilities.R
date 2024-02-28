@@ -43,6 +43,7 @@ subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
       "cohort_end_date" = "drug_exposure_end_date"
     ) |>
     dplyr::inner_join(cdm[[nm]], by = "drug_concept_id") |>
+    dplyr::compute() |>
     dplyr::inner_join(
       cdm$observation_period |>
         dplyr::select(
