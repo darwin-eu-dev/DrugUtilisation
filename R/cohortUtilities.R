@@ -73,7 +73,9 @@ subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
     dplyr::compute(temporary = FALSE, name = name, overwrite = TRUE)
 
   # impute
-  #cohort <- correctDuration(cohort, imputeDuration, durationRange)
+  if (imputeDuration != "none" || !all(durationRange == c(1, Inf))) {
+    cohort <- correctDuration(cohort, imputeDuration, durationRange)
+  }
 
   # erafy
   if (cohort |> dplyr::tally() |> dplyr::pull() > 0) {
