@@ -61,7 +61,13 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/dailyDoseCoverage.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateAtcCohortSet.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateDrugUtilisationCohortSet.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateIngredientCohortSet.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/index.html</loc>
