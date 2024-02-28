@@ -1,4 +1,4 @@
-pandoc: 2.19.2
+pandoc: 3.1.11
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
@@ -10,7 +10,7 @@ articles:
   a06_treatmentSummary: a06_treatmentSummary.html
   a07_characteriseACohort: a07_characteriseACohort.html
   routePatternDose: routePatternDose.html
-last_built: 2024-02-10T14:35Z
+last_built: 2024-02-28T15:20Z
 urls:
   reference: https://darwin-eu-dev.github.io/DrugUtilisation/reference
   article: https://darwin-eu-dev.github.io/DrugUtilisation/articles
