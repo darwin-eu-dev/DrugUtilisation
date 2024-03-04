@@ -33,6 +33,7 @@ subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
   cdm <- omopgenerics::insertTable(
     cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
   )
+  cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
 
   imputation <- imputeDuration != "none" || !all(durationRange == c(1, Inf))
 

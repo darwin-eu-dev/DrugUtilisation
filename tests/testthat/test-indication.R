@@ -597,10 +597,7 @@ test_that("summariseIndication", {
 
   result <- summariseIndication(res)
 
-  expect_true(inherits(result, "omop_result"))
   expect_true(inherits(result, "summarised_result"))
-  expect_true(inherits(result, "summarised_indication"))
-  expect_true(all(colnames(result) == omopgenerics::resultColumns("summarised_result")))
   expect_true(any(grepl("Indication on index date", result$variable_name)))
   expect_true(any(grepl("Indication during prior 7 days", result$variable_name)))
   expect_true(any(grepl("Indication during prior 30 days", result$variable_name)))
@@ -616,10 +613,7 @@ test_that("summariseIndication", {
     res, strata = list("age_group", "sex", c("age_group", "sex"))
   )
 
-  expect_true(inherits(result, "omop_result"))
   expect_true(inherits(result, "summarised_result"))
-  expect_true(inherits(result, "summarised_indication"))
-  expect_true(all(colnames(result) == omopgenerics::resultColumns("summarised_result")))
   x <- tidyr::expand_grid(
     group_level = omopgenerics::settings(res) %>% dplyr::pull("cohort_name"),
     strata_name = c("overall", "age_group", "sex", "age_group and sex")

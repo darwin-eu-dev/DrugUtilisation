@@ -175,6 +175,7 @@ addDrugUse <- function(cohort,
   cdm <- omopgenerics::insertTable(
     cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
   )
+  cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
   cohortInfo <- initialSubset(cdm, cohort, cdm[[nm]])
 
   cohort <- cohort %>%
