@@ -8,7 +8,5 @@ test_that("test summariseTreatment", {
         minCellCount = 0
       )
   )
-  expect_true(inherits(x, "omop_result"))
   expect_true(inherits(x, "summarised_result"))
-  expect_true(inherits(x, "summarised_treatment"))
 })

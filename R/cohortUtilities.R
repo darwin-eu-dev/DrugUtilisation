@@ -33,6 +33,7 @@ subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
   cdm <- omopgenerics::insertTable(
     cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
   )
+  cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
 
   imputation <- imputeDuration != "none" || !all(durationRange == c(1, Inf))
 
@@ -374,5 +375,9 @@ uniqueTmpName <- function() {
   sprintf("tmp_%03i", i)
 }
 dropTmpTables <- function(cdm) {
-  omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
+  con <- attr(attr(cdm, "cdm_source"), "dbcon")
+  schema <- attr(attr(cdm, "cdm_source"), "write_schema")
+  initialTables <- CDMConnector::listTables(con = con, schema = schema)
+  droptables <- initialTables[startsWith(initialTables, "tmp_")]
+  omopgenerics::dropTable(cdm = cdm, name = droptables)
 }

@@ -92,6 +92,7 @@ formatConceptList <- function(conceptList, cdm) {
   cl <- conceptList %>%
     dplyr::filter(.data$include_descendants == TRUE)
   cdm <- omopgenerics::insertTable(cdm = cdm, name = nm, table = cl)
+  cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
   conceptList <- conceptList %>%
     dplyr::filter(.data$include_descendants == FALSE) %>%
     dplyr::union(

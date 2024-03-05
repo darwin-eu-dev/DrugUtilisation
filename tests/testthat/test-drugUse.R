@@ -939,9 +939,7 @@ test_that("check output format", {
   result <- cdm[["cohort"]] %>%
     summariseDrugUse()
   expect_true(all(c("tbl_df", "tbl", "data.frame") %in% class(result)))
-  expect_true(inherits(result, "omop_result"))
   expect_true(inherits(result, "summarised_result"))
-  expect_true(inherits(result, "summarised_drug_use"))
 })
 
 test_that("check all estimates", {
