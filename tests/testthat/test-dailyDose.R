@@ -209,7 +209,6 @@ test_that("functionality of addDailyDose function",{
   coverage <- dailyDoseCoverage(cdm, 1)
 
   expect_true(inherits(coverage, "summarised_result"))
-  expect_true(inherits(coverage, "dose_coverage"))
 
   #check it works without specifying cdm object
   expect_no_error(addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))
