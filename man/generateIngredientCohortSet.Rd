@@ -24,9 +24,15 @@ generateIngredientCohortSet(
 
 \item{name}{Name of the GeneratedCohortSet}
 
-\item{ingredient}{Names of ingredients of interest. For example, c("acetaminophen",
-"codeine"), would result in a list of length two with the descendant
-concepts for these two particular drug ingredients.}
+\item{ingredient}{Accepts both vectors and named lists of ingredient names.
+For a vector input, e.g., c("acetaminophen", "codeine"), it generates a
+cohort table with descendant concept codes for each ingredient, assigning
+unique cohort_definition_id. For a named list input, e.g., list(
+"test_1" = c("simvastatin", "acetaminophen"), "test_2" = "metformin"),
+it produces a cohort table based on the structure of the input, where
+each name leads to a combined set of descendant concept codes for the
+specified ingredients, creating distinct cohort_definition_id for each
+named group.}
 
 \item{durationRange}{Range between the duration must be comprised. It should
 be a numeric vector of length two, with no NAs and the first value should be
