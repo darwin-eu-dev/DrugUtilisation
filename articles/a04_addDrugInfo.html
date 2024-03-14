@@ -72,7 +72,7 @@
                         <h4 data-toc-skip class="author">Marti Catala,
 Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li</h4>
             
-            <h4 data-toc-skip class="date">2024-03-09</h4>
+            <h4 data-toc-skip class="date">2024-03-14</h4>
       
       
       <div class="d-none name"><code>a04_addDrugInfo.Rmd</code></div>
@@ -109,8 +109,8 @@ generate a concept list associated with <em>Acetaminophen</em>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conceptList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"acetaminophen"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">conceptList</span></span>
-<span><span class="co">#&gt; $acetaminophen</span></span>
-<span><span class="co">#&gt; [1]  1125315  1125360  2905077 43135274</span></span></code></pre></div>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; - acetaminophen (4 codes)</span></span></code></pre></div>
 <p>Next, we create a drug utilisation cohort by using the
 <code>conceptList</code> with the
 <code><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code> function. For a better
@@ -137,7 +137,7 @@ example below to know how it works.</p>
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"drug_exposure"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addRoute.html">addRoute</a></span><span class="op">(</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [?? x 8]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;    drug_exposure_id person_id drug_concept_id drug_exposure_start_date</span></span>
 <span><span class="co">#&gt;               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                1         1         1<span style="text-decoration: underline;">503</span>328 2022-01-11              </span></span>
@@ -210,8 +210,8 @@ and route.</p>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>  ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;dbplyr_009&gt; [?? x 9]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_009_1710374587&gt; [?? x 9]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;    drug_exposure_id person_id drug_concept_id drug_exposure_start_date</span></span>
 <span><span class="co">#&gt;               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                2         1         2<span style="text-decoration: underline;">905</span>077 2021-10-26              </span></span>
@@ -232,24 +232,24 @@ the coverage of daily dose computation for chosen concept sets and
 ingredients.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="../reference/dailyDoseCoverage.html">dailyDoseCoverage</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="fl">1125315</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 84 × 15</span></span></span>
-<span><span class="co">#&gt;    cdm_name result_type   package_name    package_version group_name group_level</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredien… acetaminop…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 84 × 16</span></span></span>
+<span><span class="co">#&gt;    result_id cdm_name result_type   package_name    package_version group_name  </span></span>
+<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         1 DUS MOCK dose_coverage DrugUtilisation 0.5.2           ingredient_…</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 74 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 9 more variables: strata_name &lt;chr&gt;, strata_level &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   variable_name &lt;chr&gt;, variable_level &lt;chr&gt;, estimate_name &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;, additional_name &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   additional_level &lt;chr&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 10 more variables: group_level &lt;chr&gt;, strata_name &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   strata_level &lt;chr&gt;, variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="adding-drug-usage-details-to-a-cohort-with-adddruguse-function">Adding Drug Usage Details to a Cohort with addDrugUse()
@@ -264,20 +264,20 @@ cumulative dose, etc., can be incorporated into a cohort using the
 <span>  cdm    <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>  ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;dbplyr_017&gt; [?? x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_017_1710374595&gt; [?? x 13]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        169 1997-11-20        1998-12-16           392</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        103 2009-10-17        2013-03-11          <span style="text-decoration: underline;">1</span>242</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        129 2015-09-02        2022-02-12          <span style="text-decoration: underline;">2</span>356</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1          7 2008-10-22        2008-12-23            63</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         86 2005-02-12        2016-06-22          <span style="text-decoration: underline;">4</span>149</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         22 2013-07-15        2013-11-29           138</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         92 2013-04-13        2013-06-28            77</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         97 2018-04-16        2020-01-13           638</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         25 2013-04-08        2016-08-10          <span style="text-decoration: underline;">1</span>221</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        109 1970-05-05        1970-09-19           138</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        164 2022-11-12        2022-11-15             4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        136 2002-05-04        2005-01-24           997</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         67 2019-12-13        2020-06-24           195</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        122 2016-09-02        2017-12-23           478</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         50 2018-11-02        2021-09-28          <span style="text-decoration: underline;">1</span>062</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        107 2019-12-11        2021-06-02           540</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1          8 1982-11-07        1986-11-11          <span style="text-decoration: underline;">1</span>466</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         46 1990-03-31        1991-08-24           512</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        127 2016-10-11        2022-03-17          <span style="text-decoration: underline;">1</span>984</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         69 2020-01-12        2020-10-26           289</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: number_exposures &lt;dbl&gt;, cumulative_quantity &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   initial_quantity &lt;dbl&gt;, impute_duration_percentage &lt;dbl&gt;,</span></span></span>
@@ -366,20 +366,20 @@ cohort created at the beginning of this vignette
 <span>  quantity <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  dose     <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;dbplyr_022&gt; [?? x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_022_1710374602&gt; [?? x 13]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        169 1997-11-20        1998-12-16           392</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        103 2009-10-17        2013-03-11          <span style="text-decoration: underline;">1</span>242</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        129 2015-09-02        2022-02-12          <span style="text-decoration: underline;">2</span>356</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1          7 2008-10-22        2008-12-23            63</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         86 2005-02-12        2016-06-22          <span style="text-decoration: underline;">4</span>149</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         22 2013-07-15        2013-11-29           138</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         92 2013-04-13        2013-06-28            77</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         97 2018-04-16        2020-01-13           638</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         25 2013-04-08        2016-08-10          <span style="text-decoration: underline;">1</span>221</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        109 1970-05-05        1970-09-19           138</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        164 2022-11-12        2022-11-15             4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        136 2002-05-04        2005-01-24           997</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         67 2019-12-13        2020-06-24           195</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        122 2016-09-02        2017-12-23           478</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         50 2018-11-02        2021-09-28          <span style="text-decoration: underline;">1</span>062</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        107 2019-12-11        2021-06-02           540</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1          8 1982-11-07        1986-11-11          <span style="text-decoration: underline;">1</span>466</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         46 1990-03-31        1991-08-24           512</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        127 2016-10-11        2022-03-17          <span style="text-decoration: underline;">1</span>984</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         69 2020-01-12        2020-10-26           289</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: number_exposures &lt;dbl&gt;, cumulative_quantity &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   initial_quantity &lt;dbl&gt;, impute_duration_percentage &lt;dbl&gt;,</span></span></span>
@@ -416,7 +416,7 @@ better understanding, we will observe only subject number 56.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">drug_concept_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="op">!</span><span class="op">!</span><span class="va">conceptList</span><span class="op">$</span><span class="va">acetaminophen</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">person_id</span> <span class="op">==</span> <span class="fl">56</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [2 x 7]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;   drug_exposure_id person_id drug_concept_id drug_exposure_start_date</span></span>
 <span><span class="co">#&gt;              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>              166        56         1<span style="text-decoration: underline;">125</span>360 2022-01-27              </span></span>
@@ -433,7 +433,7 @@ less than 6 months. Hence, it has two different cohort periods:</p>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subject_id</span> <span class="op">==</span> <span class="fl">56</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [2 x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1         56 2022-01-27        2022-03-04            37</span></span>
@@ -464,7 +464,7 @@ DrugUtilisation to create a cohort</em> vignette.</p>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subject_id</span> <span class="op">==</span> <span class="fl">56</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [1 x 8]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1         56 2021-08-08        2022-03-04           209</span></span>
@@ -483,7 +483,7 @@ defined when the cohort was created.</p>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subject_id</span> <span class="op">==</span> <span class="fl">56</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [1 x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1         56 2021-08-08        2022-03-04           209</span></span>
@@ -569,20 +569,20 @@ for exposures that overlap.</p>
 <span>             eraJoinMode <span class="op">=</span> <span class="st">"previous"</span>,</span>
 <span>             overlapMode <span class="op">=</span> <span class="st">"minimum"</span>,</span>
 <span>             sameIndexMode <span class="op">=</span> <span class="st">"minimum"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;dbplyr_041&gt; [?? x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.9.2 [unknown@Linux 6.5.0-1015-azure:R 4.3.3/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_041_1710374632&gt; [?? x 13]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        169 1997-11-20        1998-12-16           392</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        103 2009-10-17        2013-03-11          <span style="text-decoration: underline;">1</span>242</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        129 2015-09-02        2022-02-12          <span style="text-decoration: underline;">2</span>356</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1          7 2008-10-22        2008-12-23            63</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         86 2005-02-12        2016-06-22          <span style="text-decoration: underline;">4</span>149</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         22 2013-07-15        2013-11-29           138</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         92 2013-04-13        2013-06-28            77</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         97 2018-04-16        2020-01-13           638</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         25 2013-04-08        2016-08-10          <span style="text-decoration: underline;">1</span>221</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        109 1970-05-05        1970-09-19           138</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        164 2022-11-12        2022-11-15             4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        136 2002-05-04        2005-01-24           997</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         67 2019-12-13        2020-06-24           195</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        122 2016-09-02        2017-12-23           478</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         50 2018-11-02        2021-09-28          <span style="text-decoration: underline;">1</span>062</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        107 2019-12-11        2021-06-02           540</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1          8 1982-11-07        1986-11-11          <span style="text-decoration: underline;">1</span>466</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         46 1990-03-31        1991-08-24           512</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        127 2016-10-11        2022-03-17          <span style="text-decoration: underline;">1</span>984</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         69 2020-01-12        2020-10-26           289</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: number_exposures &lt;dbl&gt;, cumulative_quantity &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   initial_quantity &lt;dbl&gt;, impute_duration_percentage &lt;dbl&gt;,</span></span></span>
@@ -605,24 +605,24 @@ multiple cohorts. See an example below:</p>
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/summariseDrugUse.html">summariseDrugUse</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_example1"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 101 × 15</span></span></span>
-<span><span class="co">#&gt;    cdm_name result_type      package_name package_version group_name group_level</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 101 × 16</span></span></span>
+<span><span class="co">#&gt;    result_id cdm_name result_type        package_name package_version group_name</span></span>
+<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 91 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 9 more variables: strata_name &lt;chr&gt;, strata_level &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   variable_name &lt;chr&gt;, variable_level &lt;chr&gt;, estimate_name &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;, additional_name &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   additional_level &lt;chr&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 10 more variables: group_level &lt;chr&gt;, strata_name &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   strata_level &lt;chr&gt;, variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span></span></code></pre></div>
 <div class="section level3">
 <h3 id="strata-parameter">strata parameter<a class="anchor" aria-label="anchor" href="#strata-parameter"></a>
 </h3>
@@ -634,24 +634,24 @@ each strata group by using the <code>strata</code> parameter.</p>
 <span></span>
 <span><span class="fu"><a href="../reference/summariseDrugUse.html">summariseDrugUse</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_example1"</span><span class="op">]</span><span class="op">]</span>,</span>
 <span>                 strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"sex"</span> <span class="op">=</span> <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span> </span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 303 × 15</span></span></span>
-<span><span class="co">#&gt;    cdm_name result_type      package_name package_version group_name group_level</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> DUS MOCK summarised_drug… DrugUtilisa… 0.5.2           cohort_na… acetaminop…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 303 × 16</span></span></span>
+<span><span class="co">#&gt;    result_id cdm_name result_type        package_name package_version group_name</span></span>
+<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 293 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 9 more variables: strata_name &lt;chr&gt;, strata_level &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   variable_name &lt;chr&gt;, variable_level &lt;chr&gt;, estimate_name &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;, additional_name &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   additional_level &lt;chr&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 10 more variables: group_level &lt;chr&gt;, strata_name &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   strata_level &lt;chr&gt;, variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="drugestimates-parameter">drugEstimates parameter<a class="anchor" aria-label="anchor" href="#drugestimates-parameter"></a>
