@@ -1,6 +1,6 @@
 # Copyright 2022 DARWIN EU (C)
 #
-# This file is part of CohrotSymmetry
+# This file is part of DrugUtilisation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Generates a cohort of the drug use of a certain list of concepts.
+#' Generates a cohort of the drug use of ATC name(s) of interest.
 #'
 #' @param cdm A cdm_reference object.
 #' @param name Name of the GeneratedCohortSet

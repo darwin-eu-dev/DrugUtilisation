@@ -2,7 +2,7 @@
 % Please edit documentation in R/generateIngredientCohortSet.R
 \name{generateIngredientCohortSet}
 \alias{generateIngredientCohortSet}
-\title{Generates a cohort of the drug use of a certain list of concepts.}
+\title{Generates a cohort of the drug use of ingredient name(s) of interest.}
 \usage{
 generateIngredientCohortSet(
   cdm,
@@ -74,7 +74,7 @@ The function returns the 'cdm' object with the created cohorts as
 references of the object.
 }
 \description{
-Generates a cohort of the drug use of a certain list of concepts.
+Generates a cohort of the drug use of ingredient name(s) of interest.
 }
 \examples{
 \donttest{
