@@ -2,7 +2,7 @@
 % Please edit documentation in R/generateAtcCohortSet.R
 \name{generateAtcCohortSet}
 \alias{generateAtcCohortSet}
-\title{Generates a cohort of the drug use of a certain list of concepts.}
+\title{Generates a cohort of the drug use of ATC name(s) of interest.}
 \usage{
 generateAtcCohortSet(
   cdm,
@@ -63,7 +63,7 @@ The function returns the 'cdm' object with the created cohorts as
 references of the object.
 }
 \description{
-Generates a cohort of the drug use of a certain list of concepts.
+Generates a cohort of the drug use of ATC name(s) of interest.
 }
 \examples{
 \donttest{

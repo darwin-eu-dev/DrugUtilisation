@@ -66,3 +66,37 @@ test_that("date works", {
   ))
 
 })
+
+
+test_that("ingredient list and vector both work", {
+
+  cdm <- DrugUtilisation::mockDrugUtilisation()
+
+  ingredient1 = c("simvastatin", "acetaminophen", "metformin")
+
+  cdm <- generateIngredientCohortSet(
+    cdm = cdm,
+    ingredient = ingredient1,
+    name = "test_vector"
+  )
+
+  expect_true(length(cdm$test_vector |> dplyr::pull("cohort_definition_id") |> unique()) == 3)
+
+  ingredient2 = list( "test_1" = c("simvastatin", "acetaminophen"),
+                      "test_2" = "metformin")
+
+  cdm <- generateIngredientCohortSet(
+    cdm = cdm,
+    ingredient = ingredient2,
+    name = "test_list"
+  )
+  expect_true(length(cdm$test_list |> dplyr::pull("cohort_definition_id") |> unique()) == 2)
+
+  expect_true(all(CDMConnector::cohort_set(cdm$test_vector) |> dplyr::pull("cohort_name")|>
+    sort() == c("acetaminophen","metformin", "simvastatin")))
+
+  expect_true(all(CDMConnector::cohort_set(cdm$test_list) |> dplyr::pull("cohort_name")|>
+                    sort() == c("test_1","test_2")))
+
+
+})

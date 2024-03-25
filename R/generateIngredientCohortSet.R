@@ -1,6 +1,6 @@
 # Copyright 2022 DARWIN EU (C)
 #
-# This file is part of CohrotSymmetry
+# This file is part of DrugUtilisation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Generates a cohort of the drug use of a certain list of concepts.
+#' Generates a cohort of the drug use of ingredient name(s) of interest.
 #'
 #' @param cdm A cdm_reference object.
 #' @param name Name of the GeneratedCohortSet
-#' @param ingredient Names of ingredients of interest. For example, c("acetaminophen",
-#' "codeine"), would result in a list of length two with the descendant
-#' concepts for these two particular drug ingredients.
+#' @param ingredient Accepts both vectors and named lists of ingredient names.
+#' For a vector input, e.g., c("acetaminophen", "codeine"), it generates a
+#' cohort table with descendant concept codes for each ingredient, assigning
+#' unique cohort_definition_id. For a named list input, e.g., list(
+#' "test_1" = c("simvastatin", "acetaminophen"), "test_2" = "metformin"),
+#' it produces a cohort table based on the structure of the input, where
+#' each name leads to a combined set of descendant concept codes for the
+#' specified ingredients, creating distinct cohort_definition_id for each
+#' named group.
 #' @param durationRange Range between the duration must be comprised. It should
 #' be a numeric vector of length two, with no NAs and the first value should be
 #' equal or smaller than the second one. It is only required if imputeDuration
@@ -76,14 +82,30 @@ generateIngredientCohortSet <- function(cdm,
                                         limit = "all",
                                         doseForm = NULL,
                                         ingredientRange = c(1, Inf)) {
-
-  conceptSet <- CodelistGenerator::getDrugIngredientCodes(
-    cdm = cdm,
-    name = ingredient,
-    doseForm = doseForm,
-    ingredientRange = ingredientRange,
-    withConceptDetails = FALSE
-  )
+  if (!is.list(ingredient)) {
+    conceptSet <- CodelistGenerator::getDrugIngredientCodes(
+      cdm = cdm,
+      name = ingredient,
+      doseForm = doseForm,
+      ingredientRange = ingredientRange,
+      withConceptDetails = FALSE
+    )
+  } else {
+    conceptSet <- lapply(ingredient, function(values) {
+      lapply(values, function(value) {
+        CodelistGenerator::getDrugIngredientCodes(
+          cdm = cdm,
+          name = value,
+          doseForm = doseForm,
+          ingredientRange = ingredientRange,
+          withConceptDetails = FALSE
+        )
+      }) |>
+        unname() |>
+        unlist() |>
+        unique()
+    })
+  }
 
   cdm <- DrugUtilisation::generateDrugUtilisationCohortSet(
     cdm = cdm,
@@ -110,5 +132,3 @@ generateIngredientCohortSet <- function(cdm,
 
   return(cdm)
 }
-
-
