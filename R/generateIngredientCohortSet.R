@@ -92,7 +92,7 @@ generateIngredientCohortSet <- function(cdm,
     )
   } else {
     conceptSet <- lapply(ingredient, function(values) {
-      unname(unlist(lapply(values, function(value) {
+      lapply(values, function(value) {
         CodelistGenerator::getDrugIngredientCodes(
           cdm = cdm,
           name = value,
@@ -100,7 +100,10 @@ generateIngredientCohortSet <- function(cdm,
           ingredientRange = ingredientRange,
           withConceptDetails = FALSE
         )
-      })))
+      }) |>
+        unname() |>
+        unlist() |>
+        unique()
     })
   }
 
