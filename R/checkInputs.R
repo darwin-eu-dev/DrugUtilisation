@@ -350,7 +350,7 @@ checkIndicationVariables <- function(indicationVariables, cohort) {
     dplyr::collect()
   variableType <- PatientProfiles::variableTypes(cohort)$variable_type %>%
     unique()
-  if (!all(variableType %in% c("binary", "categorical"))) {
+  if (!all(variableType %in% c("binary", "categorical", "numeric", "integer"))) {
     cli::cli_abort(
       "indicationVariables should point to binary or categorical variables"
     )
