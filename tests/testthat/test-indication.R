@@ -616,18 +616,18 @@ test_that("summariseIndication", {
   expect_true(inherits(result, "summarised_result"))
   x <- tidyr::expand_grid(
     group_level = omopgenerics::settings(res) %>% dplyr::pull("cohort_name"),
-    strata_name = c("overall", "age_group", "sex", "age_group and sex")
+    strata_name = c("overall", "age_group", "sex", "age_group &&& sex")
   ) %>%
     dplyr::left_join(
       dplyr::tibble(
         strata_name = c(
-          "age_group", "age_group", "sex", "sex", "age_group and sex",
-          "age_group and sex", "age_group and sex", "age_group and sex",
+          "age_group", "age_group", "sex", "sex", "age_group &&& sex",
+          "age_group &&& sex", "age_group &&& sex", "age_group &&& sex",
           "overall"
         ),
         strata_level = c(
-          "<40", ">=40", "Male", "Female", "<40 and Female", "<40 and Male",
-          ">=40 and Female", ">=40 and Male", "overall"
+          "<40", ">=40", "Male", "Female", "<40 &&& Female", "<40 &&& Male",
+          ">=40 &&& Female", ">=40 &&& Male", "overall"
         )
       ),
       by = "strata_name", relationship = "many-to-many"

@@ -45,7 +45,7 @@ summariseCharacteristicsFromCodelist <- function(cohort,
                                                  ),
                                                  overlap = TRUE,
                                                  minCellCount = lifecycle::deprecated()) {
-  lifecycle::deprecate_soft(
+  lifecycle::deprecate_warn(
     when = "0.5.0",
     what = "summariseCharacteristicsFromCodelist()",
     with = "PatientProfiles::summariseCharacteristics(conceptIntersect)"
@@ -64,7 +64,7 @@ summariseCharacteristicsFromCodelist <- function(cohort,
   }
 
   if (overlap) {
-    targetEndDate <- "cohort_end_date"
+    targetEndDate <- "event_end_date"
   } else {
     targetEndDate <- NULL
   }
@@ -75,10 +75,10 @@ summariseCharacteristicsFromCodelist <- function(cohort,
     strata = strata,
     tableIntersect = list(),
     cohortIntersect = list(),
-    conceptIntersect = list(
+    conceptIntersect = list(list(
       conceptSet = conceptSet, window = window, targetEndDate = targetEndDate,
       value = "flag"
-    )
+    ))
   ) |>
     dplyr::mutate(
       "package_name" = "DrugUtilisation",
