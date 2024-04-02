@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,7 @@
                         <h4 data-toc-skip class="author">Marti Catala,
 Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li</h4>
             
-            <h4 data-toc-skip class="date">2024-03-25</h4>
+            <h4 data-toc-skip class="date">2024-04-02</h4>
       
       
       <div class="d-none name"><code>a03_addIndications-example.Rmd</code></div>
@@ -182,27 +182,27 @@ parameters. An example is provided below.</p>
 <span>    indicationGap <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, <span class="fl">365</span><span class="op">)</span>,</span>
 <span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_014_1711368270&gt; [?? x 16]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpDaok9p/file1d6440dc7d5e.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_032_1712058297&gt; [?? x 16]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.0 [unknown@Linux 6.5.0-1016-azure:R 4.3.3//tmp/RtmpTgvYXD/file1e781207d23d.duckdb]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          1 1982-09-11        1982-10-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        260 1974-03-05        1974-03-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        260 1979-02-22        1979-03-08     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        260 1990-08-10        1990-09-16     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        334 1982-08-26        1982-09-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        352 1983-03-12        1983-03-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        352 1987-06-26        1987-07-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        352 1996-10-03        1996-10-10     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        376 1973-05-26        1973-06-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        376 2012-02-13        2012-03-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         80 2013-12-29        2014-01-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         84 1976-07-02        1976-07-16     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         84 1996-11-08        1996-11-22     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         90 1965-10-28        1965-12-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        222 1960-04-29        1960-05-20     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        248 1984-01-18        1984-01-25     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        248 1990-12-21        1990-12-28     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        248 1996-04-16        1996-04-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        297 1953-01-09        1953-01-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        297 2011-04-08        2011-05-13     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: indication_gap_0_bronchitis &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_sinusitis &lt;dbl&gt;, indication_gap_0_none &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_unknown &lt;dbl&gt;, indication_gap_30_sinusitis &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_bronchitis &lt;dbl&gt;, indication_gap_30_none &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_unknown &lt;dbl&gt;, indication_gap_365_sinusitis &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_365_bronchitis &lt;dbl&gt;, indication_gap_365_none &lt;dbl&gt;, …</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_unknown &lt;dbl&gt;, indication_gap_365_bronchitis &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_365_sinusitis &lt;dbl&gt;, indication_gap_365_none &lt;dbl&gt;, …</span></span></span></code></pre></div>
 <p>Use <code>indicationGap</code> to specify the indication gaps, which
 are defined as the gap between the event and the indication.
 Additionally, you can use <code>unknownIndicationTable</code> to specify
@@ -225,8 +225,8 @@ the tables to look for unknown indication.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 26 × 3</span></span></span>
 <span><span class="co">#&gt;    variable_name            estimate_name estimate_value  </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number subjects          count         2679            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number records           count         13860           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number records           count         13860           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number subjects          count         2679            </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Indication on index date count         2518            </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Indication on index date percentage    18.1673881673882</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Indication on index date count         <span style="color: #BB0000;">NA</span>              </span></span>
@@ -257,8 +257,8 @@ function. In the example below, it is summarized by
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 50 × 4</span></span></span>
 <span><span class="co">#&gt;    variable_name            estimate_name estimate_value   strata_name</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number subjects          count         2679             overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number records           count         13860            overall    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number records           count         13860            overall    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number subjects          count         2679             overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Indication on index date count         2518             overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Indication on index date percentage    18.1673881673882 overall    </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Indication on index date count         <span style="color: #BB0000;">NA</span>               overall    </span></span>

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -119,21 +119,43 @@ treatmentCohortName.</p></dd>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="addDrugUse.html">addDrugUse</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="fl">1125315</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="summariseDrugUse.html">summariseDrugUse</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span>, <span class="va">cdm</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> `result_id` column is missing, please add it as it is a compulsory column.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'missing' is no longer an option for `estimates`. Use 'count_missing' or</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 'percentage_missing'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> number_exposures: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> duration: min, q05, q25, median, q75, q95, max, mean, sd, count_missing,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> cumulative_quantity: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> number_eras: min, q05, q25, median, q75, q95, max, mean, sd, count_missing,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> initial_quantity: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> impute_daily_dose_percentage: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> impute_duration_percentage: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> initial_daily_dose_milligram: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> cumulative_dose_milligram: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-04-02 11:43:58.947562</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-04-02 11:43:59.071309</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 101 × 16</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    result_id cdm_name result_type        package_name package_version group_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 91 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 10 more variables: group_level &lt;chr&gt;, strata_name &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   strata_level &lt;chr&gt;, variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span>
@@ -150,20 +172,42 @@ treatmentCohortName.</p></dd>
 <span class="r-in"><span>   <span class="st">"age_group and sex"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> `result_id` column is missing, please add it as it is a compulsory column.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>'missing' is no longer an option for `estimates`. Use 'count_missing' or</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 'percentage_missing'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> number_exposures: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> duration: min, q05, q25, median, q75, q95, max, mean, sd, count_missing,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> cumulative_quantity: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> number_eras: min, q05, q25, median, q75, q95, max, mean, sd, count_missing,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> initial_quantity: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> impute_daily_dose_percentage: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> impute_duration_percentage: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> initial_daily_dose_milligram: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> cumulative_dose_milligram: min, q05, q25, median, q75, q95, max, mean, sd,</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-04-02 11:44:00.163738</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-04-02 11:44:00.687158</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,010 × 16</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    result_id cdm_name result_type        package_name package_version group_name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.2           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1 DUS MOCK summarised_drug_u… DrugUtilisa… 0.5.3           cohort_na…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1,000 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 10 more variables: group_level &lt;chr&gt;, strata_name &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   strata_level &lt;chr&gt;, variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span>
