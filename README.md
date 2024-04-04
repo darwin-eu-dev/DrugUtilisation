@@ -13,17 +13,721 @@
 - **addDailyDose** function works for the following patterns in the
   drug_strength table:
 
-| pattern_id |    amount_unit     | numerator_unit | denominator_unit |
-|:----------:|:------------------:|:--------------:|:----------------:|
-|     1      | international unit |       NA       |        NA        |
-|     2      |     microgram      |       NA       |        NA        |
-|     3      |  milliequivalent   |       NA       |        NA        |
-|     4      |     milligram      |       NA       |        NA        |
-|     5      |     millimiter     |       NA       |        NA        |
-|     6      |         NA         |   microgram    |       hour       |
-|     7      |         NA         |   milligram    |    actuation     |
-|     8      |         NA         |   microgram    |       hour       |
-|     9      |         NA         |   milligram    |       hour       |
+<div id="dxirpwgysb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#dxirpwgysb table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#dxirpwgysb thead, #dxirpwgysb tbody, #dxirpwgysb tfoot, #dxirpwgysb tr, #dxirpwgysb td, #dxirpwgysb th {
+  border-style: none;
+}
+
+#dxirpwgysb p {
+  margin: 0;
+  padding: 0;
+}
+
+#dxirpwgysb .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#dxirpwgysb .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#dxirpwgysb .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#dxirpwgysb .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#dxirpwgysb .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#dxirpwgysb .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#dxirpwgysb .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#dxirpwgysb .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#dxirpwgysb .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#dxirpwgysb .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#dxirpwgysb .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#dxirpwgysb .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#dxirpwgysb .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#dxirpwgysb .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#dxirpwgysb .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxirpwgysb .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#dxirpwgysb .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#dxirpwgysb .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#dxirpwgysb .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxirpwgysb .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#dxirpwgysb .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxirpwgysb .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#dxirpwgysb .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxirpwgysb .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#dxirpwgysb .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#dxirpwgysb .gt_left {
+  text-align: left;
+}
+
+#dxirpwgysb .gt_center {
+  text-align: center;
+}
+
+#dxirpwgysb .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#dxirpwgysb .gt_font_normal {
+  font-weight: normal;
+}
+
+#dxirpwgysb .gt_font_bold {
+  font-weight: bold;
+}
+
+#dxirpwgysb .gt_font_italic {
+  font-style: italic;
+}
+
+#dxirpwgysb .gt_super {
+  font-size: 65%;
+}
+
+#dxirpwgysb .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#dxirpwgysb .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#dxirpwgysb .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#dxirpwgysb .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#dxirpwgysb .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#dxirpwgysb .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#dxirpwgysb .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: center; font-weight: bold;" scope="col" id="amount">amount</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: center; font-weight: bold;" scope="col" id="amount_unit">amount_unit</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: center; font-weight: bold;" scope="col" id="numerator">numerator</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: center; font-weight: bold;" scope="col" id="numerator_unit">numerator_unit</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: center; font-weight: bold;" scope="col" id="denominator">denominator</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="text-align: center; font-weight: bold;" scope="col" id="denominator_unit">denominator_unit</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr class="gt_group_heading_row">
+      <th colspan="6" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="concentration formulation: quantity * numerator / days exposed">concentration formulation: quantity * numerator / days exposed</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">international unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">international unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliequivalent</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Actuation</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">liter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">square centimeter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Actuation</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">square centimeter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">international unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">international unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">mega-international unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliequivalent</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliequivalent</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Actuation</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">liter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">square centimeter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Actuation</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td></tr>
+    <tr><td headers="concentration formulation: quantity * numerator / days exposed  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="concentration formulation: quantity * numerator / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">square centimeter</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="6" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="fixed amount formulation: quantity * amount / days exposed">fixed amount formulation: quantity * amount / days exposed</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="fixed amount formulation: quantity * amount / days exposed  amount" class="gt_row gt_left" style="text-align: left;">number</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">international unit</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td></tr>
+    <tr><td headers="fixed amount formulation: quantity * amount / days exposed  amount" class="gt_row gt_left" style="text-align: left;">number</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">microgram</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td></tr>
+    <tr><td headers="fixed amount formulation: quantity * amount / days exposed  amount" class="gt_row gt_left" style="text-align: left;">number</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliequivalent</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td></tr>
+    <tr><td headers="fixed amount formulation: quantity * amount / days exposed  amount" class="gt_row gt_left" style="text-align: left;">number</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td></tr>
+    <tr><td headers="fixed amount formulation: quantity * amount / days exposed  amount" class="gt_row gt_left" style="text-align: left;">number</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milliliter</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td></tr>
+    <tr><td headers="fixed amount formulation: quantity * amount / days exposed  amount" class="gt_row gt_left" style="text-align: left;">number</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="fixed amount formulation: quantity * amount / days exposed  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="6" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="time based no denominator: 24 * numerator">time based no denominator: 24 * numerator</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="time based no denominator: 24 * numerator  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="time based no denominator: 24 * numerator  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="time based no denominator: 24 * numerator  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="time based no denominator: 24 * numerator  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">microgram</td>
+<td headers="time based no denominator: 24 * numerator  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="time based no denominator: 24 * numerator  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">hour</td></tr>
+    <tr><td headers="time based no denominator: 24 * numerator  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="time based no denominator: 24 * numerator  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="time based no denominator: 24 * numerator  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="time based no denominator: 24 * numerator  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="time based no denominator: 24 * numerator  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="time based no denominator: 24 * numerator  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">hour</td></tr>
+    <tr class="gt_group_heading_row">
+      <th colspan="6" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="time based with denominator: if (denominator&amp;gt;24) {numerator * 24 / denominator} else {numerator}">time based with denominator: if (denominator&gt;24) {numerator * 24 / denominator} else {numerator}</th>
+    </tr>
+    <tr class="gt_row_group_first"><td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">microgram</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">hour</td></tr>
+    <tr><td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">milligram</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">hour</td></tr>
+    <tr><td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  amount" class="gt_row gt_left" style="text-align: left;">-</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  amount_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  numerator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  numerator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">unit</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
+<td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">hour</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
 
 ## Package overview
 
@@ -84,8 +788,10 @@ library(CodelistGenerator)
 #> Warning: package 'CodelistGenerator' was built under R version 4.2.3
 conceptList <- getDrugIngredientCodes(cdm, "acetaminophen")
 conceptList
-#> $acetaminophen
-#> [1]  1125315 43135274  2905077  1125360
+#> 
+#> ── 1 codelist ──────────────────────────────────────────────────────────────────
+#> 
+#> - acetaminophen (4 codes)
 ```
 
 To generate the cohort of drug use we will use
@@ -205,23 +911,23 @@ x <- cdm[["dus_cohort"]] %>%
 glimpse(x)
 #> Rows: ??
 #> Columns: 16
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ subject_id                   <int> 81, 47, 96, 75, 91, 93, 46, 88, 8, 54, 9,…
-#> $ cohort_start_date            <date> 1995-09-13, 1963-12-22, 2011-05-25, 2010…
-#> $ cohort_end_date              <date> 1997-11-17, 1965-09-16, 2013-01-23, 2011…
+#> $ subject_id                   <int> 7, 48, 57, 77, 23, 40, 45, 51, 88, 87, 95…
+#> $ cohort_start_date            <date> 1969-09-09, 1972-04-14, 2020-04-17, 1967…
+#> $ cohort_end_date              <date> 1970-02-14, 1972-12-18, 2020-11-19, 1967…
 #> $ indication_gap_0_headache    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_influenza   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_none        <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ indication_gap_0_unknown     <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_headache   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_30_none       <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1,…
-#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…
-#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_influenza <dbl> 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_none      <dbl> 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,…
-#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…
+#> $ indication_gap_30_none       <dbl> 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_influenza <dbl> 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_none      <dbl> 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1,…
+#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 ```
 
 We can combine the indications in a single column using the
@@ -233,26 +939,26 @@ x <- x %>% indicationToStrata(keep = TRUE)
 glimpse(x)
 #> Rows: ??
 #> Columns: 19
-#> Database: DuckDB 0.7.1 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ subject_id                   <int> 81, 47, 96, 75, 91, 93, 46, 88, 8, 54, 9,…
-#> $ cohort_start_date            <date> 1995-09-13, 1963-12-22, 2011-05-25, 2010…
-#> $ cohort_end_date              <date> 1997-11-17, 1965-09-16, 2013-01-23, 2011…
+#> $ subject_id                   <int> 7, 48, 57, 77, 23, 40, 45, 51, 88, 87, 95…
+#> $ cohort_start_date            <date> 1969-09-09, 1972-04-14, 2020-04-17, 1967…
+#> $ cohort_end_date              <date> 1970-02-14, 1972-12-18, 2020-11-19, 1967…
 #> $ indication_gap_0_headache    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_influenza   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_none        <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ indication_gap_0_unknown     <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_headache   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_30_none       <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1,…
-#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…
-#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_influenza <dbl> 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_none      <dbl> 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1,…
-#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,…
+#> $ indication_gap_30_none       <dbl> 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_influenza <dbl> 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_none      <dbl> 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1,…
+#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0             <chr> "None", "None", "None", "None", "None", "…
-#> $ indication_gap_30            <chr> "None", "None", "None", "None", "None", "…
-#> $ indication_gap_365           <chr> "None", "None", "None", "None", "None", "…
+#> $ indication_gap_30            <chr> "None", "None", "None", "Unknown", "None"…
+#> $ indication_gap_365           <chr> "None", "None", "Influenza", "Unknown", "…
 ```
 
 ``` r
@@ -269,42 +975,89 @@ function:
 
 ``` r
 summariseIndication(x, cdm)
-#> # A tibble: 42 × 15
-#>    cdm_name result_type      package_name package_version group_name group_level
-#>    <chr>    <chr>            <chr>        <chr>           <chr>      <chr>      
-#>  1 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  2 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  3 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  4 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  5 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  6 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  7 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  8 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  9 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#> 10 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
+#> Warning: The `functions` argument of `summariseResult()` is deprecated as of
+#> PatientProfiles 0.7.0.
+#> ℹ Please use the `estimates` argument instead.
+#> ℹ The deprecated feature was likely used in the DrugUtilisation package.
+#>   Please report the issue to the authors.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
+#> ℹ The following estimates will be computed:
+#> • indication_gap_0_headache: count, percentage
+#> • indication_gap_0_influenza: count, percentage
+#> • indication_gap_0_none: count, percentage
+#> • indication_gap_0_unknown: count, percentage
+#> • indication_gap_30_headache: count, percentage
+#> • indication_gap_30_influenza: count, percentage
+#> • indication_gap_30_none: count, percentage
+#> • indication_gap_30_unknown: count, percentage
+#> • indication_gap_365_influenza: count, percentage
+#> • indication_gap_365_headache: count, percentage
+#> • indication_gap_365_none: count, percentage
+#> • indication_gap_365_unknown: count, percentage
+#> • indication_gap_0: count, percentage
+#> • indication_gap_30: count, percentage
+#> • indication_gap_365: count, percentage
+#> → Start summary of data, at 2024-04-04 12:16:28
+#> 
+#> ✔ Summary finished, at 2024-04-04 12:16:28
+#> # A tibble: 42 × 16
+#>    result_id cdm_name result_type        package_name package_version group_name
+#>        <int> <chr>    <chr>              <chr>        <chr>           <chr>     
+#>  1         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  2         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  3         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  4         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  5         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  6         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  7         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  8         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  9         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#> 10         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
 #> # ℹ 32 more rows
-#> # ℹ 9 more variables: strata_name <chr>, strata_level <chr>,
-#> #   variable_name <chr>, variable_level <chr>, estimate_name <chr>,
-#> #   estimate_type <chr>, estimate_value <chr>, additional_name <chr>,
-#> #   additional_level <chr>
+#> # ℹ 10 more variables: group_level <chr>, strata_name <chr>,
+#> #   strata_level <chr>, variable_name <chr>, variable_level <chr>,
+#> #   estimate_name <chr>, estimate_type <chr>, estimate_value <chr>,
+#> #   additional_name <chr>, additional_level <chr>
 ```
 
 ``` r
 summariseIndication(x, cdm) %>% glimpse()
+#> ℹ The following estimates will be computed:
+#> • indication_gap_0_headache: count, percentage
+#> • indication_gap_0_influenza: count, percentage
+#> • indication_gap_0_none: count, percentage
+#> • indication_gap_0_unknown: count, percentage
+#> • indication_gap_30_headache: count, percentage
+#> • indication_gap_30_influenza: count, percentage
+#> • indication_gap_30_none: count, percentage
+#> • indication_gap_30_unknown: count, percentage
+#> • indication_gap_365_influenza: count, percentage
+#> • indication_gap_365_headache: count, percentage
+#> • indication_gap_365_none: count, percentage
+#> • indication_gap_365_unknown: count, percentage
+#> • indication_gap_0: count, percentage
+#> • indication_gap_30: count, percentage
+#> • indication_gap_365: count, percentage
+#> → Start summary of data, at 2024-04-04 12:16:29
+#> 
+#> ✔ Summary finished, at 2024-04-04 12:16:29
 #> Rows: 42
-#> Columns: 15
+#> Columns: 16
+#> $ result_id        <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ cdm_name         <chr> "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS …
 #> $ result_type      <chr> "summarised_indication", "summarised_indication", "su…
 #> $ package_name     <chr> "DrugUtilisation", "DrugUtilisation", "DrugUtilisatio…
-#> $ package_version  <chr> "0.5.0", "0.5.0", "0.5.0", "0.5.0", "0.5.0", "0.5.0",…
+#> $ package_version  <chr> "0.5.3", "0.5.3", "0.5.3", "0.5.3", "0.5.3", "0.5.3",…
 #> $ group_name       <chr> "cohort_name", "cohort_name", "cohort_name", "cohort_…
 #> $ group_level      <chr> "acetaminophen", "acetaminophen", "acetaminophen", "a…
 #> $ strata_name      <chr> "overall", "overall", "overall", "overall", "overall"…
 #> $ strata_level     <chr> "overall", "overall", "overall", "overall", "overall"…
-#> $ variable_name    <chr> "number subjects", "number records", "Indication on i…
+#> $ variable_name    <chr> "number records", "number subjects", "Indication on i…
 #> $ variable_level   <chr> NA, NA, "Headache", "Headache", "Influenza", "Influen…
 #> $ estimate_name    <chr> "count", "count", "count", "percentage", "count", "pe…
-#> $ estimate_type    <chr> "numeric", "numeric", "numeric", "percentage", "numer…
+#> $ estimate_type    <chr> "integer", "integer", "integer", "percentage", "integ…
 #> $ estimate_value   <chr> "35", "35", "0", "0", "0", "0", "35", "100", "0", "0"…
 #> $ additional_name  <chr> "overall", "overall", "overall", "overall", "overall"…
 #> $ additional_level <chr> "overall", "overall", "overall", "overall", "overall"…
@@ -331,42 +1084,81 @@ x <- x %>%
 #> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
 #> generated.
 summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex")))
-#> # A tibble: 466 × 15
-#>    cdm_name result_type      package_name package_version group_name group_level
-#>    <chr>    <chr>            <chr>        <chr>           <chr>      <chr>      
-#>  1 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  2 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  3 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  4 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  5 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  6 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  7 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  8 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#>  9 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#> 10 DUS MOCK summarised_indi… DrugUtilisa… 0.5.0           cohort_na… acetaminop…
-#> # ℹ 456 more rows
-#> # ℹ 9 more variables: strata_name <chr>, strata_level <chr>,
-#> #   variable_name <chr>, variable_level <chr>, estimate_name <chr>,
-#> #   estimate_type <chr>, estimate_value <chr>, additional_name <chr>,
-#> #   additional_level <chr>
+#> ℹ The following estimates will be computed:
+#> • indication_gap_0_headache: count, percentage
+#> • indication_gap_0_influenza: count, percentage
+#> • indication_gap_0_none: count, percentage
+#> • indication_gap_0_unknown: count, percentage
+#> • indication_gap_30_headache: count, percentage
+#> • indication_gap_30_influenza: count, percentage
+#> • indication_gap_30_none: count, percentage
+#> • indication_gap_30_unknown: count, percentage
+#> • indication_gap_365_influenza: count, percentage
+#> • indication_gap_365_headache: count, percentage
+#> • indication_gap_365_none: count, percentage
+#> • indication_gap_365_unknown: count, percentage
+#> • indication_gap_0: count, percentage
+#> • indication_gap_30: count, percentage
+#> • indication_gap_365: count, percentage
+#> → Start summary of data, at 2024-04-04 12:16:32
+#> 
+#> ✔ Summary finished, at 2024-04-04 12:16:32
+#> # A tibble: 430 × 16
+#>    result_id cdm_name result_type        package_name package_version group_name
+#>        <int> <chr>    <chr>              <chr>        <chr>           <chr>     
+#>  1         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  2         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  3         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  4         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  5         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  6         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  7         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  8         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#>  9         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#> 10         1 DUS MOCK summarised_indica… DrugUtilisa… 0.5.3           cohort_na…
+#> # ℹ 420 more rows
+#> # ℹ 10 more variables: group_level <chr>, strata_name <chr>,
+#> #   strata_level <chr>, variable_name <chr>, variable_level <chr>,
+#> #   estimate_name <chr>, estimate_type <chr>, estimate_value <chr>,
+#> #   additional_name <chr>, additional_level <chr>
 ```
 
 ``` r
 summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex"))) %>% glimpse()
-#> Rows: 466
-#> Columns: 15
+#> ℹ The following estimates will be computed:
+#> • indication_gap_0_headache: count, percentage
+#> • indication_gap_0_influenza: count, percentage
+#> • indication_gap_0_none: count, percentage
+#> • indication_gap_0_unknown: count, percentage
+#> • indication_gap_30_headache: count, percentage
+#> • indication_gap_30_influenza: count, percentage
+#> • indication_gap_30_none: count, percentage
+#> • indication_gap_30_unknown: count, percentage
+#> • indication_gap_365_influenza: count, percentage
+#> • indication_gap_365_headache: count, percentage
+#> • indication_gap_365_none: count, percentage
+#> • indication_gap_365_unknown: count, percentage
+#> • indication_gap_0: count, percentage
+#> • indication_gap_30: count, percentage
+#> • indication_gap_365: count, percentage
+#> → Start summary of data, at 2024-04-04 12:16:33
+#> 
+#> ✔ Summary finished, at 2024-04-04 12:16:34
+#> Rows: 430
+#> Columns: 16
+#> $ result_id        <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ cdm_name         <chr> "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS …
 #> $ result_type      <chr> "summarised_indication", "summarised_indication", "su…
 #> $ package_name     <chr> "DrugUtilisation", "DrugUtilisation", "DrugUtilisatio…
-#> $ package_version  <chr> "0.5.0", "0.5.0", "0.5.0", "0.5.0", "0.5.0", "0.5.0",…
+#> $ package_version  <chr> "0.5.3", "0.5.3", "0.5.3", "0.5.3", "0.5.3", "0.5.3",…
 #> $ group_name       <chr> "cohort_name", "cohort_name", "cohort_name", "cohort_…
 #> $ group_level      <chr> "acetaminophen", "acetaminophen", "acetaminophen", "a…
 #> $ strata_name      <chr> "overall", "overall", "overall", "overall", "overall"…
 #> $ strata_level     <chr> "overall", "overall", "overall", "overall", "overall"…
-#> $ variable_name    <chr> "number subjects", "number records", "Indication on i…
+#> $ variable_name    <chr> "number records", "number subjects", "Indication on i…
 #> $ variable_level   <chr> NA, NA, "Headache", "Headache", "Influenza", "Influen…
 #> $ estimate_name    <chr> "count", "count", "count", "percentage", "count", "pe…
-#> $ estimate_type    <chr> "numeric", "numeric", "numeric", "percentage", "numer…
+#> $ estimate_type    <chr> "integer", "integer", "integer", "percentage", "integ…
 #> $ estimate_value   <chr> "35", "35", "0", "0", "0", "0", "35", "100", "0", "0"…
 #> $ additional_name  <chr> "overall", "overall", "overall", "overall", "overall"…
 #> $ additional_level <chr> "overall", "overall", "overall", "overall", "overall"…
@@ -450,24 +1242,24 @@ summariseCharacteristics(
 #> ℹ adding cohort intersect columns for table: indications_cohort
 #> ℹ summarising data
 #> ✔ summariseCharacteristics finished!
-#> # A tibble: 66 × 15
-#>    cdm_name result_type      package_name package_version group_name group_level
-#>    <chr>    <chr>            <chr>        <chr>           <chr>      <chr>      
-#>  1 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  2 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  3 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  4 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  5 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  6 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  7 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  8 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  9 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
-#> 10 DUS MOCK summarised_char… PatientProf… 0.6.0           cohort_na… acetaminop…
+#> # A tibble: 66 × 16
+#>    result_id cdm_name result_type        package_name package_version group_name
+#>        <int> <chr>    <chr>              <chr>        <chr>           <chr>     
+#>  1         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#>  2         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#>  3         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#>  4         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#>  5         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#>  6         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#>  7         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#>  8         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#>  9         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
+#> 10         1 DUS MOCK summarised_charac… PatientProf… 0.7.0           cohort_na…
 #> # ℹ 56 more rows
-#> # ℹ 9 more variables: strata_name <chr>, strata_level <chr>,
-#> #   variable_name <chr>, variable_level <chr>, estimate_name <chr>,
-#> #   estimate_type <chr>, estimate_value <chr>, additional_name <chr>,
-#> #   additional_level <chr>
+#> # ℹ 10 more variables: group_level <chr>, strata_name <chr>,
+#> #   strata_level <chr>, variable_name <chr>, variable_level <chr>,
+#> #   estimate_name <chr>, estimate_type <chr>, estimate_value <chr>,
+#> #   additional_name <chr>, additional_level <chr>
 ```
 
 ### Summarise patients large scale characteristics
@@ -482,22 +1274,22 @@ summariseLargeScaleCharacteristics(
   eventInWindow = "condition_occurrence", 
   episodeInWindow = "drug_exposure"
 )
-#> # A tibble: 26 × 15
-#>    cdm_name result_type      package_name package_version group_name group_level
-#>    <chr>    <chr>            <chr>        <chr>           <chr>      <chr>      
-#>  1 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  2 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  3 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  4 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  5 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  6 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  7 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  8 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#>  9 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#> 10 DUS MOCK summarised_larg… PatientProf… 0.6.0           cohort_na… acetaminop…
-#> # ℹ 16 more rows
-#> # ℹ 9 more variables: strata_name <chr>, strata_level <chr>,
-#> #   variable_name <chr>, variable_level <chr>, estimate_name <chr>,
-#> #   estimate_type <chr>, estimate_value <chr>, additional_name <chr>,
-#> #   additional_level <chr>
+#> # A tibble: 32 × 16
+#>    result_id cdm_name result_type        package_name package_version group_name
+#>        <int> <chr>    <chr>              <chr>        <chr>           <chr>     
+#>  1         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           overall   
+#>  2         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           overall   
+#>  3         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           overall   
+#>  4         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           cohort_na…
+#>  5         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           cohort_na…
+#>  6         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           cohort_na…
+#>  7         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           cohort_na…
+#>  8         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           cohort_na…
+#>  9         1 DUS MOCK summarised_large_… PatientProf… 0.7.0           cohort_na…
+#> 10         2 DUS MOCK summarised_large_… PatientProf… 0.7.0           overall   
+#> # ℹ 22 more rows
+#> # ℹ 10 more variables: group_level <chr>, strata_name <chr>,
+#> #   strata_level <chr>, variable_name <chr>, variable_level <chr>,
+#> #   estimate_name <chr>, estimate_type <chr>, estimate_value <chr>,
+#> #   additional_name <chr>, additional_level <chr>
 ```

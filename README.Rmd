@@ -24,17 +24,12 @@ knitr::opts_chunk$set(
 
 * **addDailyDose** function works for the following patterns in the drug_strength table:
 
-| pattern_id | amount_unit | numerator_unit | denominator_unit |
-|:----------:|:------------------:|:--------------:|:----------------:|
-| 1 | international unit | NA | NA |
-| 2 | microgram | NA | NA |
-| 3 | milliequivalent | NA | NA|
-| 4 | milligram | NA | NA|
-| 5 | millimiter | NA | NA|
-| 6 | NA | microgram | hour|
-| 7 | NA | milligram | actuation|
-| 8 | NA | microgram | hour|
-| 9 | NA | milligram | hour|
+```{r, echo = FALSE}
+DrugUtilisation::patternsWithFormula |>
+  dplyr::mutate("formula" = paste0(.data$formula_name, ": ", .data$formula)) |>
+  dplyr::select(-"formula_name", -"pattern_id") |>
+  visOmopResults::gtTable(groupNameCol = "formula")
+```
 
 ## Package overview
 
