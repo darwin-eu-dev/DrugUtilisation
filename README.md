@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# DrugUtilisation <img src='man/figures/DrugUtilisation.png' align="right" height="139"/>
+# DrugUtilisation <img src="man/figures/logo.png" align="right" height="200"/>
 
 [![CRANstatus](https://www.r-pkg.org/badges/version/DrugUtilisation)](https://CRAN.R-project.org/package=DrugUtilisation)
 [![codecov.io](https://codecov.io/github/darwin-eu/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
@@ -13,23 +13,23 @@
 - **addDailyDose** function works for the following patterns in the
   drug_strength table:
 
-<div id="dxirpwgysb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#dxirpwgysb table {
+<div id="dazbvrjzcv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#dazbvrjzcv table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#dxirpwgysb thead, #dxirpwgysb tbody, #dxirpwgysb tfoot, #dxirpwgysb tr, #dxirpwgysb td, #dxirpwgysb th {
+#dazbvrjzcv thead, #dazbvrjzcv tbody, #dazbvrjzcv tfoot, #dazbvrjzcv tr, #dazbvrjzcv td, #dazbvrjzcv th {
   border-style: none;
 }
 
-#dxirpwgysb p {
+#dazbvrjzcv p {
   margin: 0;
   padding: 0;
 }
 
-#dxirpwgysb .gt_table {
+#dazbvrjzcv .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -55,12 +55,12 @@
   border-left-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_caption {
+#dazbvrjzcv .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#dxirpwgysb .gt_title {
+#dazbvrjzcv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -72,7 +72,7 @@
   border-bottom-width: 0;
 }
 
-#dxirpwgysb .gt_subtitle {
+#dazbvrjzcv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -84,7 +84,7 @@
   border-top-width: 0;
 }
 
-#dxirpwgysb .gt_heading {
+#dazbvrjzcv .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -96,13 +96,13 @@
   border-right-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_bottom_border {
+#dazbvrjzcv .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_col_headings {
+#dazbvrjzcv .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -117,7 +117,7 @@
   border-right-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_col_heading {
+#dazbvrjzcv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -137,7 +137,7 @@
   overflow-x: hidden;
 }
 
-#dxirpwgysb .gt_column_spanner_outer {
+#dazbvrjzcv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -149,15 +149,15 @@
   padding-right: 4px;
 }
 
-#dxirpwgysb .gt_column_spanner_outer:first-child {
+#dazbvrjzcv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#dxirpwgysb .gt_column_spanner_outer:last-child {
+#dazbvrjzcv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#dxirpwgysb .gt_column_spanner {
+#dazbvrjzcv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -169,11 +169,11 @@
   width: 100%;
 }
 
-#dxirpwgysb .gt_spanner_row {
+#dazbvrjzcv .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#dxirpwgysb .gt_group_heading {
+#dazbvrjzcv .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -199,7 +199,7 @@
   text-align: left;
 }
 
-#dxirpwgysb .gt_empty_group_heading {
+#dazbvrjzcv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -214,15 +214,15 @@
   vertical-align: middle;
 }
 
-#dxirpwgysb .gt_from_md > :first-child {
+#dazbvrjzcv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#dxirpwgysb .gt_from_md > :last-child {
+#dazbvrjzcv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#dxirpwgysb .gt_row {
+#dazbvrjzcv .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -241,7 +241,7 @@
   overflow-x: hidden;
 }
 
-#dxirpwgysb .gt_stub {
+#dazbvrjzcv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -254,7 +254,7 @@
   padding-right: 5px;
 }
 
-#dxirpwgysb .gt_stub_row_group {
+#dazbvrjzcv .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -268,15 +268,15 @@
   vertical-align: top;
 }
 
-#dxirpwgysb .gt_row_group_first td {
+#dazbvrjzcv .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#dxirpwgysb .gt_row_group_first th {
+#dazbvrjzcv .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#dxirpwgysb .gt_summary_row {
+#dazbvrjzcv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -286,16 +286,16 @@
   padding-right: 5px;
 }
 
-#dxirpwgysb .gt_first_summary_row {
+#dazbvrjzcv .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_first_summary_row.thick {
+#dazbvrjzcv .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#dxirpwgysb .gt_last_summary_row {
+#dazbvrjzcv .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -305,7 +305,7 @@
   border-bottom-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_grand_summary_row {
+#dazbvrjzcv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -315,7 +315,7 @@
   padding-right: 5px;
 }
 
-#dxirpwgysb .gt_first_grand_summary_row {
+#dazbvrjzcv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -325,7 +325,7 @@
   border-top-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_last_grand_summary_row_top {
+#dazbvrjzcv .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -335,11 +335,11 @@
   border-bottom-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_striped {
+#dazbvrjzcv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#dxirpwgysb .gt_table_body {
+#dazbvrjzcv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -348,7 +348,7 @@
   border-bottom-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_footnotes {
+#dazbvrjzcv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -362,7 +362,7 @@
   border-right-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_footnote {
+#dazbvrjzcv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -371,7 +371,7 @@
   padding-right: 5px;
 }
 
-#dxirpwgysb .gt_sourcenotes {
+#dazbvrjzcv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -385,7 +385,7 @@
   border-right-color: #D3D3D3;
 }
 
-#dxirpwgysb .gt_sourcenote {
+#dazbvrjzcv .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -393,63 +393,63 @@
   padding-right: 5px;
 }
 
-#dxirpwgysb .gt_left {
+#dazbvrjzcv .gt_left {
   text-align: left;
 }
 
-#dxirpwgysb .gt_center {
+#dazbvrjzcv .gt_center {
   text-align: center;
 }
 
-#dxirpwgysb .gt_right {
+#dazbvrjzcv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#dxirpwgysb .gt_font_normal {
+#dazbvrjzcv .gt_font_normal {
   font-weight: normal;
 }
 
-#dxirpwgysb .gt_font_bold {
+#dazbvrjzcv .gt_font_bold {
   font-weight: bold;
 }
 
-#dxirpwgysb .gt_font_italic {
+#dazbvrjzcv .gt_font_italic {
   font-style: italic;
 }
 
-#dxirpwgysb .gt_super {
+#dazbvrjzcv .gt_super {
   font-size: 65%;
 }
 
-#dxirpwgysb .gt_footnote_marks {
+#dazbvrjzcv .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#dxirpwgysb .gt_asterisk {
+#dazbvrjzcv .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#dxirpwgysb .gt_indent_1 {
+#dazbvrjzcv .gt_indent_1 {
   text-indent: 5px;
 }
 
-#dxirpwgysb .gt_indent_2 {
+#dazbvrjzcv .gt_indent_2 {
   text-indent: 10px;
 }
 
-#dxirpwgysb .gt_indent_3 {
+#dazbvrjzcv .gt_indent_3 {
   text-indent: 15px;
 }
 
-#dxirpwgysb .gt_indent_4 {
+#dazbvrjzcv .gt_indent_4 {
   text-indent: 20px;
 }
 
-#dxirpwgysb .gt_indent_5 {
+#dazbvrjzcv .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -913,21 +913,21 @@ glimpse(x)
 #> Columns: 16
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ subject_id                   <int> 7, 48, 57, 77, 23, 40, 45, 51, 88, 87, 95…
-#> $ cohort_start_date            <date> 1969-09-09, 1972-04-14, 2020-04-17, 1967…
-#> $ cohort_end_date              <date> 1970-02-14, 1972-12-18, 2020-11-19, 1967…
+#> $ subject_id                   <int> 23, 40, 45, 51, 87, 95, 29, 47, 93, 26, 9…
+#> $ cohort_start_date            <date> 2003-10-29, 2018-11-15, 2017-07-03, 2017…
+#> $ cohort_end_date              <date> 2003-11-27, 2020-03-07, 2018-07-06, 2017…
 #> $ indication_gap_0_headache    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_influenza   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_none        <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ indication_gap_0_unknown     <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_headache   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_30_none       <dbl> 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_influenza <dbl> 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_none      <dbl> 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1,…
-#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_none       <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_influenza <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0,…
+#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_none      <dbl> 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0,…
+#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,…
 ```
 
 We can combine the indications in a single column using the
@@ -941,24 +941,24 @@ glimpse(x)
 #> Columns: 19
 #> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ subject_id                   <int> 7, 48, 57, 77, 23, 40, 45, 51, 88, 87, 95…
-#> $ cohort_start_date            <date> 1969-09-09, 1972-04-14, 2020-04-17, 1967…
-#> $ cohort_end_date              <date> 1970-02-14, 1972-12-18, 2020-11-19, 1967…
+#> $ subject_id                   <int> 23, 40, 45, 51, 87, 95, 29, 47, 93, 26, 9…
+#> $ cohort_start_date            <date> 2003-10-29, 2018-11-15, 2017-07-03, 2017…
+#> $ cohort_end_date              <date> 2003-11-27, 2020-03-07, 2018-07-06, 2017…
 #> $ indication_gap_0_headache    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_influenza   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_none        <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ indication_gap_0_unknown     <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_headache   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_30_none       <dbl> 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_influenza <dbl> 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_none      <dbl> 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1,…
-#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_none       <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_influenza <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0,…
+#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_none      <dbl> 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0,…
+#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,…
 #> $ indication_gap_0             <chr> "None", "None", "None", "None", "None", "…
-#> $ indication_gap_30            <chr> "None", "None", "None", "Unknown", "None"…
-#> $ indication_gap_365           <chr> "None", "None", "Influenza", "Unknown", "…
+#> $ indication_gap_30            <chr> "None", "None", "None", "None", "None", "…
+#> $ indication_gap_365           <chr> "None", "None", "None", "Headache", "None…
 ```
 
 ``` r
@@ -999,9 +999,9 @@ summariseIndication(x, cdm)
 #> • indication_gap_0: count, percentage
 #> • indication_gap_30: count, percentage
 #> • indication_gap_365: count, percentage
-#> → Start summary of data, at 2024-04-04 12:16:28
+#> → Start summary of data, at 2024-04-04 15:44:18
 #> 
-#> ✔ Summary finished, at 2024-04-04 12:16:28
+#> ✔ Summary finished, at 2024-04-04 15:44:18
 #> # A tibble: 42 × 16
 #>    result_id cdm_name result_type        package_name package_version group_name
 #>        <int> <chr>    <chr>              <chr>        <chr>           <chr>     
@@ -1040,9 +1040,9 @@ summariseIndication(x, cdm) %>% glimpse()
 #> • indication_gap_0: count, percentage
 #> • indication_gap_30: count, percentage
 #> • indication_gap_365: count, percentage
-#> → Start summary of data, at 2024-04-04 12:16:29
+#> → Start summary of data, at 2024-04-04 15:44:19
 #> 
-#> ✔ Summary finished, at 2024-04-04 12:16:29
+#> ✔ Summary finished, at 2024-04-04 15:44:19
 #> Rows: 42
 #> Columns: 16
 #> $ result_id        <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
@@ -1100,9 +1100,9 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 #> • indication_gap_0: count, percentage
 #> • indication_gap_30: count, percentage
 #> • indication_gap_365: count, percentage
-#> → Start summary of data, at 2024-04-04 12:16:32
+#> → Start summary of data, at 2024-04-04 15:44:21
 #> 
-#> ✔ Summary finished, at 2024-04-04 12:16:32
+#> ✔ Summary finished, at 2024-04-04 15:44:22
 #> # A tibble: 430 × 16
 #>    result_id cdm_name result_type        package_name package_version group_name
 #>        <int> <chr>    <chr>              <chr>        <chr>           <chr>     
@@ -1141,9 +1141,9 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 #> • indication_gap_0: count, percentage
 #> • indication_gap_30: count, percentage
 #> • indication_gap_365: count, percentage
-#> → Start summary of data, at 2024-04-04 12:16:33
+#> → Start summary of data, at 2024-04-04 15:44:22
 #> 
-#> ✔ Summary finished, at 2024-04-04 12:16:34
+#> ✔ Summary finished, at 2024-04-04 15:44:23
 #> Rows: 430
 #> Columns: 16
 #> $ result_id        <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
