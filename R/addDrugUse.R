@@ -17,14 +17,33 @@
 #' Add new columns with drug use related information
 #'
 #' @param cohort Cohort in the cdm
-#' @param cdm deprecated
-#' @param ingredientConceptId Ingredient OMOP concept that we are interested for
-#' the study. It is a compulsory input, no default value is provided.
 #' @param conceptSet List of concepts to be included. If NULL all the
 #' descendants of ingredient concept id will be used.
-#' @param duration Whether to add duration related columns.
-#' @param quantity Whether to add quantity related columns.
-#' @param dose Whether to add dose related columns.
+#' @param ingredientConceptId Ingredient OMOP concept that we are interested for
+#' the study. It is a compulsory input, no default value is provided.
+#' @param indexDate Column that point to the start of the analysis interval.
+#' @param censorDate Column that point to the end of the analysis interval. If
+#' NULL end of observation will be used.
+#' @param restrictIncident Whether to restrict to only exposures that start on
+#' or after the indexDate.
+#' @param numberExposures Whether to add the number of exposures during the
+#' analysis interval.
+#' @param numberEras Whether to add the number of eras during the analysis
+#' interval.
+#' @param timeExposed Whether to include the number of days the individual was
+#' exposed during the analysis interval.
+#' @param indexQuantity Whether to include the quantity at indexDate.
+#' @param initialQuantity Whether to include the quantity at the first exposed
+#' day within the analysis interval.
+#' @param cumulativeQuantity Whether to include the cumulative quantity during
+#' the analysis interval.
+#' @param indexDose Whether to include the daily dose at indexDate.
+#' @param initialDose Whether to include the daily dose at the first exposed
+#' day within the analysis interval.
+#' @param cumulativeDose Whether to include the cumulative dose during
+#' the analysis interval.
+#' @param nameStyle Character vector to determine the naming. It can contain
+#' references to: \{ingredient_name\}, \{concept_name\} and \{value\}.
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era.
 #' @param eraJoinMode How two different continuous exposures are joined in an
@@ -63,18 +82,18 @@
 #' the subexposure.
 #' "sum" the considered daily_dose is the sum of all the exposures present in
 #' the subexposure.
-#' @param imputeDuration Whether/how the duration should be imputed
-#' "none", "median", "mean", "mode" or a number
-#' @param imputeDailyDose Whether/how the daily_dose should be imputed
-#' "none", "median", "mean", "mode" or a number
-#' @param durationRange Range between the duration must be comprised. It should
-#' be a numeric vector of length two, with no NAs and the first value should be
-#' equal or smaller than the second one. It must not be NULL if imputeDuration
-#' is not "none". If NULL no restrictions are applied.
-#' @param dailyDoseRange Range between the daily_dose must be comprised. It
-#' should be a numeric vector of length two, with no NAs and the first value
-#' should be equal or smaller than the second one. It must not be NULL if
-#' imputeDailyDose is not "none". If NULL no restrictions are applied.
+# @param imputeDuration Whether/how the duration should be imputed
+# "none", "median", "mean", "mode" or a number
+# @param imputeDailyDose Whether/how the daily_dose should be imputed
+# "none", "median", "mean", "mode" or a number
+# @param durationRange Range between the duration must be comprised. It should
+# be a numeric vector of length two, with no NAs and the first value should be
+# equal or smaller than the second one. It must not be NULL if imputeDuration
+# is not "none". If NULL no restrictions are applied.
+# @param dailyDoseRange Range between the daily_dose must be comprised. It
+# should be a numeric vector of length two, with no NAs and the first value
+# should be equal or smaller than the second one. It must not be NULL if
+# imputeDailyDose is not "none". If NULL no restrictions are applied.
 #'
 #' @return The same cohort with the added columns.
 #'
@@ -94,20 +113,25 @@
 #' }
 #'
 addDrugUse <- function(cohort,
-                       cdm = lifecycle::deprecated(),
-                       ingredientConceptId,
                        conceptSet = NULL,
-                       duration = TRUE,
-                       quantity = TRUE,
-                       dose = TRUE,
+                       ingredientConceptId = NULL,
+                       indexDate = "cohort_start_date",
+                       censorDate = "cohort_end_date",
+                       restrictIncident = FALSE,
+                       numberExposures = TRUE,
+                       numberEras = TRUE,
+                       timeExposed = TRUE,
+                       indexQuantity = TRUE,
+                       initialQuantity = FALSE,
+                       cumulativeQuantity = TRUE,
+                       indexDose = TRUE,
+                       initialDose = FALSE,
+                       cumulativeDose = TRUE,
+                       nameStyle = "{ingredient_name}_{concept_name}_{value}",
                        gapEra = 0,
                        eraJoinMode = "zero",
                        overlapMode = "sum",
-                       sameIndexMode = "sum",
-                       imputeDuration = "none",
-                       imputeDailyDose = "none",
-                       durationRange = c(1, Inf),
-                       dailyDoseRange = c(0, Inf)) {
+                       sameIndexMode = "sum") {
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_soft("0.5.0", "addDrugUse(cdm = )")
   }
