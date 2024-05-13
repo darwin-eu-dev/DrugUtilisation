@@ -48,7 +48,7 @@ acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 
 cdm[["drug_cohort"]] \%>\%
-  addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+  addIndication("indication_cohorts", indicationGap = c(0, 30, 365))
 }
 
 }

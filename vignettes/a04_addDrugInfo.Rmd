@@ -133,11 +133,8 @@ cumulative dose, etc., can be incorporated into a cohort using the
 `addDrugUse()` function.
 
 ```{r, message= FALSE, warning=FALSE}
-addDrugUse(
-  cohort = cdm[["acetaminophen_example1"]],
-  cdm    = cdm,
-  ingredientConceptId = 1125315
-)
+cdm$acetaminophen_example1 |>
+  addDrugUse(ingredientConceptId = 1125315)
 ```
 
 ## duration parameter
@@ -296,7 +293,7 @@ summariseDrugUse(cdm[["acetaminophen_example1"]])
 We can also stratify our cohort and calculate the estimates within each strata group by using the `strata` parameter.
 ```{r, message = FALSE, warning=FALSE}
 cdm[["acetaminophen_example1"]] <- cdm[["acetaminophen_example1"]] %>%
-  addSex(cdm) # Function from PatientProfiles
+  addSex() # Function from PatientProfiles
 
 summariseDrugUse(cdm[["acetaminophen_example1"]],
                  strata = list("sex" = "sex")) 
