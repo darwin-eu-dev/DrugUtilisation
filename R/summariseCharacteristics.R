@@ -14,6 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' @importFrom PatientProfiles summariseCharacteristics
+#' @importFrom CohortCharacteristics summariseCharacteristics
 #' @export
-PatientProfiles::summariseCharacteristics
+CohortCharacteristics::summariseCharacteristics

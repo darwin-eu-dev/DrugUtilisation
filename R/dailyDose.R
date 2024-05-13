@@ -155,9 +155,9 @@ dailyDoseCoverage <- function(cdm,
       strata = list("unit", c("route", "unit"), c("unit", "route", "pattern_id")),
       includeOverallStrata = TRUE,
       variables = "daily_dose",
-      functions = c(
-        "missing", "mean", "sd", "min", "q05", "q25", "median", "q75", "q95",
-        "max"
+      estimates = c(
+        "count_missing", "percentage_missing", "mean", "sd", "min", "q05",
+        "q25", "median", "q75", "q95", "max"
       )
     ) %>%
     dplyr::filter(
@@ -165,13 +165,14 @@ dailyDoseCoverage <- function(cdm,
         .data$variable_name != "daily_dose" |
         .data$estimate_name %in% c("count", "percentage")
     ) |>
-    dplyr::mutate(
+    dplyr::mutate("cdm_name" = omopgenerics::cdmName(cdm))
+  dailyDoseSummary <- dailyDoseSummary |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      "result_id" = unique(dailyDoseSummary$result_id),
       "package_name" = "DrugUtilisation",
       "package_version" = as.character(utils::packageVersion("DrugUtilisation")),
-      "result_type" = "dose_coverage",
-      "cdm_name" = omopgenerics::cdmName(cdm)
-    ) |>
-    omopgenerics::newSummarisedResult()
+      "result_type" = "dose_coverage"
+    ))
 
   return(dailyDoseSummary)
 }

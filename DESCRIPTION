@@ -1,7 +1,7 @@
 Package: DrugUtilisation
 Title: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP 
     Common Data Model 
-Version: 0.5.3
+Version: 0.6.0
 Authors@R: c(
     person(
         "Marti", "Catala", email = "marti.catalasabate@ndorms.ox.ac.uk", 
@@ -61,7 +61,7 @@ Suggests:
     tibble
 Config/testthat/edition: 3
 Imports: 
-    CDMConnector (>= 1.3.1),
+    CDMConnector (>= 1.4.0),
     checkmate,
     DBI,
     dbplyr,
@@ -72,13 +72,14 @@ Imports:
     rlang,
     RJSONIO,
     cli,
-    PatientProfiles (>= 0.7.0),
+    PatientProfiles (>= 0.8.0),
     magrittr,
     purrr,
     tictoc,
-    omopgenerics (>= 0.0.2),
+    omopgenerics (>= 0.2.0),
     visOmopResults,
-    lifecycle
+    lifecycle,
+    CohortCharacteristics (>= 0.2.0)
 Depends: 
     R (>= 2.10)
 LazyData: true

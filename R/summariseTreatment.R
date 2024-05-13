@@ -182,7 +182,7 @@ summariseTreatment <- function(cohort,
     group = list("cohort_name"),
     strata = strata,
     variables = newCols,
-    functions = c("count", "percentage")
+    estimates = c("count", "percentage")
   )
   cols <- colnames(result)
 
@@ -211,13 +211,15 @@ summariseTreatment <- function(cohort,
     ) %>%
     dplyr::select(-c("window_name", "additional_name", "additional_level")) %>%
     visOmopResults::uniteAdditional(cols = "window") |>
-    PatientProfiles::addCdmName(cdm = cdm) %>%
-    dplyr::mutate(
+    PatientProfiles::addCdmName(cdm = cdm)
+
+  result <- result |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      "result_id" = unique(result$result_id),
       "result_type" = "summarised_treatment",
       "package_name" = "DrugUtilisation",
       "package_version" = as.character(utils::packageVersion("DrugUtilisation"))
-    ) |>
-    omopgenerics::newSummarisedResult()
+    ))
 
   return(result)
 }

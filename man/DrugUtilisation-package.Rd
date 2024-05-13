@@ -6,6 +6,8 @@
 \alias{DrugUtilisation-package}
 \title{DrugUtilisation: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP Common Data Model}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Summarise patient-level drug utilisation cohorts using data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model. New users and prevalent users cohorts can be generated and their characteristics, indication and drug use summarised.
 }
 \seealso{

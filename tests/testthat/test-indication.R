@@ -645,6 +645,7 @@ test_that("summariseIndication", {
   expect_true(any(grepl("Indication during prior 30 days", result$variable_name)))
   expect_true(any(grepl("Indication any time prior", result$variable_name)))
 
-  expect_true(grepl("summarised_indication", unique(result$result_type)))
+  expect_identical(
+    "summarised_indication", unique(settings(result)$result_type))
 
 })

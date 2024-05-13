@@ -58,7 +58,8 @@ summariseDrugUse<- function(cohort,
                             strata = list(),
                             drugUseEstimates = c(
                               "min", "q05", "q25", "median", "q75", "q95",
-                              "max", "mean", "sd", "missing"
+                              "max", "mean", "sd", "count_missing",
+                              "percentage_missing"
                             ),
                             minCellCount = lifecycle::deprecated()) {
   if (lifecycle::is_present(cdm)) {
@@ -81,15 +82,19 @@ summariseDrugUse<- function(cohort,
   result <- PatientProfiles::summariseResult(
     table = cohort, group = list("cohort_name" = "cohort_name"),
     strata = strata, variables = drugUseColumns(cohort),
-    functions = drugUseEstimates
+    estimates = drugUseEstimates
   ) %>%
     dplyr::mutate(
-      cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA)),
+      cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA))
+    )
+
+  result <- result |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      result_id = unique(result$result_id),
       result_type = "summarised_drug_use",
       package_name = "DrugUtilisation",
       package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    ) |>
-    omopgenerics::newSummarisedResult() |>
+    )) |>
     omopgenerics::suppress(minCellCount = 5)
 
   return(result)

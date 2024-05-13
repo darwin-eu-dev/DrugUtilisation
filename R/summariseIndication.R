@@ -84,7 +84,7 @@ summariseIndication <- function(cohort,
     table = cohort, group = list("cohort_name"),
     includeOverallGroup = FALSE, includeOverallStrata = TRUE,
     strata = strata, variables = indicationVariables,
-    functions = c("count", "percentage")
+    estimates = c("count", "percentage")
   ) %>%
     PatientProfiles::addCdmName(cdm = cdm) |>
     dplyr::mutate(
@@ -110,12 +110,16 @@ summariseIndication <- function(cohort,
         }) %>%
           unlist(),
         .data$variable_name
-      ),
+      )
+    )
+
+  result <- result |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      result_id = unique(result$result_id),
       result_type = "summarised_indication",
       package_name = "DrugUtilisation",
       package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    ) |>
-    omopgenerics::newSummarisedResult() |>
+    )) |>
     omopgenerics::suppress(minCellCount = 5)
 
   return(result)

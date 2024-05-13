@@ -9,7 +9,7 @@ summariseDrugUse(
   cdm = lifecycle::deprecated(),
   strata = list(),
   drugUseEstimates = c("min", "q05", "q25", "median", "q75", "q95", "max", "mean", "sd",
-    "missing"),
+    "count_missing", "percentage_missing"),
   minCellCount = lifecycle::deprecated()
 )
 }
