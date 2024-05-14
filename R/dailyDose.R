@@ -149,6 +149,10 @@ dailyDoseCoverage <- function(cdm,
 
   # summarise
   dailyDoseSummary <- dailyDose %>%
+    dplyr::mutate(dplyr::across(
+      c("route", "unit", "pattern_id", "ingredient_name"),
+      ~ dplyr::if_else(is.na(.x), "NA", as.character(.x))
+    )) |>
     PatientProfiles::summariseResult(
       group = list("ingredient_name"),
       includeOverallGroup = FALSE,
