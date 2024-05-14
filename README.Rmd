@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 DrugUtilisation::patternsWithFormula |>
   dplyr::mutate("formula" = paste0(.data$formula_name, ": ", .data$formula)) |>
   dplyr::select(-"formula_name", -"pattern_id") |>
-  visOmopResults::gtTable(groupNameCol = "formula")
+  visOmopResults::gtTable(groupColumn = "formula")
 ```
 
 ## Package overview
@@ -175,10 +175,9 @@ summariseIndication(x, cdm) %>% glimpse()
 All summarise functions have the option to add strata. Strata will always point to preexisting columns. Here we can see an example where we create a `age_group` and `sex` columns using PatientProfiles and then we use it as strata
 
 ```{r}
-library(PatientProfiles)
 x <- x %>%
-  addAge(ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
-  addSex()
+  PatientProfiles::addAge(ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
+  PatientProfiles::addSex()
 summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex")))
 ```
 
@@ -235,9 +234,7 @@ x |>
   summariseCharacteristics(
     ageGroup = list(c(0, 24), c(25, 49), c(50, 74), c(75, 150)),
     tableIntersectCount = list(
-      "Visits" = list(
-        tableName = "visit_occurrence", window = c(-365, 0)
-      )
+      "Visits" = list(tableName = "visit_occurrence", window = c(-365, 0))
     ),
     cohortIntersectFlag = list(
       "Indications" = list(
