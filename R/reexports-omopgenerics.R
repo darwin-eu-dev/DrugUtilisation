@@ -10,3 +10,7 @@ omopgenerics::settings
 #' @importFrom omopgenerics attrition
 #' @export
 omopgenerics::attrition
+
+#' @importFrom omopgenerics cohortCodelist
+#' @export
+omopgenerics::cohortCodelist

@@ -43,7 +43,10 @@
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 #'
 #' cdm[["drug_cohort"]] %>%
-#'   addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+#'   addIndication(
+#'     indicationCohortName = "indication_cohorts",
+#'     indicationGap = c(0, 30, 365)
+#'   )
 #' }
 #'
 addIndication <- function(x,
@@ -240,7 +243,7 @@ addNoneIndication <- function(x, gap) {
 #'
 #' cdm <- mockDrugUtilisation()
 #' cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
-#'   addIndication(cdm, "cohort2") %>%
+#'   addIndication(indicationCohortName = "cohort2") %>%
 #'   indicationToStrata()
 #' }
 #'

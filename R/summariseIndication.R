@@ -41,16 +41,19 @@
 #' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 #' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
-#'   addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+#'   addIndication(
+#'     indicationCohortName = "indication_cohorts",
+#'     indicationGap = c(0, 30, 365)
+#'   )
 #'
-#' summariseIndication(cdm[["drug_cohort"]], cdm)
+#' summariseIndication(cdm[["drug_cohort"]])
 #'
 #' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
-#'   addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) %>%
-#'   addSex(cdm)
+#'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) %>%
+#'   addSex()
 #'
 #' summariseIndication(
-#'   cdm[["drug_cohort"]], cdm, strata = list(
+#'   cdm[["drug_cohort"]], strata = list(
 #'     "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
 #'   )
 #' )
@@ -84,7 +87,7 @@ summariseIndication <- function(cohort,
     table = cohort, group = list("cohort_name"),
     includeOverallGroup = FALSE, includeOverallStrata = TRUE,
     strata = strata, variables = indicationVariables,
-    functions = c("count", "percentage")
+    estimates = c("count", "percentage")
   ) %>%
     PatientProfiles::addCdmName(cdm = cdm) |>
     dplyr::mutate(
@@ -110,12 +113,16 @@ summariseIndication <- function(cohort,
         }) %>%
           unlist(),
         .data$variable_name
-      ),
+      )
+    )
+
+  result <- result |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      result_id = unique(result$result_id),
       result_type = "summarised_indication",
       package_name = "DrugUtilisation",
       package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    ) |>
-    omopgenerics::newSummarisedResult() |>
+    )) |>
     omopgenerics::suppress(minCellCount = 5)
 
   return(result)

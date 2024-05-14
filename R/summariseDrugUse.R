@@ -37,16 +37,16 @@
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 #' )
 #' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addDrugUse(cdm, 1125315)
-#' result <- summariseDrugUse(cdm[["dus_cohort"]], cdm)
+#'   addDrugUse(ingredientConceptId = 1125315)
+#' result <- summariseDrugUse(cdm[["dus_cohort"]])
 #' print(result)
 #'
 #' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addSex(cdm) %>%
-#'   addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+#'   addSex() %>%
+#'   addAge(ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
 #'
 #' summariseDrugUse(
-#'   cdm[["dus_cohort"]], cdm, strata = list(
+#'   cdm[["dus_cohort"]], strata = list(
 #'    "age_group" = "age_group", "sex" = "sex",
 #'    "age_group and sex" = c("age_group", "sex")
 #'   )
@@ -58,7 +58,8 @@ summariseDrugUse<- function(cohort,
                             strata = list(),
                             drugUseEstimates = c(
                               "min", "q05", "q25", "median", "q75", "q95",
-                              "max", "mean", "sd", "missing"
+                              "max", "mean", "sd", "count_missing",
+                              "percentage_missing"
                             ),
                             minCellCount = lifecycle::deprecated()) {
   if (lifecycle::is_present(cdm)) {
@@ -81,15 +82,19 @@ summariseDrugUse<- function(cohort,
   result <- PatientProfiles::summariseResult(
     table = cohort, group = list("cohort_name" = "cohort_name"),
     strata = strata, variables = drugUseColumns(cohort),
-    functions = drugUseEstimates
+    estimates = drugUseEstimates
   ) %>%
     dplyr::mutate(
-      cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA)),
+      cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA))
+    )
+
+  result <- result |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      result_id = unique(result$result_id),
       result_type = "summarised_drug_use",
       package_name = "DrugUtilisation",
       package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    ) |>
-    omopgenerics::newSummarisedResult() |>
+    )) |>
     omopgenerics::suppress(minCellCount = 5)
 
   return(result)

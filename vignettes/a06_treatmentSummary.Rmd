@@ -96,7 +96,7 @@ strata group by using the `strata` parameter.
 
 ```{r, message = FALSE, warning=FALSE}
 cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
-  addSex(cdm) %>%
+  addSex() %>%
   addAge(ageGroup = list("<40" = c(0, 39), ">40" = c(40, 150)))
 
 summariseTreatmentFromCohort(cohort = cdm$cohort1,

@@ -41,16 +41,16 @@
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 #' )
 #' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addDrugUse(cdm, 1125315)
-#' result <- summariseDrugUse(cdm[["dus_cohort"]], cdm)
+#'   addDrugUse(ingredientConceptId = 1125315)
+#' result <- summariseDrugUse(cdm[["dus_cohort"]])
 #' print(result)
 #'
 #' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addSex(cdm) %>%
-#'   addAge(cdm, ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+#'   addSex() %>%
+#'   addAge(ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
 #'
 #' summariseDrugUse(
-#'   cdm[["dus_cohort"]], cdm, strata = list(
+#'   cdm[["dus_cohort"]], strata = list(
 #'    "age_group" = "age_group", "sex" = "sex",
 #'    "age_group and sex" = c("age_group", "sex")
 #'   )
@@ -182,7 +182,7 @@ summariseTreatment <- function(cohort,
     group = list("cohort_name"),
     strata = strata,
     variables = newCols,
-    functions = c("count", "percentage")
+    estimates = c("count", "percentage")
   )
   cols <- colnames(result)
 
@@ -211,13 +211,15 @@ summariseTreatment <- function(cohort,
     ) %>%
     dplyr::select(-c("window_name", "additional_name", "additional_level")) %>%
     visOmopResults::uniteAdditional(cols = "window") |>
-    PatientProfiles::addCdmName(cdm = cdm) %>%
-    dplyr::mutate(
+    PatientProfiles::addCdmName(cdm = cdm)
+
+  result <- result |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      "result_id" = unique(result$result_id),
       "result_type" = "summarised_treatment",
       "package_name" = "DrugUtilisation",
       "package_version" = as.character(utils::packageVersion("DrugUtilisation"))
-    ) |>
-    omopgenerics::newSummarisedResult()
+    ))
 
   return(result)
 }

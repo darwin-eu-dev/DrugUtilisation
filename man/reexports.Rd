@@ -9,6 +9,7 @@
 \alias{cohortCount}
 \alias{settings}
 \alias{attrition}
+\alias{cohortCodelist}
 \alias{summariseCharacteristics}
 \alias{summariseLargeScaleCharacteristics}
 \title{Objects exported from other packages}
@@ -20,8 +21,8 @@ below to see their documentation.
 \describe{
   \item{CDMConnector}{\code{\link[CDMConnector]{generateConceptCohortSet}}}
 
-  \item{omopgenerics}{\code{\link[omopgenerics]{attrition}}, \code{\link[omopgenerics]{cohortCount}}, \code{\link[omopgenerics]{settings}}}
+  \item{CohortCharacteristics}{\code{\link[CohortCharacteristics]{summariseCharacteristics}}, \code{\link[CohortCharacteristics]{summariseLargeScaleCharacteristics}}}
 
-  \item{PatientProfiles}{\code{\link[PatientProfiles]{summariseCharacteristics}}, \code{\link[PatientProfiles]{summariseLargeScaleCharacteristics}}}
+  \item{omopgenerics}{\code{\link[omopgenerics]{attrition}}, \code{\link[omopgenerics]{cohortCodelist}}, \code{\link[omopgenerics]{cohortCount}}, \code{\link[omopgenerics]{settings}}}
 }}
 

@@ -31,7 +31,7 @@ library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 cdm[["cohort1"]] <- cdm[["cohort1"]] \%>\%
-  addIndication(cdm, "cohort2") \%>\%
+  addIndication(indicationCohortName = "cohort2") \%>\%
   indicationToStrata()
 }
 
