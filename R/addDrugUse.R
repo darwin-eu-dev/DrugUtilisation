@@ -1004,5 +1004,95 @@ addDrugUseInternal <- function(x,
                                sameIndexMode,
                                nameStyle,
                                name) {
-  x <- createDates
+  tablePrefix <- omopgenerics::tmpPrefix()
+  nm1 <- omopgenerics::uniqueTableName(tablePrefix)
+  cdm <- omopgenerics::insertTable(
+    cdm = cdm,
+    name = nm1,
+    table = dplyr::tibble("drug_concept_id" = unlist(conceptSet)),
+    temporary = FALSE
+  )
+
+  id <- personIndentifier(x)
+  idDates <- uniqueColumnIdentifier(
+    cols = c(colnames(cdm$drug_exposure), colnames(x)), n = 2
+  )
+
+  xdates <- x|>
+    x |>
+    dplyr::select(dplyr::all_of(c(
+      id, "index_date" = indexDate, "censor_date" = censorDate
+    ))) |>
+    dplyr::distinct() |>
+    dplyr::compute(
+      name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
+    )
+  if (is.null(censorDate)) {
+    xdates <- xdates |>
+      PatientProfiles::addFutureObservation(
+        indexDate = indexDate,
+        futureObservationName = "censor_date",
+        futureObservationType = "date"
+      )
+  }
+
+  drugData <- xdates |>
+    dplyr::inner_join(
+      cdm$drug_exposure |>
+        dplyr::inner_join(cdm[[nm1]], by = "drug_concept_id") |>
+        dplyr::select(
+          !!id := "person_id",
+          "start_date" = "drug_exposure_start_date",
+          "end_date" = "drug_exposure_end_date"
+        ),
+      by = id
+    ) |>
+    dplyr::mutate("end_date" = dplyr::if_else(
+      is.na(.data$end_date), .data$start_date, .data$end_date
+    ))
+  if (restrictIncident) {
+    drugData <- drugData |>
+      dplyr::filter(
+        .data$start_date >= .data$index_date &
+          (.data$end_date >= .data$index_date | is.na(.data$end_date))
+      )
+  } else {
+    drugData <- drugData |>
+      dplyr::filter(
+        .data$start_date <= .data$censor_date &
+          (.data$end_date >= .data$index_date | is.na(.data$end_date))
+      )
+  }
+  drugData <- drugData |>
+    dplyr::compute(
+      name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
+    )
+
+}
+uniqueColumnIdentifier <- function(cols = character(), n = 1) {
+  result <- character()
+  nid <- 1
+  while(length(result) < n) {
+    opts <- paste0(
+      "id_",
+      do.call(tidyr::expand_grid, rep(list(letters), nid)) |>
+        tidyr::unite(col = "id", dplyr::everything(), sep = "") |>
+        dplyr::pull()
+    )
+    if (length(cols) > 0) {
+      opts <- opts[!opts %in% cols]
+    }
+    nopts <- length(opts)
+    if (nopts == n) {
+      result <- opts
+    } else if (nopts > n) {
+      result <- sample(result, size = n)
+    }
+    nid <- nid + 1
+  }
+  return(result)
+}
+personIdentifier <- function(x) {
+  id <- c("person_id", "subject_id")
+  id[id %in% colnames(x)]
 }
