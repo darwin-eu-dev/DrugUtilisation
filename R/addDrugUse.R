@@ -979,3 +979,30 @@ addImpute <- function(cohort, cohortInfo, imputeCount, label) {
   }
   return(cohort)
 }
+
+
+addDrugUseInternal <- function(x,
+                               indexDate,
+                               censorDate,
+                               conceptSet,
+                               ingredientConceptId,
+                               restrictIncident,
+                               numberExposures,
+                               numberEras,
+                               exposedTime,
+                               indexQuantity,
+                               initialQuantity,
+                               cumulativeQuantity,
+                               indexDose,
+                               initialDose,
+                               cumulativeDose,
+                               missingDuration,
+                               missingDose,
+                               gapEra,
+                               eraJoinMode,
+                               overlapMode,
+                               sameIndexMode,
+                               nameStyle,
+                               name) {
+  x <- createDates
+}
