@@ -1,7 +1,7 @@
 Package: DrugUtilisation
 Title: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP 
     Common Data Model 
-Version: 0.6.0
+Version: 0.6.1
 Authors@R: c(
     person(
         "Marti", "Catala", email = "marti.catalasabate@ndorms.ox.ac.uk", 
@@ -78,8 +78,7 @@ Imports:
     tictoc,
     omopgenerics (>= 0.2.0),
     visOmopResults,
-    lifecycle,
-    CohortCharacteristics (>= 0.2.0)
+    lifecycle
 Depends: 
     R (>= 2.10)
 LazyData: true
