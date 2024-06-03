@@ -6,6 +6,9 @@
 \usage{
 summariseCharacteristics()
 }
+\value{
+An error pointing to the new function in CohortCharacteristics
+}
 \description{
 This function has been deprecated please use CohortCharacteristics package
 }

@@ -16,6 +16,8 @@
 
 #' This function has been deprecated please use CohortCharacteristics package
 #'
+#' @return An error pointing to the new function in CohortCharacteristics
+#'
 #' @export
 #'
 summariseLargeScaleCharacteristics <- function() {
