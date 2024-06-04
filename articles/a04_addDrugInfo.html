@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,7 +79,7 @@
                         <h4 data-toc-skip class="author">Marti Catala,
 Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li</h4>
             
-            <h4 data-toc-skip class="date">2024-05-14</h4>
+            <h4 data-toc-skip class="date">2024-06-04</h4>
       
       
       <div class="d-none name"><code>a04_addDrugInfo.Rmd</code></div>
@@ -144,7 +144,7 @@ example below to know how it works.</p>
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"drug_exposure"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/addRoute.html">addRoute</a></span><span class="op">(</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [?? x 8]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;    drug_exposure_id person_id drug_concept_id drug_exposure_start_date</span></span>
 <span><span class="co">#&gt;               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                1         1         1<span style="text-decoration: underline;">503</span>328 2022-01-11              </span></span>
@@ -217,8 +217,8 @@ and route.</p>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>  ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_007_1715701318&gt; [?? x 9]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_009_1717531795&gt; [?? x 9]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;    drug_exposure_id person_id drug_concept_id drug_exposure_start_date</span></span>
 <span><span class="co">#&gt;               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                2         1         2<span style="text-decoration: underline;">905</span>077 2021-10-26              </span></span>
@@ -244,10 +244,9 @@ ingredients.</p>
 <span><span class="co">#&gt;   median, q75, q95, max</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Table is collected to memory as not all requested estimates are supported on</span></span>
 <span><span class="co">#&gt;   the database side</span></span>
-<span><span class="co">#&gt; → Start summary of data, at 2024-05-14 15:41:59.135467</span></span>
+<span><span class="co">#&gt; → Start summary of data, at 2024-06-04 20:09:55.373167</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-05-14 15:41:59.405324</span></span>
-<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> The following variables: result_type, package_name, package_version; were added to `settings`</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Summary finished, at 2024-06-04 20:09:55.62863</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 84 × 13</span></span></span>
 <span><span class="co">#&gt;    result_id cdm_name group_name      group_level   strata_name strata_level</span></span>
 <span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span></span>
@@ -276,20 +275,20 @@ cumulative dose, etc., can be incorporated into a cohort using the
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">acetaminophen_example1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/addDrugUse.html">addDrugUse</a></span><span class="op">(</span>ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_014_1715701327&gt; [?? x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_016_1717531803&gt; [?? x 13]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          7 2008-10-22        2008-12-23            63</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         86 2005-02-12        2016-06-22          <span style="text-decoration: underline;">4</span>149</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         25 2013-04-08        2016-08-10          <span style="text-decoration: underline;">1</span>221</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         12 2003-06-26        2004-10-19           482</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         36 2018-05-24        2019-10-31           526</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        146 2008-04-22        2008-05-25            34</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        186 2000-10-19        2005-05-04          <span style="text-decoration: underline;">1</span>659</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        114 2022-10-17        2022-11-13            28</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        184 2009-04-22        2010-03-13           326</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         18 2015-08-16        2017-08-06           722</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         87 2009-03-11        2011-11-20           985</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        123 1986-12-24        1987-08-31           251</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          9 1989-02-04        1992-11-02          <span style="text-decoration: underline;">1</span>368</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        115 2010-08-21        2011-02-20           184</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         31 2000-06-11        2000-10-25           137</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         52 2015-12-13        2016-01-04            23</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         81 2022-07-18        2022-09-15            60</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        183 2011-05-07        2013-07-10           796</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         39 1990-07-25        2003-10-04          <span style="text-decoration: underline;">4</span>820</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        117 1999-05-22        2009-03-01          <span style="text-decoration: underline;">3</span>572</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: number_exposures &lt;dbl&gt;, cumulative_quantity &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   initial_quantity &lt;dbl&gt;, impute_duration_percentage &lt;dbl&gt;,</span></span></span>
@@ -378,20 +377,20 @@ cohort created at the beginning of this vignette
 <span>  quantity <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  dose     <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_019_1715701334&gt; [?? x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_021_1717531810&gt; [?? x 13]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          7 2008-10-22        2008-12-23            63</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         86 2005-02-12        2016-06-22          <span style="text-decoration: underline;">4</span>149</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         25 2013-04-08        2016-08-10          <span style="text-decoration: underline;">1</span>221</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         12 2003-06-26        2004-10-19           482</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         36 2018-05-24        2019-10-31           526</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        146 2008-04-22        2008-05-25            34</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        186 2000-10-19        2005-05-04          <span style="text-decoration: underline;">1</span>659</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        114 2022-10-17        2022-11-13            28</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        184 2009-04-22        2010-03-13           326</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         18 2015-08-16        2017-08-06           722</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         87 2009-03-11        2011-11-20           985</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        123 1986-12-24        1987-08-31           251</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          9 1989-02-04        1992-11-02          <span style="text-decoration: underline;">1</span>368</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        115 2010-08-21        2011-02-20           184</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         31 2000-06-11        2000-10-25           137</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         52 2015-12-13        2016-01-04            23</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         81 2022-07-18        2022-09-15            60</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        183 2011-05-07        2013-07-10           796</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         39 1990-07-25        2003-10-04          <span style="text-decoration: underline;">4</span>820</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        117 1999-05-22        2009-03-01          <span style="text-decoration: underline;">3</span>572</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: number_exposures &lt;dbl&gt;, cumulative_quantity &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   initial_quantity &lt;dbl&gt;, impute_duration_percentage &lt;dbl&gt;,</span></span></span>
@@ -428,7 +427,7 @@ better understanding, we will observe only subject number 56.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">drug_concept_id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="op">!</span><span class="op">!</span><span class="va">conceptList</span><span class="op">$</span><span class="va">acetaminophen</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">person_id</span> <span class="op">==</span> <span class="fl">56</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [2 x 7]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;   drug_exposure_id person_id drug_concept_id drug_exposure_start_date</span></span>
 <span><span class="co">#&gt;              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>              166        56         1<span style="text-decoration: underline;">125</span>360 2022-01-27              </span></span>
@@ -445,7 +444,7 @@ less than 6 months. Hence, it has two different cohort periods:</p>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subject_id</span> <span class="op">==</span> <span class="fl">56</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [2 x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1         56 2022-01-27        2022-03-04            37</span></span>
@@ -476,7 +475,7 @@ DrugUtilisation to create a cohort</em> vignette.</p>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subject_id</span> <span class="op">==</span> <span class="fl">56</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [1 x 8]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1         56 2021-08-08        2022-03-04           209</span></span>
@@ -495,7 +494,7 @@ defined when the cohort was created.</p>
 <span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">subject_id</span> <span class="op">==</span> <span class="fl">56</span><span class="op">)</span> </span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [1 x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1         56 2021-08-08        2022-03-04           209</span></span>
@@ -580,20 +579,20 @@ for exposures that overlap.</p>
 <span>             eraJoinMode <span class="op">=</span> <span class="st">"previous"</span>,</span>
 <span>             overlapMode <span class="op">=</span> <span class="st">"minimum"</span>,</span>
 <span>             sameIndexMode <span class="op">=</span> <span class="st">"minimum"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_038_1715701364&gt; [?? x 13]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1018-azure:R 4.4.0/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_040_1717531840&gt; [?? x 13]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v0.10.2 [unknown@Linux 6.5.0-1021-azure:R 4.4.0/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date duration</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          7 2008-10-22        2008-12-23            63</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         86 2005-02-12        2016-06-22          <span style="text-decoration: underline;">4</span>149</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         25 2013-04-08        2016-08-10          <span style="text-decoration: underline;">1</span>221</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         12 2003-06-26        2004-10-19           482</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         36 2018-05-24        2019-10-31           526</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        146 2008-04-22        2008-05-25            34</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        186 2000-10-19        2005-05-04          <span style="text-decoration: underline;">1</span>659</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        114 2022-10-17        2022-11-13            28</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        184 2009-04-22        2010-03-13           326</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         18 2015-08-16        2017-08-06           722</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         87 2009-03-11        2011-11-20           985</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        123 1986-12-24        1987-08-31           251</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          9 1989-02-04        1992-11-02          <span style="text-decoration: underline;">1</span>368</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        115 2010-08-21        2011-02-20           184</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         31 2000-06-11        2000-10-25           137</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         52 2015-12-13        2016-01-04            23</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         81 2022-07-18        2022-09-15            60</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        183 2011-05-07        2013-07-10           796</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         39 1990-07-25        2003-10-04          <span style="text-decoration: underline;">4</span>820</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        117 1999-05-22        2009-03-01          <span style="text-decoration: underline;">3</span>572</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8 more variables: number_exposures &lt;dbl&gt;, cumulative_quantity &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   initial_quantity &lt;dbl&gt;, impute_duration_percentage &lt;dbl&gt;,</span></span></span>

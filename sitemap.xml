@@ -97,10 +97,16 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/stratifyByUnit.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseCharacteristics.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseDrugUse.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseIndication.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseLargeScaleCharacteristics.html</loc>
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromCohort.html</loc>
