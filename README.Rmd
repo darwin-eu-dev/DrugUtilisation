@@ -224,35 +224,3 @@ You can summarise the drug use using `summariseDrugUse` function
 ```{r}
 summariseDrugUse(x)
 ```
-
-### Summarise patient characteristics
-
-You can summarise the patient characteristics with `summariseCharacteristics` function:
-
-```{r}
-x |>
-  summariseCharacteristics(
-    ageGroup = list(c(0, 24), c(25, 49), c(50, 74), c(75, 150)),
-    tableIntersectCount = list(
-      "Visits" = list(tableName = "visit_occurrence", window = c(-365, 0))
-    ),
-    cohortIntersectFlag = list(
-      "Indications" = list(
-        targetCohortTable  = "indications_cohort", window = c(-365, 0)
-      )
-    )
-  )
-```
-
-### Summarise patients large scale characteristics
-
-You can summarise the patient characteristics with `summariseLargeScaleCharacteristics` function:
-
-```{r}
-x |>
-  summariseLargeScaleCharacteristics(
-    window = list(c(-Inf, Inf)), 
-    eventInWindow = "condition_occurrence", 
-    episodeInWindow = "drug_exposure"
-  )
-```
