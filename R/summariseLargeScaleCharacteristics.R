@@ -14,6 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' @importFrom CohortCharacteristics summariseLargeScaleCharacteristics
+#' This function has been deprecated please use CohortCharacteristics package
+#'
+#' @return An error pointing to the new function in CohortCharacteristics
+#'
 #' @export
-CohortCharacteristics::summariseLargeScaleCharacteristics
+#'
+summariseLargeScaleCharacteristics <- function() {
+  lifecycle::deprecate_stop(
+    when = "0.6.1",
+    what = "DrugUtilisation::summariseLargeScaleCharacteristics()",
+    with = "CohortCharacteristics::summariseLargeScaleCharacteristics()"
+  )
+}

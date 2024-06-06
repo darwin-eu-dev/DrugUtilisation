@@ -14,6 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' @importFrom CohortCharacteristics summariseCharacteristics
+#' This function has been deprecated please use CohortCharacteristics package
+#'
+#' @return An error pointing to the new function in CohortCharacteristics
+#'
 #' @export
-CohortCharacteristics::summariseCharacteristics
+#'
+summariseCharacteristics <- function() {
+  lifecycle::deprecate_stop(
+    when = "0.6.1",
+    what = "DrugUtilisation::summariseCharacteristics()",
+    with = "CohortCharacteristics::summariseCharacteristics()"
+  )
+}
