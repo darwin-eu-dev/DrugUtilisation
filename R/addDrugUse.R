@@ -501,7 +501,7 @@ initialSubset <- function(cdm, dusCohort, conceptSet) {
          (.data$drug_exposure_start_date <= .data$cohort_end_date)) |
         (!is.na(.data$drug_exposure_end_date) &
            ((.data$drug_exposure_end_date >= .data$cohort_start_date) &
-           (.data$drug_exposure_start_date <= .data$cohort_end_date)))
+              (.data$drug_exposure_start_date <= .data$cohort_end_date)))
     ) %>%
     dplyr::compute(
       temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
@@ -996,7 +996,6 @@ addDrugUseInternal <- function(x,
                                indexDose,
                                initialDose,
                                cumulativeDose,
-                               missingDuration,
                                missingDose,
                                gapEra,
                                eraJoinMode,
@@ -1004,7 +1003,11 @@ addDrugUseInternal <- function(x,
                                sameIndexMode,
                                nameStyle,
                                name) {
+  # initial checks
+
+  cdm <- omopgenerics::cdmReference(x)
   tablePrefix <- omopgenerics::tmpPrefix()
+
   nm1 <- omopgenerics::uniqueTableName(tablePrefix)
   cdm <- omopgenerics::insertTable(
     cdm = cdm,
@@ -1019,7 +1022,6 @@ addDrugUseInternal <- function(x,
   )
 
   xdates <- x|>
-    x |>
     dplyr::select(dplyr::all_of(c(
       id, "index_date" = indexDate, "censor_date" = censorDate
     ))) |>
@@ -1034,6 +1036,9 @@ addDrugUseInternal <- function(x,
         futureObservationName = "censor_date",
         futureObservationType = "date"
       )
+    cols <- c(id, "index_date")
+  } else {
+    cols <- c(id, "index_date", "censor_date")
   }
 
   drugData <- xdates |>
@@ -1068,6 +1073,137 @@ addDrugUseInternal <- function(x,
       name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
     )
 
+  if (numberExposures | exposedTime) {
+    drugDataErafied <- drugData |>
+      erafy(
+        startDate = "start_date", endDate = "end_date", by = cols, gap = gapEra
+      ) |>
+      dplyr::compute(
+        name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
+      )
+  }
+
+  if (indexDose | cumulativeDose | initialDose) {
+    drugData <- drugData |>
+      addDailyDose(ingredientConceptId = ingredientConceptId)
+  }
+
+  if (numberExposures) {
+    x <- x |>
+      dplyr::left_join(
+        drugData |>
+          dplyr::count(
+            dplyr::across(dplyr::all_of(cols)),
+            name = getColName("number_exposures")
+          ),
+        by = cols
+      )
+  }
+
+  if (numberEras) {
+    x <- x |>
+      dplyr::left_join(
+        drugDataErafied |>
+          dplyr::count(
+            dplyr::across(dplyr::all_of(cols)),
+            name = getColName("number_eras")
+          ),
+        by = cols
+      )
+  }
+
+  if (exposedTime) {
+    col <- getColName("exposed_time")
+    x <- x |>
+      dplyr::left_join(
+        drugDataErafied %>%
+          dplyr::mutate("exposed_time" = as.integer(!!CDMConnector::datediff(
+            start = "start_date", end = "end_date", interval = "day"
+          )) + 1L) |>
+          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
+          dplyr::summarise(
+            !!col := sum(.data$eposed_time, na.rm = TRUE),
+            .groups = "drop"
+          )
+      ) |>
+      dplyr::mutate(!!col := dplyr::coalesce(.data$exposed_time, 0L))
+  }
+
+  if (indexQuantity | indexDose) {
+    qIndex <- list()
+    if (indexQuantity) {
+      qIndex[[getColName("index_quantity")]] <-
+        paste0(sameIndexMode, '(.data$quantity, na.rm = TRUE)') |>
+          rlang::parse_exprs()
+    }
+    if (indexDose) {
+      qIndex[[getColName("index_dose")]] <-
+        paste0(sameIndexMode, '(.data$daily_dose, na.rm = TRUE)') |>
+        rlang::parse_exprs()
+    }
+    x <- x |>
+      dplyr::left_join(
+        drugData |>
+          dplyr::filter(.data$index_date == .data$start_date) |>
+          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
+          dplyr::summarise(!!!qIndex, .groups = "drop"),
+        by = cols
+      )
+  }
+
+  if (initialQuantity | initialDose) {
+    qInitial <- list()
+    if (initialQuantity) {
+      qInitial[[getColName("initial_quantity")]] <-
+        paste0(sameIndexMode, '(.data$quantity, na.rm = TRUE)') |>
+        rlang::parse_exprs()
+    }
+    if (initialDose) {
+      qInitial[[getColName("initial_dose")]] <-
+        paste0(sameIndexMode, '(.data$daily_dose, na.rm = TRUE)') |>
+        rlang::parse_exprs()
+    }
+    x <- x |>
+      dplyr::left_join(
+        drugData |>
+          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
+          dplyr::filter(
+            .data$index_date == min(.data$index_date, na.rm = TRUE)
+          ) |>
+          dplyr::summarise(!!!qInitial, .groups = "drop"),
+        by = cols
+      )
+  }
+
+  if (cumulativeDose | cumulativeQuantity) {
+    if (eraJoinMode == "zero" & sameIndexMode == "sum" & overlapMode == "sum") {
+      drugDataCumulative <- drugData
+    } else {
+      # TO IMPLEMENT
+    }
+    qCumulative <- list()
+    if (cumulativeQuantity) {
+      qCumulative[[getColName("cumulative_quantity")]] <-
+        paste0(sameIndexMode, '(.data$quantity, na.rm = TRUE)') |>
+        rlang::parse_exprs()
+    }
+    if (cumulativeDose) {
+      qCumulative[[getColName("cumulative_dose")]] <-
+        paste0(sameIndexMode, '(.data$daily_dose, na.rm = TRUE)') |>
+        rlang::parse_exprs()
+    }
+    x <- x |>
+      dplyr::left_join(
+        drugDataCumulative |>
+          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
+          dplyr::summarise(!!!qCumulative, .groups = "drop"),
+        by = cols
+      )
+  }
+
+  x <- x |> dplyr::compute(name = name, temporary = is.null(name))
+
+  return(x)
 }
 uniqueColumnIdentifier <- function(cols = character(), n = 1) {
   result <- character()
@@ -1095,4 +1231,7 @@ uniqueColumnIdentifier <- function(cols = character(), n = 1) {
 personIdentifier <- function(x) {
   id <- c("person_id", "subject_id")
   id[id %in% colnames(x)]
+}
+getColName <- function(nm) {
+  glue::glue(nameStyle, value = nm) |> as.character()
 }
