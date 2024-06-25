@@ -980,7 +980,6 @@ addImpute <- function(cohort, cohortInfo, imputeCount, label) {
   return(cohort)
 }
 
-
 addDrugUseInternal <- function(x,
                                indexDate,
                                censorDate,
@@ -1005,6 +1004,9 @@ addDrugUseInternal <- function(x,
                                name,
                                call) {
   # initial checks
+  # x <- validateX(x, call)
+  # indexDate <- validateIndexDate(indexDate, x, call)
+
   cdm <- omopgenerics::cdmReference(x)
   tablePrefix <- omopgenerics::tmpPrefix()
 
@@ -1016,7 +1018,7 @@ addDrugUseInternal <- function(x,
     temporary = FALSE
   )
 
-  id <- personIndentifier(x)
+  id <- omopgenerics::getPersonIdentifier(x)
   idDates <- uniqueColumnIdentifier(
     cols = c(colnames(cdm$drug_exposure), colnames(x)), n = 2
   )
@@ -1096,7 +1098,7 @@ addDrugUseInternal <- function(x,
         drugData |>
           dplyr::count(
             dplyr::across(dplyr::all_of(cols)),
-            name = getColName("number_exposures")
+            name = getColName("number_exposures", nameStyle)
           ),
         by = cols
       )
@@ -1108,14 +1110,14 @@ addDrugUseInternal <- function(x,
         drugDataErafied |>
           dplyr::count(
             dplyr::across(dplyr::all_of(cols)),
-            name = getColName("number_eras")
+            name = getColName("number_eras", nameStyle)
           ),
         by = cols
       )
   }
 
   if (exposedTime) {
-    col <- getColName("exposed_time")
+    col <- getColName("exposed_time", nameStyle)
     x <- x |>
       dplyr::left_join(
         drugDataErafied %>%
@@ -1145,12 +1147,12 @@ addDrugUseInternal <- function(x,
   if (indexQuantity | indexDose) {
     qIndex <- list()
     if (indexQuantity) {
-      qIndex[[getColName("index_quantity")]] <-
+      qIndex[[getColName("index_quantity", nameStyle)]] <-
         paste0(sameIndexMode, '(.data$quantity, na.rm = TRUE)') |>
           rlang::parse_exprs()
     }
     if (indexDose) {
-      qIndex[[getColName(paste0("index_dose_", unit))]] <-
+      qIndex[[getColName(paste0("index_dose_", unit)), nameStyle]] <-
         paste0(sameIndexMode, '(.data$daily_dose, na.rm = TRUE)') |>
         rlang::parse_exprs()
     }
@@ -1167,12 +1169,12 @@ addDrugUseInternal <- function(x,
   if (initialQuantity | initialDose) {
     qInitial <- list()
     if (initialQuantity) {
-      qInitial[[getColName("initial_quantity")]] <-
+      qInitial[[getColName("initial_quantity", nameStyle)]] <-
         paste0(sameIndexMode, '(.data$quantity, na.rm = TRUE)') |>
         rlang::parse_exprs()
     }
     if (initialDose) {
-      qInitial[[getColName(paste0("initial_dose_", unit))]] <-
+      qInitial[[getColName(paste0("initial_dose_", unit), nameStyle)]] <-
         paste0(sameIndexMode, '(.data$daily_dose, na.rm = TRUE)') |>
         rlang::parse_exprs()
     }
@@ -1188,31 +1190,19 @@ addDrugUseInternal <- function(x,
       )
   }
 
-  if () {
-    qCumulative <- rlang::parse_exprs('sum(.data$quantity, na.rm = TRUE)') |>
-      rlang::set_names(getColName("cumulative_quantity"))
-    x <- x |>
-      dplyr::left_join(
-        drugDataCumulative |>
-          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
-          dplyr::summarise(!!!qCumulative, .groups = "drop"),
-        by = cols
-      )
-  }
-
   if (cumulativeDose | cumulativeQuantity) {
     qCumulative <- c(
       rlang::parse_exprs('sum(.data$quantity, na.rm = TRUE)') |>
-        rlang::set_names(getColName("cumulative_quantity")),
+        rlang::set_names(getColName("cumulative_quantity", nameStyle)),
       rlang::parse_exprs("sum(.data$daily_dose, na.rm = TRUE)") |>
-        rlang::set_names(getColName(paste0("cumulative_dose_", unit)))
+        rlang::set_names(getColName(paste0("cumulative_dose_", unit), nameStyle))
     )
     qCumulative <- qCumulative[c(cumulativeQuantity, cumulativeDose)]
     x <- x |>
       dplyr::left_join(
-        drugDataCumulative |>
+        drugData |>
           dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
-          dplyr::summarise(!!!qCumDose, .groups = "drop"),
+          dplyr::summarise(!!!qCumulative, .groups = "drop"),
         by = cols
       )
   }
@@ -1250,6 +1240,6 @@ personIdentifier <- function(x) {
   id <- c("person_id", "subject_id")
   id[id %in% colnames(x)]
 }
-getColName <- function(nm) {
+getColName <- function(nm, nameStyle) {
   glue::glue(nameStyle, value = nm) |> as.character()
 }
