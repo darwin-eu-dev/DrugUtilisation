@@ -1002,9 +1002,9 @@ addDrugUseInternal <- function(x,
                                overlapMode,
                                sameIndexMode,
                                nameStyle,
-                               name) {
+                               name,
+                               call) {
   # initial checks
-
   cdm <- omopgenerics::cdmReference(x)
   tablePrefix <- omopgenerics::tmpPrefix()
 
@@ -1023,22 +1023,25 @@ addDrugUseInternal <- function(x,
 
   xdates <- x|>
     dplyr::select(dplyr::all_of(c(
-      id, "index_date" = indexDate, "censor_date" = censorDate
+      id, "index_date" = indexDate, "censor" = censorDate
     ))) |>
     dplyr::distinct() |>
-    dplyr::compute(
-      name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
+    PatientProfiles::addFutureObservation(
+      indexDate = indexDate,
+      futureObservationName = "future_observation",
+      futureObservationType = "date",
+      name = omopgenerics::uniqueTableName(tablePrefix)
     )
   if (is.null(censorDate)) {
-    xdates <- xdates |>
-      PatientProfiles::addFutureObservation(
-        indexDate = indexDate,
-        futureObservationName = "censor_date",
-        futureObservationType = "date"
-      )
+    xdates <- xdates |> dplyr::rename("censor_date" = "future_observation")
     cols <- c(id, "index_date")
   } else {
-    cols <- c(id, "index_date", "censor_date")
+    xdates <- xdates |>
+      dplyr::mutate("censor_date" = dplyr::if_else(
+        is.na(.data$censor), .data$future_observation, .data$censor
+      )) |>
+      dplyr::select(-"future_observation")
+    cols <- c(id, "index_date", "censor")
   }
 
   drugData <- xdates |>
@@ -1046,26 +1049,27 @@ addDrugUseInternal <- function(x,
       cdm$drug_exposure |>
         dplyr::inner_join(cdm[[nm1]], by = "drug_concept_id") |>
         dplyr::select(
-          !!id := "person_id",
-          "start_date" = "drug_exposure_start_date",
-          "end_date" = "drug_exposure_end_date"
+          !!id := "person_id", "drug_exposure_start_date",
+          "drug_exposure_end_date", "quantity", "drug_concept_id"
         ),
       by = id
     ) |>
-    dplyr::mutate("end_date" = dplyr::if_else(
-      is.na(.data$end_date), .data$start_date, .data$end_date
+    dplyr::mutate("drug_exposure_end_date" = dplyr::if_else(
+      is.na(.data$drug_exposure_end_date),
+      .data$drug_exposure_start_date,
+      .data$drug_exposure_end_date
     ))
   if (restrictIncident) {
     drugData <- drugData |>
       dplyr::filter(
-        .data$start_date >= .data$index_date &
-          (.data$end_date >= .data$index_date | is.na(.data$end_date))
+        .data$drug_exposure_start_date >= .data$index_date &
+          .data$drug_exposure_end_date >= .data$index_date
       )
   } else {
     drugData <- drugData |>
       dplyr::filter(
-        .data$start_date <= .data$censor_date &
-          (.data$end_date >= .data$index_date | is.na(.data$end_date))
+        .data$drug_exposure_start_date <= .data$censor_date &
+          .data$drug_exposure_end_date >= .data$index_date
       )
   }
   drugData <- drugData |>
@@ -1073,19 +1077,17 @@ addDrugUseInternal <- function(x,
       name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
     )
 
-  if (numberExposures | exposedTime) {
+  if (numberEras | exposedTime) {
     drugDataErafied <- drugData |>
       erafy(
-        startDate = "start_date", endDate = "end_date", by = cols, gap = gapEra
+        startDate = "drug_exposure_start_date",
+        endDate = "drug_exposure_end_date",
+        by = cols,
+        gap = gapEra
       ) |>
       dplyr::compute(
         name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
       )
-  }
-
-  if (indexDose | cumulativeDose | initialDose) {
-    drugData <- drugData |>
-      addDailyDose(ingredientConceptId = ingredientConceptId)
   }
 
   if (numberExposures) {
@@ -1118,7 +1120,9 @@ addDrugUseInternal <- function(x,
       dplyr::left_join(
         drugDataErafied %>%
           dplyr::mutate("exposed_time" = as.integer(!!CDMConnector::datediff(
-            start = "start_date", end = "end_date", interval = "day"
+            start = "drug_exposure_start_date",
+            end = "drug_exposure_end_date",
+            interval = "day"
           )) + 1L) |>
           dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
           dplyr::summarise(
@@ -1129,6 +1133,15 @@ addDrugUseInternal <- function(x,
       dplyr::mutate(!!col := dplyr::coalesce(.data$exposed_time, 0L))
   }
 
+  if (indexDose | cumulativeDose | initialDose) {
+    drugData <- drugData |>
+      addDailyDose(ingredientConceptId = ingredientConceptId)
+    unit <- drugData |>
+      dplyr::select("unit") |>
+      dplyr::distinct() |>
+      dplyr::pull()
+  }
+
   if (indexQuantity | indexDose) {
     qIndex <- list()
     if (indexQuantity) {
@@ -1137,14 +1150,14 @@ addDrugUseInternal <- function(x,
           rlang::parse_exprs()
     }
     if (indexDose) {
-      qIndex[[getColName("index_dose")]] <-
+      qIndex[[getColName(paste0("index_dose_", unit))]] <-
         paste0(sameIndexMode, '(.data$daily_dose, na.rm = TRUE)') |>
         rlang::parse_exprs()
     }
     x <- x |>
       dplyr::left_join(
         drugData |>
-          dplyr::filter(.data$index_date == .data$start_date) |>
+          dplyr::filter(.data$index_date == .data$drug_exposure_start_date) |>
           dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
           dplyr::summarise(!!!qIndex, .groups = "drop"),
         by = cols
@@ -1159,7 +1172,7 @@ addDrugUseInternal <- function(x,
         rlang::parse_exprs()
     }
     if (initialDose) {
-      qInitial[[getColName("initial_dose")]] <-
+      qInitial[[getColName(paste0("initial_dose_", unit))]] <-
         paste0(sameIndexMode, '(.data$daily_dose, na.rm = TRUE)') |>
         rlang::parse_exprs()
     }
@@ -1175,23 +1188,9 @@ addDrugUseInternal <- function(x,
       )
   }
 
-  if (cumulativeDose | cumulativeQuantity) {
-    if (eraJoinMode == "zero" & sameIndexMode == "sum" & overlapMode == "sum") {
-      drugDataCumulative <- drugData
-    } else {
-      # TO IMPLEMENT
-    }
-    qCumulative <- list()
-    if (cumulativeQuantity) {
-      qCumulative[[getColName("cumulative_quantity")]] <-
-        paste0(sameIndexMode, '(.data$quantity, na.rm = TRUE)') |>
-        rlang::parse_exprs()
-    }
-    if (cumulativeDose) {
-      qCumulative[[getColName("cumulative_dose")]] <-
-        paste0(sameIndexMode, '(.data$daily_dose, na.rm = TRUE)') |>
-        rlang::parse_exprs()
-    }
+  if () {
+    qCumulative <- rlang::parse_exprs('sum(.data$quantity, na.rm = TRUE)') |>
+      rlang::set_names(getColName("cumulative_quantity"))
     x <- x |>
       dplyr::left_join(
         drugDataCumulative |>
@@ -1201,7 +1200,26 @@ addDrugUseInternal <- function(x,
       )
   }
 
+  if (cumulativeDose | cumulativeQuantity) {
+    qCumulative <- c(
+      rlang::parse_exprs('sum(.data$quantity, na.rm = TRUE)') |>
+        rlang::set_names(getColName("cumulative_quantity")),
+      rlang::parse_exprs("sum(.data$daily_dose, na.rm = TRUE)") |>
+        rlang::set_names(getColName(paste0("cumulative_dose_", unit)))
+    )
+    qCumulative <- qCumulative[c(cumulativeQuantity, cumulativeDose)]
+    x <- x |>
+      dplyr::left_join(
+        drugDataCumulative |>
+          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
+          dplyr::summarise(!!!qCumDose, .groups = "drop"),
+        by = cols
+      )
+  }
+
   x <- x |> dplyr::compute(name = name, temporary = is.null(name))
+
+  omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
   return(x)
 }
