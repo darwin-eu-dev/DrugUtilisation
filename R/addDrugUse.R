@@ -108,6 +108,31 @@ addDrugUse <- function(cohort,
                        imputeDailyDose = "none",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
+  x <- cohort |>
+    addDrugUseInternal(
+      indexDate = "cohort_start_date",
+      censorDate = NULL,
+      conceptSet = conceptSet,
+      ingredientConceptId = ingredientConceptId,
+      restrictIncident = TRUE,
+      numberExposures = TRUE,
+      numberEras = TRUE,
+      exposedTime = TRUE,
+      indexQuantity = TRUE,
+      initialQuantity = TRUE,
+      cumulativeQuantity = TRUE,
+      indexDose = TRUE,
+      initialDose = TRUE,
+      cumulativeDose = TRUE,
+      gapEra = gapEra,
+      eraJoinMode = eraJoinMode,
+      overlapMode = overlapMode,
+      sameIndexMode = sameIndexMode,
+      nameStyle = "{value}",
+      name = NULL)
+
+  return(x)
+
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_soft("0.5.0", "addDrugUse(cdm = )")
   }
@@ -1002,10 +1027,14 @@ addDrugUseInternal <- function(x,
                                sameIndexMode,
                                nameStyle,
                                name,
-                               call) {
+                               call = parent.frame()) {
   # initial checks
   # x <- validateX(x, call)
+  cdm <- omopgenerics::cdmReference(x)
   # indexDate <- validateIndexDate(indexDate, x, call)
+  ingredientConceptId <- validateIngredientConceptId(ingredientConceptId, cdm, call)
+  conceptSet <- validateConceptSet(conceptSet, ingredientConceptId, cdm, call)
+
 
   cdm <- omopgenerics::cdmReference(x)
   tablePrefix <- omopgenerics::tmpPrefix()
@@ -1082,9 +1111,9 @@ addDrugUseInternal <- function(x,
   if (numberEras | exposedTime) {
     drugDataErafied <- drugData |>
       erafy(
-        startDate = "drug_exposure_start_date",
-        endDate = "drug_exposure_end_date",
-        by = cols,
+        start = "drug_exposure_start_date",
+        end = "drug_exposure_end_date",
+        group = cols,
         gap = gapEra
       ) |>
       dplyr::compute(
@@ -1242,4 +1271,42 @@ personIdentifier <- function(x) {
 }
 getColName <- function(nm, nameStyle) {
   glue::glue(nameStyle, value = nm) |> as.character()
+}
+
+validateConceptSet <- function(conceptSet, ingredientConceptId, cdm, call) {
+  if (is.null(conceptSet)) {
+    if (is.null(ingredientConceptId)) {
+      "Either conceptSet or ingredientConceptId must be provided." |>
+        cli::cli_abort(call = call)
+    }
+    conceptSet <- cdm$concept_ancestor |>
+      dplyr::filter(.data$ancestor_concept_id %in% .env$ingredientConceptId) |>
+      dplyr::select("ancestor_concept_id", "descendant_concept_id") |>
+      dplyr::collect() |>
+      dplyr::arrange(.data$ancestor_concept_id) |>
+      dplyr::group_by(.data$ancestor_concept_id) |>
+      dplyr::group_split() |>
+      lapply(dplyr::pull, "descendant_concept_id") |>
+      rlang::set_names(paste0("ingredient_", sort(ingredientConceptId), "_descendants"))
+
+  }
+  conceptSet <- omopgenerics::newCodelist(conceptSet)
+  return(invisible(conceptSet))
+}
+validateIngredientConceptId <- function(ingredientConceptId, cdm, call) {
+  if (!is.numeric(ingredientConceptId)) {
+    "ingredientConceptId must be numeric" |> cli::cli_abort(call = call)
+  }
+  ingredients <- cdm$concept |>
+    dplyr::filter(.data$concept_class_id == "Ingredient") |>
+    dplyr::filter(.data$concept_id %in% .env$ingredientConceptId) |>
+    dplyr::pull("concept_id") |>
+    as.integer()
+  missingIngredients <- ingredientConceptId[
+    !as.integer(ingredientConceptId) %in% ingredients]
+  if (length(missingIngredients) > 0) {
+    "Ingredients not present in concept table: {missingIngredients}" |>
+      cli::cli_abort(call = call)
+  }
+  return(ingredients)
 }
