@@ -11,12 +11,13 @@ test_that("test flags", {
     "cumulative_dose_milligram"
   )
   for (k in seq_len(nrow(x))) {
-    xx <- cdm$cohort1 %>%
+    expect_no_error(
+      xx <- cdm$cohort1 %>%
       addDrugUse(
         ingredientConceptId = 1539403, duration = x$duration[k],
         quantity = x$quantity[k], dose = x$dose[k]
-      ) %>%
-      expect_no_error()
+      )
+    )
     expect_true(all(c("number_exposures", "number_eras") %in% colnames(xx)))
     if (x$duration[k]) {
       expect_true(all(columnsDuration %in% colnames(xx)))
