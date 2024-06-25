@@ -94,27 +94,22 @@
 #' }
 #'
 addDrugUse <- function(cohort,
-                       cdm = lifecycle::deprecated(),
-                       ingredientConceptId,
+                       indexDate = "cohort_start_date",
+                       censorDate = NULL,
+                       ingredientConceptId = NULL,
                        conceptSet = NULL,
+                       restrictIncident = TRUE,
                        duration = TRUE,
                        quantity = TRUE,
                        dose = TRUE,
-                       gapEra = 0,
-                       eraJoinMode = "zero",
-                       overlapMode = "sum",
-                       sameIndexMode = "sum",
-                       imputeDuration = "none",
-                       imputeDailyDose = "none",
-                       durationRange = c(1, Inf),
-                       dailyDoseRange = c(0, Inf)) {
+                       gapEra = 0) {
   x <- cohort |>
     addDrugUseInternal(
-      indexDate = "cohort_start_date",
-      censorDate = NULL,
+      indexDate = indexDate,
+      censorDate = censorDate,
       conceptSet = conceptSet,
       ingredientConceptId = ingredientConceptId,
-      restrictIncident = TRUE,
+      restrictIncident = restrictIncident,
       numberExposures = TRUE,
       numberEras = TRUE,
       exposedTime = TRUE,
@@ -125,155 +120,10 @@ addDrugUse <- function(cohort,
       initialDose = TRUE,
       cumulativeDose = TRUE,
       gapEra = gapEra,
-      eraJoinMode = eraJoinMode,
-      overlapMode = overlapMode,
-      sameIndexMode = sameIndexMode,
       nameStyle = "{value}",
       name = NULL)
 
   return(x)
-
-  if (lifecycle::is_present(cdm)) {
-    lifecycle::deprecate_soft("0.5.0", "addDrugUse(cdm = )")
-  }
-  cdm <- omopgenerics::cdmReference(cohort)
-
-  vars <- c(
-    "eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration",
-    "imputeDailyDose"
-  )
-  for (char in vars) {
-    if (is.character(get(char))) {
-      assign(char, tolower(get(char)))
-    }
-  }
-
-  if (length(conceptSet) > 1) {
-    cli::cli_abort("Only one concept set should be provided")
-  }
-  if (is.null(conceptSet)) {
-    checkInputs(ingredientConceptId = ingredientConceptId, cdm = cdm)
-    conceptSet <- list(
-      cdm[["drug_strength"]] %>%
-        dplyr::filter(.data$ingredient_concept_id == .env$ingredientConceptId) %>%
-        dplyr::pull("drug_concept_id")
-    )
-    names(conceptSet) <- cdm[["concept"]] %>%
-      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-      dplyr::pull("concept_name")
-  }
-
-  # initial checks
-  checkInputs(
-    cohort = cohort, cdm = cdm, ingredientConceptId = ingredientConceptId,
-    conceptSet = conceptSet, duration = duration, quantity = quantity,
-    dose = dose, gapEra = gapEra, eraJoinMode = eraJoinMode,
-    overlapMode = overlapMode, sameIndexMode = sameIndexMode,
-    imputeDuration = imputeDuration, imputeDailyDose = imputeDailyDose,
-    durationRange = durationRange, dailyDoseRange = dailyDoseRange
-  )
-
-  if (length(conceptSet) > 1) {
-    cli::cli_abort("Only one concept set is allowed")
-  }
-
-  # save original reference
-  originalCohort <- cohort
-
-  # unique cohort entries
-  cohort <- cohort %>%
-    dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
-    dplyr::distinct() %>%
-    addDuration(duration) %>%
-    dplyr::compute(
-      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
-    )
-
-  # subset drug_exposure and only get the drug concept ids that we are
-  # interested in.
-  conceptSet <- conceptSet |>
-    unlist() |>
-    unname() |>
-    dplyr::as_tibble() |>
-    dplyr::rename("drug_concept_id" = "value")
-  nm <- uniqueTmpName()
-  cdm <- omopgenerics::insertTable(
-    cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
-  )
-  cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
-  cohortInfo <- initialSubset(cdm, cohort, cdm[[nm]])
-
-  cohort <- cohort %>%
-    addInfo(cohortInfo, quantity, cdm)
-
-  # correct duration
-  cohortInfo <- cohortInfo %>%
-    dplyr::mutate(duration = !!CDMConnector::datediff(
-      start = "drug_exposure_start_date", end = "drug_exposure_end_date"
-    ) + 1) %>%
-    rowsToImpute("duration", durationRange)
-
-  cohort <- cohort %>%
-    addImpute(cohortInfo, duration, "impute_duration_percentage")
-
-  cohortInfo <- cohortInfo %>%
-    solveImputation("duration", imputeDuration, TRUE) %>%
-    dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
-    dplyr::mutate(drug_exposure_end_date = !!CDMConnector::dateadd(
-      date = "drug_exposure_start_date", number = "days_to_add"
-    )) %>%
-    dplyr::select(-c("duration", "days_to_add")) %>%
-    dplyr::compute(
-      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
-    )
-
-  # add number eras
-  cohort <- addNumberEras(cohort, cohortInfo, gapEra, cdm)
-
-  if (dose) {
-    # add daily dose
-    cohortInfo <- cohortInfo %>%
-      addDailyDose(ingredientConceptId = ingredientConceptId) %>%
-      dplyr::select(-"quantity") %>%
-      dplyr::distinct()
-
-    # impute daily dose
-    cohortInfo <- cohortInfo %>% rowsToImpute("daily_dose", dailyDoseRange)
-
-    cohort <- cohort %>%
-      addImpute(cohortInfo, TRUE, "impute_daily_dose_percentage")
-
-    cohortInfo <- cohortInfo %>%
-      solveImputation("daily_dose", imputeDailyDose) %>%
-      dplyr::compute(
-        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
-      )
-
-    # get distinct units to cover
-    units <- cohortInfo %>%
-      dplyr::select("unit") %>%
-      dplyr::distinct() %>%
-      dplyr::filter(!is.na(.data$unit)) %>%
-      dplyr::pull()
-
-    cohort <- cohort %>%
-      addInitialDailyDose(cohortInfo, sameIndexMode, units, cdm) %>%
-      addCumulativeDose(
-        cohortInfo, cdm, gapEra, sameIndexMode, overlapMode, eraJoinMode, units
-      )
-  }
-
-  # add result
-  cohort <- originalCohort %>%
-    dplyr::left_join(
-      cohort,
-      by = c("subject_id", "cohort_start_date", "cohort_end_date")
-    ) %>%
-    dplyr::compute()
-
-  dropTmpTables(cdm = cdm)
-
-  return(cohort)
 }
 
 addDuration <- function(cohort, duration) {
@@ -1006,26 +856,23 @@ addImpute <- function(cohort, cohortInfo, imputeCount, label) {
 }
 
 addDrugUseInternal <- function(x,
-                               indexDate = "cohort_start_date",
-                               censorDate = NULL,
-                               conceptSet = NULL,
+                               indexDate,
+                               censorDate,
+                               conceptSet,
                                ingredientConceptId,
-                               restrictIncident = TRUE,
-                               numberExposures = TRUE,
-                               numberEras = TRUE,
-                               exposedTime = TRUE,
-                               indexQuantity = TRUE,
-                               initialQuantity = TRUE,
-                               cumulativeQuantity = TRUE,
-                               indexDose = TRUE,
-                               initialDose = TRUE,
-                               cumulativeDose = TRUE,
-                               gapEra = 30,
-                               eraJoinMode,
-                               overlapMode,
-                               sameIndexMode,
-                               nameStyle = "{value}",
-                               name = NULL,
+                               restrictIncident,
+                               numberExposures,
+                               numberEras,
+                               exposedTime,
+                               indexQuantity,
+                               initialQuantity,
+                               cumulativeQuantity,
+                               indexDose,
+                               initialDose,
+                               cumulativeDose,
+                               gapEra,
+                               nameStyle,
+                               name,
                                call = parent.frame()) {
   # initial checks
   # x <- validateX(x, call)
