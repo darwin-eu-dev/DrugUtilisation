@@ -861,10 +861,7 @@ addDrugUseInternal <- function(x,
 
   nm1 <- omopgenerics::uniqueTableName(tablePrefix)
   cdm <- omopgenerics::insertTable(
-    cdm = cdm,
-    name = nm1,
-    table = dplyr::tibble("drug_concept_id" = unlist(conceptSet)),
-    temporary = FALSE
+    cdm = cdm, name = nm1, table = conceptSetTibble(conceptSet), temporary = F
   )
 
   id <- omopgenerics::getPersonIdentifier(x)
@@ -880,7 +877,7 @@ addDrugUseInternal <- function(x,
       name = omopgenerics::uniqueTableName(tablePrefix)
     )
   if (is.null(censorDate)) {
-    cols <- c(id, indexDate)
+    cols <- c(id, indexDate, "concept_name")
     censorDate <- idFuture
   } else {
     xdates <- xdates |>
@@ -890,7 +887,7 @@ addDrugUseInternal <- function(x,
         .data[[censorDate]]
       )) |>
       dplyr::select(-dplyr::all_of(idFuture))
-    cols <- c(id, indexDate, censorDate)
+    cols <- c(id, indexDate, censorDate, "concept_name")
   }
 
   drugData <- xdates |>
@@ -899,7 +896,8 @@ addDrugUseInternal <- function(x,
         dplyr::inner_join(cdm[[nm1]], by = "drug_concept_id") |>
         dplyr::select(
           !!id := "person_id", "drug_exposure_start_date",
-          "drug_exposure_end_date", "quantity", "drug_concept_id"
+          "drug_exposure_end_date", "quantity", "drug_concept_id",
+          "concept_name"
         ),
       by = id
     ) |>
@@ -1174,7 +1172,7 @@ validateGapEra <- function(gapEra, call) {
   assertNumeric(gapEra, integerish = TRUE, min = 0, length = 1, call = call)
   return(invisible(gapEra))
 }
-validateNameStyle(nameStyle, ingredientConceptId, conceptSet, values, call) {
+validateNameStyle <- function(nameStyle, ingredientConceptId, conceptSet, values, call) {
   assertCharacter(nameStyle, length = 1, call = call)
   msg <- character()
   if (length(ingredientConceptId) > 1 && !grepl("\\{ingredient\\}", nameStyle)) {
@@ -1197,4 +1195,10 @@ validateName <- function(name, cdm, call) {
       cli::cli_inform()
   }
   return(invisible(name))
+}
+
+conceptSetTibble <- function(conceptSet) {
+  purrr::map(conceptSet, dplyr::as_tibble) |>
+    dplyr::bind_rows(.id = "concept_name") |>
+    dplyr::rename("drug_concept_id" = "value")
 }
