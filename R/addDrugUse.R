@@ -828,12 +828,35 @@ addDrugUseInternal <- function(x,
                                name,
                                call = parent.frame()) {
   # initial checks
-  # x <- validateX(x, call)
+  x <- validateX(x, call)
   cdm <- omopgenerics::cdmReference(x)
-  # indexDate <- validateIndexDate(indexDate, x, call)
+  indexDate <- validateIndexDate(indexDate, x, call)
   ingredientConceptId <- validateIngredientConceptId(ingredientConceptId, cdm, call)
   conceptSet <- validateConceptSet(conceptSet, ingredientConceptId, cdm, call)
+  restrictIncident <- validateLogical(restrictIncident, "restrictIncident", call)
+  numberExposures <- validateLogical(numberExposures, "numberExposures", call)
+  numberEras <- validateLogical(numberEras, "numberEras", call)
+  exposedTime <- validateLogical(exposedTime, "exposedTime", call)
+  indexQuantity <- validateLogical(indexQuantity, "indexQuantity", call)
+  initialQuantity <- validateLogical(initialQuantity, "initialQuantity", call)
+  cumulativeQuantity <- validateLogical(cumulativeQuantity, "cumulativeQuantity", call)
+  indexDose <- validateLogical(indexDose, "indexDose", call)
+  initialDose <- validateLogical(initialDose, "initialDose", call)
+  cumulativeDose <- validateLogical(cumulativeDose, "cumulativeDose", call)
+  gapEra <- validateGapEra(gapEra, call)
+  values <- c(
+    numberExposures, numberEras, exposedTime, indexQuantity, initialQuantity,
+    cumulativeQuantity, indexDose, initialDose, cumulativeDose
+  )
+  values <- values[values]
+  nameStyle <- validateNameStyle(
+    nameStyle, ingredientConceptId, conceptSet, values, call)
+  name <- validateName(name, cdm, call)
 
+  if ((indexDose | initialDose | cumulativeDose) & is.null(ingredientConceptId)) {
+    "{.strong ingredientConceptId} can not be NULL for dose calculations" |>
+      cli::cli_abort(call = call)
+  }
   tablePrefix <- omopgenerics::tmpPrefix()
 
   nm1 <- omopgenerics::uniqueTableName(tablePrefix)
@@ -1073,6 +1096,20 @@ getColName <- function(nm, nameStyle) {
   glue::glue(nameStyle, value = nm) |> as.character()
 }
 
+validateX <- function(x, call) {
+  assertClass(x, "cdm_table", call = call)
+  id <- c("subject_id", "person_id")
+  id <- id[id %in% colnames(x)]
+  if (length(id) == 0) {
+    "person_id or subject_id must be columns in x" |>
+      cli::cli_abort(call = call)
+  }
+  if (length(id) == 2) {
+    "person_id and subject_id must not be columns in x" |>
+      cli::cli_abort(call = call)
+  }
+  return(invisible(x))
+}
 validateConceptSet <- function(conceptSet, ingredientConceptId, cdm, call) {
   if (is.null(conceptSet)) {
     if (is.null(ingredientConceptId)) {
@@ -1094,9 +1131,10 @@ validateConceptSet <- function(conceptSet, ingredientConceptId, cdm, call) {
   return(invisible(conceptSet))
 }
 validateIngredientConceptId <- function(ingredientConceptId, cdm, call) {
-  if (!is.numeric(ingredientConceptId)) {
-    "ingredientConceptId must be numeric" |> cli::cli_abort(call = call)
-  }
+  if (is.null(ingredientConceptId)) return(invisible(ingredientConceptId))
+  assertNumeric(
+    ingredientConceptId, integerish = TRUE, min = 0, unique = TRUE, call = call
+  )
   ingredients <- cdm$concept |>
     dplyr::filter(.data$concept_class_id == "Ingredient") |>
     dplyr::filter(.data$concept_id %in% .env$ingredientConceptId) |>
@@ -1132,8 +1170,26 @@ validateLogical <- function(x, nm, call) {
   assertLogical(x, length = 1, msg = msg, call = call)
   return(invisible(x))
 }
-# validateGapEra(gapEra, call)
-# validateNameStyle(nameStyle, ingredientConceptId, conceptSet, call)
+validateGapEra <- function(gapEra, call) {
+  assertNumeric(gapEra, integerish = TRUE, min = 0, length = 1, call = call)
+  return(invisible(gapEra))
+}
+validateNameStyle(nameStyle, ingredientConceptId, conceptSet, values, call) {
+  assertCharacter(nameStyle, length = 1, call = call)
+  msg <- character()
+  if (length(ingredientConceptId) > 1 && !grepl("\\{ingredient\\}", nameStyle)) {
+    msg <- c(msg, "{{ingredient}} must be part of nameStyle")
+  }
+  if (length(conceptSet) > 1 && !grepl("\\{concept_name\\}", nameStyle)) {
+    msg <- c(msg, "{{concept_name}} must be part of nameStyle")
+  }
+  if (length(values) > 1 && !grepl("\\{value\\}", nameStyle)) {
+    msg <- c(msg, "{{value}} must be part of nameStyle")
+  }
+  if (length(msg) > 1) {
+    cli::cli_abort(message = msg, call = call)
+  }
+}
 validateName <- function(name, cdm, call) {
   assertCharacter(name, length = 1, na = FALSE, null = TRUE, call = call)
   if (!is.null(name) && name %in% names(cdm)) {
