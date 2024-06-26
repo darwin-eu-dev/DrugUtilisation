@@ -17,64 +17,20 @@
 #' Add new columns with drug use related information
 #'
 #' @param cohort Cohort in the cdm
-#' @param cdm deprecated
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
 #' @param conceptSet List of concepts to be included. If NULL all the
 #' descendants of ingredient concept id will be used.
-#' @param duration Whether to add duration related columns.
-#' @param quantity Whether to add quantity related columns.
-#' @param dose Whether to add dose related columns.
+#' ingredientConceptId = NULL,
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era.
-#' @param eraJoinMode How two different continuous exposures are joined in an
-#' era. There are four options:
-#' "zero" the exposures are joined considering that the period between both
-#' continuous exposures the subject is treated with a daily dose of zero. The
-#' time between both exposures contributes to the total exposed time.
-#' "join" the exposures are joined considering that the period between both
-#' continuous exposures the subject is treated with a daily dose of zero. The
-#' time between both exposures does not contribute to the total exposed time.
-#' "previous" the exposures are joined considering that the period between both
-#' continuous exposures the subject is treated with the daily dose of the
-#' previous subexposure. The time between both exposures contributes to the
-#' total exposed time.
-#' "subsequent" the exposures are joined considering that the period between
-#' both continuous exposures the subject is treated with the daily dose of the
-#' subsequent subexposure. The time between both exposures contributes to the
-#' total exposed time.
-#' @param overlapMode How the overlapping between two exposures that do not
-#' start on the same day is solved inside a subexposure. There are five possible
-#'  options:
-#' "previous" the considered daily_dose is the one of the earliest exposure.
-#' "subsequent" the considered daily_dose is the one of the new exposure that
-#' starts in that subexposure.
-#' "minimum" the considered daily_dose is the minimum of all of the exposures in
-#' the subexposure.
-#' "maximum" the considered daily_dose is the maximum of all of the exposures in
-#' the subexposure.
-#' "sum" the considered daily_dose is the sum of all the exposures present in
-#' the subexposure.
-#' @param sameIndexMode How the overlapping between two exposures that start on
-#' the same day is solved inside a subexposure. There are three possible options:
-#' "minimum" the considered daily_dose is the minimum of all of the exposures in
-#' the subexposure.
-#' "maximum" the considered daily_dose is the maximum of all of the exposures in
-#' the subexposure.
-#' "sum" the considered daily_dose is the sum of all the exposures present in
-#' the subexposure.
-#' @param imputeDuration Whether/how the duration should be imputed
-#' "none", "median", "mean", "mode" or a number
-#' @param imputeDailyDose Whether/how the daily_dose should be imputed
-#' "none", "median", "mean", "mode" or a number
-#' @param durationRange Range between the duration must be comprised. It should
-#' be a numeric vector of length two, with no NAs and the first value should be
-#' equal or smaller than the second one. It must not be NULL if imputeDuration
-#' is not "none". If NULL no restrictions are applied.
-#' @param dailyDoseRange Range between the daily_dose must be comprised. It
-#' should be a numeric vector of length two, with no NAs and the first value
-#' should be equal or smaller than the second one. It must not be NULL if
-#' imputeDailyDose is not "none". If NULL no restrictions are applied.
 #'
 #' @return The same cohort with the added columns.
 #'
@@ -95,13 +51,10 @@
 #'
 addDrugUse <- function(cohort,
                        indexDate = "cohort_start_date",
-                       censorDate = NULL,
+                       censorDate = "cohort_end_date",
                        ingredientConceptId = NULL,
                        conceptSet = NULL,
                        restrictIncident = TRUE,
-                       duration = TRUE,
-                       quantity = TRUE,
-                       dose = TRUE,
                        gapEra = 0) {
   x <- cohort |>
     addDrugUseInternal(
@@ -931,12 +884,15 @@ addDrugUseInternal <- function(x,
       is.na(.data$drug_exposure_end_date),
       .data$drug_exposure_start_date,
       .data$drug_exposure_end_date
-    ))
+    )) |>
+    dplyr::filter(
+      .data$drug_exposure_start_date <= .data$seug_exposure_end_date
+    )
   if (restrictIncident) {
     drugData <- drugData |>
       dplyr::filter(
         .data$drug_exposure_start_date >= .data[[indexDate]] &
-          .data$drug_exposure_end_date >= .data[[indexDate]]
+          .data$drug_exposure_start_date <= .data[[censorDate]]
       )
   } else {
     drugData <- drugData |>
@@ -1011,7 +967,10 @@ addDrugUseInternal <- function(x,
 
   if (indexDose | cumulativeDose | initialDose) {
     drugData <- drugData |>
-      addDailyDose(ingredientConceptId = ingredientConceptId)
+      addDailyDose(
+        ingredientConceptId = ingredientConceptId,
+        name = omopgenerics::uniqueTableName(tablePrefix)
+      )
     unit <- drugData |>
       dplyr::select("unit") |>
       dplyr::distinct() |>
@@ -1030,7 +989,10 @@ addDrugUseInternal <- function(x,
     x <- x |>
       dplyr::left_join(
         drugData |>
-          dplyr::filter(.data[[indexDate]] == .data$drug_exposure_start_date) |>
+          dplyr::filter(
+            .data[[indexDate]] >= .data$drug_exposure_start_date &
+              .data[[indexDate]] <= .data$drug_exposure_end_date
+          ) |>
           dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
           dplyr::summarise(!!!qIndex, .groups = "drop"),
         by = cols
@@ -1060,15 +1022,37 @@ addDrugUseInternal <- function(x,
 
   if (cumulativeDose | cumulativeQuantity) {
     qCumulative <- c(
-      rlang::parse_exprs('sum(.data$quantity, na.rm = TRUE)') |>
-        rlang::set_names(getColName("cumulative_quantity", nameStyle)),
-      rlang::parse_exprs("sum(.data$daily_dose, na.rm = TRUE)") |>
-        rlang::set_names(getColName(paste0("cumulative_dose_", unit), nameStyle))
-    )
+      'sum(.data$quantity * .data$corrector_factor, na.rm = TRUE)',
+      "sum(.data$daily_dose * .data$exposed_days, na.rm = TRUE)"
+    ) |>
+      rlang::parse_exprs() |>
+      rlang::set_names(getColName(
+        c("cumulative_quantity", paste0("cumulative_dose_", unit)), nameStyle
+      ))
     qCumulative <- qCumulative[c(cumulativeQuantity, cumulativeDose)]
+    newVariables <- c(
+      "dplyr::if_else(
+          .data[['{indexDate}']] <= .data$drug_exposure_start_date,
+          as.numeric(.data$drug_exposure_start_date),
+          as.numeric(.data[['{indexDate}']])
+        )",
+      "dplyr::if_else(
+          .data[['{censorDate}']] >= .data$drug_exposure_end_date,
+          as.numeric(.data$drug_exposure_end_date),
+          as.numeric(.data[['{censorDate}']])
+        )",
+      ".data$end - .data$start + 1",
+      ".data$exposed_days / (as.numeric(.data$drug_exposure_end_date) -
+            as.numeric(.data$drug_exposure_start_date) + 1)"
+    ) |>
+      rlang::parse_exprs() |>
+      rlang::set_names(c("start", "end", "exposed_days", "corrector_factor"))
+    if (!cumulativeQuantity) newVariables <- newVariables[1:3]
+
     x <- x |>
       dplyr::left_join(
         drugData |>
+          dplyr::mutate(!!!newVariables) |>
           dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
           dplyr::summarise(!!!qCumulative, .groups = "drop"),
         by = cols
@@ -1125,4 +1109,36 @@ validateIngredientConceptId <- function(ingredientConceptId, cdm, call) {
       cli::cli_abort(call = call)
   }
   return(ingredients)
+}
+validateIndexDate <- function(indexDate, x, call) {
+  msg <- "{.strong indexDate} must point to date column in x"
+  assertCharacter(indexDate, length = 1, call = call, msg = msg)
+  if (!indexDate %in% colnames(x)) cli::cli_abort(message = msg, call = call)
+  type <- x |> utils::head(1) |> dplyr::pull(indexDate) |> dplyr::type_sum()
+  if (type != "date") cli::cli_abort(message = msg, call = call)
+  return(invisible(indexDate))
+}
+validateCensorDate <- function(censorDate, x, call) {
+  if (is.null(censorDate)) return(invisible(censorDate))
+  msg <- "{.strong censorDate} must be NULL or point to date column in x"
+  assertCharacter(censorDate, length = 1, call = call, msg = msg)
+  if (!censorDate %in% colnames(x)) cli::cli_abort(message = msg, call = call)
+  type <- x |> utils::head(1) |> dplyr::pull(censorDate) |> dplyr::type_sum()
+  if (type != "date") cli::cli_abort(message = msg, call = call)
+  return(invisible(censorDate))
+}
+validateLogical <- function(x, nm, call) {
+  msg <- paste0("{.strong ", nm, "} must be TRUE or FALSE")
+  assertLogical(x, length = 1, msg = msg, call = call)
+  return(invisible(x))
+}
+# validateGapEra(gapEra, call)
+# validateNameStyle(nameStyle, ingredientConceptId, conceptSet, call)
+validateName <- function(name, cdm, call) {
+  assertCharacter(name, length = 1, na = FALSE, null = TRUE, call = call)
+  if (!is.null(name) && name %in% names(cdm)) {
+    c("!" = "table {.strong {name}} already exist in the cdm and will be overwritten") |>
+      cli::cli_inform()
+  }
+  return(invisible(name))
 }

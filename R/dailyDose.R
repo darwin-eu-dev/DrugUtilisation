@@ -21,6 +21,8 @@
 #' @param cdm A cdm reference
 #' @param ingredientConceptId ingredientConceptId for which to filter the
 #' drugs of interest
+#' @param name Name of the computed table, if NULL a temporary table will be
+#' generated.
 #'
 #' @return same input table
 #' @export
@@ -39,7 +41,8 @@
 #'
 addDailyDose <- function(drugExposure,
                          cdm = attr(drugExposure, "cdm_reference"),
-                         ingredientConceptId) {
+                         ingredientConceptId,
+                         name = NULL) {
   # initial checks
   checkInputs(
     drugExposure = drugExposure, ingredientConceptId = ingredientConceptId,
@@ -79,8 +82,13 @@ addDailyDose <- function(drugExposure,
         "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
         "quantity"
       )
-    ) %>%
-    dplyr::compute()
+    )
+
+  if (is.null(name)) {
+    drugExposure <- drugExposure |> dplyr::compute()
+  } else {
+    drugExposure <- drugExposure |> dplyr::compute(name = name, temporary = FALSE)
+  }
 
   cdm <- omopgenerics::dropTable(cdm = cdm, name = nm)
 
@@ -164,6 +172,7 @@ dailyDoseCoverage <- function(cdm,
         "q25", "median", "q75", "q95", "max"
       )
     ) %>%
+    suppressWarnings() |>
     dplyr::filter(
       !(.data$strata_name %in% c("Overall", "route")) |
         .data$variable_name != "daily_dose" |

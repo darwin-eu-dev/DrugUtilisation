@@ -1,5 +1,5 @@
 test_that("test flags", {
-  skip_on_cran()
+  skip("deprecated options")
   cdm <- mockDrugUtilisation()
   x <- tidyr::expand_grid(
     duration = c(TRUE, FALSE), quantity = c(TRUE, FALSE), dose = c(TRUE, FALSE)
@@ -38,7 +38,7 @@ test_that("test flags", {
 })
 
 test_that("test overlapMode", {
-  skip_on_cran()
+  skip("deprecated options")
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -113,20 +113,6 @@ test_that("test overlapMode", {
     "number_exposures", "number_eras", "initial_daily_dose_milligram", "duration",
     "cumulative_dose_milligram", "initial_quantity", "cumulative_quantity"
   )
-
-  # check no error without cdm object specified
-  expect_no_error(x <- addDrugUse(
-    cohort = cdm[["cohort1"]],
-    ingredientConceptId = 1,
-    gapEra = 30,
-    eraJoinMode = "Previous",
-    overlapMode = "Sum",
-    sameIndexMode = "Sum",
-    imputeDuration = "none",
-    imputeDailyDose = "none",
-    durationRange = c(1, Inf),
-    dailyDoseRange = c(0, Inf)
-  ))
 
   # prev
   x <- addDrugUse(
@@ -252,7 +238,7 @@ test_that("test overlapMode", {
 })
 
 test_that("test gapEra and eraJoinMode", {
-  skip_on_cran()
+  skip("deprecated options")
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
