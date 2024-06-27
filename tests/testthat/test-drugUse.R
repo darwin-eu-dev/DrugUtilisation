@@ -1029,70 +1029,70 @@ test_that("check all variables", {
   ) %in% result$variable_name))
 })
 
-test_that("test impute duration percentage", {
-  conceptList <- list(`Ingredient: acetaminophen (1125315)` =
-                        c(1125315, 43135274, 2905077, 1125360))
-
-  cdm <- mockDrugUtilisation(numberIndividual  = 200)
-
-  cdm$drug_exposure <- cdm$drug_exposure %>%
-    dplyr::mutate(drug_exposure_end_date = dplyr::if_else(person_id == 14, NA, drug_exposure_end_date))
-
-  cdm <- generateDrugUtilisationCohortSet(
-    cdm  = cdm,
-    name = "acetaminophen_example3",
-    conceptSet = conceptList,
-    imputeDuration = "mean"
-  )
-
-  # expect_true(cdm$acetaminophen_example3 %>%
-  #   addDrugUse(
-  #     ingredientConceptId = 1125315,
-  #     duration = TRUE,
-  #     quantity = FALSE,
-  #     dose     = FALSE,
-  #     imputeDuration = "mean"
-  #   ) %>%
-  #   dplyr::filter(subject_id == 14) %>%
-  #   dplyr::pull(impute_duration_percentage) == 100)
-
-
-  cdm <- mockDrugUtilisation(
-    connectionDetails,
-    drug_exposure = dplyr::tibble(
-      drug_exposure_id = 1:4,
-      person_id = c(1, 1, 1, 1),
-      drug_concept_id = c(1539462, 1539463, 1539403, 1539403),
-      drug_exposure_start_date = as.Date(c(
-        "2000-01-01", "2001-02-01", "2001-02-17", "2001-04-10"
-      )),
-      drug_exposure_end_date = as.Date(c(
-        NA,  "2001-02-15", "2001-03-19", "2001-05-10"
-      )),
-      quantity = c(1,2,3,4),
-      drug_type_concept_id = 0
-    ),
-    cohort1 = dplyr::tibble(cohort_definition_id = 1, subject_id = 1,
-                            cohort_start_date = as.Date("1990-01-01"),
-                            cohort_end_date = as.Date("2020-01-01")),
-    observation_period = dplyr::tibble(
-      observation_period_id = 1,
-      person_id = 1,
-      observation_period_start_date = as.Date("1980-01-01"),
-      observation_period_end_date = as.Date("2030-01-01"),
-      period_type_concept_id = 0
-    )
-  )
-
-  cdm$cohort1 <- cdm$cohort1 %>% addDrugUse(
-    cdm = cdm,
-    ingredientConceptId = 1539403,
-    conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
-      imputeDuration = "median")
-
-
-  expect_true(cdm$cohort1 %>%
-                dplyr::filter(subject_id == 1) %>%
-                dplyr::pull(impute_duration_percentage) == 25)
-
-})
+# test_that("test impute duration percentage", {
+#   conceptList <- list(`Ingredient: acetaminophen (1125315)` =
+#                         c(1125315, 43135274, 2905077, 1125360))
+#
+#   cdm <- mockDrugUtilisation(numberIndividual  = 200)
+#
+#   cdm$drug_exposure <- cdm$drug_exposure %>%
+#     dplyr::mutate(drug_exposure_end_date = dplyr::if_else(person_id == 14, NA, drug_exposure_end_date))
+#
+#   cdm <- generateDrugUtilisationCohortSet(
+#     cdm  = cdm,
+#     name = "acetaminophen_example3",
+#     conceptSet = conceptList,
+#     imputeDuration = "mean"
+#   )
+#
+# expect_true(cdm$acetaminophen_example3 %>%
+#   addDrugUse(
+#     ingredientConceptId = 1125315,
+#     duration = TRUE,
+#     quantity = FALSE,
+#     dose     = FALSE,
+#     imputeDuration = "mean"
+#   ) %>%
+#   dplyr::filter(subject_id == 14) %>%
+#   dplyr::pull(impute_duration_percentage) == 100)
+#
+#
+#   cdm <- mockDrugUtilisation(
+#     connectionDetails,
+#     drug_exposure = dplyr::tibble(
+#       drug_exposure_id = 1:4,
+#       person_id = c(1, 1, 1, 1),
+#       drug_concept_id = c(1539462, 1539463, 1539403, 1539403),
+#       drug_exposure_start_date = as.Date(c(
+#         "2000-01-01", "2001-02-01", "2001-02-17", "2001-04-10"
+#       )),
+#       drug_exposure_end_date = as.Date(c(
+#         NA,  "2001-02-15", "2001-03-19", "2001-05-10"
+#       )),
+#       quantity = c(1,2,3,4),
+#       drug_type_concept_id = 0
+#     ),
+#     cohort1 = dplyr::tibble(cohort_definition_id = 1, subject_id = 1,
+#                             cohort_start_date = as.Date("1990-01-01"),
+#                             cohort_end_date = as.Date("2020-01-01")),
+#     observation_period = dplyr::tibble(
+#       observation_period_id = 1,
+#       person_id = 1,
+#       observation_period_start_date = as.Date("1980-01-01"),
+#       observation_period_end_date = as.Date("2030-01-01"),
+#       period_type_concept_id = 0
+#     )
+#   )
+#
+#   cdm$cohort1 <- cdm$cohort1 %>% addDrugUse(
+#     cdm = cdm,
+#     ingredientConceptId = 1539403,
+#     conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
+#       imputeDuration = "median")
+#
+#
+#   expect_true(cdm$cohort1 %>%
+#                 dplyr::filter(subject_id == 1) %>%
+#                 dplyr::pull(impute_duration_percentage) == 25)
+#
+# })

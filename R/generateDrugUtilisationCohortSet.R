@@ -67,6 +67,7 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              priorObservation = lifecycle::deprecated(),
                                              cohortDateRange = lifecycle::deprecated(),
                                              limit = lifecycle::deprecated()) {
+
   if (lifecycle::is_present(durationRange)) {
     lifecycle::deprecate_warn(
       when = "0.6.2", what = "generateDrugUtilisationCohortSet(durationRange = )"
@@ -95,17 +96,12 @@ generateDrugUtilisationCohortSet <- function(cdm,
 
   priorObservation <- 0
   cohortDateRange <- as.Date(c(NA, NA))
-  limit <- "all"
-  durationRange <- c(1, Inf)
-  imputeDuration <- "none"
 
-  if (is.character(imputeDuration)) imputeDuration <- tolower(imputeDuration)
-  if (is.character(limit)) limit <- tolower(limit)
   checkInputs(
     cdm = cdm, name = name, conceptSet = conceptSet,
-    limit = limit, priorObservation = priorObservation, gapEra = gapEra,
+    limit = "all", priorObservation = priorObservation, gapEra = gapEra,
     priorUseWashout = priorUseWashout, cohortDateRange = cohortDateRange,
-    imputeDuration = imputeDuration, durationRange = durationRange
+    imputeDuration = "none", durationRange = c(1, Inf)
   )
 
   # get conceptSet
@@ -113,9 +109,9 @@ generateDrugUtilisationCohortSet <- function(cdm,
     dplyr::mutate(cohort_definition_id = dplyr::row_number()) %>%
     dplyr::select("cohort_definition_id", "cohort_name") |>
     dplyr::mutate(
-      duration_range_min = as.character(.env$durationRange[1]),
-      duration_range_max = as.character(.env$durationRange[2]),
-      impute_duration = as.character(.env$imputeDuration),
+      duration_range_min = as.character(1),
+      duration_range_max = as.character(Inf),
+      impute_duration = "none",
       gap_era = as.character(.env$gapEra),
       prior_use_washout = as.character(.env$priorUseWashout),
       prior_observation = as.character(dplyr::coalesce(
@@ -123,21 +119,20 @@ generateDrugUtilisationCohortSet <- function(cdm,
       )),
       cohort_date_range_start = as.character(.env$cohortDateRange[1]),
       cohort_date_range_end = as.character(.env$cohortDateRange[2]),
-      limit = .env$limit
+      limit = "all"
     )
 
   conceptSet <- conceptSetFromConceptSetList(conceptSet, cohortSet)
 
   cdm[[name]] <- subsetTables(
-    cdm, conceptSet, imputeDuration, durationRange, name
+    cdm, conceptSet, name
   ) |>
     omopgenerics::newCohortTable(cohortSetRef = cohortSet) |>
     erafyCohort(gapEra) |>
     requirePriorUseWashout(priorUseWashout) |>
     requirePriorObservation(priorObservation) |>
     trimStartDate(cohortDateRange[1]) |>
-    trimEndDate(cohortDateRange[2]) |>
-    applyLimit(limit)
+    trimEndDate(cohortDateRange[2])
 
   dropTmpTables(cdm)
 
