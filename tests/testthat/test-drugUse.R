@@ -1,5 +1,6 @@
+
 test_that("test flags", {
-  skip("deprecated options")
+  skip_on_cran()
   cdm <- mockDrugUtilisation()
   x <- tidyr::expand_grid(
     duration = c(TRUE, FALSE), quantity = c(TRUE, FALSE), dose = c(TRUE, FALSE)
@@ -11,13 +12,12 @@ test_that("test flags", {
     "cumulative_dose_milligram"
   )
   for (k in seq_len(nrow(x))) {
-    expect_no_error(
-      xx <- cdm$cohort1 %>%
+    xx <- cdm$cohort1 %>%
       addDrugUse(
         ingredientConceptId = 1539403, duration = x$duration[k],
         quantity = x$quantity[k], dose = x$dose[k]
-      )
-    )
+      ) %>%
+      expect_no_error()
     expect_true(all(c("number_exposures", "number_eras") %in% colnames(xx)))
     if (x$duration[k]) {
       expect_true(all(columnsDuration %in% colnames(xx)))
@@ -38,7 +38,7 @@ test_that("test flags", {
 })
 
 test_that("test overlapMode", {
-  skip("deprecated options")
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -102,17 +102,31 @@ test_that("test overlapMode", {
       period_type_concept_id = 0
     ),
     concept_relationship = dplyr::tibble(
-        concept_id_1 = c(c(1, 2, 3, 4, 5)),
-        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
-        relationship_id = c(rep("RxNorm has dose form", 5)),
-        valid_start_date = as.Date("1900-01-01"),
-        valid_end_date = as.Date("2100-01-01")
+      concept_id_1 = c(c(1, 2, 3, 4, 5)),
+      concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+      relationship_id = c(rep("RxNorm has dose form", 5)),
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     )
   )
   variables <- c(
     "number_exposures", "number_eras", "initial_daily_dose_milligram", "duration",
     "cumulative_dose_milligram", "initial_quantity", "cumulative_quantity"
   )
+
+  # check no error without cdm object specified
+  expect_no_error(x <- addDrugUse(
+    cohort = cdm[["cohort1"]],
+    ingredientConceptId = 1,
+    gapEra = 30,
+    eraJoinMode = "Previous",
+    overlapMode = "Sum",
+    sameIndexMode = "Sum",
+    imputeDuration = "none",
+    imputeDailyDose = "none",
+    durationRange = c(1, Inf),
+    dailyDoseRange = c(0, Inf)
+  ))
 
   # prev
   x <- addDrugUse(
@@ -238,7 +252,7 @@ test_that("test overlapMode", {
 })
 
 test_that("test gapEra and eraJoinMode", {
-  skip("deprecated options")
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     connectionDetails,
     drug_exposure = dplyr::tibble(
@@ -1033,15 +1047,15 @@ test_that("test impute duration percentage", {
   )
 
   expect_true(cdm$acetaminophen_example3 %>%
-    addDrugUse(
-      ingredientConceptId = 1125315,
-      duration = TRUE,
-      quantity = FALSE,
-      dose     = FALSE,
-      imputeDuration = "mean"
-    ) %>%
-    dplyr::filter(subject_id == 14) %>%
-    dplyr::pull(impute_duration_percentage) == 100)
+                addDrugUse(
+                  ingredientConceptId = 1125315,
+                  duration = TRUE,
+                  quantity = FALSE,
+                  dose     = FALSE,
+                  imputeDuration = "mean"
+                ) %>%
+                dplyr::filter(subject_id == 14) %>%
+                dplyr::pull(impute_duration_percentage) == 100)
 
 
   cdm <- mockDrugUtilisation(
@@ -1075,7 +1089,7 @@ test_that("test impute duration percentage", {
     cdm = cdm,
     ingredientConceptId = 1539403,
     conceptSet = list("simvastatin" = c(1539462, 1539463, 1539403)),
-      imputeDuration = "median")
+    imputeDuration = "median")
 
 
   expect_true(cdm$cohort1 %>%

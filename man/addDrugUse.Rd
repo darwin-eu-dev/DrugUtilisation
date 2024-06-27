@@ -6,42 +6,102 @@
 \usage{
 addDrugUse(
   cohort,
-  indexDate = "cohort_start_date",
-  censorDate = "cohort_end_date",
-  ingredientConceptId = NULL,
+  cdm = lifecycle::deprecated(),
+  ingredientConceptId,
   conceptSet = NULL,
-  restrictIncident = TRUE,
-  gapEra = 0
+  duration = TRUE,
+  quantity = TRUE,
+  dose = TRUE,
+  gapEra = 0,
+  eraJoinMode = "zero",
+  overlapMode = "sum",
+  sameIndexMode = "sum",
+  imputeDuration = "none",
+  imputeDailyDose = "none",
+  durationRange = c(1, Inf),
+  dailyDoseRange = c(0, Inf)
 )
 }
 \arguments{
 \item{cohort}{Cohort in the cdm}
 
-\item{indexDate}{Name of a column that indicates the date to start the
-analysis.}
-
-\item{censorDate}{Name of a column that indicates the date to stop the
-analysis, if NULL end of individuals observation is used.}
+\item{cdm}{deprecated}
 
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
 
 \item{conceptSet}{List of concepts to be included. If NULL all the
-descendants of ingredient concept id will be used.
-ingredientConceptId = NULL,}
+descendants of ingredient concept id will be used.}
 
-\item{restrictIncident}{Whether to include only incident prescriptions in the
-analysis. If FALSE all prescriptions that overlap with the study period will
-be included.}
+\item{duration}{Whether to add duration related columns.}
+
+\item{quantity}{Whether to add quantity related columns.}
+
+\item{dose}{Whether to add dose related columns.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era.}
+
+\item{eraJoinMode}{How two different continuous exposures are joined in an
+era. There are four options:
+"zero" the exposures are joined considering that the period between both
+continuous exposures the subject is treated with a daily dose of zero. The
+time between both exposures contributes to the total exposed time.
+"join" the exposures are joined considering that the period between both
+continuous exposures the subject is treated with a daily dose of zero. The
+time between both exposures does not contribute to the total exposed time.
+"previous" the exposures are joined considering that the period between both
+continuous exposures the subject is treated with the daily dose of the
+previous subexposure. The time between both exposures contributes to the
+total exposed time.
+"subsequent" the exposures are joined considering that the period between
+both continuous exposures the subject is treated with the daily dose of the
+subsequent subexposure. The time between both exposures contributes to the
+total exposed time.}
+
+\item{overlapMode}{How the overlapping between two exposures that do not
+start on the same day is solved inside a subexposure. There are five possible
+options:
+"previous" the considered daily_dose is the one of the earliest exposure.
+"subsequent" the considered daily_dose is the one of the new exposure that
+starts in that subexposure.
+"minimum" the considered daily_dose is the minimum of all of the exposures in
+the subexposure.
+"maximum" the considered daily_dose is the maximum of all of the exposures in
+the subexposure.
+"sum" the considered daily_dose is the sum of all the exposures present in
+the subexposure.}
+
+\item{sameIndexMode}{How the overlapping between two exposures that start on
+the same day is solved inside a subexposure. There are three possible options:
+"minimum" the considered daily_dose is the minimum of all of the exposures in
+the subexposure.
+"maximum" the considered daily_dose is the maximum of all of the exposures in
+the subexposure.
+"sum" the considered daily_dose is the sum of all the exposures present in
+the subexposure.}
+
+\item{imputeDuration}{Whether/how the duration should be imputed
+"none", "median", "mean", "mode" or a number}
+
+\item{imputeDailyDose}{Whether/how the daily_dose should be imputed
+"none", "median", "mean", "mode" or a number}
+
+\item{durationRange}{Range between the duration must be comprised. It should
+be a numeric vector of length two, with no NAs and the first value should be
+equal or smaller than the second one. It must not be NULL if imputeDuration
+is not "none". If NULL no restrictions are applied.}
+
+\item{dailyDoseRange}{Range between the daily_dose must be comprised. It
+should be a numeric vector of length two, with no NAs and the first value
+should be equal or smaller than the second one. It must not be NULL if
+imputeDailyDose is not "none". If NULL no restrictions are applied.}
 }
 \value{
 The same cohort with the added columns.
 }
 \description{
-Add new columns with drug use related information
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 \donttest{
