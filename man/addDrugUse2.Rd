@@ -11,7 +11,17 @@ addDrugUse2(
   ingredientConceptId = NULL,
   conceptSet = NULL,
   restrictIncident = TRUE,
-  gapEra = 0
+  gapEra = 0,
+  numberExposures = TRUE,
+  numberEras = TRUE,
+  exposedTime = TRUE,
+  timeToExposure = TRUE,
+  initialQuantity = TRUE,
+  cumulativeQuantity = TRUE,
+  initialDailyDose = TRUE,
+  cumulativeDose = TRUE,
+  nameStyle = "{value}_{concept_name}_{ingredient}",
+  name = NULL
 )
 }
 \arguments{
@@ -36,6 +46,29 @@ be included.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era.}
+
+\item{numberExposures}{Whether to add a column with the number of exposures.}
+
+\item{numberEras}{Whether to add a column with the number of eras.}
+
+\item{exposedTime}{Whether to add a column with the number of exposed days.}
+
+\item{timeToExposure}{Whether to add a column with the number of days between
+indexDate and start of the first exposure.}
+
+\item{initialQuantity}{Whether to add a column with the initial quantity.}
+
+\item{cumulativeQuantity}{Whether to add a column with the cumulative
+quantity during the whole exposure.}
+
+\item{initialDailyDose}{Whether to add a column with the initial daily dose.}
+
+\item{cumulativeDose}{Whether to add a column with the cumulative dose.}
+
+\item{nameStyle}{Character string to specify the nameStyle of the new columns.}
+
+\item{name}{Name of the new computed column if NULL a temporary tables is
+created.}
 }
 \value{
 The same cohort with the added columns.
@@ -53,7 +86,7 @@ cdm <- generateDrugUtilisationCohortSet(
   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 )
 cdm[["dus_cohort"]] \%>\%
-  addDrugUse(ingredientConceptId = 1125315)
+  addDrugUse2(ingredientConceptId = 1125315)
 }
 
 }

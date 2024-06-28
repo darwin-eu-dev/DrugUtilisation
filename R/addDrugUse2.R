@@ -40,6 +40,19 @@
 #' be included.
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era.
+#' @param numberExposures Whether to add a column with the number of exposures.
+#' @param numberEras Whether to add a column with the number of eras.
+#' @param exposedTime Whether to add a column with the number of exposed days.
+#' @param timeToExposure Whether to add a column with the number of days between
+#' indexDate and start of the first exposure.
+#' @param initialQuantity Whether to add a column with the initial quantity.
+#' @param cumulativeQuantity Whether to add a column with the cumulative
+#' quantity during the whole exposure.
+#' @param initialDailyDose Whether to add a column with the initial daily dose.
+#' @param cumulativeDose Whether to add a column with the cumulative dose.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
 #'
 #' @return The same cohort with the added columns.
 #'
@@ -55,7 +68,7 @@
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 #' )
 #' cdm[["dus_cohort"]] %>%
-#'   addDrugUse(ingredientConceptId = 1125315)
+#'   addDrugUse2(ingredientConceptId = 1125315)
 #' }
 #'
 addDrugUse2 <- function(cohort,
@@ -64,27 +77,35 @@ addDrugUse2 <- function(cohort,
                        ingredientConceptId = NULL,
                        conceptSet = NULL,
                        restrictIncident = TRUE,
-                       gapEra = 0) {
-  x <- cohort |>
+                       gapEra = 0,
+                       numberExposures = TRUE,
+                       numberEras = TRUE,
+                       exposedTime = TRUE,
+                       timeToExposure = TRUE,
+                       initialQuantity = TRUE,
+                       cumulativeQuantity = TRUE,
+                       initialDailyDose = TRUE,
+                       cumulativeDose = TRUE,
+                       nameStyle = "{value}_{concept_name}_{ingredient}",
+                       name = NULL) {
+  cohort |>
     addDrugUseInternal(
       indexDate = indexDate,
       censorDate = censorDate,
       conceptSet = conceptSet,
       ingredientConceptId = ingredientConceptId,
       restrictIncident = restrictIncident,
-      numberExposures = TRUE,
-      numberEras = TRUE,
-      exposedTime = TRUE,
-      timeToExposure = TRUE,
-      initialQuantity = TRUE,
-      cumulativeQuantity = TRUE,
-      initialDose = TRUE,
-      cumulativeDose = TRUE,
+      numberExposures = numberExposures,
+      numberEras = numberEras,
+      exposedTime = exposedTime,
+      timeToExposure = timeToExposure,
+      initialQuantity = initialQuantity,
+      cumulativeQuantity = cumulativeQuantity,
+      initialDailyDose = initialDailyDose,
+      cumulativeDose = cumulativeDose,
       gapEra = gapEra,
-      nameStyle = "{value}",
-      name = NULL)
-
-  return(x)
+      nameStyle = nameStyle,
+      name = name)
 }
 
 addDrugUseInternal <- function(x,
@@ -99,11 +120,11 @@ addDrugUseInternal <- function(x,
                                timeToExposure,
                                initialQuantity,
                                cumulativeQuantity,
-                               initialDose,
+                               initialDailyDose,
                                cumulativeDose,
                                gapEra,
-                               nameStyle,
                                name,
+                               nameStyle,
                                call = parent.frame()) {
   # initial checks
   x <- validateX(x, call)
@@ -119,19 +140,17 @@ addDrugUseInternal <- function(x,
   initialQuantity <- validateLogical(initialQuantity, "initialQuantity", call)
   cumulativeQuantity <- validateLogical(cumulativeQuantity, "cumulativeQuantity", call)
   indexDose <- validateLogical(indexDose, "indexDose", call)
-  initialDose <- validateLogical(initialDose, "initialDose", call)
+  initialDailyDose <- validateLogical(initialDailyDose, "initialDailyDose", call)
   cumulativeDose <- validateLogical(cumulativeDose, "cumulativeDose", call)
   gapEra <- validateGapEra(gapEra, call)
   values <- c(
     numberExposures, numberEras, exposedTime, indexQuantity, initialQuantity,
-    cumulativeQuantity, indexDose, initialDose, cumulativeDose
+    cumulativeQuantity, indexDose, initialDailyDose, cumulativeDose
   )
   values <- values[values]
-  nameStyle <- validateNameStyle(
-    nameStyle, ingredientConceptId, conceptSet, values, call)
   name <- validateName(name, cdm, call)
 
-  if ((indexDose | initialDose | cumulativeDose) & is.null(ingredientConceptId)) {
+  if ((indexDose | initialDailyDose | cumulativeDose) & is.null(ingredientConceptId)) {
     "{.strong ingredientConceptId} can not be NULL for dose calculations" |>
       cli::cli_abort(call = call)
   }
@@ -143,7 +162,7 @@ addDrugUseInternal <- function(x,
   )
 
   id <- omopgenerics::getPersonIdentifier(x)
-  idFuture <- omopgenerics::uniqueId()
+  idFuture <- omopgenerics::uniqueId(exclude = colnames(x))
 
   xdates <- x|>
     dplyr::select(dplyr::all_of(c(id, indexDate, censorDate))) |>
@@ -155,7 +174,7 @@ addDrugUseInternal <- function(x,
       name = omopgenerics::uniqueTableName(tablePrefix)
     )
   if (is.null(censorDate)) {
-    cols <- c(id, indexDate, "concept_name")
+    cols <- c(id, indexDate)
     censorDate <- idFuture
   } else {
     xdates <- xdates |>
@@ -165,7 +184,7 @@ addDrugUseInternal <- function(x,
         .data[[censorDate]]
       )) |>
       dplyr::select(-dplyr::all_of(idFuture))
-    cols <- c(id, indexDate, censorDate, "concept_name")
+    cols <- c(id, indexDate, censorDate)
   }
 
   drugData <- xdates |>
@@ -185,7 +204,7 @@ addDrugUseInternal <- function(x,
       .data$drug_exposure_end_date
     )) |>
     dplyr::filter(
-      .data$drug_exposure_start_date <= .data$seug_exposure_end_date
+      .data$drug_exposure_start_date <= .data$drug_exposure_end_date
     )
   if (restrictIncident) {
     drugData <- drugData |>
@@ -205,171 +224,204 @@ addDrugUseInternal <- function(x,
       name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
     )
 
-  if (numberEras | exposedTime) {
-    drugDataErafied <- drugData |>
-      erafy(
-        start = "drug_exposure_start_date",
-        end = "drug_exposure_end_date",
-        group = cols,
-        gap = gapEra
-      ) |>
-      dplyr::compute(
-        name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
-      )
-  }
-
-  if (numberExposures) {
-    nameCol <- getColName("number_exposures", nameStyle)
+  if (cumulativeQuantity | numberExposures | timeToExposure) {
+    qs <- c(
+      "as.integer(dplyr::n())",
+      "min(.data$drug_exposure_start_date, na.rm = TRUE)",
+      "as.numeric(sum(.data$quantity, na.rm = TRUE))"
+    ) |>
+      rlang::parse_exprs() |>
+      rlang::set_names(c(
+        "number_exposures", "time_to_exposure","cumulative_quantity"
+      ))
+    qs <- qs[c(numberExposures, timeToExposure, cumulativeQuantity)]
+    toJoin <- drugData |>
+      dplyr::group_by(dplyr::across(dplyr::all_of(c(cols, "concept_name")))) |>
+      dplyr::summarise(!!!qs, .groups = "drop")
+    if (timeToExposure) {
+      toJoin <- toJoin %>%
+        dplyr::mutate("time_to_exposure" = dplyr::if_else(
+          .data$time_to_exposure <= .data[[indexDate]],
+          0L,
+          as.integer(!!CDMConnector::datediff(start = indexDate, end = "time_to_exposure"))
+        ))
+    }
     x <- x |>
       dplyr::left_join(
-        drugData |>
-          dplyr::count(dplyr::across(dplyr::all_of(cols)), name = nameCol),
-        by = cols
-      ) |>
-      dplyr::mutate(
-        !!nameCol := dplyr::coalesce(as.integer(.data[[nameCol]]), 0L)
-      )
-  }
-
-  if (numberEras) {
-    nameCol <- getColName("number_eras", nameStyle)
-    x <- x |>
-      dplyr::left_join(
-        drugDataErafied |>
-          dplyr::count(dplyr::across(dplyr::all_of(cols)), name = nameCol),
-        by = cols
-      ) |>
-      dplyr::mutate(
-        !!nameCol := dplyr::coalesce(as.integer(.data[[nameCol]]), 0L)
-      )
-  }
-
-  if (exposedTime) {
-    col <- getColName("exposed_time", nameStyle)
-    x <- x |>
-      dplyr::left_join(
-        drugDataErafied %>%
-          dplyr::mutate("exposed_time" = as.integer(!!CDMConnector::datediff(
-            start = "drug_exposure_start_date",
-            end = "drug_exposure_end_date",
-            interval = "day"
-          )) + 1L) |>
-          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
-          dplyr::summarise(
-            !!col := sum(.data$exposed_time, na.rm = TRUE),
-            .groups = "drop"
+        toJoin |>
+          tidyr::pivot_wider(
+            names_from = "concept_name",
+            names_glue = "{.value}_{concept_name}",
+            values_from = dplyr::all_of(names(qs))
           ),
         by = cols
       ) |>
-      dplyr::mutate(!!col := dplyr::coalesce(.data$exposed_time, 0L))
+      dplyr::mutate(dplyr::across(
+        dplyr::starts_with(names(qs)), ~ dplyr::coalesce(.x, 0L)
+      )) |>
+      compute2(name)
   }
 
-  if (indexDose | cumulativeDose | initialDose) {
-    drugData <- drugData |>
-      addDailyDose(
-        ingredientConceptId = ingredientConceptId,
-        name = omopgenerics::uniqueTableName(tablePrefix)
-      )
-    unit <- drugData |>
-      dplyr::select("unit") |>
-      dplyr::distinct() |>
-      dplyr::pull()
-  }
-
-  if (indexQuantity | indexDose) {
-    qIndex <- c(
-      "sum(.data$quantity, na.rm = TRUE)", "sum(.data$daily_dose, na.rm = TRUE)"
-    ) |>
-      rlang::parse_exprs() |>
-      rlang::set_names(c(
-        getColName(c("index_quantity", paste0("index_dose_", unit)), nameStyle)
-      ))
-    qIndex <- qIndex[c(indexQuantity, indexDose)]
+  if (initialQuantity) {
     x <- x |>
       dplyr::left_join(
         drugData |>
-          dplyr::filter(
-            .data[[indexDate]] >= .data$drug_exposure_start_date &
-              .data[[indexDate]] <= .data$drug_exposure_end_date
+          dplyr::group_by(dplyr::across(dplyr::all_of(c(cols, "concept_name")))) |>
+          dplyr::filter(.data$drug_exposure_start_date == min(.data$drug_exposure_start_date, na.rm = TRUE)) |>
+          dplyr::summarise("initial_quantity" = as.numeric(sum(.data$quantity, na.rm = TRUE)), .groups = "drop") |>
+          tidyr::pivot_wider(
+            names_from = "concept_name",
+            names_glue = "{.value}_{concept_name}",
+            values_from = "initial_quantity"
+          ),
+        by = cols
+      ) |>
+      dplyr::mutate(dplyr::across(
+        dplyr::starts_with("initial_quantity"), ~ dplyr::coalesce(.x, 0L)
+      )) |>
+      compute2(name)
+  }
+
+  if (numberEras | exposedTime) {
+    toJoin <- drugData |>
+      erafy(
+        start = "drug_exposure_start_date",
+        end = "drug_exposure_end_date",
+        group = c(cols, "concept_name"),
+        gap = gapEra
+      )
+    if (exposedTime) {
+      toJoin <- toJoin %>%
+        dplyr::mutate("exposed_time" = as.integer(!!CDMConnector::datediff(
+          start = "drug_exposure_start_date",
+          end = "drug_exposure_end_date",
+          interval = "day"
+        )) + 1L)
+    }
+    qs <- c(
+      "as.integer(dplyr::n())", "sum(.data$exposed_time, na.rm = TRUE)"
+    ) |>
+      rlang::parse_exprs() |>
+      rlang::set_names(c("number_eras", "exposed_time"))
+    qs <- qs[c(numberEras, exposedTime)]
+    x <- x |>
+      dplyr::left_join(
+        toJoin |>
+          dplyr::group_by(dplyr::across(dplyr::all_of(c(cols, "concept_name")))) |>
+          dplyr::summarise(!!!qs, .groups = "drop") |>
+          tidyr::pivot_wider(
+            names_from = "concept_name",
+            names_glue = "{.value}_{concept_name}",
+            values_from = dplyr::all_of(names(qs))
+          ),
+        by = cols
+      ) |>
+      dplyr::mutate(dplyr::across(
+        dplyr::starts_with(names(qs)), ~ dplyr::coalesce(.x, 0L)
+      )) |>
+      compute2(name)
+  }
+
+  if (initialDailyDose | cumulativeDose) {
+    if (!cumulativeDose) {
+      doseData <- drugData |>
+        dplyr::group_by(dplyr::across(c(cols, "concept_name"))) |>
+        dplyr::filter(.data$drug_exposure_start_date == min(
+          .data$drug_exposure_start_date, na.rm = TRUE
+        )) |>
+        dplyr::ungroup()
+    } else {
+      id <- omopgenerics::uniqueId(n = 2, exclude = colnames(drugData))
+      doseData <- drugData %>%
+        dplyr::mutate(
+          !!id[1] := dplyr::if_else(
+            .data[[indexDate]] <= .data$drug_exposure_start_date,
+            .data$drug_exposure_start_date,
+            .data[[indexDate]]
+          ),
+          !!id[2] := dplyr::if_else(
+            .data[[censorDate]] >= .data$drug_exposure_end_date,
+            .data$drug_exposure_end_date,
+            .data[[censorDate]]
+          ),
+          "exposure_duration" = as.integer(!!CDMConnector::datediff(
+            start = id[1], end = id[2]))
+        ) |>
+        dplyr::select(!id)
+    }
+    doseData <- doseData |>
+      dplyr::compute(
+        name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
+      )
+
+    for (k in seq_along(ingredientConceptId)) {
+      nm <- omopgenerics::uniqueTableName(tablePrefix)
+      toJoin <- doseData |>
+        addDailyDose(ingredientConceptId = ingredientConceptId[k], name = nm)
+      if (cumulativeDose) {
+        x <- x |>
+          dplyr::left_join(
+            toJoin |>
+              dplyr::group_by(dplyr::across(c(cols, "concept_name", "unit"))) |>
+              dplyr::summarise(
+                "cumulative_dose" = as.integer(sum(.data$daily_dose * .data$exposed_time, na.rm = TRUE)),
+                .groups = "drop"
+              ) |>
+              tidyr::pivot_wider(
+                names_from = c("concept_name", "unit"),
+                names_glue = !!paste0("cumulative_dose_{concept_name}_", ingredientConceptId[k], "_{unit}"),
+                values_from = "cumulative_dose"
+              ),
+            by = cols
           ) |>
-          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
-          dplyr::summarise(!!!qIndex, .groups = "drop"),
-        by = cols
-      )
-  }
-
-  if (initialQuantity | initialDose) {
-    qInitial <- c(
-      "sum(.data$quantity, na.rm = TRUE)", "sum(.data$daily_dose, na.rm = TRUE)"
-    ) |>
-      rlang::parse_exprs() |>
-      rlang::set_names(c(
-        getColName(c("initial_quantity", paste0("initial_dose_", unit)), nameStyle)
-      ))
-    qIndex <- qIndex[c(indexQuantity, indexDose)]
-    x <- x |>
-      dplyr::left_join(
-        drugData |>
-          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
-          dplyr::filter(
-            .data[[indexDate]] == min(.data[[indexDate]], na.rm = TRUE)
+          dplyr::mutate(dplyr::across(
+            dplyr::starts_with("cumulative"), ~ dplyr::coalesce(.x, 0L)
+          )) |>
+          compute2(name)
+        if (initialDailyDose) {
+          toJoin <- toJoin |>
+            dplyr::group_by(dplyr::across(c(cols, "concept_name"))) |>
+            dplyr::filter(.data$drug_exposure_start_date == min(
+              .data$drug_exposure_start_date, na.rm = TRUE
+            )) |>
+            dplyr::ungroup()
+        }
+      }
+      if (initialDailyDose) {
+        x <- x |>
+          dplyr::left_join(
+            toJoin |>
+              dplyr::group_by(dplyr::across(c(cols, "concept_name", "unit"))) |>
+              dplyr::summarise(
+                "initial_daily_dose" = as.integer(sum(.data$daily_dose, na.rm = TRUE)),
+                .groups = "drop"
+              ) |>
+              tidyr::pivot_wider(
+                names_from = c("concept_name", "unit"),
+                names_glue = !!paste0("initial_daily_dose_{concept_name}_", ingredientConceptId[k], "_{unit}"),
+                values_from = "initial_daily_dose"
+              ),
+            by = cols
           ) |>
-          dplyr::summarise(!!!qInitial, .groups = "drop"),
-        by = cols
-      )
-  }
-
-  if (cumulativeDose | cumulativeQuantity) {
-    qCumulative <- c(
-      'sum(.data$quantity * .data$corrector_factor, na.rm = TRUE)',
-      "sum(.data$daily_dose * .data$exposed_days, na.rm = TRUE)"
-    ) |>
-      rlang::parse_exprs() |>
-      rlang::set_names(getColName(
-        c("cumulative_quantity", paste0("cumulative_dose_", unit)), nameStyle
-      ))
-    qCumulative <- qCumulative[c(cumulativeQuantity, cumulativeDose)]
-    newVariables <- c(
-      "dplyr::if_else(
-          .data[['{indexDate}']] <= .data$drug_exposure_start_date,
-          as.numeric(.data$drug_exposure_start_date),
-          as.numeric(.data[['{indexDate}']])
-        )",
-      "dplyr::if_else(
-          .data[['{censorDate}']] >= .data$drug_exposure_end_date,
-          as.numeric(.data$drug_exposure_end_date),
-          as.numeric(.data[['{censorDate}']])
-        )",
-      ".data$end - .data$start + 1",
-      ".data$exposed_days / (as.numeric(.data$drug_exposure_end_date) -
-            as.numeric(.data$drug_exposure_start_date) + 1)"
-    ) |>
-      rlang::parse_exprs() |>
-      rlang::set_names(c("start", "end", "exposed_days", "corrector_factor"))
-    if (!cumulativeQuantity) newVariables <- newVariables[1:3]
-
-    x <- x |>
-      dplyr::left_join(
-        drugData |>
-          dplyr::mutate(!!!newVariables) |>
-          dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
-          dplyr::summarise(!!!qCumulative, .groups = "drop"),
-        by = cols
-      )
-  }
-
-  if (is.null(name)) {
-    x <- x |> dplyr::compute()
-  } else {
-    x <- x |> dplyr::compute(name = name, temporary = FALSE)
+          dplyr::mutate(dplyr::across(
+            dplyr::starts_with("initial_daily_dose"), ~ dplyr::coalesce(.x, 0L)
+          )) |>
+          compute2(name)
+      }
+    }
   }
 
   omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with(tablePrefix))
 
   return(x)
 }
-getColName <- function(nm, nameStyle) {
-  glue::glue(nameStyle, value = nm) |> as.character()
+compute2 <- function(x, name) {
+  if (is.null(name)) {
+    x <- x |> dplyr::compute()
+  } else {
+    x <- x |> dplyr::compute(name = name, temporary = FALSE)
+  }
+  return(x)
 }
 
 validateX <- function(x, call) {
@@ -404,6 +456,7 @@ validateConceptSet <- function(conceptSet, ingredientConceptId, cdm, call) {
 
   }
   conceptSet <- omopgenerics::newCodelist(conceptSet)
+
   return(invisible(conceptSet))
 }
 validateIngredientConceptId <- function(ingredientConceptId, cdm, call) {
@@ -466,6 +519,7 @@ validateNameStyle <- function(nameStyle, ingredientConceptId, conceptSet, values
   if (length(msg) > 1) {
     cli::cli_abort(message = msg, call = call)
   }
+  return(invisible(nameStyle))
 }
 validateName <- function(name, cdm, call) {
   assertCharacter(name, length = 1, na = FALSE, null = TRUE, call = call)
@@ -475,6 +529,7 @@ validateName <- function(name, cdm, call) {
   }
   return(invisible(name))
 }
+
 
 conceptSetTibble <- function(conceptSet) {
   purrr::map(conceptSet, dplyr::as_tibble) |>

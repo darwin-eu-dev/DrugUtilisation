@@ -84,11 +84,7 @@ addDailyDose <- function(drugExposure,
       )
     )
 
-  if (is.null(name)) {
-    drugExposure <- drugExposure |> dplyr::compute()
-  } else {
-    drugExposure <- drugExposure |> dplyr::compute(name = name, temporary = FALSE)
-  }
+  drugExposure <- drugExposure |> compute2(name)
 
   cdm <- omopgenerics::dropTable(cdm = cdm, name = nm)
 
