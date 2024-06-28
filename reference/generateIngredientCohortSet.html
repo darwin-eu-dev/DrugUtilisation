@@ -59,13 +59,13 @@
 <span>  <span class="va">cdm</span>,</span>
 <span>  <span class="va">name</span>,</span>
 <span>  ingredient <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  durationRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span>,</span>
-<span>  imputeDuration <span class="op">=</span> <span class="st">"none"</span>,</span>
+<span>  durationRange <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  imputeDuration <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  priorUseWashout <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  priorObservation <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  cohortDateRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  limit <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  priorObservation <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  cohortDateRange <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  limit <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  doseForm <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ingredientRange <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -94,15 +94,11 @@ named group.</p></dd>
 
 
 <dt>durationRange</dt>
-<dd><p>Range between the duration must be comprised. It should
-be a numeric vector of length two, with no NAs and the first value should be
-equal or smaller than the second one. It is only required if imputeDuration
-= TRUE. If NULL no restrictions are applied.</p></dd>
+<dd><p>Deprecated.</p></dd>
 
 
 <dt>imputeDuration</dt>
-<dd><p>Whether/how the duration should be imputed
-"none", "median", "mean", "mode", or it can be a count</p></dd>
+<dd><p>Deprecated.</p></dd>
 
 
 <dt>gapEra</dt>
@@ -115,21 +111,15 @@ considered in the same era.</p></dd>
 
 
 <dt>priorObservation</dt>
-<dd><p>Minimum number of days of prior observation
-required for the incident eras to be considered.</p></dd>
+<dd><p>Deprecated.</p></dd>
 
 
 <dt>cohortDateRange</dt>
-<dd><p>Range for cohort_start_date and cohort_end_date</p></dd>
+<dd><p>Deprecated.</p></dd>
 
 
 <dt>limit</dt>
-<dd><p>Choice on how to summarise the exposures. There are
-two options:
-"all" we summarise the output will be a summary of the exposed eras of
-each individual. Each individual can contribute multiple times.
-"first" we only consider the first observable era of each individual that fulfills the criteria provided
-in previous parameters. In this case each individual can not contribute with multiple rows.</p></dd>
+<dd><p>Deprecated.</p></dd>
 
 
 <dt>doseForm</dt>
