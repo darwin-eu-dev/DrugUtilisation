@@ -17,11 +17,10 @@
 #' This function is used to summarise the indication table over multiple
 #' cohorts.
 #'
-#' @param cohort Cohort with indications and strata
-#' @param cdm cdm_reference created by CDMConnector
-#' @param strata Stratification list
-#' @param minCellCount Minimum counts that a group can have. Cohorts with
-#' less counts than this value are obscured.
+#' @param cohort Cohort with indications and strata.
+#' @param cdm Deprecated.
+#' @param strata Stratification list.
+#' @param minCellCount Deprecated.
 #'
 #' @return A Tibble with 4 columns: cohort_definition_id, variable, estimate and
 #' value. There will be one row for each cohort, variable and cohort
@@ -63,12 +62,12 @@ summariseIndication <- function(cohort,
                                 cdm = lifecycle::deprecated(),
                                 strata = list(),
                                 minCellCount = lifecycle::deprecated()) {
-  if (lifecycle::is_present()) {
+  if (lifecycle::is_present(minCellCount)) {
     lifecycle::deprecate_soft(
       when = "0.5.0", what = "summariseIndication(minCellCount = )"
     )
   }
-  if (lifecycle::is_present()) {
+  if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_soft(
       when = "0.5.0", what = "summariseIndication(cdm = )"
     )

@@ -13,14 +13,13 @@ summariseIndication(
 )
 }
 \arguments{
-\item{cohort}{Cohort with indications and strata}
+\item{cohort}{Cohort with indications and strata.}
 
-\item{cdm}{cdm_reference created by CDMConnector}
+\item{cdm}{Deprecated.}
 
-\item{strata}{Stratification list}
+\item{strata}{Stratification list.}
 
-\item{minCellCount}{Minimum counts that a group can have. Cohorts with
-less counts than this value are obscured.}
+\item{minCellCount}{Deprecated.}
 }
 \value{
 A Tibble with 4 columns: cohort_definition_id, variable, estimate and

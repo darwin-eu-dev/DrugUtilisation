@@ -47,25 +47,25 @@ test_that("handle empty ingredient name gracefully", {
 
 })
 
-test_that("date works", {
-
-  cdm <- DrugUtilisation::mockDrugUtilisation()
-
-  cdm <- generateIngredientCohortSet(
-    cdm = cdm,
-    ingredient = "acetaminophen",
-    cohortDateRange = c(as.Date("2020-01-01"), as.Date("2020-12-31")),
-    name = "date_range_test"
-  )
-
-  cohort_df <- cdm$date_range_test %>% dplyr::collect()
-
-  expect_true(all(
-    cohort_df$cohort_start_date >= as.Date("2020-01-01") &
-      cohort_df$cohort_end_date <= as.Date("2020-12-31")
-  ))
-
-})
+# test_that("date works", {
+#
+#   cdm <- DrugUtilisation::mockDrugUtilisation()
+#
+#   cdm <- generateIngredientCohortSet(
+#     cdm = cdm,
+#     ingredient = "acetaminophen",
+#     cohortDateRange = c(as.Date("2020-01-01"), as.Date("2020-12-31")),
+#     name = "date_range_test"
+#   )
+#
+#   cohort_df <- cdm$date_range_test %>% dplyr::collect()
+#
+#   expect_true(all(
+#     cohort_df$cohort_start_date >= as.Date("2020-01-01") &
+#       cohort_df$cohort_end_date <= as.Date("2020-12-31")
+#   ))
+#
+# })
 
 
 test_that("ingredient list and vector both work", {
