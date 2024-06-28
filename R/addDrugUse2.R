@@ -148,7 +148,10 @@ addDrugUseInternal <- function(x,
     cumulativeQuantity, indexDose, initialDailyDose, cumulativeDose
   )
   values <- values[values]
+  nameStyle <- validateNameStyle(nameStyle, ingredientConceptId, conceptSet, values, call)
   name <- validateName(name, cdm, call)
+  nameStyle <- gsub("{value}", "{.value}", x = nameStyle, fixed = TRUE)
+  nameStyleI <- noIngredientNameStyle(nameStyle)
 
   if ((indexDose | initialDailyDose | cumulativeDose) & is.null(ingredientConceptId)) {
     "{.strong ingredientConceptId} can not be NULL for dose calculations" |>
@@ -251,7 +254,7 @@ addDrugUseInternal <- function(x,
         toJoin |>
           tidyr::pivot_wider(
             names_from = "concept_name",
-            names_glue = "{.value}_{concept_name}",
+            names_glue = nameStyleI,
             values_from = dplyr::all_of(names(qs))
           ),
         by = cols
@@ -271,7 +274,7 @@ addDrugUseInternal <- function(x,
           dplyr::summarise("initial_quantity" = as.numeric(sum(.data$quantity, na.rm = TRUE)), .groups = "drop") |>
           tidyr::pivot_wider(
             names_from = "concept_name",
-            names_glue = "{.value}_{concept_name}",
+            names_glue = nameStyleI,
             values_from = "initial_quantity"
           ),
         by = cols
@@ -311,7 +314,7 @@ addDrugUseInternal <- function(x,
           dplyr::summarise(!!!qs, .groups = "drop") |>
           tidyr::pivot_wider(
             names_from = "concept_name",
-            names_glue = "{.value}_{concept_name}",
+            names_glue = nameStyleI,
             values_from = dplyr::all_of(names(qs))
           ),
         by = cols
@@ -369,7 +372,7 @@ addDrugUseInternal <- function(x,
               ) |>
               tidyr::pivot_wider(
                 names_from = c("concept_name", "unit"),
-                names_glue = !!paste0("cumulative_dose_{concept_name}_", ingredientConceptId[k], "_{unit}"),
+                names_glue = !!ingredientNameStyle(nameStyle, ingredientConceptId[k]),
                 values_from = "cumulative_dose"
               ),
             by = cols
@@ -398,7 +401,7 @@ addDrugUseInternal <- function(x,
               ) |>
               tidyr::pivot_wider(
                 names_from = c("concept_name", "unit"),
-                names_glue = !!paste0("initial_daily_dose_{concept_name}_", ingredientConceptId[k], "_{unit}"),
+                names_glue = !!ingredientNameStyle(nameStyle, ingredientConceptId[k]),
                 values_from = "initial_daily_dose"
               ),
             by = cols
@@ -530,7 +533,16 @@ validateName <- function(name, cdm, call) {
   return(invisible(name))
 }
 
-
+noIngredientNameStyle <- function(x) {
+  x <- gsub("_{ingredient}", "", x, fixed = TRUE)
+  x <- gsub("{ingredient}_", "", x, fixed = TRUE)
+  return(x)
+}
+ingredientNameStyle <- function(x, ing) {
+  x <- gsub("{ingredient}", as.character(ing), x, fixed = TRUE)
+  x <- gsub("{.value}", "{.value}_{unit}", x, fixed = TRUE)
+  return(x)
+}
 conceptSetTibble <- function(conceptSet) {
   purrr::map(conceptSet, dplyr::as_tibble) |>
     dplyr::bind_rows(.id = "concept_name") |>
