@@ -8,13 +8,13 @@ generateIngredientCohortSet(
   cdm,
   name,
   ingredient = NULL,
-  durationRange = c(1, Inf),
-  imputeDuration = "none",
+  durationRange = lifecycle::deprecated(),
+  imputeDuration = lifecycle::deprecated(),
   gapEra = 0,
   priorUseWashout = 0,
-  priorObservation = 0,
-  cohortDateRange = as.Date(c(NA, NA)),
-  limit = "all",
+  priorObservation = lifecycle::deprecated(),
+  cohortDateRange = lifecycle::deprecated(),
+  limit = lifecycle::deprecated(),
   doseForm = NULL,
   ingredientRange = c(1, Inf)
 )
@@ -34,30 +34,20 @@ each name leads to a combined set of descendant concept codes for the
 specified ingredients, creating distinct cohort_definition_id for each
 named group.}
 
-\item{durationRange}{Range between the duration must be comprised. It should
-be a numeric vector of length two, with no NAs and the first value should be
-equal or smaller than the second one. It is only required if imputeDuration
-= TRUE. If NULL no restrictions are applied.}
+\item{durationRange}{Deprecated.}
 
-\item{imputeDuration}{Whether/how the duration should be imputed
-"none", "median", "mean", "mode", or it can be a count}
+\item{imputeDuration}{Deprecated.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
 considered in the same era.}
 
 \item{priorUseWashout}{Prior days without exposure.}
 
-\item{priorObservation}{Minimum number of days of prior observation
-required for the incident eras to be considered.}
+\item{priorObservation}{Deprecated.}
 
-\item{cohortDateRange}{Range for cohort_start_date and cohort_end_date}
+\item{cohortDateRange}{Deprecated.}
 
-\item{limit}{Choice on how to summarise the exposures. There are
-two options:
-"all" we summarise the output will be a summary of the exposed eras of
-each individual. Each individual can contribute multiple times.
-"first" we only consider the first observable era of each individual that fulfills the criteria provided
-in previous parameters. In this case each individual can not contribute with multiple rows.}
+\item{limit}{Deprecated.}
 
 \item{doseForm}{Only descendants codes with the specified dose form
 will be returned. If NULL, descendant codes will be returned regardless

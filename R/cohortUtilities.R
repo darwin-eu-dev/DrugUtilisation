@@ -27,15 +27,13 @@ conceptSetFromConceptSetList <- function(conceptSetList, cohortSet) {
 }
 
 #' @noRd
-subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
+subsetTables <- function(cdm, conceptSet, name) {
   # insert concepts
   nm <- uniqueTmpName()
   cdm <- omopgenerics::insertTable(
     cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
   )
   cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
-
-  imputation <- imputeDuration != "none" || !all(durationRange == c(1, Inf))
 
   # subset table
   cohort <- cdm$drug_exposure |>
@@ -67,21 +65,12 @@ subsetTables <- function(cdm, conceptSet, imputeDuration, durationRange, name) {
         .data$cohort_end_date
       )
     )
-  if (!imputation) {
-    cohort <- cohort |>
-      dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date)
-  }
   cohort <- cohort |>
     dplyr::select(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date"
     ) |>
     dplyr::compute(temporary = FALSE, name = name, overwrite = TRUE)
-
-  # impute
-  if (imputation) {
-    cohort <- correctDuration(cohort, imputeDuration, durationRange)
-  }
 
   # erafy
   if (cohort |> dplyr::tally() |> dplyr::pull() > 0) {
@@ -249,23 +238,6 @@ erafy <- function(x,
 }
 
 #' @noRd
-applyLimit <- function(cohort, limit) {
-  limit <- tolower(limit)
-  if (sumcounts(cohort) > 0 & limit == "first") {
-    cohort <- cohort %>%
-      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
-      dplyr::filter(
-        .data$cohort_start_date == min(.data$cohort_start_date, na.rm = TRUE)
-      ) %>%
-      dplyr::ungroup() %>%
-      dplyr::compute(
-        name = attr(cohort, "tbl_name"), temporary = FALSE, overwrite = TRUE
-      ) |>
-      omopgenerics::recordCohortAttrition(reason = "restric to first record")
-  }
-  return(cohort)
-}
-
 correctDuration <- function(x,
                             imputeDuration,
                             durationRange,

@@ -16,7 +16,7 @@ addIndication(
 \arguments{
 \item{x}{Table in the cdm}
 
-\item{cdm}{A cdm reference created using CDMConnector}
+\item{cdm}{Deprecated.}
 
 \item{indicationCohortName}{Name of indication cohort table}
 

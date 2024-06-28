@@ -17,7 +17,7 @@
 #' Get indication for a target cohort
 #'
 #' @param x Table in the cdm
-#' @param cdm A cdm reference created using CDMConnector
+#' @param cdm Deprecated.
 #' @param indicationCohortName Name of indication cohort table
 #' @param indicationGap Gap between the event and the indication
 #' @param unknownIndicationTable Tables to search unknown indications
