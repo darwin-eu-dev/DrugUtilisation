@@ -136,16 +136,15 @@ addDrugUseInternal <- function(x,
   numberExposures <- validateLogical(numberExposures, "numberExposures", call)
   numberEras <- validateLogical(numberEras, "numberEras", call)
   exposedTime <- validateLogical(exposedTime, "exposedTime", call)
-  indexQuantity <- validateLogical(indexQuantity, "indexQuantity", call)
+  timeToExposure <- validateLogical(timeToExposure, "timeToExposure", call)
   initialQuantity <- validateLogical(initialQuantity, "initialQuantity", call)
   cumulativeQuantity <- validateLogical(cumulativeQuantity, "cumulativeQuantity", call)
-  indexDose <- validateLogical(indexDose, "indexDose", call)
   initialDailyDose <- validateLogical(initialDailyDose, "initialDailyDose", call)
   cumulativeDose <- validateLogical(cumulativeDose, "cumulativeDose", call)
   gapEra <- validateGapEra(gapEra, call)
   values <- c(
-    numberExposures, numberEras, exposedTime, indexQuantity, initialQuantity,
-    cumulativeQuantity, indexDose, initialDailyDose, cumulativeDose
+    numberExposures, numberEras, exposedTime, timeToExposure, initialQuantity,
+    cumulativeQuantity, initialDailyDose, cumulativeDose
   )
   values <- values[values]
   nameStyle <- validateNameStyle(nameStyle, ingredientConceptId, conceptSet, values, call)
@@ -153,7 +152,7 @@ addDrugUseInternal <- function(x,
   nameStyle <- gsub("{value}", "{.value}", x = nameStyle, fixed = TRUE)
   nameStyleI <- noIngredientNameStyle(nameStyle)
 
-  if ((indexDose | initialDailyDose | cumulativeDose) & is.null(ingredientConceptId)) {
+  if ((initialDailyDose | cumulativeDose) & is.null(ingredientConceptId)) {
     "{.strong ingredientConceptId} can not be NULL for dose calculations" |>
       cli::cli_abort(call = call)
   }
