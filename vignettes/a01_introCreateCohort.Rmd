@@ -55,7 +55,8 @@ To create a cohort with a concept list from a .json file, use
 `codesFromConceptSet()` from CodelistGenerator package. Let's see an example:
 
 ```{r}
-conceptSet_json <- codesFromConceptSet(here::here("inst/Concept"), cdm)
+conceptSet_json <- codesFromConceptSet(
+  system.file("Concept", package = "DrugUtilisation"), cdm)
 conceptSet_json
 ```
 
