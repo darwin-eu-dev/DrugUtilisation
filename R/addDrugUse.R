@@ -113,7 +113,7 @@ addDrugUse <- function(cohort,
   lifecycle::deprecate_soft(
     when = "0.7.0",
     what = "DrugUtilisation::addDrugUse()",
-    with = "DrugUtilisation::addDrugUse2()"
+    with = "DrugUtilisation::addDrugUtilisation()"
   )
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_soft("0.5.0", "addDrugUse(cdm = )")

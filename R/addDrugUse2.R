@@ -14,15 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# NEW NAME SUGGESTIONS
-# addDrugUsage # NMB
-# addDrugUtilisation # NMB
-# addDrugUse2
-# addDrugInformation
-# addUseOfDrugs
-# addDrugSummary
-# addDrugUseSummary
-
 #' Add new columns with drug use related information
 #'
 #' @param cohort Cohort in the cdm
@@ -68,26 +59,26 @@
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 #' )
 #' cdm[["dus_cohort"]] %>%
-#'   addDrugUse2(ingredientConceptId = 1125315)
+#'   addDrugUtilisation(ingredientConceptId = 1125315)
 #' }
 #'
-addDrugUse2 <- function(cohort,
-                        indexDate = "cohort_start_date",
-                        censorDate = "cohort_end_date",
-                        ingredientConceptId = NULL,
-                        conceptSet = NULL,
-                        restrictIncident = TRUE,
-                        gapEra = 0,
-                        numberExposures = TRUE,
-                        numberEras = TRUE,
-                        exposedTime = TRUE,
-                        timeToExposure = TRUE,
-                        initialQuantity = TRUE,
-                        cumulativeQuantity = TRUE,
-                        initialDailyDose = TRUE,
-                        cumulativeDose = TRUE,
-                        nameStyle = "{value}_{concept_name}_{ingredient}",
-                        name = NULL) {
+addDrugUtilisation <- function(cohort,
+                               indexDate = "cohort_start_date",
+                               censorDate = "cohort_end_date",
+                               ingredientConceptId = NULL,
+                               conceptSet = NULL,
+                               restrictIncident = TRUE,
+                               gapEra = 0,
+                               numberExposures = TRUE,
+                               numberEras = TRUE,
+                               exposedTime = TRUE,
+                               timeToExposure = TRUE,
+                               initialQuantity = TRUE,
+                               cumulativeQuantity = TRUE,
+                               initialDailyDose = TRUE,
+                               cumulativeDose = TRUE,
+                               nameStyle = "{value}_{concept_name}_{ingredient}",
+                               name = NULL) {
   cohort |>
     addDrugUseInternal(
       indexDate = indexDate,
@@ -420,6 +411,7 @@ addDrugUseInternal <- function(x,
   return(x)
 }
 compute2 <- function(x, name) {
+  x <- x |> dplyr::rename_all(tolower)
   if (is.null(name)) {
     x <- x |> dplyr::compute()
   } else {
@@ -466,8 +458,7 @@ validateConceptSet <- function(conceptSet, ingredientConceptId, cdm, call) {
 validateIngredientConceptId <- function(ingredientConceptId, cdm, call) {
   if (is.null(ingredientConceptId)) return(invisible(ingredientConceptId))
   assertNumeric(
-    ingredientConceptId, integerish = TRUE, min = 0, unique = TRUE, call = call,
-    length = 1 # to be removed when multiple ingredients are supported
+    ingredientConceptId, integerish = TRUE, min = 0, unique = TRUE, call = call
   )
   ingredients <- cdm$concept |>
     dplyr::filter(.data$concept_class_id == "Ingredient") |>

@@ -3,7 +3,7 @@
 export("%>%")
 export(addDailyDose)
 export(addDrugUse)
-export(addDrugUse2)
+export(addDrugUtilisation)
 export(addIndication)
 export(addRoute)
 export(attrition)
