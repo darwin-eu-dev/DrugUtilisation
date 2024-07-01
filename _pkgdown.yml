@@ -28,9 +28,9 @@ reference:
 - contents:
   - matches("summariseCharacteristics|summariseLargeScaleCharacteristics|summariseCharacteristicsFromCodelist")
 - subtitle: Complementary functions
-  desc: Helpper functions, some of thay may be deprecated in the near future
+  desc: Helper functions, some of thay may be deprecated in the near future
 - contents:
-  - matches("readConceptList|mockDrugUtilisation|generateConceptCohortSet")
+  - matches("readConceptList|mockDrugUtilisation|generateConceptCohortSet|requirePriorUseWashout")
 - subtitle: Benchmarking function
   desc: Function to test performance of different functions in DrugUtilisation
 - contents:
