@@ -350,7 +350,17 @@ addDrugUseInternal <- function(x,
         gap = gapEra + 1
       )
     if (exposedTime) {
-      toJoin <- toJoin %>%
+      toJoin <- toJoin |>
+        dplyr::mutate(
+          "drug_exposure_start_date" = dplyr::if_else(
+            .data$drug_exposure_start_date <= .data$cohort_start_date,
+            .data$cohort_start_date, .data$drug_exposure_start_date
+          ),
+          "drug_exposure_end_date" = dplyr::if_else(
+            .data$drug_exposure_end_date >= .data$cohort_end_date,
+            .data$cohort_end_date, .data$drug_exposure_end_date
+          )
+        ) %>%
         dplyr::mutate("exposed_time" = as.integer(!!CDMConnector::datediff(
           start = "drug_exposure_start_date",
           end = "drug_exposure_end_date",
@@ -358,7 +368,8 @@ addDrugUseInternal <- function(x,
         )) + 1L)
     }
     qs <- c(
-      "as.integer(dplyr::n())", "sum(.data$exposed_time, na.rm = TRUE)"
+      "as.integer(dplyr::n())",
+      "as.integer(sum(.data$exposed_time, na.rm = TRUE))"
     ) |>
       rlang::parse_exprs() |>
       rlang::set_names(c("number_eras", "exposed_time"))

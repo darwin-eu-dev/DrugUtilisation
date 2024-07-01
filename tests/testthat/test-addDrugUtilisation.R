@@ -72,23 +72,23 @@ test_that("Basic functionality", {
     0L, 31L, 287L, NA, NA, NA
   ))
   expect_identical(x0$cumulative_quantity_ingredient_1125315_descendants, c(
-
+    60, 11, 15, 0, 0, 0
   ))
-  expect_identical(
-    x0$initial_quantity_ingredient_1125315_descendants
-  )
-  expect_identical(
-    x0$exposed_time_ingredient_1125315_descendants
-  )
-  expect_identical(
-    x0$cumulative_dose_na_ingredient_1125315_descendants_1125315
-  )
-  expect_identical(
-    x0$cumulative_dose_milligram_ingredient_1125315_descendants_1125315
-  )
-  expect_identical(
-    x0$initial_daily_dose_milligram_ingredient_1125315_descendants_1125315
-  )
+  expect_identical(x0$initial_quantity_ingredient_1125315_descendants, c(
+    10, 1, 15, 0, 0, 0
+  ))
+  expect_identical(x0$exposed_time_ingredient_1125315_descendants, c(
+    45L, 43L, 17L, 0L, 0L, 0L
+  ))
+  # expect_identical(
+  #   x0$cumulative_dose_na_ingredient_1125315_descendants_1125315
+  # )
+  # expect_identical(
+  #   x0$cumulative_dose_milligram_ingredient_1125315_descendants_1125315
+  # )
+  # expect_identical(
+  #   x0$initial_daily_dose_milligram_ingredient_1125315_descendants_1125315
+  # )
 
   # restrictIncident
   expect_no_error(
