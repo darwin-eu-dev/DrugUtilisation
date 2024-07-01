@@ -38,7 +38,7 @@
 #' indexDate and start of the first exposure.
 #' @param initialQuantity Whether to add a column with the initial quantity.
 #' @param cumulativeQuantity Whether to add a column with the cumulative
-#' quantity during the whole exposure.
+#' quantity of the identified prescription.
 #' @param initialDailyDose Whether to add a column with the initial daily dose.
 #' @param cumulativeDose Whether to add a column with the cumulative dose.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
@@ -98,6 +98,71 @@ addDrugUtilisation <- function(cohort,
       nameStyle = nameStyle,
       name = name)
 }
+
+#' To add a new column with the number of exposures. To add multiple columns use
+#' `addDrugUtilisation()` for efficiency.
+#'
+#' @param cohort Cohort in the cdm
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
+#' @param conceptSet List of concepts to be included. If NULL all the
+#' descendants of ingredient concept id will be used.
+#' ingredientConceptId = NULL,
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
+#'
+#' @return The same cohort with the added columns.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
+#' )
+#'
+#' cdm$dus_cohort |>
+#'   addNumberExposures(conceptSet = codelist)
+#' }
+#'
+addNumberExposures <- function(cohort,
+                               indexDate = "cohort_start_date",
+                               censorDate = "cohort_end_date",
+                               conceptSet = NULL,
+                               restrictIncident = TRUE,
+                               nameStyle = "number_exposures_{concept_name}",
+                               name = NULL) {
+  cohort |>
+    addDrugUseInternal(
+      indexDate = indexDate,
+      censorDate = censorDate,
+      conceptSet = conceptSet,
+      ingredientConceptId = NULL,
+      restrictIncident = restrictIncident,
+      numberExposures = TRUE,
+      numberEras = FALSE,
+      exposedTime = FALSE,
+      timeToExposure = FALSE,
+      initialQuantity = FALSE,
+      cumulativeQuantity = FALSE,
+      initialDailyDose = FALSE,
+      cumulativeDose = FALSE,
+      gapEra = 0,
+      nameStyle = nameStyle,
+      name = name)
+}
+
 
 addDrugUseInternal <- function(x,
                                indexDate,
@@ -250,7 +315,8 @@ addDrugUseInternal <- function(x,
         by = cols
       ) |>
       dplyr::mutate(dplyr::across(
-        dplyr::starts_with(names(qs)), ~ dplyr::coalesce(.x, 0L)
+        dplyr::starts_with(c("number_exposures", "cumulative_quantity")),
+        ~ dplyr::coalesce(.x, 0L)
       )) |>
       compute2(name)
   }
@@ -281,7 +347,7 @@ addDrugUseInternal <- function(x,
         start = "drug_exposure_start_date",
         end = "drug_exposure_end_date",
         group = c(cols, "concept_name"),
-        gap = gapEra
+        gap = gapEra + 1
       )
     if (exposedTime) {
       toJoin <- toJoin %>%
@@ -350,7 +416,8 @@ addDrugUseInternal <- function(x,
       nameStyleI <- ingredientNameStyle(nameStyle, ingredientConceptId[k])
       nm <- omopgenerics::uniqueTableName(tablePrefix)
       toJoin <- drugData |>
-        addDailyDose(ingredientConceptId = ingredientConceptId[k], name = nm)
+        addDailyDose(ingredientConceptId = ingredientConceptId[k], name = nm) |>
+        dplyr::filter(!is.na(.data$daily_dose) & !is.na(.data$unit))
       if (cumulativeDose) {
         x <- x |>
           dplyr::left_join(
