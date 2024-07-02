@@ -214,12 +214,12 @@ test_that("functionality of addDailyDose function",{
   coverage_sup <- omopgenerics::suppress(coverage, minCellCount = 50)
   expect_true(all(is.na(
     coverage_sup |>
-      dplyr::filter(strata_level == "overall", grepl("missing", variable_name)) |>
+      dplyr::filter(strata_level == "overall", grepl("missing", estimate_name)) |>
       dplyr::pull("estimate_value")
   )))
   expect_true(all(!is.na(
     coverage_sup |>
-      dplyr::filter(strata_level == "overall", !grepl("missing", variable_name)) |>
+      dplyr::filter(strata_level == "overall", !grepl("missing", estimate_name)) |>
       dplyr::pull("estimate_value")
   )))
 
