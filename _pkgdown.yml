@@ -30,7 +30,7 @@ reference:
 - subtitle: Benchmarking function
   desc: Function to tabluate summarise results.
 - contents:
-  - matches("tableIndication")
+  - matches("tableIndication|optionsTableIndication")
 - subtitle: Complementary functions
   desc: Helpper functions, some of thay may be deprecated in the near future
 - contents:
