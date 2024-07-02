@@ -10,7 +10,7 @@ reference:
 - subtitle: Indication functions
   desc: Indication functions are used to summarise and obtain the indication information
 - contents:
-  - matches("addIndication|summariseIndication")
+  - matches("addIndication|summariseIndication|tableIndication|optionsTableIndication")
 - subtitle: Add daily dose
   desc: Tools to compute the daily dose, see when it can be computed
 - contents:
