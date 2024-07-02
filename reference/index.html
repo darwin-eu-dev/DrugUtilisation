@@ -34,6 +34,9 @@
     <a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a>
   </div>
 </li>
+<li class="nav-item">
+  <a class="nav-link" href="../news/index.html">Changelog</a>
+</li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -91,14 +94,19 @@
         <dd>Get indication for a target cohort</dd>
       </dl><dl><dt>
           
-          <code><a href="indicationToStrata.html">indicationToStrata()</a></code> 
+          <code><a href="optionsTableIndication.html">optionsTableIndication()</a></code> 
         </dt>
-        <dd>Create new variables summarising the data of indication that can be used as stratification columns</dd>
+        <dd>Additional arguments for the functions tableIndication</dd>
       </dl><dl><dt>
           
           <code><a href="summariseIndication.html">summariseIndication()</a></code> 
         </dt>
         <dd>This function is used to summarise the indication table over multiple cohorts.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="tableIndication.html">tableIndication()</a></code> 
+        </dt>
+        <dd>Format a summarised_indication object into a visual table.</dd>
       </dl></div><div class="section level2">
       
       <h3 id="add-daily-dose">Add daily dose<a class="anchor" aria-label="anchor" href="#add-daily-dose"></a></h3>
@@ -153,14 +161,14 @@
 
       <dl><dt>
           
-          <code><a href="addDrugUse.html">addDrugUse()</a></code> 
+          <code><a href="addDrugUtilisation.html">addDrugUtilisation()</a></code> 
         </dt>
         <dd>Add new columns with drug use related information</dd>
       </dl><dl><dt>
           
-          <code><a href="summariseDrugUse.html">summariseDrugUse()</a></code> 
+          <code><a href="addNumberExposures.html">addNumberExposures()</a></code> 
         </dt>
-        <dd>This function is used to summarise the dose table over multiple cohorts.</dd>
+        <dd>To add a new column with the number of exposures. To add multiple columns use <code><a href="../reference/addDrugUtilisation.html">addDrugUtilisation()</a></code> for efficiency.</dd>
       </dl></div><div class="section level2">
       
       <h3 id="summarise-treatments-during-certain-windows">Summarise treatments during certain windows<a class="anchor" aria-label="anchor" href="#summarise-treatments-during-certain-windows"></a></h3>
@@ -184,48 +192,6 @@
         <dd>This function is used to summarise the dose table over multiple cohorts.</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="charcterise-a-cohort">Charcterise a cohort<a class="anchor" aria-label="anchor" href="#charcterise-a-cohort"></a></h3>
-      <div class="section-desc"><p>Different functions to characterize cohort, these functions may be moved to more focused into characterization packages within DARWIN-EU framework</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="summariseCharacteristics.html">summariseCharacteristics()</a></code> 
-        </dt>
-        <dd>This function has been deprecated please use CohortCharacteristics package</dd>
-      </dl><dl><dt>
-          
-          <code><a href="summariseLargeScaleCharacteristics.html">summariseLargeScaleCharacteristics()</a></code> 
-        </dt>
-        <dd>This function has been deprecated please use CohortCharacteristics package</dd>
-      </dl></div><div class="section level2">
-      
-      <h3 id="benchmarking-function">Benchmarking function<a class="anchor" aria-label="anchor" href="#benchmarking-function"></a></h3>
-      <div class="section-desc"><p>Function to tabluate summarise results.</p></div>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="optionsTableIndication.html">optionsTableIndication()</a></code> 
-        </dt>
-        <dd>Additional arguments for the functions tableIndication</dd>
-      </dl><dl><dt>
-          
-          <code><a href="tableIndication.html">tableIndication()</a></code> 
-        </dt>
-        <dd>Format a summarised_indication object into a visual table.</dd>
-      </dl></div><div class="section level2">
-      
       <h3 id="complementary-functions">Complementary functions<a class="anchor" aria-label="anchor" href="#complementary-functions"></a></h3>
       <div class="section-desc"><p>Helpper functions, some of thay may be deprecated in the near future</p></div>
 
@@ -247,7 +213,7 @@
         <dd>Get concept ids from a provided path to json files</dd>
       </dl></div><div class="section level2">
       
-      <h3 id="benchmarking-function-1">Benchmarking function<a class="anchor" aria-label="anchor" href="#benchmarking-function-1"></a></h3>
+      <h3 id="benchmarking-function">Benchmarking function<a class="anchor" aria-label="anchor" href="#benchmarking-function"></a></h3>
       <div class="section-desc"><p>Function to test performance of different functions in DrugUtilisation</p></div>
 
       
@@ -261,6 +227,32 @@
           <code><a href="benchmarkDUS.html">benchmarkDUS()</a></code> 
         </dt>
         <dd>Run benchmark of drug utilisation cohort generation</dd>
+      </dl></div><div class="section level2">
+      
+      <h3 id="deprecated-functions">Deprecated functions<a class="anchor" aria-label="anchor" href="#deprecated-functions"></a></h3>
+      <div class="section-desc"><p>This functions has been deprecated</p></div>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="addDrugUse.html">addDrugUse()</a></code> 
+        </dt>
+        <dd>Add new columns with drug use related information</dd>
+      </dl><dl><dt>
+          
+          <code><a href="indicationToStrata.html">indicationToStrata()</a></code> 
+        </dt>
+        <dd>Create new variables summarising the data of indication that can be used as stratification columns</dd>
+      </dl><dl><dt>
+          
+          <code><a href="summariseDrugUse.html">summariseDrugUse()</a></code> 
+        </dt>
+        <dd>This function is used to summarise the dose table over multiple cohorts.</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
