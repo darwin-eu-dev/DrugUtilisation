@@ -55,8 +55,7 @@ test_that("test case single indication", {
     condition_end_date = as.Date("2020-05-31")
   )
 
-  cdm <-
-    mockDrugUtilisation(
+  cdm <- mockDrugUtilisation(
       connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,

@@ -119,11 +119,11 @@ addDailyDose(
 )
 ```
 
-There is also a function, `dailyDoseCoverage()`, to check the coverage
+There is also a function, `summariseDoseCoverage()`, to check the coverage
 of daily dose computation for chosen concept sets and ingredients.
 
-```{r, eval=TRUE}
-suppressWarnings(dailyDoseCoverage(cdm, 1125315))
+```{r, eval=TRUE, warning=FALSE}
+summariseDoseCoverage(cdm, 1125315)
 ```
 
 # Adding Drug Usage Details to a Cohort with addDrugUse() function

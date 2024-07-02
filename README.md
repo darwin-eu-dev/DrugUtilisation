@@ -13,23 +13,20 @@
 - **addDailyDose** function works for the following patterns in the
   drug_strength table:
 
-<div id="ybyzrvvody" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ybyzrvvody table {
+<div id="zfhnlcavcp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zfhnlcavcp table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-#ybyzrvvody thead, #ybyzrvvody tbody, #ybyzrvvody tfoot, #ybyzrvvody tr, #ybyzrvvody td, #ybyzrvvody th {
+&#10;#zfhnlcavcp thead, #zfhnlcavcp tbody, #zfhnlcavcp tfoot, #zfhnlcavcp tr, #zfhnlcavcp td, #zfhnlcavcp th {
   border-style: none;
 }
-
-#ybyzrvvody p {
+&#10;#zfhnlcavcp p {
   margin: 0;
   padding: 0;
 }
-
-#ybyzrvvody .gt_table {
+&#10;#zfhnlcavcp .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -54,13 +51,11 @@
   border-left-width: 2px;
   border-left-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_caption {
+&#10;#zfhnlcavcp .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
-
-#ybyzrvvody .gt_title {
+&#10;#zfhnlcavcp .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -71,8 +66,7 @@
   border-bottom-color: #FFFFFF;
   border-bottom-width: 0;
 }
-
-#ybyzrvvody .gt_subtitle {
+&#10;#zfhnlcavcp .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -83,8 +77,7 @@
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
-
-#ybyzrvvody .gt_heading {
+&#10;#zfhnlcavcp .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -95,14 +88,12 @@
   border-right-width: 1px;
   border-right-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_bottom_border {
+&#10;#zfhnlcavcp .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_col_headings {
+&#10;#zfhnlcavcp .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -116,8 +107,7 @@
   border-right-width: 1px;
   border-right-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_col_heading {
+&#10;#zfhnlcavcp .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -136,8 +126,7 @@
   padding-right: 5px;
   overflow-x: hidden;
 }
-
-#ybyzrvvody .gt_column_spanner_outer {
+&#10;#zfhnlcavcp .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -148,16 +137,13 @@
   padding-left: 4px;
   padding-right: 4px;
 }
-
-#ybyzrvvody .gt_column_spanner_outer:first-child {
+&#10;#zfhnlcavcp .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
-
-#ybyzrvvody .gt_column_spanner_outer:last-child {
+&#10;#zfhnlcavcp .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
-
-#ybyzrvvody .gt_column_spanner {
+&#10;#zfhnlcavcp .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -168,12 +154,10 @@
   display: inline-block;
   width: 100%;
 }
-
-#ybyzrvvody .gt_spanner_row {
+&#10;#zfhnlcavcp .gt_spanner_row {
   border-bottom-style: hidden;
 }
-
-#ybyzrvvody .gt_group_heading {
+&#10;#zfhnlcavcp .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -198,8 +182,7 @@
   vertical-align: middle;
   text-align: left;
 }
-
-#ybyzrvvody .gt_empty_group_heading {
+&#10;#zfhnlcavcp .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -213,16 +196,13 @@
   border-bottom-color: #D3D3D3;
   vertical-align: middle;
 }
-
-#ybyzrvvody .gt_from_md > :first-child {
+&#10;#zfhnlcavcp .gt_from_md > :first-child {
   margin-top: 0;
 }
-
-#ybyzrvvody .gt_from_md > :last-child {
+&#10;#zfhnlcavcp .gt_from_md > :last-child {
   margin-bottom: 0;
 }
-
-#ybyzrvvody .gt_row {
+&#10;#zfhnlcavcp .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -240,8 +220,7 @@
   vertical-align: middle;
   overflow-x: hidden;
 }
-
-#ybyzrvvody .gt_stub {
+&#10;#zfhnlcavcp .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -253,8 +232,7 @@
   padding-left: 5px;
   padding-right: 5px;
 }
-
-#ybyzrvvody .gt_stub_row_group {
+&#10;#zfhnlcavcp .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -267,16 +245,13 @@
   padding-right: 5px;
   vertical-align: top;
 }
-
-#ybyzrvvody .gt_row_group_first td {
+&#10;#zfhnlcavcp .gt_row_group_first td {
   border-top-width: 2px;
 }
-
-#ybyzrvvody .gt_row_group_first th {
+&#10;#zfhnlcavcp .gt_row_group_first th {
   border-top-width: 2px;
 }
-
-#ybyzrvvody .gt_summary_row {
+&#10;#zfhnlcavcp .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -285,17 +260,14 @@
   padding-left: 5px;
   padding-right: 5px;
 }
-
-#ybyzrvvody .gt_first_summary_row {
+&#10;#zfhnlcavcp .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_first_summary_row.thick {
+&#10;#zfhnlcavcp .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
-
-#ybyzrvvody .gt_last_summary_row {
+&#10;#zfhnlcavcp .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -304,8 +276,7 @@
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_grand_summary_row {
+&#10;#zfhnlcavcp .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -314,8 +285,7 @@
   padding-left: 5px;
   padding-right: 5px;
 }
-
-#ybyzrvvody .gt_first_grand_summary_row {
+&#10;#zfhnlcavcp .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -324,8 +294,7 @@
   border-top-width: 6px;
   border-top-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_last_grand_summary_row_top {
+&#10;#zfhnlcavcp .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -334,12 +303,10 @@
   border-bottom-width: 6px;
   border-bottom-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_striped {
+&#10;#zfhnlcavcp .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
-
-#ybyzrvvody .gt_table_body {
+&#10;#zfhnlcavcp .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -347,8 +314,7 @@
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_footnotes {
+&#10;#zfhnlcavcp .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -361,8 +327,7 @@
   border-right-width: 2px;
   border-right-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_footnote {
+&#10;#zfhnlcavcp .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -370,8 +335,7 @@
   padding-left: 5px;
   padding-right: 5px;
 }
-
-#ybyzrvvody .gt_sourcenotes {
+&#10;#zfhnlcavcp .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -384,72 +348,57 @@
   border-right-width: 2px;
   border-right-color: #D3D3D3;
 }
-
-#ybyzrvvody .gt_sourcenote {
+&#10;#zfhnlcavcp .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 5px;
   padding-right: 5px;
 }
-
-#ybyzrvvody .gt_left {
+&#10;#zfhnlcavcp .gt_left {
   text-align: left;
 }
-
-#ybyzrvvody .gt_center {
+&#10;#zfhnlcavcp .gt_center {
   text-align: center;
 }
-
-#ybyzrvvody .gt_right {
+&#10;#zfhnlcavcp .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
-
-#ybyzrvvody .gt_font_normal {
+&#10;#zfhnlcavcp .gt_font_normal {
   font-weight: normal;
 }
-
-#ybyzrvvody .gt_font_bold {
+&#10;#zfhnlcavcp .gt_font_bold {
   font-weight: bold;
 }
-
-#ybyzrvvody .gt_font_italic {
+&#10;#zfhnlcavcp .gt_font_italic {
   font-style: italic;
 }
-
-#ybyzrvvody .gt_super {
+&#10;#zfhnlcavcp .gt_super {
   font-size: 65%;
 }
-
-#ybyzrvvody .gt_footnote_marks {
+&#10;#zfhnlcavcp .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
-
-#ybyzrvvody .gt_asterisk {
+&#10;#zfhnlcavcp .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
-
-#ybyzrvvody .gt_indent_1 {
+&#10;#zfhnlcavcp .gt_indent_1 {
   text-indent: 5px;
 }
-
-#ybyzrvvody .gt_indent_2 {
+&#10;#zfhnlcavcp .gt_indent_2 {
   text-indent: 10px;
 }
-
-#ybyzrvvody .gt_indent_3 {
+&#10;#zfhnlcavcp .gt_indent_3 {
   text-indent: 15px;
 }
-
-#ybyzrvvody .gt_indent_4 {
+&#10;#zfhnlcavcp .gt_indent_4 {
   text-indent: 20px;
 }
-
-#ybyzrvvody .gt_indent_5 {
+&#10;#zfhnlcavcp .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -724,8 +673,7 @@
 <td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  denominator" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">number</td>
 <td headers="time based with denominator: if (denominator>24) {numerator * 24 / denominator} else {numerator}  denominator_unit" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">hour</td></tr>
   </tbody>
-  
-  
+  &#10;  
 </table>
 </div>
 
@@ -787,8 +735,10 @@ Or we can build our own list using other packages
 library(CodelistGenerator)
 conceptList <- getDrugIngredientCodes(cdm, "acetaminophen")
 conceptList
-#> $acetaminophen
-#> [1]  1125315  1125360  2905077 43135274
+#> 
+#> ── 1 codelist ──────────────────────────────────────────────────────────────────
+#> 
+#> - acetaminophen (4 codes)
 ```
 
 To generate the cohort of drug use we will use
@@ -806,6 +756,26 @@ cdm <- generateDrugUtilisationCohortSet(
   imputeDuration = "none", 
   durationRange = c(0, Inf)
 )
+#> Warning: The `durationRange` argument of `generateDrugUtilisationCohortSet()` is
+#> deprecated as of DrugUtilisation 0.6.2.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
+#> Warning: The `imputeDuration` argument of `generateDrugUtilisationCohortSet()` is
+#> deprecated as of DrugUtilisation 0.6.2.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
+#> Warning: The `priorObservation` argument of `generateDrugUtilisationCohortSet()` is
+#> deprecated as of DrugUtilisation 0.6.2.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
+#> Warning: The `limit` argument of `generateDrugUtilisationCohortSet()` is deprecated as
+#> of DrugUtilisation 0.6.2.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
 ```
 
 #### Cohort attributes
@@ -833,20 +803,23 @@ library(dplyr)
 #> The following objects are masked from 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
+```
+
+``` r
 settings(cdm[["dus_cohort"]]) %>% glimpse()
 #> Rows: 1
 #> Columns: 11
 #> $ cohort_definition_id    <int> 1
 #> $ cohort_name             <chr> "acetaminophen"
-#> $ duration_range_min      <chr> "0"
+#> $ duration_range_min      <chr> "1"
 #> $ duration_range_max      <chr> "Inf"
 #> $ impute_duration         <chr> "none"
 #> $ gap_era                 <chr> "30"
 #> $ prior_use_washout       <chr> "0"
-#> $ prior_observation       <chr> "365"
+#> $ prior_observation       <chr> "0"
 #> $ cohort_date_range_start <chr> NA
 #> $ cohort_date_range_end   <chr> NA
-#> $ limit                   <chr> "first"
+#> $ limit                   <chr> "all"
 ```
 
 Cohort count:
@@ -856,22 +829,22 @@ cohortCount(cdm[["dus_cohort"]])
 #> # A tibble: 1 × 3
 #>   cohort_definition_id number_records number_subjects
 #>                  <int>          <int>           <int>
-#> 1                    1             35              35
+#> 1                    1             70              62
 ```
 
 Cohort attrition:
 
 ``` r
 attrition(cdm[["dus_cohort"]]) %>% glimpse()
-#> Rows: 4
+#> Rows: 2
 #> Columns: 7
-#> $ cohort_definition_id <int> 1, 1, 1, 1
-#> $ number_records       <int> 71, 70, 41, 35
-#> $ number_subjects      <int> 62, 62, 35, 35
-#> $ reason_id            <int> 1, 2, 3, 4
+#> $ cohort_definition_id <int> 1, 1
+#> $ number_records       <int> 71, 70
+#> $ number_subjects      <int> 62, 62
+#> $ reason_id            <int> 1, 2
 #> $ reason               <chr> "Initial qualifying events", "join exposures sepa…
-#> $ excluded_records     <int> 0, 1, 29, 6
-#> $ excluded_subjects    <int> 0, 0, 27, 0
+#> $ excluded_records     <int> 0, 1
+#> $ excluded_subjects    <int> 0, 0
 ```
 
 ### Indication
@@ -902,23 +875,23 @@ x <- cdm[["dus_cohort"]] %>%
 glimpse(x)
 #> Rows: ??
 #> Columns: 16
-#> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.3/:memory:]
+#> Database: DuckDB v1.0.0 [nuriamb@Windows 10 x64:R 4.2.3/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ subject_id                   <int> 81, 97, 29, 47, 93, 26, 91, 35, 54, 62, 9…
-#> $ cohort_start_date            <date> 1995-09-13, 1991-02-09, 2020-12-08, 1963…
-#> $ cohort_end_date              <date> 1997-11-17, 1991-10-07, 2021-01-09, 1965…
+#> $ subject_id                   <int> 88, 79, 9, 98, 48, 57, 77, 40, 63, 47, 35…
+#> $ cohort_start_date            <date> 2015-08-19, 2020-05-02, 2016-03-17, 2020…
+#> $ cohort_end_date              <date> 2016-05-09, 2022-02-21, 2016-09-02, 2020…
 #> $ indication_gap_0_headache    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_influenza   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_none        <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ indication_gap_0_unknown     <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_headache   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_30_none       <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_influenza <dbl> 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,…
-#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_none      <dbl> 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0,…
-#> $ indication_gap_365_unknown   <dbl> 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_none       <dbl> 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_influenza <dbl> 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,…
+#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,…
+#> $ indication_gap_365_none      <dbl> 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0,…
+#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,…
 ```
 
 We can combine the indications in a single column using the
@@ -930,33 +903,35 @@ x <- x %>% indicationToStrata(keep = TRUE)
 glimpse(x)
 #> Rows: ??
 #> Columns: 19
-#> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.3/:memory:]
+#> Database: DuckDB v1.0.0 [nuriamb@Windows 10 x64:R 4.2.3/:memory:]
 #> $ cohort_definition_id         <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ subject_id                   <int> 81, 97, 29, 47, 93, 26, 91, 35, 54, 62, 9…
-#> $ cohort_start_date            <date> 1995-09-13, 1991-02-09, 2020-12-08, 1963…
-#> $ cohort_end_date              <date> 1997-11-17, 1991-10-07, 2021-01-09, 1965…
+#> $ subject_id                   <int> 88, 79, 9, 98, 48, 57, 77, 40, 63, 47, 35…
+#> $ cohort_start_date            <date> 2015-08-19, 2020-05-02, 2016-03-17, 2020…
+#> $ cohort_end_date              <date> 2016-05-09, 2022-02-21, 2016-09-02, 2020…
 #> $ indication_gap_0_headache    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_influenza   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0_none        <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ indication_gap_0_unknown     <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
 #> $ indication_gap_30_headache   <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_30_influenza  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_30_none       <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
-#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_influenza <dbl> 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1,…
-#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-#> $ indication_gap_365_none      <dbl> 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0,…
-#> $ indication_gap_365_unknown   <dbl> 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_30_none       <dbl> 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1,…
+#> $ indication_gap_30_unknown    <dbl> 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,…
+#> $ indication_gap_365_influenza <dbl> 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0,…
+#> $ indication_gap_365_headache  <dbl> 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,…
+#> $ indication_gap_365_none      <dbl> 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0,…
+#> $ indication_gap_365_unknown   <dbl> 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,…
 #> $ indication_gap_0             <chr> "None", "None", "None", "None", "None", "…
-#> $ indication_gap_30            <chr> "None", "None", "None", "None", "None", "…
-#> $ indication_gap_365           <chr> "None", "Unknown", "None", "None", "None"…
+#> $ indication_gap_30            <chr> "None", "None", "None", "Influenza", "Non…
+#> $ indication_gap_365           <chr> "Influenza", "None", "None", "Influenza a…
 ```
 
 ``` r
 table(x %>% pull("indication_gap_365"))
 #> 
-#>  Headache Influenza      None   Unknown 
-#>         2         3        27         3
+#>               Headache              Influenza Influenza and Headache 
+#>                      5                      5                      2 
+#>                   None                Unknown 
+#>                     48                     10
 ```
 
 ### Summarise the indication
@@ -966,13 +941,18 @@ function:
 
 ``` r
 summariseIndication(x, cdm)
+#> Warning: The `cdm` argument of `summariseIndication()` is deprecated as of
+#> DrugUtilisation 0.5.0.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
 #> ℹ The following estimates will be computed:
 #> • indication_gap_0_headache: count, percentage
 #> • indication_gap_0_influenza: count, percentage
 #> • indication_gap_0_none: count, percentage
 #> • indication_gap_0_unknown: count, percentage
-#> • indication_gap_30_headache: count, percentage
 #> • indication_gap_30_influenza: count, percentage
+#> • indication_gap_30_headache: count, percentage
 #> • indication_gap_30_none: count, percentage
 #> • indication_gap_30_unknown: count, percentage
 #> • indication_gap_365_influenza: count, percentage
@@ -982,10 +962,10 @@ summariseIndication(x, cdm)
 #> • indication_gap_0: count, percentage
 #> • indication_gap_30: count, percentage
 #> • indication_gap_365: count, percentage
-#> → Start summary of data, at 2024-06-03 15:52:58
+#> → Start summary of data, at 2024-07-02 15:12:33
 #> 
-#> ✔ Summary finished, at 2024-06-03 15:52:58
-#> # A tibble: 42 × 13
+#> ✔ Summary finished, at 2024-07-02 15:12:33
+#> # A tibble: 46 × 13
 #>    result_id cdm_name group_name  group_level   strata_name strata_level
 #>        <int> <chr>    <chr>       <chr>         <chr>       <chr>       
 #>  1         1 DUS MOCK cohort_name acetaminophen overall     overall     
@@ -998,7 +978,7 @@ summariseIndication(x, cdm)
 #>  8         1 DUS MOCK cohort_name acetaminophen overall     overall     
 #>  9         1 DUS MOCK cohort_name acetaminophen overall     overall     
 #> 10         1 DUS MOCK cohort_name acetaminophen overall     overall     
-#> # ℹ 32 more rows
+#> # ℹ 36 more rows
 #> # ℹ 7 more variables: variable_name <chr>, variable_level <chr>,
 #> #   estimate_name <chr>, estimate_type <chr>, estimate_value <chr>,
 #> #   additional_name <chr>, additional_level <chr>
@@ -1011,8 +991,8 @@ summariseIndication(x, cdm) %>% glimpse()
 #> • indication_gap_0_influenza: count, percentage
 #> • indication_gap_0_none: count, percentage
 #> • indication_gap_0_unknown: count, percentage
-#> • indication_gap_30_headache: count, percentage
 #> • indication_gap_30_influenza: count, percentage
+#> • indication_gap_30_headache: count, percentage
 #> • indication_gap_30_none: count, percentage
 #> • indication_gap_30_unknown: count, percentage
 #> • indication_gap_365_influenza: count, percentage
@@ -1022,10 +1002,10 @@ summariseIndication(x, cdm) %>% glimpse()
 #> • indication_gap_0: count, percentage
 #> • indication_gap_30: count, percentage
 #> • indication_gap_365: count, percentage
-#> → Start summary of data, at 2024-06-03 15:52:59
+#> → Start summary of data, at 2024-07-02 15:12:33
 #> 
-#> ✔ Summary finished, at 2024-06-03 15:52:59
-#> Rows: 42
+#> ✔ Summary finished, at 2024-07-02 15:12:34
+#> Rows: 46
 #> Columns: 13
 #> $ result_id        <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ cdm_name         <chr> "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS …
@@ -1037,7 +1017,7 @@ summariseIndication(x, cdm) %>% glimpse()
 #> $ variable_level   <chr> NA, NA, "Headache", "Headache", "Influenza", "Influen…
 #> $ estimate_name    <chr> "count", "count", "count", "percentage", "count", "pe…
 #> $ estimate_type    <chr> "integer", "integer", "integer", "percentage", "integ…
-#> $ estimate_value   <chr> "35", "35", "0", "0", "0", "0", "35", "100", "0", "0"…
+#> $ estimate_value   <chr> "70", "62", "0", "0", "0", "0", "69", "98.57142857142…
 #> $ additional_name  <chr> "overall", "overall", "overall", "overall", "overall"…
 #> $ additional_level <chr> "overall", "overall", "overall", "overall", "overall"…
 ```
@@ -1059,8 +1039,8 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 #> • indication_gap_0_influenza: count, percentage
 #> • indication_gap_0_none: count, percentage
 #> • indication_gap_0_unknown: count, percentage
-#> • indication_gap_30_headache: count, percentage
 #> • indication_gap_30_influenza: count, percentage
+#> • indication_gap_30_headache: count, percentage
 #> • indication_gap_30_none: count, percentage
 #> • indication_gap_30_unknown: count, percentage
 #> • indication_gap_365_influenza: count, percentage
@@ -1070,10 +1050,10 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 #> • indication_gap_0: count, percentage
 #> • indication_gap_30: count, percentage
 #> • indication_gap_365: count, percentage
-#> → Start summary of data, at 2024-06-03 15:53:00
+#> → Start summary of data, at 2024-07-02 15:12:35
 #> 
-#> ✔ Summary finished, at 2024-06-03 15:53:01
-#> # A tibble: 430 × 13
+#> ✔ Summary finished, at 2024-07-02 15:12:35
+#> # A tibble: 550 × 13
 #>    result_id cdm_name group_name  group_level   strata_name strata_level
 #>        <int> <chr>    <chr>       <chr>         <chr>       <chr>       
 #>  1         1 DUS MOCK cohort_name acetaminophen overall     overall     
@@ -1086,7 +1066,7 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 #>  8         1 DUS MOCK cohort_name acetaminophen overall     overall     
 #>  9         1 DUS MOCK cohort_name acetaminophen overall     overall     
 #> 10         1 DUS MOCK cohort_name acetaminophen overall     overall     
-#> # ℹ 420 more rows
+#> # ℹ 540 more rows
 #> # ℹ 7 more variables: variable_name <chr>, variable_level <chr>,
 #> #   estimate_name <chr>, estimate_type <chr>, estimate_value <chr>,
 #> #   additional_name <chr>, additional_level <chr>
@@ -1099,8 +1079,8 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 #> • indication_gap_0_influenza: count, percentage
 #> • indication_gap_0_none: count, percentage
 #> • indication_gap_0_unknown: count, percentage
-#> • indication_gap_30_headache: count, percentage
 #> • indication_gap_30_influenza: count, percentage
+#> • indication_gap_30_headache: count, percentage
 #> • indication_gap_30_none: count, percentage
 #> • indication_gap_30_unknown: count, percentage
 #> • indication_gap_365_influenza: count, percentage
@@ -1110,10 +1090,10 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 #> • indication_gap_0: count, percentage
 #> • indication_gap_30: count, percentage
 #> • indication_gap_365: count, percentage
-#> → Start summary of data, at 2024-06-03 15:53:01
+#> → Start summary of data, at 2024-07-02 15:12:36
 #> 
-#> ✔ Summary finished, at 2024-06-03 15:53:02
-#> Rows: 430
+#> ✔ Summary finished, at 2024-07-02 15:12:36
+#> Rows: 550
 #> Columns: 13
 #> $ result_id        <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…
 #> $ cdm_name         <chr> "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS MOCK", "DUS …
@@ -1125,7 +1105,7 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 #> $ variable_level   <chr> NA, NA, "Headache", "Headache", "Influenza", "Influen…
 #> $ estimate_name    <chr> "count", "count", "count", "percentage", "count", "pe…
 #> $ estimate_type    <chr> "integer", "integer", "integer", "percentage", "integ…
-#> $ estimate_value   <chr> "35", "35", "0", "0", "0", "0", "35", "100", "0", "0"…
+#> $ estimate_value   <chr> "70", "62", "0", "0", "0", "0", "69", "98.57142857142…
 #> $ additional_name  <chr> "overall", "overall", "overall", "overall", "overall"…
 #> $ additional_level <chr> "overall", "overall", "overall", "overall", "overall"…
 ```
@@ -1142,7 +1122,7 @@ cdm[["drug_exposure"]] %>%
  glimpse()
 #> Rows: ??
 #> Columns: 9
-#> Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.3/:memory:]
+#> Database: DuckDB v1.0.0 [nuriamb@Windows 10 x64:R 4.2.3/:memory:]
 #> $ drug_exposure_id         <int> 8, 12, 17, 23, 24, 27, 34, 35, 40, 49, 50, 59…
 #> $ person_id                <int> 3, 4, 7, 8, 9, 9, 12, 13, 14, 19, 19, 23, 25,…
 #> $ drug_concept_id          <dbl> 43135274, 1125360, 1125360, 2905077, 1125360,…
@@ -1157,19 +1137,19 @@ cdm[["drug_exposure"]] %>%
 #### Coverage
 
 Currently you can evaluate the coverage of daily dose for a conceptList
-or overall using `dailyDoseCoverage`. You should restrict to a certain
-ingredient.
+or overall using `summariseDoseCoverage`. You should restrict to a
+certain ingredient.
 
 ``` r
-dailyDoseCoverage(cdm = cdm, ingredient = 1125315) 
+summariseDoseCoverage(cdm = cdm, ingredient = 1125315) 
 #> ℹ The following estimates will be computed:
 #> • daily_dose: count_missing, percentage_missing, mean, sd, min, q05, q25,
 #>   median, q75, q95, max
 #> ! Table is collected to memory as not all requested estimates are supported on
 #>   the database side
-#> → Start summary of data, at 2024-06-03 15:53:03
+#> → Start summary of data, at 2024-07-02 15:12:38
 #> 
-#> ✔ Summary finished, at 2024-06-03 15:53:03
+#> ✔ Summary finished, at 2024-07-02 15:12:39
 #> # A tibble: 84 × 13
 #>    result_id cdm_name group_name      group_level   strata_name strata_level
 #>        <int> <chr>    <chr>           <chr>         <chr>       <chr>       
@@ -1232,9 +1212,9 @@ summariseDrugUse(x)
 #>   count_missing, percentage_missing
 #> ! Table is collected to memory as not all requested estimates are supported on
 #>   the database side
-#> → Start summary of data, at 2024-06-03 15:53:11
+#> → Start summary of data, at 2024-07-02 15:12:46
 #> 
-#> ✔ Summary finished, at 2024-06-03 15:53:11
+#> ✔ Summary finished, at 2024-07-02 15:12:47
 #> # A tibble: 101 × 13
 #>    result_id cdm_name group_name  group_level   strata_name strata_level
 #>        <int> <chr>    <chr>       <chr>         <chr>       <chr>       

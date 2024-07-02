@@ -197,10 +197,10 @@ cdm[["drug_exposure"]] %>%
 
 #### Coverage
 
-Currently you can evaluate the coverage of daily dose for a conceptList or overall using `dailyDoseCoverage`. You should restrict to a certain ingredient.
+Currently you can evaluate the coverage of daily dose for a conceptList or overall using `summariseDoseCoverage`. You should restrict to a certain ingredient.
 
 ```{r}
-dailyDoseCoverage(cdm = cdm, ingredient = 1125315) 
+summariseDoseCoverage(cdm = cdm, ingredient = 1125315) 
 ```
 
 ### DrugUse
