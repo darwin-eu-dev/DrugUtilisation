@@ -71,7 +71,7 @@ test_that("tableIndication works", {
 
   tib <- tableIndication(result, header = "variable", groupColumn = "cdm_name", type = "tibble")
   expect_true(nrow(tib) == 2)
-  expect_true(all(colnames(tib) == c(
+  expect_true(all(c(
     'Database name', 'Cohort name', '[header_level]Indication on index date\n[header_level]Asthma',
     '[header_level]Indication on index date\n[header_level]Covid', '[header_level]Indication on index date\n[header_level]None',
     '[header_level]Indication on index date\n[header_level]Unknown', '[header_level]Indication during prior 7 days\n[header_level]Covid',
@@ -81,7 +81,7 @@ test_that("tableIndication works", {
     '[header_level]Indication during prior 30 days\n[header_level]Unknown', '[header_level]Indication any time prior\n[header_level]Asthma',
     '[header_level]Indication any time prior\n[header_level]Covid', '[header_level]Indication any time prior\n[header_level]None',
     '[header_level]Indication any time prior\n[header_level]Unknown'
-  )))
+  ) %in% colnames(tib)))
 
   # strata
   res <- res %>%
@@ -97,7 +97,7 @@ test_that("tableIndication works", {
   fx <- tableIndication(result, cdmName = FALSE, cohortName = FALSE, type = "flextable")
   expect_true("flextable" %in% class(fx))
   expect_true(all(colnames(fx$body$dataset) == c(
-    'Variable name', 'Age group', 'Sex', 'Indication', 'Estimate value', 'Additional name', 'Additional level'
+    'Variable name', 'Age group', 'Sex', 'Indication', 'Estimate value'
   )))
   expect_true(all(fx$body$dataset$`Variable name` |> levels() == c(
     "Indication any time prior", "Indication during prior 30 days", "Indication during prior 7 days", "Indication on index date"

@@ -104,9 +104,8 @@ tableIndication <- function(result,
       header <- header[!"group" %in% header]
     }
     excludeColumns <- c(excludeColumns, "group_name", "group_level")
-    split <- character()
   } else {
-    split <- c("group")
+    split <- c(split, "group")
   }
 
   if (!cdmName) {
