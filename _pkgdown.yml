@@ -27,6 +27,10 @@ reference:
   desc: Different functions to characterize cohort, these functions may be moved to more focused into characterization packages within DARWIN-EU framework
 - contents:
   - matches("summariseCharacteristics|summariseLargeScaleCharacteristics|summariseCharacteristicsFromCodelist")
+- subtitle: Benchmarking function
+  desc: Function to tabluate summarise results.
+- contents:
+  - matches("tableIndication")
 - subtitle: Complementary functions
   desc: Helpper functions, some of thay may be deprecated in the near future
 - contents:
