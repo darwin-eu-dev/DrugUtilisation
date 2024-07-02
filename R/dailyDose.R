@@ -103,11 +103,11 @@ addDailyDose <- function(drugExposure,
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' dailyDoseCoverage(cdm, 1125315)
+#' summariseDoseCoverage(cdm, 1125315)
 #' }
 #'
-dailyDoseCoverage <- function(cdm,
-                              ingredientConceptId) {
+summariseDoseCoverage <- function(cdm,
+                                  ingredientConceptId) {
   # initial checks
   checkInputs(cdm = cdm)
 
@@ -151,7 +151,7 @@ dailyDoseCoverage <- function(cdm,
   dailyDoseSummary <- dailyDose %>%
     dplyr::mutate(dplyr::across(
       c("route", "unit", "pattern_id", "ingredient_name"),
-      ~ dplyr::if_else(is.na(.x), "NA", as.character(.x))
+      ~ dplyr::if_else(is.na(.x), "missing", as.character(.x))
     )) |>
     PatientProfiles::summariseResult(
       group = list("ingredient_name"),
@@ -179,6 +179,32 @@ dailyDoseCoverage <- function(cdm,
     ))
 
   return(dailyDoseSummary)
+}
+
+#' Check coverage of daily dose computation in a sample of the cdm for selected
+#' concept sets and ingredient
+#'
+#' `r lifecycle::badge("deprecated")`
+#'
+#' @param cdm A cdm reference created using CDMConnector
+#' @param ingredientConceptId Code indicating the ingredient of interest
+#'
+#' @return The function returns information of the coverage of computeDailyDose.R
+#' for the selected ingredients and concept sets
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' dailyDoseCoverage(cdm, 1125315)
+#' }
+#'
+dailyDoseCoverage <- function(cdm,
+                              ingredientConceptId) {
+ lifecycle::deprecate_stop(when = "0.1.0", what = "dailyDoseCoverage()", with = "summariseDoseCoverage()")
 }
 
 standardUnits <- function(drugExposure) {
