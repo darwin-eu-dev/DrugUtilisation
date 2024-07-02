@@ -19,13 +19,3 @@ for the selected ingredients and concept sets
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
-\examples{
-\donttest{
-library(DrugUtilisation)
-
-cdm <- mockDrugUtilisation()
-
-dailyDoseCoverage(cdm, 1125315)
-}
-
-}

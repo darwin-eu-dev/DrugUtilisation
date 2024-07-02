@@ -193,14 +193,6 @@ summariseDoseCoverage <- function(cdm,
 #' for the selected ingredients and concept sets
 #' @export
 #'
-#' @examples
-#' \donttest{
-#' library(DrugUtilisation)
-#'
-#' cdm <- mockDrugUtilisation()
-#'
-#' dailyDoseCoverage(cdm, 1125315)
-#' }
 #'
 dailyDoseCoverage <- function(cdm,
                               ingredientConceptId) {
