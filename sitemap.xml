@@ -79,6 +79,9 @@
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/mockDrugUtilisation.html</loc>
   </url>
   <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/optionsTableIndication.html</loc>
+  </url>
+  <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/patternTable.html</loc>
   </url>
   <url>
@@ -113,5 +116,8 @@
   </url>
   <url>
     <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromConceptSet.html</loc>
+  </url>
+  <url>
+    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/tableIndication.html</loc>
   </url>
 </urlset>
