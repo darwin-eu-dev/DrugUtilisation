@@ -31,6 +31,7 @@
 #' \donttest{
 #' library(DrugUtilisation)
 #' library(CodelistGenerator)
+#' library(CDMConnector)
 #'
 #' cdm <- mockDrugUtilisation()
 #'

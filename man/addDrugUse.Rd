@@ -101,7 +101,7 @@ imputeDailyDose is not "none". If NULL no restrictions are applied.}
 The same cohort with the added columns.
 }
 \description{
-Add new columns with drug use related information
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 \donttest{

@@ -99,21 +99,21 @@ conceptSet_ATC
 Once we have the `conceptSet`, we can proceed to generate a cohort.
 There are two functions in this package to do that:
 
-1.  `generateConceptCohortSet()`: to generate a cohort for a certain
+1.  `CDMConnector::generateConceptCohortSet()`: to generate a cohort for a certain
     list of concepts (they do not have to be a drug). This function is
     exported from CDMConnector package.
 
 2.  `generateDrugUtilisationCohortSet()`: to generate a cohort of the
     drug use.
 
-## Use generateConceptCohortSet() to create a cohort
+## Use CDMConnector::generateConceptCohortSet() to create a cohort
 
 Let's try to use `generateConceptCohortSet()` to get the asthma cohort
 using the `conceptSet_code` created before. We could also use `conceptSet_json_1` or
 `conceptSet_json_2` to obtain the same result.
 
 ```{r, message=FALSE, warning=FALSE}
-cdm <- generateConceptCohortSet(cdm,
+cdm <- CDMConnector::generateConceptCohortSet(cdm,
   conceptSet = conceptSet_code,
   name = "asthma_1",
   overwrite = TRUE
@@ -140,7 +140,7 @@ You can use the `end` parameter to set how the cohort end date will be defined. 
 See an example below:
 
 ```{r, message=FALSE, warning=FALSE}
-cdm <- generateConceptCohortSet(cdm,
+cdm <- CDMConnector::generateConceptCohortSet(cdm,
   conceptSet = conceptSet_code,
   name = "asthma_2",
   end = "event_end_date",
@@ -154,7 +154,7 @@ cdm$asthma_2
 The `requiredObservation` parameter is a numeric vector of length 2, that defines the number of days of required observation time prior to index and post index for an event to be included in the cohort. The default value is `c(0,0)`. Let's check how the difference between **asthma_3** and **asthma_2** when changing this parameter.
 
 ```{r, message=FALSE, warning=FALSE}
-cdm <- generateConceptCohortSet(cdm,
+cdm <- CDMConnector::generateConceptCohortSet(cdm,
   conceptSet = conceptSet_code,
   name = "asthma_3",
   end = "observation_period_end_date",

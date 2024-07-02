@@ -75,7 +75,7 @@ cdm <- generateDrugUtilisationCohortSet(
 ```
 ## Create a indication cohort
 
-Next we going to create our indications cohort to indicate patients with sinusitis and bronchitis. This can be done by using `generateConceptCohortSet()`.
+Next we going to create our indications cohort to indicate patients with sinusitis and bronchitis. This can be done by using `CDMConnector::generateConceptCohortSet()`.
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 indications <-
@@ -85,7 +85,7 @@ indications <-
   )
 
 cdm <-
-  generateConceptCohortSet(cdm, name = "indications_cohort", indications)
+  CDMConnector::generateConceptCohortSet(cdm, name = "indications_cohort", indications)
 
 cohortCount(cdm[["indications_cohort"]]) %>%
   left_join(
