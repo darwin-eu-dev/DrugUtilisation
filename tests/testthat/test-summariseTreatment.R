@@ -1,5 +1,5 @@
 test_that("test summariseTreatment", {
-  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- mockDrugUtilisation()
   expect_no_error(
     x <- cdm$cohort1 %>%
       summariseTreatmentFromCohort(

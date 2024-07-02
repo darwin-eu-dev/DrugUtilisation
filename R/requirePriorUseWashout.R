@@ -18,6 +18,8 @@
 #'
 #' @param cohort A cohort table in a cdm reference.
 #' @param washout The length of washout to be applied.
+#' @param name Name of the new cohort with the washout. Default name is the original
+#' cohort name.
 #' @return The function returns the cohort after applying the specified washout.
 #'
 #' @export
@@ -29,13 +31,24 @@
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-requirePriorUseWashout <- function(cohort, washout) {
+requirePriorUseWashout <- function(cohort,
+                                   washout,
+                                   name = tableName(cohort)) {
   checkInputs(
-    cohort = cohort, priorUseWashout = washout
+    cohort = cohort, priorUseWashout = washout, name = name
   )
 
+  if ((sumcounts(cohort) == 0) & (name !=tableName(cohort))){
+    cli::cli_abort("Cohort is empty so washout cannot be applied.
+                   Suggest rechecking the cohort.")
+  }
+
+  if (washout == 0 & (name !=tableName(cohort))){
+    cli::cli_abort("Washout specified is 0 meaning nothing will be applied.
+                   Suggest rechecking the washout.")
+  }
+
   if (sumcounts(cohort) > 0 & washout > 0) {
-    name <- attr(cohort, "tbl_name")
     cohort <- cohort %>%
       dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
       dplyr::arrange(.data$cohort_start_date) %>%

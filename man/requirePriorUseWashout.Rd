@@ -4,12 +4,15 @@
 \alias{requirePriorUseWashout}
 \title{Generates a cohort of the drug use of a certain list of concepts.}
 \usage{
-requirePriorUseWashout(cohort, washout)
+requirePriorUseWashout(cohort, washout, name = tableName(cohort))
 }
 \arguments{
 \item{cohort}{A cohort table in a cdm reference.}
 
 \item{washout}{The length of washout to be applied.}
+
+\item{name}{Name of the new cohort with the washout. Default name is the original
+cohort name.}
 }
 \value{
 The function returns the cohort after applying the specified washout.
