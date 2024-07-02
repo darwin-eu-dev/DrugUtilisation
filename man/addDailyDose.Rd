@@ -7,7 +7,8 @@
 addDailyDose(
   drugExposure,
   cdm = attr(drugExposure, "cdm_reference"),
-  ingredientConceptId
+  ingredientConceptId,
+  name = NULL
 )
 }
 \arguments{
@@ -18,6 +19,9 @@ drug_exposure_start_date and drug_exposure_end_date as columns}
 
 \item{ingredientConceptId}{ingredientConceptId for which to filter the
 drugs of interest}
+
+\item{name}{Name of the computed table, if NULL a temporary table will be
+generated.}
 }
 \value{
 same input table

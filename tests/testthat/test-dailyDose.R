@@ -95,6 +95,16 @@ test_that("functionality of addDailyDose function",{
 
   daily_dose <- addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1)
 
+  # compute behavior
+  initialTables <- CDMConnector::listTables(CDMConnector::cdmCon(cdm))
+  expect_no_error(
+    x <- cdm[["drug_exposure"]] |>
+      addDailyDose(ingredientConceptId = 1, name = "my_custom_name")
+  )
+  finalTables <- CDMConnector::listTables(CDMConnector::cdmCon(cdm))
+  expect_identical(omopgenerics::tableName(x), "my_custom_name")
+  expect_true("my_custom_name" %in% setdiff(finalTables, initialTables))
+
   patterns1 <- drugStrengthPattern(cdm = cdm, ingredientConceptId = 1)
 
   expect_true(

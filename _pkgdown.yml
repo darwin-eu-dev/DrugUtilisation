@@ -10,7 +10,7 @@ reference:
 - subtitle: Indication functions
   desc: Indication functions are used to summarise and obtain the indication information
 - contents:
-  - matches("addIndication|indicationToStrata|summariseIndication")
+  - matches("addIndication|summariseIndication|tableIndication|optionsTableIndication")
 - subtitle: Add daily dose
   desc: Tools to compute the daily dose, see when it can be computed
 - contents:
@@ -18,24 +18,20 @@ reference:
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
-  - matches("addDrugUse|summariseDrugUse")
+  - matches("addDrugUtilisation|summariseDrugUtilisation|addNumberExposures")
 - subtitle: Summarise treatments during certain windows
   desc: Summarise the use of different treatments during certain windows
 - contents:
   - matches("summariseTreatment")
-- subtitle: Charcterise a cohort
-  desc: Different functions to characterize cohort, these functions may be moved to more focused into characterization packages within DARWIN-EU framework
-- contents:
-  - matches("summariseCharacteristics|summariseLargeScaleCharacteristics|summariseCharacteristicsFromCodelist")
-- subtitle: Benchmarking function
-  desc: Function to tabluate summarise results.
-- contents:
-  - matches("tableIndication|optionsTableIndication")
 - subtitle: Complementary functions
   desc: Helpper functions, some of thay may be deprecated in the near future
 - contents:
-  - matches("readConceptList|mockDrugUtilisation|generateConceptCohortSet")
+  - matches("readConceptList|mockDrugUtilisation")
 - subtitle: Benchmarking function
   desc: Function to test performance of different functions in DrugUtilisation
 - contents:
   - matches("benchmarkDUS")
+- subtitle: Deprecated functions
+  desc: This functions has been deprecated
+- contents:
+  - matches("addDrugUse|summariseDrugUse|indicationToStrata")

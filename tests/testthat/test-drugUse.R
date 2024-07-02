@@ -1,3 +1,4 @@
+
 test_that("test flags", {
   skip_on_cran()
   cdm <- mockDrugUtilisation()
@@ -101,11 +102,11 @@ test_that("test overlapMode", {
       period_type_concept_id = 0
     ),
     concept_relationship = dplyr::tibble(
-        concept_id_1 = c(c(1, 2, 3, 4, 5)),
-        concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
-        relationship_id = c(rep("RxNorm has dose form", 5)),
-        valid_start_date = as.Date("1900-01-01"),
-        valid_end_date = as.Date("2100-01-01")
+      concept_id_1 = c(c(1, 2, 3, 4, 5)),
+      concept_id_2 = c(19016586, 46275062, 35894935, 19135843, 19082107),
+      relationship_id = c(rep("RxNorm has dose form", 5)),
+      valid_start_date = as.Date("1900-01-01"),
+      valid_end_date = as.Date("2100-01-01")
     )
   )
   variables <- c(

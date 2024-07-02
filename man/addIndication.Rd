@@ -36,6 +36,7 @@ Get indication for a target cohort
 \donttest{
 library(DrugUtilisation)
 library(CodelistGenerator)
+library(CDMConnector)
 
 cdm <- mockDrugUtilisation()
 
