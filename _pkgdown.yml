@@ -14,7 +14,7 @@ reference:
 - subtitle: Add daily dose
   desc: Tools to compute the daily dose, see when it can be computed
 - contents:
-  - matches("addDailyDose|addPattern|addRoute|summariseDoseCoverage|patternTable|stratifyByUnit|patternsWithFormula")
+  - matches("addDailyDose|addPattern|addRoute|summariseDoseCoverage|dailyDoseCoverage|patternTable|stratifyByUnit|patternsWithFormula")
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
