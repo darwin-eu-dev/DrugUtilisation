@@ -59,7 +59,7 @@ indexDate and start of the first exposure.}
 \item{initialQuantity}{Whether to add a column with the initial quantity.}
 
 \item{cumulativeQuantity}{Whether to add a column with the cumulative
-quantity during the whole exposure.}
+quantity of the identified prescription.}
 
 \item{initialDailyDose}{Whether to add a column with the initial daily dose.}
 

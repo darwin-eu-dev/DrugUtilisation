@@ -35,6 +35,7 @@ cohorts.
 library(DrugUtilisation)
 library(PatientProfiles)
 library(CodelistGenerator)
+library(CDMConnector)
 
 cdm <- mockDrugUtilisation()
 indications <- list("headache" = 378253, "asthma" = 317009)
