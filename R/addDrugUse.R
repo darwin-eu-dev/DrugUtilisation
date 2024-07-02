@@ -16,6 +16,8 @@
 
 #' Add new columns with drug use related information
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort Cohort in the cdm
 #' @param cdm deprecated
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
@@ -108,6 +110,11 @@ addDrugUse <- function(cohort,
                        imputeDailyDose = "none",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
+  lifecycle::deprecate_soft(
+    when = "0.7.0",
+    what = "DrugUtilisation::addDrugUse()",
+    with = "DrugUtilisation::addDrugUtilisation()"
+  )
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_soft("0.5.0", "addDrugUse(cdm = )")
   }
@@ -501,7 +508,7 @@ initialSubset <- function(cdm, dusCohort, conceptSet) {
          (.data$drug_exposure_start_date <= .data$cohort_end_date)) |
         (!is.na(.data$drug_exposure_end_date) &
            ((.data$drug_exposure_end_date >= .data$cohort_start_date) &
-           (.data$drug_exposure_start_date <= .data$cohort_end_date)))
+              (.data$drug_exposure_start_date <= .data$cohort_end_date)))
     ) %>%
     dplyr::compute(
       temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()

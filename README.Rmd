@@ -128,9 +128,10 @@ attrition(cdm[["dus_cohort"]]) %>% glimpse()
 
 ### Indication
 
-Indications will always be cohorts. An option that the package has is to create concept based cohorts using `generateConceptCohortSet`.
+Indications will always be cohorts. An option that the package has is to create concept based cohorts using `CDMConnector::generateConceptCohortSet()`.
 
 ```{r}
+library(CDMConnector)
 indications <- list(headache = 378253, influenza = 4266367)
 cdm <- generateConceptCohortSet(cdm, indications, "indications_cohort")
 cohortCount(cdm[["indications_cohort"]])
