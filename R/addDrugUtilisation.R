@@ -68,7 +68,7 @@ addDrugUtilisation <- function(cohort,
                                ingredientConceptId = NULL,
                                conceptSet = NULL,
                                restrictIncident = TRUE,
-                               gapEra = 0,
+                               gapEra = 1,
                                numberExposures = TRUE,
                                numberEras = TRUE,
                                exposedTime = TRUE,
@@ -347,7 +347,7 @@ addDrugUseInternal <- function(x,
         start = "drug_exposure_start_date",
         end = "drug_exposure_end_date",
         group = c(cols, "concept_name"),
-        gap = gapEra + 1
+        gap = gapEra
       )
     if (exposedTime) {
       toJoin <- toJoin |>
@@ -405,20 +405,21 @@ addDrugUseInternal <- function(x,
     }
     drugData <- drugData |>
       dplyr::mutate(
-        "drug_exposure_start_date" = dplyr::if_else(
+        "start_contribution" = dplyr::if_else(
           .data[[indexDate]] <= .data$drug_exposure_start_date,
           .data$drug_exposure_start_date,
           .data[[indexDate]]
         ),
-        "drug_exposure_end_date" = dplyr::if_else(
+        "end_contribution" = dplyr::if_else(
           .data[[censorDate]] >= .data$drug_exposure_end_date,
           .data$drug_exposure_end_date,
           .data[[censorDate]]
         )
       ) %>%
       dplyr::mutate("exposure_duration" = as.integer(!!CDMConnector::datediff(
-        start = "drug_exposure_start_date", end = "drug_exposure_end_date"
-      ))) |>
+        start = "start_contribution", end = "end_contribution"
+      )) + 1L) |>
+      dplyr::select(-c("start_contribution", "end_contribution")) |>
       dplyr::compute(
         name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
       )
@@ -435,7 +436,7 @@ addDrugUseInternal <- function(x,
             toJoin |>
               dplyr::group_by(dplyr::across(dplyr::all_of(c(cols, "concept_name", "unit")))) |>
               dplyr::summarise(
-                "cumulative_dose" = as.integer(sum(.data$daily_dose * .data$exposure_duration, na.rm = TRUE)),
+                "cumulative_dose" = sum(.data$daily_dose * .data$exposure_duration, na.rm = TRUE),
                 .groups = "drop"
               ) |>
               tidyr::pivot_wider(
@@ -446,7 +447,7 @@ addDrugUseInternal <- function(x,
             by = cols
           ) |>
           dplyr::mutate(dplyr::across(
-            dplyr::starts_with("cumulative"), ~ dplyr::coalesce(.x, 0L)
+            dplyr::starts_with("cumulative"), ~ dplyr::coalesce(.x, 0)
           )) |>
           compute2(name)
         if (initialDailyDose) {
@@ -465,7 +466,7 @@ addDrugUseInternal <- function(x,
             toJoin |>
               dplyr::group_by(dplyr::across(c(cols, "concept_name", "unit"))) |>
               dplyr::summarise(
-                "initial_daily_dose" = as.integer(sum(.data$daily_dose, na.rm = TRUE)),
+                "initial_daily_dose" = sum(.data$daily_dose, na.rm = TRUE),
                 .groups = "drop"
               ) |>
               tidyr::pivot_wider(
@@ -476,7 +477,7 @@ addDrugUseInternal <- function(x,
             by = cols
           ) |>
           dplyr::mutate(dplyr::across(
-            dplyr::starts_with("initial_daily_dose"), ~ dplyr::coalesce(.x, 0L)
+            dplyr::starts_with("initial_daily_dose"), ~ dplyr::coalesce(.x, 0)
           )) |>
           compute2(name)
       }

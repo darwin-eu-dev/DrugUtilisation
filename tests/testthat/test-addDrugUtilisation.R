@@ -2,7 +2,7 @@
 test_that("Basic functionality", {
   # basic functionality
   cdm <- mockDrugUtilisation(
-    #connectionDetails = connectionDetails,
+    connectionDetails = connectionDetails,
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 3, 3, 1, 2, 4, 4, 1),
@@ -69,26 +69,21 @@ test_that("Basic functionality", {
   expect_identical(x0$number_eras_ingredient_1125315_descendants, c(
     1L, 2L, 1L, 0L, 0L, 0L))
   expect_identical(x0$time_to_exposure_ingredient_1125315_descendants, c(
-    0L, 31L, 287L, NA, NA, NA
-  ))
+    0L, 31L, 287L, NA, NA, NA))
   expect_identical(x0$cumulative_quantity_ingredient_1125315_descendants, c(
-    60, 11, 15, 0, 0, 0
-  ))
+    60, 11, 15, 0, 0, 0))
   expect_identical(x0$initial_quantity_ingredient_1125315_descendants, c(
-    10, 1, 15, 0, 0, 0
-  ))
+    10, 1, 15, 0, 0, 0))
   expect_identical(x0$exposed_time_ingredient_1125315_descendants, c(
-    45L, 43L, 17L, 0L, 0L, 0L
-  ))
-  # expect_identical(
-  #   x0$cumulative_dose_na_ingredient_1125315_descendants_1125315
-  # )
-  # expect_identical(
-  #   x0$cumulative_dose_milligram_ingredient_1125315_descendants_1125315
-  # )
-  # expect_identical(
-  #   x0$initial_daily_dose_milligram_ingredient_1125315_descendants_1125315
-  # )
+    45L, 43L, 17L, 0L, 0L, 0L))
+  expect_equal(
+    x0$cumulative_dose_milligram_ingredient_1125315_descendants_1125315,
+    c(5000+9600*20*40/56+15000, 500*1*29/29, 17/30*15*500, 0, 0, 0)
+  )
+  expect_equal(
+    x0$initial_daily_dose_milligram_ingredient_1125315_descendants_1125315,
+    c(500*10/11, 500*1/29, 500*15/30, 0, 0, 0)
+  )
 
   # restrictIncident
   expect_no_error(
@@ -102,11 +97,19 @@ test_that("Basic functionality", {
     x1$number_exposures_ingredient_1125315_descendants,
     c(3L, 2L, 2L, 0L, 2L, 0L)
   )
+  expect_equal(
+    x1$cumulative_dose_milligram_ingredient_1125315_descendants_1125315,
+    c(5000+9600*20*40/56+15000, 500*1*29/29, 17/30*15*500+15*5*500/35, 0, 10*500*2/11+9600*20*18/56, 0)
+  )
+  expect_equal(
+    x1$initial_daily_dose_milligram_ingredient_1125315_descendants_1125315,
+    c(500*10/11, 500*1/29, 5*500/35, 0, 10*500/11+9600*20/56, 0)
+  )
 
   # gapEra
   expect_no_error(
     x2 <- cdm$dus_cohort |>
-      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 56) |>
+      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 57) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date)
   )
@@ -116,7 +119,7 @@ test_that("Basic functionality", {
   )
   expect_no_error(
     x3 <- cdm$dus_cohort |>
-      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 57) |>
+      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 58) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date)
   )
@@ -186,7 +189,7 @@ test_that("gapEra consecutive prescriptions", {
 
   expect_no_error(
     x <- cdm$dus_cohort |>
-      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 0) |>
+      addDrugUtilisation(ingredientConceptId = 1125315) |>
       dplyr::collect()
   )
   expect_identical(x$number_exposures_ingredient_1125315_descendants, 2L)

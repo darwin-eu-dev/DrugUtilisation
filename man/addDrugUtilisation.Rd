@@ -11,7 +11,7 @@ addDrugUtilisation(
   ingredientConceptId = NULL,
   conceptSet = NULL,
   restrictIncident = TRUE,
-  gapEra = 0,
+  gapEra = 1,
   numberExposures = TRUE,
   numberEras = TRUE,
   exposedTime = TRUE,
