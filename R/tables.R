@@ -83,6 +83,9 @@ tableIndication <- function(result,
     omopgenerics::newSummarisedResult() |>
     visOmopResults::filterSettings(.data$result_type == "summarised_indication") |>
     dplyr::filter(!grepl("number", .data$variable_name))
+  if (nrow(result) == 0) {
+    cli::cli_abort("There are no results with `result_type = summarised_indication`")
+  }
   checkmate::assertLogical(cohortName, any.missing = FALSE)
   checkmate::assertLogical(cdmName, any.missing = FALSE)
   checkmate::assertLogical(splitStrata, any.missing = FALSE)
