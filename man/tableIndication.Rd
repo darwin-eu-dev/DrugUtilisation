@@ -36,9 +36,6 @@ in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{varia
 \item{.options}{Named list with additional formatting options.
 DrugUtilisation::optionsTableIndication() shows allowed
 arguments and their default values.}
-
-\item{formatEstimateName}{Named list of estimate name's to join, sorted by
-computation order. Indicate estimate_name's between <...>.}
 }
 \value{
 A table with a formatted version of summariseIndication() results.

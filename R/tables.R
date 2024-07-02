@@ -20,8 +20,6 @@
 #'
 #' @param result A summarised_result object with results from
 #' summariseIndication().
-#' @param formatEstimateName Named list of estimate name's to join, sorted by
-#' computation order. Indicate estimate_name's between <...>.
 #' @param header A vector containing which elements should go into the header
 #' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`.
 #' @param splitStrata If TRUE strata columns will be splitted.
@@ -83,7 +81,7 @@ tableIndication <- function(result,
   }
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(result_type == "summarised_indication") |>
+    visOmopResults::filterSettings(.data$result_type == "summarised_indication") |>
     dplyr::filter(!grepl("number", .data$variable_name))
   checkmate::assertLogical(cohortName, any.missing = FALSE)
   checkmate::assertLogical(cdmName, any.missing = FALSE)
