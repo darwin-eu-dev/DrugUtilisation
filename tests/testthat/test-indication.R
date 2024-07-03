@@ -66,7 +66,7 @@ test_that("test case single indication", {
   #check it works without cdm object specified
 
   expect_no_error(cdm[["cohort1"]] %>%
-    addIndication(indicationCohortName = "cohort2", indicationGap = 0,
+    addIndication(indicationCohortName = "cohort2", indicationWindow = 0,
       unknownIndicationTable = NULL
     ))
 
