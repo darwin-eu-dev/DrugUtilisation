@@ -39,6 +39,7 @@ Get indication for a target cohort
 \donttest{
 library(DrugUtilisation)
 library(CodelistGenerator)
+library(CDMConnector)
 
 cdm <- mockDrugUtilisation()
 
@@ -51,7 +52,7 @@ acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 
 cdm[["drug_cohort"]] |>
-  addIndication(cdm, "indication_cohorts", indicationWindow = list(c(-1,0)), unknownIndicationTable = "condition_occurrence")
+  addIndication(cdm, "indication_cohorts", indicationWindow = list(c(0,0)))
 }
 
 }
