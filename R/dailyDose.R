@@ -205,7 +205,7 @@ summariseDoseCoverage <- function(cdm,
 #'
 dailyDoseCoverage <- function(cdm,
                               ingredientConceptId) {
-  lifecycle::deprecate_stop(when = "0.1.0", what = "dailyDoseCoverage()", with = "summariseDoseCoverage()")
+  lifecycle::deprecate_stop(when = "0.7.0", what = "dailyDoseCoverage()", with = "summariseDoseCoverage()")
 }
 
 standardUnits <- function(drugExposure) {
