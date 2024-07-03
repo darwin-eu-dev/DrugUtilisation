@@ -102,9 +102,8 @@ Then to add indication to the drug utilisation cohort we can simple use the `add
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 
-cdm[["acetaminophen_users"]] %>%
+cdm[["acetaminophen_users"]] |>
   addIndication(
-    cdm = cdm, 
     indicationCohortName = "indications_cohort",
     indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
     unknownIndicationTable =  c("condition_occurrence")

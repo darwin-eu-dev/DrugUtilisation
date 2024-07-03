@@ -79,7 +79,7 @@ addIndication <- function(x,
     dplyr::distinct()
 
   # add indications that are cohorts
-  ind <- addCohortIndication(ind, indicationCohortName, indicationWindow,nameformat,unknownIndicationTable)
+  ind <- addCohortIndication(ind, indicationCohortName, indicationWindow,nameformat,unknownIndicationTable,indicationCohortId)
 
   # add the indication columns to the original table
   result <- x |>
@@ -107,7 +107,7 @@ indicationName <- function(window, termination = "") {
 
 #' Add cohort indications
 #' @noRd
-addCohortIndication <- function(ind, cohortName, window, name, unknown) {
+addCohortIndication <- function(ind, cohortName, window, name, unknown, id) {
   for (w in seq_len(length(window))) {
 
     win <- window[[w]]
@@ -116,7 +116,7 @@ addCohortIndication <- function(ind, cohortName, window, name, unknown) {
       cohortName,
       targetEndDate = NULL,
       window = win,
-      targetCohortId = indicationCohortId,
+      targetCohortId = id,
       nameStyle = name
     ) |>
       addNoneIndication(win) |>
