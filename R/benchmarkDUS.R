@@ -107,7 +107,7 @@ benchmarkDUS <- function(
 
     cdm[[name]] %>%
       addIndication(
-        cdm = cdm, indicationCohortName = indicationCohortName, indicationGap = 0,
+        cdm = cdm, indicationCohortName = indicationCohortName, indicationWindow = list(c(0,0)),
         unknownIndicationTable = NULL
       )
 
