@@ -164,8 +164,7 @@ summariseDoseCoverage <- function(cdm,
       includeOverallStrata = TRUE,
       variables = "daily_dose",
       estimates = c(
-        "count_missing", "percentage_missing", "mean", "sd", "min", "q05",
-        "q25", "median", "q75", "q95", "max"
+        "count_missing", "percentage_missing", "mean", "sd", "q25", "median", "q75"
       )
     ) %>%
     suppressWarnings() |>
@@ -174,7 +173,12 @@ summariseDoseCoverage <- function(cdm,
         .data$variable_name != "daily_dose" |
         .data$estimate_name %in% c("count", "percentage")
     ) |>
-    dplyr::mutate("cdm_name" = omopgenerics::cdmName(cdm))
+    dplyr::mutate(
+      "cdm_name" = omopgenerics::cdmName(cdm),
+      variable_name = dplyr::if_else(
+        grepl("missing", .data$estimate_name), "Missing dose", .data$variable_name
+      )
+    )
   dailyDoseSummary <- dailyDoseSummary |>
     omopgenerics::newSummarisedResult(settings = dplyr::tibble(
       "result_id" = unique(dailyDoseSummary$result_id),
@@ -201,7 +205,7 @@ summariseDoseCoverage <- function(cdm,
 #'
 dailyDoseCoverage <- function(cdm,
                               ingredientConceptId) {
- lifecycle::deprecate_stop(when = "0.1.0", what = "dailyDoseCoverage()", with = "summariseDoseCoverage()")
+  lifecycle::deprecate_stop(when = "0.1.0", what = "dailyDoseCoverage()", with = "summariseDoseCoverage()")
 }
 
 standardUnits <- function(drugExposure) {

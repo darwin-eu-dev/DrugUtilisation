@@ -75,8 +75,10 @@ tableIndication <- function(result,
     if (any(! header %in% c("cdm_name", "group", "strata", "variable"))) {
       cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`")
     }
-    if (grepl(paste0(header, collapse = "|"), groupColumn)) {
-      cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
+    if (!is.null(groupColumn)) {
+      if (grepl(paste0(header, collapse = "|"), groupColumn)) {
+        cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
+      }
     }
   }
   result <- result |>
@@ -153,9 +155,10 @@ tableIndication <- function(result,
 #' @param result A summarised_result object with results from
 #' summariseDoseCoverage().
 #' @param header A vector containing which elements should go into the header
-#' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`.
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`, and
+#' `estimate`.
 #' @param splitStrata If TRUE strata columns will be splitted.
-#' @param cohortName If TRUE cohort names will be displayed.
+#' @param ingridientName If TRUE cohort names will be displayed.
 #' @param cdmName If TRUE database names will be displayed.
 #' @param groupColumn Column to use as group labels.
 #' @param type Type of desired formatted table, possibilities: "gt",
@@ -166,19 +169,13 @@ tableIndication <- function(result,
 #'
 #' @examples
 #' \donttest{
-#'
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' result <- cdm$cohort1 |>
-#'   addIndication(
-#'     indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
-#'     unknownIndicationTable = "condition_occurrence"
-#'   ) |>
-#'   summariseIndication()
+#' result <- summariseDoseCoverage(cdm, 1125315)
 #'
-#' tableIndication(result)
+#' tableDrugCoverage(result)
 #'
 #'
 #' CDMConnector::cdmDisconnect(cdm = cdm)
@@ -189,36 +186,37 @@ tableIndication <- function(result,
 #' @export
 #'
 tableDrugCoverage <- function(result,
-                            header = c("group", "strata"),
-                            splitStrata = TRUE,
-                            cohortName = TRUE,
-                            cdmName = TRUE,
-                            groupColumn = "variable_name",
-                            type = "gt",
-                            .options = list()) {
+                              header = c("variable", "estimate"),
+                              splitStrata = TRUE,
+                              ingridientName = TRUE,
+                              cdmName = TRUE,
+                              groupColumn = NULL,
+                              type = "gt",
+                              .options = list()) {
   # check input and filter result
-  if (!cohortName & "cohort_name" %in% groupColumn) {
-    cli::cli_abort("If `cohortName = FALSE`, `cohort_name` cannot be used in `groupColumn`.")
+  if (!ingridientName & "ingredient_name" %in% groupColumn) {
+    cli::cli_abort("If `ingridientName = FALSE`, `ingredient_name` cannot be used in `groupColumn`.")
   }
   if (!cdmName & "cdm_name" %in% groupColumn) {
     cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
   }
   if (!is.null(header)) {
-    if (any(! header %in% c("cdm_name", "group", "strata", "variable"))) {
-      cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`")
+    if (any(!header %in% c("cdm_name", "group", "strata", "variable", "estimate"))) {
+      cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`, `estimate`")
     }
-    if (grepl(paste0(header, collapse = "|"), groupColumn)) {
-      cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
+    if (!is.null(groupColumn)) {
+      if (grepl(paste0(header, collapse = "|"), groupColumn)) {
+        cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
+      }
     }
   }
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "summarised_indication") |>
-    dplyr::filter(!grepl("number", .data$variable_name))
+    visOmopResults::filterSettings(.data$result_type == "dose_coverage")
   if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = summarised_indication`")
+    cli::cli_abort("There are no results with `result_type = dose_coverage`")
   }
-  checkmate::assertLogical(cohortName, any.missing = FALSE)
+  checkmate::assertLogical(ingridientName, any.missing = FALSE)
   checkmate::assertLogical(cdmName, any.missing = FALSE)
   checkmate::assertLogical(splitStrata, any.missing = FALSE)
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
@@ -230,10 +228,10 @@ tableDrugCoverage <- function(result,
   split <- c("additional")
 
   # Exclude columns, rename, and split
-  excludeColumns <- c("result_id", "estimate_type", "estimate_name")
-  if (!cohortName) {
+  excludeColumns <- c("result_id", "estimate_type", "variable_level")
+  if (!ingridientName) {
     if ("group" %in% header) {
-      cli::cli_warn(c("!" = "Dropping group from header as `cohortName = FALSE`."))
+      cli::cli_warn(c("!" = "Dropping group from header as `ingridientName = FALSE`."))
       header <- header[!"group" %in% header]
     }
     excludeColumns <- c(excludeColumns, "group_name", "group_level")
@@ -252,10 +250,7 @@ tableDrugCoverage <- function(result,
     renameColumns <- c("Database name" = "cdm_name")
   }
   if (!"variable_name" %in% groupColumn) {
-    renameColumns <- c(renameColumns, "Indication window" = "variable_name")
-  }
-  if (!"variable_level" %in% groupColumn) {
-    renameColumns <- c(renameColumns, "Indication" = "variable_level")
+    renameColumns <- c(renameColumns, "Variable" = "variable_name")
   }
 
   # split
@@ -264,16 +259,21 @@ tableDrugCoverage <- function(result,
   }
 
   # table
-  visOmopResults::visOmopTable(
-    result = result,
-    formatEstimateName = c("N (%)" = "<count> (<percentage> %)"),
-    header = header,
-    split = split,
-    groupColumn = groupColumn,
-    renameColumns = renameColumns,
-    type = type,
-    excludeColumns = excludeColumns,
-    .options = .options
+  suppressMessages(
+    visOmopResults::visOmopTable(
+      result = result,
+      formatEstimateName = c("N (%)" = "<count_missing> (<percentage_missing> %)",
+                             "N" = "<count>",
+                             "Mean (SD)" = "<mean> (<sd>)",
+                             "Median (Q25 - Q75)" = "<median> (<q25> - <q75>)"),
+      header = header,
+      split = split,
+      groupColumn = groupColumn,
+      renameColumns = renameColumns,
+      type = type,
+      excludeColumns = excludeColumns,
+      .options = .options
+    )
   )
 }
 
