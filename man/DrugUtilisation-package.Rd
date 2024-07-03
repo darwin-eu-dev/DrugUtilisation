@@ -6,6 +6,8 @@
 \alias{DrugUtilisation-package}
 \title{DrugUtilisation: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP Common Data Model}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Summarise patient-level drug utilisation cohorts using data mapped to the Observational Medical Outcomes Partnership (OMOP) common data model. New users and prevalent users cohorts can be generated and their characteristics, indication and drug use summarised.
 }
 \seealso{
@@ -29,6 +31,7 @@ Other contributors:
 \itemize{
   \item Edward Burn \email{edward.burn@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9286-1128}{ORCID}) [contributor]
   \item Xintong Li \email{xintong.li@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-6872-5804}{ORCID}) [contributor]
+  \item Marta Alcalde-Herraiz \email{marta.alcaldeherraiz@ndorms.ox.ac.uk} (\href{https://orcid.org/0009-0002-4405-1814}{ORCID}) [contributor]
 }
 
 }

@@ -1,0 +1,306 @@
+---
+title: "Add drug related information to a Drug Utilisation cohort"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Add drug related information to a Drug Utilisation cohort}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+The DrugUtilisation package includes a range of functions that add
+drug-related information of subjects in OMOP CDM tables and cohort
+tables. In this vignette, we will explore these functions and provide
+some examples for its usage.
+
+## Create mock data first
+
+```{r, message= FALSE, warning=FALSE}
+library(DrugUtilisation)
+library(CodelistGenerator)
+library(CDMConnector)
+library(dplyr)
+library(PatientProfiles)
+
+cdm <- mockDrugUtilisation(numberIndividual  = 200)
+```
+
+## Create a drug utilisation cohort
+
+We will use *Acetaminophen* as our example drug to construct our drug
+utilisation cohort. To begin, we will employ ```getDrugIngredientCodes()```
+function from CodelistGenerator to generate a concept list associated
+with *Acetaminophen*.
+
+```{r, message= FALSE, warning=FALSE}
+conceptList <- getDrugIngredientCodes(cdm, c("acetaminophen"))
+conceptList
+```
+
+Next, we create a drug utilisation cohort by using the `conceptList`
+with the `generateDrugUtilisationCohortSet()` function. For a better
+understanding of the arguments and functionalities of
+`generateDrugUtilisationCohortSet()`, please refer to the *Use
+DrugUtilisation to create a cohort* vignette.
+
+```{r, message= FALSE, warning=FALSE}
+cdm <- generateDrugUtilisationCohortSet(
+  cdm  = cdm,
+  name = "acetaminophen_example1",
+  conceptSet = conceptList
+)
+```
+
+# Adding routes with addRoute() function
+
+`addRoute()` function utilises an internal CSV file containing all
+possible routes for various drug dose forms supported by the package.
+The function is designed to seamlessly incorporate route information
+into your drug table for the supported dose forms. See the example below
+to know how it works.
+
+```{r, message = FALSE, warning=FALSE}
+cdm[["drug_exposure"]] %>%
+  addRoute() 
+```
+
+# Generating patterns with patternTable() function
+
+The `patternTable()` function in the DrugUtilisation package is a
+powerful tool for deriving patterns from a drug strength table. This
+function extracts distinct patterns, associating them with `pattern_id`
+and `formula_id`. The resulting tibble provides the following data:
+
+-   `number_concepts`: the count of distinct concepts in the patterns.
+-   `number_ingredients`: the count of distinct ingredients involved.
+-   `number_records`: the overall count of records in the patterns.
+
+Moreover, the tibble includes a column indicating potentially valid and
+invalid combinations.
+
+```{r, eval = TRUE}
+patternTable(cdm)
+```
+
+For detailed information about the patterns, their associated formula,
+and combinations of `amount_unit`, `numerator_unit`, and
+`denominator_unit`, you can refer to the data:
+
+```{r, eval = FALSE}
+patternsWithFormula
+```
+
+# Get daily dose with addDailyDose() function
+
+Now that we have all the patterns and formulas supported, the
+computation of daily doses can be performed using the `addDailyDose()`
+function. This function will add to the data with additional columns,
+including those for quantity, daily dose, unit, and route.
+
+```{r, eval=TRUE}
+addDailyDose(
+  cdm$drug_exposure,
+  cdm = cdm,
+  ingredientConceptId = 1125315
+)
+```
+
+There is also a function, `dailyDoseCoverage()`, to check the coverage
+of daily dose computation for chosen concept sets and ingredients.
+
+```{r, eval=TRUE}
+suppressWarnings(dailyDoseCoverage(cdm, 1125315))
+```
+
+# Adding Drug Usage Details to a Cohort with addDrugUse() function
+
+Additional drug usage details, including duration, initial dose,
+cumulative dose, etc., can be incorporated into a cohort using the
+`addDrugUse()` function.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$acetaminophen_example1 |>
+  addDrugUse(ingredientConceptId = 1125315)
+```
+
+## duration parameter
+
+The `duration` parameter is a boolean variable (`TRUE`/`FALSE`)
+determining whether to include duration related columns, which
+correspond to:
+
+1.  `duration`: duration is calculated as `cohort_end_date - cohort_start_date + 1`.
+2.  `impute_duration_percentage`: if a drug exposure record does not have the duration of the exposure, or falls outside the specified duration range, duration will be imputed. The number of records that have been imputed or that would have been imputed (if we choose not to impute the duration) is recorded in this column.
+
+To set the imputation method for duration, use the `imputeDuration` input, which can take values such as `none` (default), `median`, `mode` or a numerical value. Define the `durationRange` parameter as a numeric vector of length two, where the first value should be equal or smaller than the second one. If set to NULL, no restrictions are applied. 
+
+## quantity parameter
+The `quantity` parameter, another boolean variable (`TRUE`/`FALSE`), controls the inclusion of quantity-related columns. If set to `TRUE` (default), the following columns are added:
+
+1.  `cumulative_quantity`: cumulative sum of the column `quantity` of the `drug_exposure` table during the drug exposure period.
+2.  `initial_quantity`: quantity at `drug_exposure_start_date`.
+
+
+## dose parameter
+The `dose` parameter, also a boolean variable (`TRUE`/`FALSE`), governs the addition of daily dose-related columns. When set to `TRUE`, the following columns are added:
+
+1.  `initial_daily_dose_milligram`: dose at `drug_exposure_start_date`.
+2.  `cumulative_dose_milligram`: cumulative sum of the column `dose` of `drug_exposure` table during the drug exposure period.
+3.  `impute_daily_dose_percentage`: If daily dose is missing, or falls outside the imputation range, records will be imputed. This column shows the number of records that have been imputed or that would have been imputed (if we choose not to impute the daily dose).
+
+Similar to duration imputation, use the `imputeDose` parameter to set the method for imputing daily dose, with options like `none` (default), `median`, `mean`, `mode`. Define the imputation range with the `dailyDoseRange` parameter, a numeric vector of length two,  where the first value should be equal or smaller than the second one. If set to NULL, no restrictions are applied. 
+
+These parameters offer flexibility in customizing the drug usage details added to the cohort. See the next example, where we use the cohort created at the beginning of this vignette *acetaminophen_example1*.
+
+```{r, message= FALSE, warning=FALSE}
+addDrugUse(
+  cohort = cdm[["acetaminophen_example1"]],
+  cdm    = cdm,
+  ingredientConceptId = 1125315,
+  duration = TRUE,
+  quantity = TRUE,
+  dose     = TRUE
+)
+```
+
+If all these parameters are set to false, only `number_exposures` and `number_eras` will be added. 
+
+## Parameters for Joining Exposures
+The way continuous exposures are joined can be configured by using different parameters. Let's have a look to all the options we have.
+
+### gapEra parameter
+This parameter sets the number of days between two continuous exposures to be considered in the same era. If the previous exposure's end date minus the next exposure's start date is less than or equal to the specified `gapEra`, these two exposures will be joined. Let's see an illustrative example.
+
+First, let's create a cohort with `gapEra = 0`. For a better understanding, we will observe only subject number 56.
+```{r cols.print=7, message=FALSE, warning=FALSE, }
+cdm <- generateDrugUtilisationCohortSet(
+  cdm = cdm,
+  name = "acetaminophen_example2",
+  conceptSet = conceptList,
+  gapEra = 0
+)
+ 
+cdm$drug_exposure %>%
+  filter(drug_concept_id %in% !!conceptList$acetaminophen) %>%
+  filter(person_id == 56)
+```
+
+This subject has two different drug exposure periods separated by less than 6 months. Hence, it has two different cohort periods:
+
+```{r cols.print=7, message=FALSE, warning=FALSE, }
+cdm[["acetaminophen_example2"]] %>%
+  addDrugUse(
+    ingredientConceptId = 1125315,
+    gapEra = 0
+  ) %>%
+  filter(subject_id == 56)
+```
+
+Now, we merge this two periods by modifying the ```gapEra``` input when creating the cohort. For a better understanding of ```gapEra``` arguments and functionalities, please see *Use DrugUtilisation to create a cohort* vignette.
+```{r cols.print=7, message=FALSE, warning=FALSE, }
+cdm <- generateDrugUtilisationCohortSet(
+  cdm = cdm,
+  name = "acetaminophen_example3",
+  conceptSet = conceptList,
+  gapEra = 180
+)
+
+cdm$acetaminophen_example3 %>%
+  addDrugUse(
+    ingredientConceptId = 1125315,
+    gapEra = 180,
+    duration = TRUE,
+    quantity = FALSE,
+    dose = FALSE
+  ) %>%
+  filter(subject_id == 56) 
+```
+
+See that we only have one record with two exposures for subject number 56. Note that the number of eras is still 1, as we have defined the same `gapEra` as when the cohort was created. However, it is possible to specify a different `gapEra` than the one defined when the cohort was created.
+
+```{r cols.print=7, message=FALSE, warning=FALSE, }
+cdm$acetaminophen_example3 %>%
+  addDrugUse(
+    ingredientConceptId = 1125315,
+    gapEra = 0
+  ) %>%
+  filter(subject_id == 56) 
+```
+
+Notice that `number_eras` now indicates that we have two eras within the same record.
+
+### eraJoinMode parameter
+This parameter defines how two different continuous exposures are joined in an era. There are four options:
+
+1.  `eraJoinMode = "zero"` (default option): Exposures are joined considering that the period between both continuous exposures means the subject is treated with a daily dose of zero. The time between both exposures contributes to the total exposed time.
+2.  `eraJoinMode = "join"`: Exposures are joined, considering that the period between both continuous exposures means the subject is treated with a daily dose of zero. The time between both exposures does not contribute to the total exposed time.
+3.  `eraJoinMode = "previous"`:  Exposures are joined, considering that the period between both continuous exposures means the subject is treated with the daily dose of the previous subexposure. The time between both exposures contributes to the total exposed time.
+4.  `eraJoinMode = "subsequent"`: Exposures are joined, considering that the period between both continuous exposures means the subject is treated with the daily dose of the subsequent subexposure. The time between both exposures contributes to the total exposed time.
+
+### `overlapMode` parameter
+This parameter defines how the overlapping between two exposures that do not start on the same day is resolved inside a subexposure. There are five possible options:
+
+1.  `overlapMode* = "sum"` (default):  The considered daily dose is the sum of all the exposures present in the subexposure.
+2.  `overlapMode = minimum`: The considered daily dose is the minimum of all the exposures in the subexposure.
+3.  `overlapMode = maximum`: The considered daily dose is the maximum of all the exposures in the subexposure.
+4.  `overlapMode = previous`: The considered daily dose is that of the earliest exposure.
+5.  `overlapMode = subsequent`: The considered daily dose is that of the latest exposure.
+
+### sameIndexMode parameter
+This parameter works similarly to `overlapMode`, but it customizes the overlapping between two exposures starting on the same date. It includes the options `sum` (default), `minimum`, and `maximum` described in `overlapMode`.
+
+For example, the following example sets a maximum gap of 30 days for exposures to be joined. It uses the daily dose of the previous subexposure when joining exposures, employs the minimum daily dose for exposures starting on the same day, and considers the minimum daily dose for exposures that overlap.
+    
+```{r, eval=TRUE}
+cdm[["acetaminophen_example1"]] %>%
+  addDrugUse(ingredientConceptId = 1125315,
+             gapEra = 30,
+             eraJoinMode = "previous",
+             overlapMode = "minimum",
+             sameIndexMode = "minimum")
+
+```
+
+# Summarise drug usage information with summariseDrugUse() function
+This functions creates a tibble summarising the dose table across multiple cohorts. See an example below:
+
+```{r, message = FALSE, warning=FALSE}
+cdm[["acetaminophen_example1"]] <- cdm[["acetaminophen_example1"]] %>% 
+  addDrugUse(
+    cdm = cdm,
+    ingredientConceptId = 1125315
+  )
+
+summariseDrugUse(cdm[["acetaminophen_example1"]])
+```
+
+## strata parameter
+We can also stratify our cohort and calculate the estimates within each strata group by using the `strata` parameter.
+```{r, message = FALSE, warning=FALSE}
+cdm[["acetaminophen_example1"]] <- cdm[["acetaminophen_example1"]] %>%
+  addSex() # Function from PatientProfiles
+
+summariseDrugUse(cdm[["acetaminophen_example1"]],
+                 strata = list("sex" = "sex")) 
+```
+
+## drugEstimates parameter
+Customize the estimates to be calculated by using the `drugEstimates` parameter. By default, it will compute the minimum value, quartiles (5%, 25%, 50% - median, 75% and 95%), the maximum value, the mean, the standard deviation, and the number of missings values for each column added with `addDrugUse()`.
+
+## minCellCount parameter
+Specify the minimum number of individuals that a strata group must have in order to appear in the table.
+

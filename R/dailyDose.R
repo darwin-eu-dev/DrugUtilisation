@@ -21,6 +21,8 @@
 #' @param cdm A cdm reference
 #' @param ingredientConceptId ingredientConceptId for which to filter the
 #' drugs of interest
+#' @param name Name of the computed table, if NULL a temporary table will be
+#' generated.
 #'
 #' @return same input table
 #' @export
@@ -39,12 +41,15 @@
 #'
 addDailyDose <- function(drugExposure,
                          cdm = attr(drugExposure, "cdm_reference"),
-                         ingredientConceptId) {
+                         ingredientConceptId,
+                         name = NULL) {
   # initial checks
   checkInputs(
     drugExposure = drugExposure, ingredientConceptId = ingredientConceptId,
     cdm = cdm
   )
+
+  nm <- uniqueTmpName()
 
   # select only pattern_id and unit
   dailyDose <- drugExposure %>%
@@ -67,7 +72,7 @@ addDailyDose <- function(drugExposure,
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
       "quantity", "daily_dose", "unit"
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute(temporary = FALSE, overwrite = TRUE, name = nm)
 
   # add the information back to the initial table
   drugExposure <- drugExposure %>%
@@ -77,8 +82,11 @@ addDailyDose <- function(drugExposure,
         "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
         "quantity"
       )
-    ) %>%
-    CDMConnector::computeQuery()
+    )
+
+  drugExposure <- drugExposure |> compute2(name)
+
+  cdm <- omopgenerics::dropTable(cdm = cdm, name = nm)
 
   return(drugExposure)
 }
@@ -145,22 +153,35 @@ dailyDoseCoverage <- function(cdm,
 
   # summarise
   dailyDoseSummary <- dailyDose %>%
+    dplyr::mutate(dplyr::across(
+      c("route", "unit", "pattern_id", "ingredient_name"),
+      ~ dplyr::if_else(is.na(.x), "NA", as.character(.x))
+    )) |>
     PatientProfiles::summariseResult(
       group = list("ingredient_name"),
       includeOverallGroup = FALSE,
       strata = list("unit", c("route", "unit"), c("unit", "route", "pattern_id")),
       includeOverallStrata = TRUE,
       variables = "daily_dose",
-      functions = c(
-        "missing", "mean", "sd", "min", "q05", "q25", "median", "q75", "q95",
-        "max"
+      estimates = c(
+        "count_missing", "percentage_missing", "mean", "sd", "min", "q05",
+        "q25", "median", "q75", "q95", "max"
       )
     ) %>%
+    suppressWarnings() |>
     dplyr::filter(
       !(.data$strata_name %in% c("Overall", "route")) |
-        .data$variable != "daily_dose" |
-        .data$estimate_type %in% c("count", "percentage")
-    )
+        .data$variable_name != "daily_dose" |
+        .data$estimate_name %in% c("count", "percentage")
+    ) |>
+    dplyr::mutate("cdm_name" = omopgenerics::cdmName(cdm))
+  dailyDoseSummary <- dailyDoseSummary |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      "result_id" = unique(dailyDoseSummary$result_id),
+      "package_name" = "DrugUtilisation",
+      "package_version" = as.character(utils::packageVersion("DrugUtilisation")),
+      "result_type" = "dose_coverage"
+    ))
 
   return(dailyDoseSummary)
 }
@@ -192,6 +213,16 @@ applyFormula <- function(drugExposure) {
       daily_dose = dplyr::case_when(
         is.na(.data$quantity) ~
           as.numeric(NA),
+        .data$quantity <= 0 ~
+          as.numeric(NA),
+        .data$days_exposed <= 0 ~
+          as.numeric(NA),
+        .data$denominator_value <= 0 ~
+          as.numeric(NA),
+        .data$numerator_value <= 0 ~
+          as.numeric(NA),
+        .data$amount_value <= 0 ~
+          as.numeric(NA),
         .data$formula_name == "concentration formulation" ~
           .data$numerator_value * .data$quantity / .data$days_exposed,
         .data$formula_name == "fixed amount formulation" ~
@@ -204,8 +235,5 @@ applyFormula <- function(drugExposure) {
           .data$numerator_value * 24,
         .default = as.numeric(NA)
       )
-    ) %>%
-    dplyr::mutate(daily_dose = dplyr::if_else(
-      .data$daily_dose < 0, as.numeric(NA), .data$daily_dose
-    ))
+    )
 }

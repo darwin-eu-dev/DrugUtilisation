@@ -34,6 +34,12 @@
 #' }
 #'
 readConceptList <- function(path, cdm) {
+  lifecycle::deprecate_soft(
+    when = "0.5.0",
+    what = "DrugUtilisation::readConceptList()",
+    with = "CodelistGenerator::codesFromConceptSet()"
+  )
+
   # initial checks
   checkInputs(path = path, cdm = cdm)
 
@@ -82,6 +88,11 @@ readConceptList <- function(path, cdm) {
 #' @return list of concept_ids and respective cohort_definition_ids of interest
 #' @noRd
 formatConceptList <- function(conceptList, cdm) {
+  nm <- omopgenerics::uniqueTableName(omopgenerics::tmpPrefix())
+  cl <- conceptList %>%
+    dplyr::filter(.data$include_descendants == TRUE)
+  cdm <- omopgenerics::insertTable(cdm = cdm, name = nm, table = cl)
+  cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
   conceptList <- conceptList %>%
     dplyr::filter(.data$include_descendants == FALSE) %>%
     dplyr::union(
@@ -90,18 +101,14 @@ formatConceptList <- function(conceptList, cdm) {
           "concept_id" = "ancestor_concept_id",
           "descendant_concept_id"
         ) %>%
-        dplyr::inner_join(
-          conceptList %>%
-            dplyr::filter(.data$include_descendants == TRUE),
-          copy = TRUE,
-          by = "concept_id"
-        ) %>%
+        dplyr::inner_join(cdm[[nm]], by = "concept_id") %>%
         dplyr::select(-"concept_id") %>%
         dplyr::rename("concept_id" = "descendant_concept_id") %>%
         dplyr::collect()
     ) %>%
     dplyr::select(-"include_descendants") %>%
     dplyr::rename("drug_concept_id" = "concept_id")
+  omopgenerics::dropTable(cdm = cdm, name = nm)
   # eliminate the ones that is_excluded = TRUE
   conceptList <- conceptList %>%
     dplyr::filter(.data$is_excluded == FALSE) %>%

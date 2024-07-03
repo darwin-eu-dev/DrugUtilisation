@@ -6,7 +6,7 @@
 \usage{
 addIndication(
   x,
-  cdm = attr(x, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   indicationCohortName,
   indicationGap = 0,
   unknownIndicationTable = NULL,
@@ -16,7 +16,7 @@ addIndication(
 \arguments{
 \item{x}{Table in the cdm}
 
-\item{cdm}{A cdm reference created using CDMConnector}
+\item{cdm}{Deprecated.}
 
 \item{indicationCohortName}{Name of indication cohort table}
 
@@ -36,6 +36,7 @@ Get indication for a target cohort
 \donttest{
 library(DrugUtilisation)
 library(CodelistGenerator)
+library(CDMConnector)
 
 cdm <- mockDrugUtilisation()
 
@@ -48,7 +49,10 @@ acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 
 cdm[["drug_cohort"]] \%>\%
-  addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+  addIndication(
+    indicationCohortName = "indication_cohorts",
+    indicationGap = c(0, 30, 365)
+  )
 }
 
 }

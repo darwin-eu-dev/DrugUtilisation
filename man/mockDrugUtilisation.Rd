@@ -6,7 +6,7 @@
 \usage{
 mockDrugUtilisation(
   connectionDetails = list(con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-    writeSchema = "main", cdmPrefix = NULL, writePrefix = NULL),
+    writeSchema = "main"),
   numberIndividuals = 10,
   seed = 1,
   concept = NULL,

@@ -1,0 +1,137 @@
+---
+title: "Add treatment summary to a Drug Utilisation cohort"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Add treatment summary to a Drug Utilisation cohort}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+  markdown: 
+    wrap: 72
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+The DrugUtilisation package incorporates a function to summarise the
+dose table over multiple cohorts: `summariseTreatment()`. In this
+vignette, we will explore the functionalities and usages of this
+function.
+
+## Create mock table
+
+```{r, message = FALSE, warning=FALSE}
+library(DrugUtilisation)
+library(CodelistGenerator)
+library(CDMConnector)
+library(dplyr)
+library(PatientProfiles)
+
+cdm <- mockDrugUtilisation(numberIndividual = 200)
+
+new_cohort_set <- settings(cdm$cohort1) %>%
+  dplyr::arrange(cohort_definition_id) %>%
+  dplyr::mutate(cohort_name = c("asthma","bronchitis","pneumonia"))
+
+cdm$cohort1 <- cdm$cohort1 |>
+  newCohortTable(cohortSetRef = new_cohort_set)
+
+new_cohort_set <- settings(cdm$cohort2) %>%
+  dplyr::arrange(cohort_definition_id) %>%
+  dplyr::mutate(cohort_name = c("albuterol","fluticasone","montelukast"))
+
+cdm$cohort2 <- cdm$cohort2 |>
+  newCohortTable(cohortSetRef = new_cohort_set)
+
+```
+
+For the following examples, we will use the cohort `cohort1` and
+`cohort2` already created in the mock table.
+
+Notice that `cohort1` is a cohort with three subcohorts representing
+three different conditions:
+
+```{r, message = FALSE, warning=FALSE}
+settings(cdm$cohort1)
+```
+
+And `cohort2` is a cohort with three different treatments:
+
+```{r, message = FALSE, warning=FALSE}
+settings(cdm$cohort2)
+```
+
+# Summarise treatment with summariseTreatmentFromCohort() function
+
+`summariseTreatmentFromCohort()` function creates a standarised tibble
+summarising the treatment information (already specified in an existing cohort) over multiple cohorts. There are three mandatory arguments:
+
+1.  `cohort`: cohort from the cdm object.
+2.  `treatmentCohortName`: name of the treatment cohort's table.
+3.  `window`: list of the windows where to summarise the treatments.
+
+See an example of its usage below, where we use
+`summariseTreatmentFromCohort()` to summarise treatments defined in
+`cohort2` in the cohorts defined in `cohort1`.
+
+```{r, message = FALSE, warning=FALSE}
+summariseTreatmentFromCohort(cohort = cdm$cohort1,
+                   treatmentCohortName = c("cohort2"),
+                   window = list(c(0,0), c(1,30)))
+```
+
+## strata parameter
+
+We can also stratify our cohort and calculate the estimates within each
+strata group by using the `strata` parameter.
+
+```{r, message = FALSE, warning=FALSE}
+cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
+  addSex() %>%
+  addAge(ageGroup = list("<40" = c(0, 39), ">40" = c(40, 150)))
+
+summariseTreatmentFromCohort(cohort = cdm$cohort1,
+                   treatmentCohortName = c("cohort2"),
+                   window = list(c(0,0)),
+                   treatmentCohortId = 1,
+                   strata = list("sex" = "sex", "age" = "age_group")
+                   )
+```
+
+Notice that we have also used the `treatmentCohortId` parameter to
+specify that we only want to explore `albuterol` across the cohorts defined in
+`cohort1`.
+
+## combination parameter
+
+Soon, you will be able to include combinations of different treatments
+by using the `combination` argument. Unfortunately, it has not been
+implemented yet, stay tuned for the next release! 😄
+
+## `minCellCount` parameter
+
+Specify the minimum number of individuals that a strata group must have
+in order to appear in the table. Default is set to 5.
+
+# Summarise treatment with `summariseTreatmentFromConceptSet()` function
+
+`summariseTreatmentFromCohort()` can be used when we have already
+created our treatment cohort. However, if that is not the case, we can
+use `summariseTreatmentFromConceptSet()` to avoid creating a new cohort
+before using this function. The following arguments have to be provided:
+
+1.  `cohort`: cohort from the cdm object.
+2.  `treatmentConceptSet`: list with the treatments' concepts sets.
+3.  `window`: list of the windows where to summarise the treatments.
+
+Unfortunately, is not implemented yet. Stay in the loop for the next
+release!😉

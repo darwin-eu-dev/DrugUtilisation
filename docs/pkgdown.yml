@@ -1,6 +1,17 @@
-pandoc: '2.18'
-pkgdown: 2.0.6
+pandoc: 2.14.0.3
+pkgdown: 2.0.7
 pkgdown_sha: ~
-articles: {}
-last_built: 2022-10-21T16:09Z
+articles:
+  a01_introCreateCohort: a01_introCreateCohort.html
+  a02_scalingOfInstantiateCohorts: a02_scalingOfInstantiateCohorts.html
+  a03_addIndications-example: a03_addIndications-example.html
+  a04_addDrugInfo: a04_addDrugInfo.html
+  a05_treatmentDiscontinuation: a05_treatmentDiscontinuation.html
+  a06_treatmentSummary: a06_treatmentSummary.html
+  a07_characteriseACohort: a07_characteriseACohort.html
+  routePatternDose: routePatternDose.html
+last_built: 2024-02-28T15:02Z
+urls:
+  reference: https://darwin-eu-dev.github.io/DrugUtilisation/reference
+  article: https://darwin-eu-dev.github.io/DrugUtilisation/articles
 

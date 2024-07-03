@@ -17,11 +17,10 @@
 #' This function is used to summarise the indication table over multiple
 #' cohorts.
 #'
-#' @param cohort Cohort with indications and strata
-#' @param cdm cdm_reference created by CDMConnector
-#' @param strata Stratification list
-#' @param minCellCount Minimum counts that a group can have. Cohorts with
-#' less counts than this value are obscured.
+#' @param cohort Cohort with indications and strata.
+#' @param cdm Deprecated.
+#' @param strata Stratification list.
+#' @param minCellCount Deprecated.
 #'
 #' @return A Tibble with 4 columns: cohort_definition_id, variable, estimate and
 #' value. There will be one row for each cohort, variable and cohort
@@ -34,6 +33,7 @@
 #' library(DrugUtilisation)
 #' library(PatientProfiles)
 #' library(CodelistGenerator)
+#' library(CDMConnector)
 #'
 #' cdm <- mockDrugUtilisation()
 #' indications <- list("headache" = 378253, "asthma" = 317009)
@@ -41,29 +41,41 @@
 #' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 #' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
-#'   addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+#'   addIndication(
+#'     indicationCohortName = "indication_cohorts",
+#'     indicationGap = c(0, 30, 365)
+#'   )
 #'
-#' summariseIndication(cdm[["drug_cohort"]], cdm)
+#' summariseIndication(cdm[["drug_cohort"]])
 #'
 #' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
-#'   addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) %>%
-#'   addSex(cdm)
+#'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) %>%
+#'   addSex()
 #'
 #' summariseIndication(
-#'   cdm[["drug_cohort"]], cdm, strata = list(
+#'   cdm[["drug_cohort"]], strata = list(
 #'     "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
 #'   )
 #' )
 #' }
 #'
 summariseIndication <- function(cohort,
-                                cdm = attr(cohort, "cdm_reference"),
+                                cdm = lifecycle::deprecated(),
                                 strata = list(),
-                                minCellCount = 5) {
+                                minCellCount = lifecycle::deprecated()) {
+  if (lifecycle::is_present(minCellCount)) {
+    lifecycle::deprecate_soft(
+      when = "0.5.0", what = "summariseIndication(minCellCount = )"
+    )
+  }
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_soft(
+      when = "0.5.0", what = "summariseIndication(cdm = )"
+    )
+  }
+  cdm <- omopgenerics::cdmReference(cohort)
   # initialChecks
-  checkInputs(
-    cohort = cohort, cdm = cdm, strata = strata, minCellCount = minCellCount
-  )
+  checkInputs(cohort = cohort, cdm = cdm, strata = strata)
 
   indicationVariables <- indicationColumns(cohort)
 
@@ -72,15 +84,16 @@ summariseIndication <- function(cohort,
 
   # summarise indication columns
   result <- PatientProfiles::summariseResult(
-    table = cohort, group = list("cohort_name" = "cohort_name"),
+    table = cohort, group = list("cohort_name"),
+    includeOverallGroup = FALSE, includeOverallStrata = TRUE,
     strata = strata, variables = indicationVariables,
-    functions = c("count", "percentage"),
-    minCellCount = minCellCount
+    estimates = c("count", "percentage")
   ) %>%
+    PatientProfiles::addCdmName(cdm = cdm) |>
     dplyr::mutate(
       variable_level = dplyr::if_else(
-        substr(.data$variable, 1, 15) == "indication_gap_",
-        lapply(strsplit(.data$variable, "_"), function(x) {
+        substr(.data$variable_name, 1, 15) == "indication_gap_",
+        lapply(strsplit(.data$variable_name, "_"), function(x) {
           if (length(x) > 3) {
             x <- paste0(x[-c(1:3)], collapse = "_")
             x <- paste0(toupper(substr(x, 1, 1)), substr(x, 2, nchar(x)))
@@ -92,18 +105,25 @@ summariseIndication <- function(cohort,
           unlist(),
         as.character(NA)
       ),
-      variable = dplyr::if_else(
-        substr(.data$variable, 1, 15) == "indication_gap_",
-        lapply(strsplit(.data$variable, "_"), function(x) {
+      variable_name = dplyr::if_else(
+        substr(.data$variable_name, 1, 15) == "indication_gap_",
+        lapply(strsplit(.data$variable_name, "_"), function(x) {
           x <- paste0(x[1:min(3, length(x))], collapse = "_")
           x <- indicationColumnName(x)
         }) %>%
           unlist(),
-        .data$variable
-      ),
-      cdm_name = dplyr::coalesce(CDMConnector::cdmName(cdm), as.character(NA)),
-      result_type = "Summary indication"
+        .data$variable_name
+      )
     )
+
+  result <- result |>
+    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
+      result_id = unique(result$result_id),
+      result_type = "summarised_indication",
+      package_name = "DrugUtilisation",
+      package_version = as.character(utils::packageVersion("DrugUtilisation"))
+    )) |>
+    omopgenerics::suppress(minCellCount = 5)
 
   return(result)
 }

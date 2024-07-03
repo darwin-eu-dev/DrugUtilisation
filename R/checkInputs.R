@@ -94,8 +94,7 @@ checkLimit <- function(limit) {
 
 checkPriorObservation <- function(priorObservation) {
   checkmate::assertIntegerish(
-    priorObservation,
-    lower = 0, any.missing = F, len = 1, null.ok = T
+    priorObservation, lower = 0, any.missing = F, len = 1,
   )
 }
 
@@ -284,7 +283,7 @@ checkSameIndexMode <- function(sameIndexMode) {
 
 checkIngredientConceptId <- function(ingredientConceptId, cdm) {
   if (is.null(ingredientConceptId)) {
-    cli::cli_abort("ingredientConceptId ca not be NULL")
+    cli::cli_abort("ingredientConceptId can not be NULL")
   }
   if (!isInteger(ingredientConceptId)) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
@@ -351,7 +350,7 @@ checkIndicationVariables <- function(indicationVariables, cohort) {
     dplyr::collect()
   variableType <- PatientProfiles::variableTypes(cohort)$variable_type %>%
     unique()
-  if (!all(variableType %in% c("binary", "categorical"))) {
+  if (!all(variableType %in% c("binary", "categorical", "numeric", "integer"))) {
     cli::cli_abort(
       "indicationVariables should point to binary or categorical variables"
     )
@@ -580,9 +579,9 @@ checkTablesToCharacterize <- function(tablesToCharacterize, cdm) {
 }
 
 checkDrugUseEstimates <- function(drugUseEstimates) {
-  choices <- PatientProfiles::availableFunctions() %>%
+  choices <- PatientProfiles::availableEstimates(fullQuantiles = TRUE) %>%
     dplyr::filter(.data$variable_type == "numeric") %>%
-    dplyr::pull("format_key")
+    dplyr::pull("estimate_name")
   errorMessage <- paste0(
     "drugUseEstimates must be a subset of: ", paste0(choices, collapse = ", ")
   )

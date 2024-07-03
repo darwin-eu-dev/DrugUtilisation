@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# DrugUtilisation <img src='man/figures/DrugUtilisation.png' align="right" height="139"/>
+# DrugUtilisation <img src="man/figures/logo.png" align="right" height="200"/>
 
 [![CRANstatus](https://www.r-pkg.org/badges/version/DrugUtilisation)](https://CRAN.R-project.org/package=DrugUtilisation) 
 [![codecov.io](https://codecov.io/github/darwin-eu/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
@@ -24,17 +24,12 @@ knitr::opts_chunk$set(
 
 * **addDailyDose** function works for the following patterns in the drug_strength table:
 
-| pattern_id | amount_unit | numerator_unit | denominator_unit |
-|:----------:|:------------------:|:--------------:|:----------------:|
-| 1 | international unit | NA | NA |
-| 2 | microgram | NA | NA |
-| 3 | milliequivalent | NA | NA|
-| 4 | milligram | NA | NA|
-| 5 | millimiter | NA | NA|
-| 6 | NA | microgram | hour|
-| 7 | NA | milligram | actuation|
-| 8 | NA | microgram | hour|
-| 9 | NA | milligram | hour|
+```{r, echo = FALSE}
+DrugUtilisation::patternsWithFormula |>
+  dplyr::mutate("formula" = paste0(.data$formula_name, ": ", .data$formula)) |>
+  dplyr::select(-"formula_name", -"pattern_id") |>
+  visOmopResults::gtTable(groupColumn = "formula")
+```
 
 ## Package overview
 
@@ -116,7 +111,7 @@ Cohort set:
 ```{r}
 library(CDMConnector)
 library(dplyr)
-cohortSet(cdm[["dus_cohort"]]) %>% glimpse()
+settings(cdm[["dus_cohort"]]) %>% glimpse()
 ```
 
 Cohort count:
@@ -128,14 +123,15 @@ cohortCount(cdm[["dus_cohort"]])
 Cohort attrition:
 
 ```{r}
-cohortAttrition(cdm[["dus_cohort"]]) %>% glimpse()
+attrition(cdm[["dus_cohort"]]) %>% glimpse()
 ```
 
 ### Indication
 
-Indications will always be cohorts. An option that the package has is to create concept based cohorts using `generateConceptCohortSet`.
+Indications will always be cohorts. An option that the package has is to create concept based cohorts using `CDMConnector::generateConceptCohortSet()`.
 
 ```{r}
+library(CDMConnector)
 indications <- list(headache = 378253, influenza = 4266367)
 cdm <- generateConceptCohortSet(cdm, indications, "indications_cohort")
 cohortCount(cdm[["indications_cohort"]])
@@ -146,7 +142,7 @@ Then we can add the indication using the function `addIndication`. That will add
 ```{r}
 x <- cdm[["dus_cohort"]] %>%
   addIndication(
-    cdm = cdm, indicationCohortName = "indications_cohort", indicationGap = c(0, 30, 365), 
+    indicationCohortName = "indications_cohort", indicationGap = c(0, 30, 365), 
     unknownIndicationTable = c("condition_occurrence")
   )
 glimpse(x)
@@ -180,10 +176,9 @@ summariseIndication(x, cdm) %>% glimpse()
 All summarise functions have the option to add strata. Strata will always point to preexisting columns. Here we can see an example where we create a `age_group` and `sex` columns using PatientProfiles and then we use it as strata
 
 ```{r}
-library(PatientProfiles)
 x <- x %>%
-  addAge(cdm, ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
-  addSex(cdm)
+  PatientProfiles::addAge(ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
+  PatientProfiles::addSex()
 summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex")))
 ```
 
@@ -196,17 +191,17 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 We can compute daily dose for a certain ingredient from a subset of drug_exposure or the whole drug exposure (can be very computationally expensive).
 
 ```{r}
-#cdm[["drug_exposure"]] %>%
-#  addDailyDose(ingredientConceptId = 1125315) %>%
-#  glimpse()
+cdm[["drug_exposure"]] %>%
+ addDailyDose(ingredientConceptId = 1125315) %>%
+ glimpse()
 ```
 
 #### Coverage
 
-Currently you can evaluate the coverage of daily dose for a conceptList or overall using `dailyDoseCoverage`. You can restrict to a certain ingredient, otherwise the result will be stratified by ingredient.
+Currently you can evaluate the coverage of daily dose for a conceptList or overall using `dailyDoseCoverage`. You should restrict to a certain ingredient.
 
 ```{r}
-#dailyDoseCoverage(cdm = cdm, sample = NULL, ingredient = NULL, conceptList = NULL) 
+dailyDoseCoverage(cdm = cdm, ingredient = 1125315) 
 ```
 
 ### DrugUse
@@ -214,16 +209,13 @@ Currently you can evaluate the coverage of daily dose for a conceptList or overa
 You can add columns related to the drug use using `addDrugUse`. You always have to provide a reference ingredient.
 
 ```{r}
-#x <- x %>%
-#  addDrugUse(
-#    cdm = cdm,
-#    ingredientConceptId = 1125315,
-#    initialDailyDose = TRUE,
-#    numberExposures = TRUE,
-#    duration = TRUE,
-#    cumulativeDose = TRUE,
-#    numberEras = TRUE
-#  )
+x <- x %>%
+ addDrugUse(
+   ingredientConceptId = 1125315,
+   dose = TRUE,
+   quantity = TRUE,
+   duration = TRUE
+ )
 ```
 
 ### Summarise the drug use
@@ -231,39 +223,5 @@ You can add columns related to the drug use using `addDrugUse`. You always have 
 You can summarise the drug use using `summariseDrugUse` function
 
 ```{r}
-#summariseDrugUse(x, cdm)
-```
-
-### Summarise patient characteristics
-
-You can summarise the patient characteristics with `summariseCharacteristics` function:
-
-```{r}
-summariseCharacteristics(
-  x, cdm, ageGroup = list(c(0, 24), c(25, 49), c(50, 74), c(75, 150)),
-  tableIntersect = list(
-    "Visits" = list(
-      tableName = "visit_occurrence", value = "count", window = c(-365, 0)
-    )
-  ),
-  cohortIntersect = list(
-    "Indications" = list(
-      targetCohortTable  = "indications_cohort", value = "flag", 
-      window = c(-365, 0)
-    )
-  )
-)
-```
-
-### Summarise patients large scale characteristics
-
-You can summarise the patient characteristics with `summariseLargeScaleCharacteristics` function:
-
-```{r}
-summariseLargeScaleCharacteristics(
-  cohort = x, 
-  window = list(c(-Inf, Inf)), 
-  eventInWindow = "condition_occurrence", 
-  episodeInWindow = "drug_exposure"
-)
+summariseDrugUse(x)
 ```

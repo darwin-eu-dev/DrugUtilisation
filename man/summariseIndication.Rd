@@ -7,20 +7,19 @@ cohorts.}
 \usage{
 summariseIndication(
   cohort,
-  cdm = attr(cohort, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   strata = list(),
-  minCellCount = 5
+  minCellCount = lifecycle::deprecated()
 )
 }
 \arguments{
-\item{cohort}{Cohort with indications and strata}
+\item{cohort}{Cohort with indications and strata.}
 
-\item{cdm}{cdm_reference created by CDMConnector}
+\item{cdm}{Deprecated.}
 
-\item{strata}{Stratification list}
+\item{strata}{Stratification list.}
 
-\item{minCellCount}{Minimum counts that a group can have. Cohorts with
-less counts than this value are obscured.}
+\item{minCellCount}{Deprecated.}
 }
 \value{
 A Tibble with 4 columns: cohort_definition_id, variable, estimate and
@@ -36,6 +35,7 @@ cohorts.
 library(DrugUtilisation)
 library(PatientProfiles)
 library(CodelistGenerator)
+library(CDMConnector)
 
 cdm <- mockDrugUtilisation()
 indications <- list("headache" = 378253, "asthma" = 317009)
@@ -43,16 +43,19 @@ cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] \%>\%
-  addIndication(cdm, "indication_cohorts", indicationGap = c(0, 30, 365))
+  addIndication(
+    indicationCohortName = "indication_cohorts",
+    indicationGap = c(0, 30, 365)
+  )
 
-summariseIndication(cdm[["drug_cohort"]], cdm)
+summariseIndication(cdm[["drug_cohort"]])
 
 cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] \%>\%
-  addAge(cdm, ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) \%>\%
-  addSex(cdm)
+  addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) \%>\%
+  addSex()
 
 summariseIndication(
-  cdm[["drug_cohort"]], cdm, strata = list(
+  cdm[["drug_cohort"]], strata = list(
     "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
   )
 )

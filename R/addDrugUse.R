@@ -16,8 +16,10 @@
 
 #' Add new columns with drug use related information
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort Cohort in the cdm
-#' @param cdm cdm_reference created with CDMConnector::cdmFromCon
+#' @param cdm deprecated
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
 #' @param conceptSet List of concepts to be included. If NULL all the
@@ -87,14 +89,14 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 #' )
 #' cdm[["dus_cohort"]] %>%
-#'   addDrugUse(cdm, 1125315)
+#'   addDrugUse(ingredientConceptId = 1125315)
 #' }
 #'
 addDrugUse <- function(cohort,
-                       cdm = attr(cohort, "cdm_reference"),
+                       cdm = lifecycle::deprecated(),
                        ingredientConceptId,
                        conceptSet = NULL,
                        duration = TRUE,
@@ -108,6 +110,16 @@ addDrugUse <- function(cohort,
                        imputeDailyDose = "none",
                        durationRange = c(1, Inf),
                        dailyDoseRange = c(0, Inf)) {
+  lifecycle::deprecate_soft(
+    when = "0.7.0",
+    what = "DrugUtilisation::addDrugUse()",
+    with = "DrugUtilisation::addDrugUtilisation()"
+  )
+  if (lifecycle::is_present(cdm)) {
+    lifecycle::deprecate_soft("0.5.0", "addDrugUse(cdm = )")
+  }
+  cdm <- omopgenerics::cdmReference(cohort)
+
   vars <- c(
     "eraJoinMode", "overlapMode", "sameIndexMode", "imputeDuration",
     "imputeDailyDose"
@@ -147,36 +159,31 @@ addDrugUse <- function(cohort,
     cli::cli_abort("Only one concept set is allowed")
   }
 
-  # get conceptSet
-  conceptSet <- conceptSetFromConceptSetList(conceptSet)
-
-  conceptSet <- conceptSet %>%
-    dplyr::select("cohort_definition_id", "concept_id")
-
   # save original reference
   originalCohort <- cohort
-
-  stem <- paste0(sample(letters, 5), collapse = "")
-  writeSchema <- attr(cdm, "write_schema")
-  if ("prefix" %in% names(writeSchema)) {
-    writeSchema["prefix"] <- paste0(writeSchema["prefix"], stem, "_")
-  } else {
-    writeSchema["prefix"] <- paste0(stem, "_")
-  }
-  attr(cdm, "write_schema") <- writeSchema
 
   # unique cohort entries
   cohort <- cohort %>%
     dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") %>%
     dplyr::distinct() %>%
     addDuration(duration) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"), overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 
   # subset drug_exposure and only get the drug concept ids that we are
   # interested in.
-  cohortInfo <- initialSubset(cdm, cohort, conceptSet)
+  conceptSet <- conceptSet |>
+    unlist() |>
+    unname() |>
+    dplyr::as_tibble() |>
+    dplyr::rename("drug_concept_id" = "value")
+  nm <- uniqueTmpName()
+  cdm <- omopgenerics::insertTable(
+    cdm = cdm, name = nm, table = conceptSet, overwrite = TRUE
+  )
+  cdm[[nm]] <- cdm[[nm]] |> dplyr::compute()
+  cohortInfo <- initialSubset(cdm, cohort, cdm[[nm]])
 
   cohort <- cohort %>%
     addInfo(cohortInfo, quantity, cdm)
@@ -198,9 +205,8 @@ addDrugUse <- function(cohort,
       date = "drug_exposure_start_date", number = "days_to_add"
     )) %>%
     dplyr::select(-c("duration", "days_to_add")) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 
   # add number eras
@@ -221,9 +227,8 @@ addDrugUse <- function(cohort,
 
     cohortInfo <- cohortInfo %>%
       solveImputation("daily_dose", imputeDailyDose) %>%
-      CDMConnector::computeQuery(
-        temporary = FALSE, schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
+      dplyr::compute(
+        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
       )
 
     # get distinct units to cover
@@ -246,9 +251,9 @@ addDrugUse <- function(cohort,
       cohort,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
-    CDMConnector::computeQuery()
+    dplyr::compute()
 
-  CDMConnector::dropTable(cdm = cdm, name = dplyr::everything())
+  dropTmpTables(cdm = cdm)
 
   return(cohort)
 }
@@ -286,9 +291,8 @@ addInfo <- function(cohort,
     dplyr::mutate(number_exposures = dplyr::if_else(
       is.na(.data$number_exposures), 0, .data$number_exposures
     )) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
   if (quantity) {
     cohort <- cohort %>%
@@ -309,9 +313,8 @@ addInfo <- function(cohort,
           "subject_id", "cohort_start_date", "cohort_end_date"
         ),
       ) %>%
-      CDMConnector::computeQuery(
-        temporary = FALSE, schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
+      dplyr::compute(
+        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
       )
   } else {
     cohort <- cohort %>% dplyr::select(-"cumulative_quantity")
@@ -372,9 +375,8 @@ addInitialDailyDose <- function(cohort,
       cohortInfo,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
   return(cohort)
 }
@@ -412,9 +414,8 @@ addNumberEras <- function(cohort, cohortInfo, gapEra, cdm) {
     dplyr::mutate(number_eras = dplyr::if_else(
       is.na(.data$number_eras), 0, .data$number_eras
     )) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 }
 
@@ -484,9 +485,8 @@ addCumulativeDose <- function(cohort,
       cumDose,
       by = c("subject_id", "cohort_start_date", "cohort_end_date")
     ) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 }
 
@@ -502,22 +502,16 @@ initialSubset <- function(cdm, dusCohort, conceptSet) {
       "quantity"
     ) %>%
     dplyr::inner_join(dusCohort, by = "subject_id") %>%
-    dplyr::inner_join(
-      conceptSet %>%
-        dplyr::select("drug_concept_id" = "concept_id"),
-      by = "drug_concept_id",
-      copy = TRUE
-    ) %>%
+    dplyr::inner_join(conceptSet, by = "drug_concept_id") %>%
     dplyr::filter(
       (is.na(.data$drug_exposure_end_date) &
          (.data$drug_exposure_start_date <= .data$cohort_end_date)) |
         (!is.na(.data$drug_exposure_end_date) &
            ((.data$drug_exposure_end_date >= .data$cohort_start_date) &
-           (.data$drug_exposure_start_date <= .data$cohort_end_date)))
+              (.data$drug_exposure_start_date <= .data$cohort_end_date)))
     ) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 }
 
@@ -579,9 +573,8 @@ splitSubexposures <- function(x, cdm) {
     tidyr::pivot_wider(names_from = "date_type", values_from = "date_event") %>%
     dplyr::select(-"id2") %>%
     dplyr::ungroup() %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 
   x_intervals <- x_intervals %>%
@@ -621,9 +614,8 @@ splitSubexposures <- function(x, cdm) {
     dplyr::mutate(subexposed_days = !!CDMConnector::datediff(
       "subexposure_start_date", "subexposure_end_date"
     ) + 1) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 
   # we join the exposures with the overlapping periods and we only consider the
@@ -647,9 +639,8 @@ splitSubexposures <- function(x, cdm) {
         "subexposed_days"
       )
     ) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 
   return(x_intervals)
@@ -681,10 +672,10 @@ addTypeSubexposure <- function(x, gapEra) {
           .data$subexposure_id > 1 &
           .data$subexposure_id < max(.data$subexposure_id, na.rm = TRUE) ~
           "gap",
-        TRUE ~ "unexposed"
+        TRUE ~ "untreated"
       )
     ) %>%
-    dplyr::filter(.data$type_subexposure != "unexposed") %>%
+    dplyr::filter(.data$type_subexposure != "untreated") %>%
     dplyr::ungroup()
   return(x)
 }
@@ -738,13 +729,6 @@ solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
       dplyr::filter(
         .data$drug_exposure_id == min(.data$drug_exposure_id, na.rm = TRUE)
       ) %>%
-      # dplyr::union_all(
-      #   x_same_index %>%
-      #     dplyr::filter(
-      #       .data$drug_exposure_id > min(.data$drug_exposure_id, na.rm = TRUE)
-      #     ) %>%
-      #     dplyr::mutate(daily_dose = 0)
-      # ) %>%
       dplyr::mutate(considered_subexposure = "yes")
   }
   x <- x %>%
@@ -755,9 +739,8 @@ solveSameIndexOverlap <- function(x, cdm, sameIndexMode) {
     dplyr::filter(dplyr::n() == 1) %>%
     dplyr::ungroup() %>%
     dplyr::union_all(x_same_index %>% dplyr::ungroup()) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
 
   return(x)
@@ -856,9 +839,8 @@ solveOverlap <- function(x, cdm, overlapMode) {
     }
     x_overlap <- x_overlap %>%
       dplyr::ungroup() %>%
-      CDMConnector::computeQuery(
-        temporary = FALSE, schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
+      dplyr::compute(
+        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
       )
     x <- x %>%
       dplyr::group_by(
@@ -877,9 +859,8 @@ solveOverlap <- function(x, cdm, overlapMode) {
       )) %>%
       dplyr::ungroup() %>%
       dplyr::union_all(x_overlap) %>%
-      CDMConnector::computeQuery(
-        temporary = FALSE, schema = attr(cdm, "write_schema"),
-        overwrite = TRUE
+      dplyr::compute(
+        temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
       )
   }
   return(x)
@@ -950,9 +931,8 @@ addGapDailyDose <- function(x, cdm, eraJoinMode) {
     dplyr::union_all(
       x_gaps_dose %>% dplyr::mutate(considered_subexposure = "yes")
     ) %>%
-    CDMConnector::computeQuery(
-      temporary = FALSE, schema = attr(cdm, "write_schema"),
-      overwrite = TRUE
+    dplyr::compute(
+      temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()
     )
   return(x)
 }

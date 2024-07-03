@@ -6,7 +6,7 @@
 \usage{
 addDrugUse(
   cohort,
-  cdm = attr(cohort, "cdm_reference"),
+  cdm = lifecycle::deprecated(),
   ingredientConceptId,
   conceptSet = NULL,
   duration = TRUE,
@@ -25,7 +25,7 @@ addDrugUse(
 \arguments{
 \item{cohort}{Cohort in the cdm}
 
-\item{cdm}{cdm_reference created with CDMConnector::cdmFromCon}
+\item{cdm}{deprecated}
 
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
@@ -101,7 +101,7 @@ imputeDailyDose is not "none". If NULL no restrictions are applied.}
 The same cohort with the added columns.
 }
 \description{
-Add new columns with drug use related information
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 \donttest{
@@ -110,10 +110,10 @@ library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
 cdm <- generateDrugUtilisationCohortSet(
-  cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+  cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 )
 cdm[["dus_cohort"]] \%>\%
-  addDrugUse(cdm, 1125315)
+  addDrugUse(ingredientConceptId = 1125315)
 }
 
 }
