@@ -309,3 +309,23 @@ defaultTableOptions <- function(.options) {
 optionsTableIndication <- function() {
   defaultTableOptions(NULL)
 }
+
+#' Additional arguments for the functions tableDoseCoverage
+#'
+#' @description
+#' It provides a list of allowed inputs for .option argument in tableDrugCoverage,
+#' and their given default values.
+#'
+#'
+#' @return The default .options named list.
+#'
+#' @export
+#'
+#' @examples
+#' {
+#' optionsTableDoseCoverage()
+#' }
+#'
+optionsTableDoseCoverage <- function() {
+  defaultTableOptions(NULL)
+}
