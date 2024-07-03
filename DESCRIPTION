@@ -74,11 +74,11 @@ Imports:
     rlang,
     RJSONIO,
     cli,
-    PatientProfiles (>= 0.8.0),
+    PatientProfiles (>= 1.0.0),
     magrittr,
     purrr,
     tictoc,
-    omopgenerics (>= 0.2.0),
+    omopgenerics (>= 0.2.3),
     visOmopResults,
     lifecycle
 Depends: 

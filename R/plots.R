@@ -1,0 +1,184 @@
+# Copyright 2024 DARWIN EU (C)
+#
+# This file is part of DrugUtilisation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#' Generate a custom ggplot2 from a summarised_result object generated with
+#' summariseTreatment function.
+#'
+#' @param result ...
+#' @param facetX ...
+#' @param facetY ...
+#' @param splitStrata ...
+#' @param colour ...
+#'
+#' @return A ggplot2 object.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(duckdb)
+#' library(CDMConnector)
+#' library(CodelistGenerator)
+#' library(PatientProfiles)
+#' library(DrugUtilisation)
+#'
+#' con <- dbConnect(duckdb(), eunomiaDir("GiBleed"))
+#' cdm <- cdmFromCon(con = con, cdmSchema = "main", writeSchema = "main")
+#'
+#' codes <- getDrugIngredientCodes(cdm = cdm, name = "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm, conceptSet = codes, name = "study_cohort")
+#'
+#' alternative <- getDrugIngredientCodes(cdm = cdm, name = c(
+#'   "acetaminophen", "dextromethorphan", "doxylamine", "hydrocodone"))
+#'
+#' result <- cdm$study_cohort |>
+#'   addSex() |>
+#'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) |>
+#'   summariseTreatmentFromConceptSet(
+#'     treatmentConceptSet = alternative,
+#'     window = list(c(0, 199), c(200, 399), c(400, 599), c(600, 799)),
+#'     strata = list(c("age_group", "sex"))
+#'   )
+#'
+#' plotTreatment(result)
+#' }
+#'
+plotTreatment <- function(result,
+                          facetX = "window_name",
+                          facetY = c("cdm_name", "cohort_name", "strata"),
+                          splitStrata = TRUE,
+                          colour = "treatment") {
+  rlang::check_installed("ggplot2")
+  # check input
+  assertChoice(
+    facetX, choices = c("window_name", "cdm_name", "cohort_name", "strata"),
+    null = TRUE, unique = T)
+  assertChoice(
+    facetY, choices = c("window_name", "cdm_name", "cohort_name", "strata"),
+    null = TRUE, unique = T)
+  assertLogical(splitStrata, length = 1)
+  assertChoice(
+    colour,
+    choices = c("window_name", "cdm_name", "cohort_name", "strata", "treatment"),
+    null = T,
+    unique = T
+  )
+
+  result <- omopgenerics::newSummarisedResult(result) |>
+    visOmopResults::filterSettings(
+      .data$result_type == "summarised_treatment") |>
+    dplyr::filter(.data$estimate_name == "percentage")
+
+  if (nrow(result) == 0) {
+    cli::cli_warn(c("!" = "There are no results to plot, returning empty plot"))
+    return(ggplot2::ggplot())
+  }
+
+  # to display order accordingly
+  lev <- result$variable_name |> unique() |> rev()
+
+  warnDuplicatePoints(result, unique(c(facetX, facetY, colour)))
+
+  if (splitStrata) {
+    strata <- visOmopResults::strataColumns(result)
+    result <- result |> visOmopResults::splitStrata()
+    facetX <- substituteStrata(facetX, strata)
+    facetY <- substituteStrata(facetY, strata)
+    colour <- substituteStrata(colour, strata)
+  } else {
+    result <- result |> dplyr::rename("strata" = "strata_level")
+    strata <- "strata"
+  }
+
+  result <- result |>
+    dplyr::select(
+      "cdm_name", "cohort_name" = "group_level", dplyr::all_of(strata),
+      "treatment" = "variable_name", "estimate_value",
+      "window_name" = "additional_level"
+    ) |>
+    dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
+    dplyr::arrange(dplyr::desc(estimate_value)) |>
+    dplyr::mutate("treatment" = factor(.data$treatment, levels = lev))
+
+  if (length(colour) > 0) {
+    cols <- colour
+    colourLab <- gsub("_", " ", cols) |>
+      stringr::str_to_sentence() |>
+      paste0(collapse = ", ")
+    colour <- omopgenerics::uniqueId(exclude = colnames(result))
+    result <- result |>
+      tidyr::unite(col = !!colour, dplyr::all_of(cols), remove = FALSE)
+  } else {
+    colour <- NULL
+    colourLab <- NULL
+  }
+
+  if (length(facetX) == 0) facetX <- "."
+  if (length(facetY) == 0) facetY <- "."
+  form <- paste0(
+    paste0(facetY, collapse = " + "), " ~ ", paste0(facetX, collapse = " + ")
+  ) |>
+    as.formula()
+
+  ggplot2::ggplot(data = result, mapping = ggplot2::aes(x = .data$estimate_value, y = .data$treatment, fill = .data[[colour]])) +
+    ggplot2::geom_col() +
+    ggplot2::facet_grid(form) +
+    ggplot2::labs(fill = colourLab, x = "Percentage", y = "Treatment")
+
+}
+
+warnDuplicatePoints <- function(result, exclude) {
+  result <- result |>
+    dplyr::rename(
+      "cohort_name" = "group_level", "window_name" = "additional_level",
+      "strata" = "strata_level"
+    )
+  potential <- c("cdm_name", "cohort_name", "strata", "window_name")
+  potential <- potential[!potential %in% exclude]
+  duplicates <- result |>
+    dplyr::select(dplyr::all_of(potential)) |>
+    dplyr::distinct()
+  if (nrow(duplicates) > 1) {
+    x <- list()
+    for (col in colnames(duplicates)) {
+      x[[col]] <- unique(duplicates[[col]])
+    }
+    x <- x[lengths(x) > 1]
+    mes <- c("!" = "There are duplicated points, not included either in facetX, facetY or colour:")
+    for (k in seq_along(x)) {
+      col <- names(x)[k]
+      values <- x[[k]]
+      mes <- c(mes, "*" = paste0(col, ": ", paste0(values, collapse = ", "), "."))
+    }
+    cli::cli_inform(mes)
+  }
+  return(invisible(NULL))
+}
+substituteStrata <- function(x, strata) {
+  id <- which(x == "strata")
+  if (length(id) == 1) {
+    len <- length(x)
+    if (id == 1) {
+      x <- c(strata, x[-1])
+    } else if (id == len) {
+      x <- c(x[1:(id-1)], strata)
+    } else {
+      x <- c(x[1:(id-1)], strata, x[(id+1):len])
+    }
+  }
+  return(x)
+}
