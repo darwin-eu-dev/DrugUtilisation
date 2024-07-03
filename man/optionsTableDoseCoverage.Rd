@@ -10,7 +10,7 @@ optionsTableDoseCoverage()
 The default .options named list.
 }
 \description{
-It provides a list of allowed inputs for .option argument in tableDrugCoverage,
+It provides a list of allowed inputs for .option argument in tableDoseCoverage,
 and their given default values.
 }
 \examples{

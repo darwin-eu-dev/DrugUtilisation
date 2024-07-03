@@ -164,7 +164,7 @@ tableIndication <- function(result,
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param .options Named list with additional formatting options.
-#' DrugUtilisation::optionsTableDrugCoverage() shows allowed
+#' DrugUtilisation::optionstableDoseCoverage() shows allowed
 #' arguments and their default values.
 #'
 #' @examples
@@ -175,7 +175,7 @@ tableIndication <- function(result,
 #'
 #' result <- summariseDoseCoverage(cdm, 1125315)
 #'
-#' tableDrugCoverage(result)
+#' tableDoseCoverage(result)
 #'
 #'
 #' CDMConnector::cdmDisconnect(cdm = cdm)
@@ -185,7 +185,7 @@ tableIndication <- function(result,
 #'
 #' @export
 #'
-tableDrugCoverage <- function(result,
+tableDoseCoverage <- function(result,
                               header = c("variable", "estimate"),
                               splitStrata = TRUE,
                               ingridientName = TRUE,
@@ -313,7 +313,7 @@ optionsTableIndication <- function() {
 #' Additional arguments for the functions tableDoseCoverage
 #'
 #' @description
-#' It provides a list of allowed inputs for .option argument in tableDrugCoverage,
+#' It provides a list of allowed inputs for .option argument in tableDoseCoverage,
 #' and their given default values.
 #'
 #'

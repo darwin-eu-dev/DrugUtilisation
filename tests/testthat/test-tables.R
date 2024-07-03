@@ -109,7 +109,7 @@ test_that("tableIndication works", {
 })
 
 
-test_that("tableDrugCoverage", {
+test_that("tableDoseCoverage", {
   drug_strength <- dplyr::tibble(
     drug_concept_id = c(
       2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,
@@ -206,7 +206,7 @@ test_that("tableDrugCoverage", {
   coverage <- summariseDoseCoverage(cdm, 1)
 
   # default
-  default <- tableDrugCoverage(coverage)
+  default <- tableDoseCoverage(coverage)
   expect_true("gt_tbl" %in% class(default))
   expect_true(all(colnames(default$`_data`) == c(
     'Database name', 'Ingredient name', 'Unit', 'Route', 'Pattern id',
@@ -215,27 +215,27 @@ test_that("tableDrugCoverage", {
   )))
 
   # other options working
-  tib1 <- tableDrugCoverage(coverage, type = "tibble", ingridientName = FALSE, splitStrata = FALSE)
+  tib1 <- tableDoseCoverage(coverage, type = "tibble", ingridientName = FALSE, splitStrata = FALSE)
   expect_true(all(colnames(tib1) == c(
     'Database name', 'Strata name', 'Strata level', '[header_level]Number records\n[header_level]N',
     '[header_level]Missing dose\n[header_level]N (%)', '[header_level]Daily dose\n[header_level]Mean (SD)',
     '[header_level]Daily dose\n[header_level]Median (Q25 - Q75)'
   )))
 
-  fx1 <- tableDrugCoverage(coverage, header = c("cdm_name", "group"), groupColumn = "variable_name", type = "flextable")
+  fx1 <- tableDoseCoverage(coverage, header = c("cdm_name", "group"), groupColumn = "variable_name", type = "flextable")
   expect_true("flextable" %in% class(fx1))
   expect_true(all(colnames(fx1$body$dataset) == c(
     'Variable name', 'Unit', 'Route', 'Pattern id', 'Estimate name', 'Database name\nDUS MOCK\nIngredient name\nIngredient 1'
   )))
   expect_true(all(fx1$body$dataset$`Variable name` |> levels() == c("Daily dose", "Missing dose", "Number records")))
 
-  gt1 <- tableDrugCoverage(coverage, header = c("group"))
+  gt1 <- tableDoseCoverage(coverage, header = c("group"))
   expect_true(all(colnames(gt1$`_data`) == c(
     'Database name', 'Unit', 'Route', 'Pattern id', 'Variable', 'Estimate name', '[header]Ingredient name\n[header_level]Ingredient 1'
   )))
 
   # expected errors
-  expect_error(tableDrugCoverage(coverage, header = "variable", groupColumn = "variable_name"))
-  expect_error(tableDrugCoverage(coverage, groupColumn = "cdm_name", cdmName = FALSE))
-  expect_error(tableDrugCoverage(coverage, header = "hi"))
+  expect_error(tableDoseCoverage(coverage, header = "variable", groupColumn = "variable_name"))
+  expect_error(tableDoseCoverage(coverage, groupColumn = "cdm_name", cdmName = FALSE))
+  expect_error(tableDoseCoverage(coverage, header = "hi"))
 })
