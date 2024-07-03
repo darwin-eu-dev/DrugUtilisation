@@ -235,6 +235,4 @@ test_that("functionality of addDailyDose function",{
 
   #check it works without specifying cdm object
   expect_no_error(addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))
-
-  PatientProfiles::mockDisconnect(cdm)
 })
