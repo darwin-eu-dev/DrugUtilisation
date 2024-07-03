@@ -22,7 +22,7 @@ reference:
 - subtitle: Summarise treatments during certain windows
   desc: Summarise the use of different treatments during certain windows
 - contents:
-  - matches("summariseTreatment")
+  - matches("summariseTreatment|plotTreatment")
 - subtitle: Complementary functions
   desc: Helpper functions, some of thay may be deprecated in the near future
 - contents:
