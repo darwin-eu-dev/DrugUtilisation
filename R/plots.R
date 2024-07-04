@@ -28,7 +28,7 @@
 #' @export
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' library(duckdb)
 #' library(CDMConnector)
 #' library(CodelistGenerator)
@@ -111,13 +111,11 @@ plotTreatment <- function(result,
       "window_name" = "additional_level"
     ) |>
     dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
-    dplyr::arrange(dplyr::desc(estimate_value)) |>
     dplyr::mutate("treatment" = factor(.data$treatment, levels = lev))
 
   if (length(colour) > 0) {
     cols <- colour
     colourLab <- gsub("_", " ", cols) |>
-      stringr::str_to_sentence() |>
       paste0(collapse = ", ")
     colour <- omopgenerics::uniqueId(exclude = colnames(result))
     result <- result |>
@@ -132,7 +130,7 @@ plotTreatment <- function(result,
   form <- paste0(
     paste0(facetY, collapse = " + "), " ~ ", paste0(facetX, collapse = " + ")
   ) |>
-    as.formula()
+    stats::as.formula()
 
   ggplot2::ggplot(data = result, mapping = ggplot2::aes(x = .data$estimate_value, y = .data$treatment, fill = .data[[colour]])) +
     ggplot2::geom_col() +

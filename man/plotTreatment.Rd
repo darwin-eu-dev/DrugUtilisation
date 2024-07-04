@@ -32,7 +32,7 @@ Generate a custom ggplot2 from a summarised_result object generated with
 summariseTreatment function.
 }
 \examples{
-\donttest{
+\dontrun{
 library(duckdb)
 library(CDMConnector)
 library(CodelistGenerator)
