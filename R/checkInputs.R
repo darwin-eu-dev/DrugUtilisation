@@ -403,10 +403,6 @@ checkStrata <- function(strata, cohort) {
   }
 }
 
-checkMinCellCount <- function(minCellCount) {
-  checkmate::assertIntegerish(minCellCount, lower = 0, any.missing = F, len = 1)
-}
-
 checkOffset <- function(offset) {
   checkmate::assertIntegerish(offset, lower = 0, any.missing = F, len = 1)
 }

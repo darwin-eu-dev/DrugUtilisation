@@ -94,8 +94,7 @@ summariseDrugUse<- function(cohort,
       result_type = "summarised_drug_use",
       package_name = "DrugUtilisation",
       package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    )) |>
-    omopgenerics::suppress(minCellCount = 5)
+    ))
 
   return(result)
 }

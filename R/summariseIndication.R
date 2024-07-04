@@ -122,8 +122,7 @@ summariseIndication <- function(cohort,
       result_type = "summarised_indication",
       package_name = "DrugUtilisation",
       package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    )) |>
-    omopgenerics::suppress(minCellCount = 5)
+    ))
 
   return(result)
 }
