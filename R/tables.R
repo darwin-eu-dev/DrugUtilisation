@@ -39,14 +39,14 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' result <- cdm$cohort1 |>
-#'   addIndication(
-#'     indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
-#'     unknownIndicationTable = "condition_occurrence"
-#'   ) |>
-#'   summariseIndication()
+#' # result <- cdm$cohort1 |>
+#' #  addIndication(
+#' #    indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
+#' #    unknownIndicationTable = "condition_occurrence"
+#' #  ) |>
+#' #  summariseIndication()
 #'
-#' tableIndication(result)
+#' # tableIndication(result)
 #'
 #'
 #' CDMConnector::cdmDisconnect(cdm = cdm)
