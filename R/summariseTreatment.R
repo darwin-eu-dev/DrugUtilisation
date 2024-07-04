@@ -251,7 +251,7 @@ summariseTreatment <- function(cohort,
       "result_id", "cdm_name", "group_name",  "group_level", "strata_name",
       "strata_level", "additional_name", "additional_level"
     )) |>
-    dplyr::arrange(variable_name, .by_group = TRUE) |>
+    dplyr::arrange(.data$variable_name, .by_group = TRUE) |>
     dplyr::ungroup() |>
     dplyr::mutate(variable_name = as.character(.data$variable_name))
 
