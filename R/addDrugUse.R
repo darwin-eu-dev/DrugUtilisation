@@ -210,7 +210,7 @@ addDrugUse <- function(cohort,
     )
 
   # add number eras
-  cohort <- addNumberEras(cohort, cohortInfo, gapEra, cdm)
+  cohort <- addNumberErasDrugUse(cohort, cohortInfo, gapEra, cdm)
 
   if (dose) {
     # add daily dose
@@ -381,7 +381,7 @@ addInitialDailyDose <- function(cohort,
   return(cohort)
 }
 
-addNumberEras <- function(cohort, cohortInfo, gapEra, cdm) {
+addNumberErasDrugUseDrugUse <- function(cohort, cohortInfo, gapEra, cdm) {
   cohort %>%
     dplyr::left_join(
       cohortInfo %>%
