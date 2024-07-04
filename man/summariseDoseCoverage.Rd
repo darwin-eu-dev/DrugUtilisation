@@ -5,12 +5,22 @@
 \title{Check coverage of daily dose computation in a sample of the cdm for selected
 concept sets and ingredient}
 \usage{
-summariseDoseCoverage(cdm, ingredientConceptId)
+summariseDoseCoverage(
+  cdm,
+  ingredientConceptId,
+  estimates = c("count_missing", "percentage_missing", "mean", "sd", "q25", "median",
+    "q75"),
+  sampleSize = NULL
+)
 }
 \arguments{
 \item{cdm}{A cdm reference created using CDMConnector}
 
 \item{ingredientConceptId}{Code indicating the ingredient of interest}
+
+\item{sampleSize}{Maximum number of records of an ingredient to estimate dose
+coverage. If an ingredient has more, a random sample equal to \code{sampleSize}
+will be considered. If NULL, all records will be used.}
 }
 \value{
 The function returns information of the coverage of computeDailyDose.R

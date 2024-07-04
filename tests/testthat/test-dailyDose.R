@@ -233,6 +233,15 @@ test_that("functionality of addDailyDose function",{
       dplyr::pull("estimate_value")
   )))
 
+  # test estimates
+  coverage <- summariseDoseCoverage(cdm, 1, estimates = "mean")
+  expect_true(all(coverage$estimate_name |> unique() == c("count", "mean")))
+
+  # test min records
+  coverage <- summariseDoseCoverage(cdm, 1, sampleSize = 50)
+  expect_true(coverage$estimate_value[1] == "50")
+  expect_true(settings(coverage)$sample_size == 50)
+
   #check it works without specifying cdm object
   expect_no_error(addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))
 })

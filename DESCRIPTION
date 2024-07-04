@@ -85,5 +85,5 @@ Depends:
     R (>= 2.10)
 LazyData: true
 URL: https://darwin-eu-dev.github.io/DrugUtilisation/
-Config/testthat/parallel: false
+Config/testthat/parallel: true
 VignetteBuilder: knitr

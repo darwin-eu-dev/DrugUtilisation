@@ -163,6 +163,8 @@ tableIndication <- function(result,
 #' @param groupColumn Column to use as group labels.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
 #' @param .options Named list with additional formatting options.
 #' DrugUtilisation::optionstableDoseCoverage() shows allowed
 #' arguments and their default values.
@@ -192,6 +194,12 @@ tableDoseCoverage <- function(result,
                               cdmName = TRUE,
                               groupColumn = NULL,
                               type = "gt",
+                              formatEstimateName = c(
+                                "N (%)" = "<count_missing> (<percentage_missing> %)",
+                                "N" = "<count>",
+                                "Mean (SD)" = "<mean> (<sd>)",
+                                "Median (Q25 - Q75)" = "<median> (<q25> - <q75>)"
+                              ),
                               .options = list()) {
   # check input and filter result
   if (!ingridientName & "ingredient_name" %in% groupColumn) {
@@ -262,10 +270,7 @@ tableDoseCoverage <- function(result,
   suppressMessages(
     visOmopResults::visOmopTable(
       result = result,
-      formatEstimateName = c("N (%)" = "<count_missing> (<percentage_missing> %)",
-                             "N" = "<count>",
-                             "Mean (SD)" = "<mean> (<sd>)",
-                             "Median (Q25 - Q75)" = "<median> (<q25> - <q75>)"),
+      formatEstimateName = formatEstimateName,
       header = header,
       split = split,
       groupColumn = groupColumn,

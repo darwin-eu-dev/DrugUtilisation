@@ -12,6 +12,9 @@ tableDoseCoverage(
   cdmName = TRUE,
   groupColumn = NULL,
   type = "gt",
+  formatEstimateName = c(`N (\%)` = "<count_missing> (<percentage_missing> \%)", N =
+    "<count>", `Mean (SD)` = "<mean> (<sd>)", `Median (Q25 - Q75)` =
+    "<median> (<q25> - <q75>)"),
   .options = list()
 )
 }
@@ -33,6 +36,9 @@ in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{varia
 
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", "tibble".}
+
+\item{formatEstimateName}{Named list of estimate name's to join, sorted by
+computation order. Indicate estimate_name's between <...>.}
 
 \item{.options}{Named list with additional formatting options.
 DrugUtilisation::optionstableDoseCoverage() shows allowed

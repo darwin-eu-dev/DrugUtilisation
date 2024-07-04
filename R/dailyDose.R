@@ -96,6 +96,9 @@ addDailyDose <- function(drugExposure,
 #'
 #' @param cdm A cdm reference created using CDMConnector
 #' @param ingredientConceptId Code indicating the ingredient of interest
+#' @param sampleSize Maximum number of records of an ingredient to estimate dose
+#'  coverage. If an ingredient has more, a random sample equal to `sampleSize`
+#'  will be considered. If NULL, all records will be used.
 #'
 #' @return The function returns information of the coverage of computeDailyDose.R
 #' for the selected ingredients and concept sets
@@ -111,9 +114,16 @@ addDailyDose <- function(drugExposure,
 #' }
 #'
 summariseDoseCoverage <- function(cdm,
-                                  ingredientConceptId) {
+                                  ingredientConceptId,
+                                  estimates = c(
+                                    "count_missing", "percentage_missing",
+                                    "mean", "sd", "q25", "median", "q75"
+                                  ),
+                                  sampleSize = NULL) {
   # initial checks
-  checkInputs(cdm = cdm)
+  checkInputs(cdm = cdm, ingredientConceptId = ingredientConceptId)
+  checkmate::assertIntegerish(x = sampleSize,lower = 0, len = 1, null.ok = TRUE, any.missing = FALSE, )
+  checkmate::assertCharacter(estimates)
 
   # get daily dosage
   dailyDose <- cdm[["drug_exposure"]] %>%
@@ -151,21 +161,28 @@ summariseDoseCoverage <- function(cdm,
     ) %>%
     dplyr::collect()
 
+  if (!is.null(sampleSize)) {
+    dailyDose <- dailyDose |>
+      dplyr::group_by(.data$ingredient_name) |>
+      dplyr::mutate(rand_id = sample(dplyr::row_number())) |>
+      dplyr::filter(.data$rand_id <= sampleSize) |>
+      dplyr::select(!"rand_id") |>
+      dplyr::ungroup()
+  }
+
   # summarise
   dailyDoseSummary <- dailyDose %>%
     dplyr::mutate(dplyr::across(
       c("route", "unit", "pattern_id", "ingredient_name"),
       ~ dplyr::if_else(is.na(.x), "missing", as.character(.x))
-    )) |>
+    )) %>%
     PatientProfiles::summariseResult(
       group = list("ingredient_name"),
       includeOverallGroup = FALSE,
       strata = list("unit", c("route", "unit"), c("unit", "route", "pattern_id")),
       includeOverallStrata = TRUE,
       variables = "daily_dose",
-      estimates = c(
-        "count_missing", "percentage_missing", "mean", "sd", "q25", "median", "q75"
-      )
+      estimates = estimates
     ) %>%
     suppressWarnings() |>
     dplyr::filter(
@@ -184,7 +201,8 @@ summariseDoseCoverage <- function(cdm,
       "result_id" = unique(dailyDoseSummary$result_id),
       "package_name" = "DrugUtilisation",
       "package_version" = as.character(utils::packageVersion("DrugUtilisation")),
-      "result_type" = "dose_coverage"
+      "result_type" = "dose_coverage",
+      "sample_size" = sampleSize
     ))
 
   return(dailyDoseSummary)
