@@ -14,9 +14,11 @@ summariseDoseCoverage(
 )
 }
 \arguments{
-\item{cdm}{A cdm reference created using CDMConnector}
+\item{cdm}{A cdm reference created using CDMConnector.}
 
-\item{ingredientConceptId}{Code indicating the ingredient of interest}
+\item{ingredientConceptId}{Code indicating the ingredient of interest.}
+
+\item{estimates}{Estimates to obtain.}
 
 \item{sampleSize}{Maximum number of records of an ingredient to estimate dose
 coverage. If an ingredient has more, a random sample equal to \code{sampleSize}

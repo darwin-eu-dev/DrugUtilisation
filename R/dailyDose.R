@@ -94,8 +94,9 @@ addDailyDose <- function(drugExposure,
 #' Check coverage of daily dose computation in a sample of the cdm for selected
 #' concept sets and ingredient
 #'
-#' @param cdm A cdm reference created using CDMConnector
-#' @param ingredientConceptId Code indicating the ingredient of interest
+#' @param cdm A cdm reference created using CDMConnector.
+#' @param ingredientConceptId Code indicating the ingredient of interest.
+#' @param estimates Estimates to obtain.
 #' @param sampleSize Maximum number of records of an ingredient to estimate dose
 #'  coverage. If an ingredient has more, a random sample equal to `sampleSize`
 #'  will be considered. If NULL, all records will be used.
