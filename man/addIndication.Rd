@@ -6,18 +6,16 @@
 \usage{
 addIndication(
   x,
-  cdm = attr(x, "cdm_reference"),
   indicationCohortName,
   indicationCohortId = NULL,
   indicationWindow = list(c(0, 0)),
   unknownIndicationTable = NULL,
-  indexDate = "cohort_start_date"
+  indexDate = "cohort_start_date",
+  name = NULL
 )
 }
 \arguments{
 \item{x}{Table in the cdm}
-
-\item{cdm}{A cdm reference created using CDMConnector}
 
 \item{indicationCohortName}{Name of indication cohort table}
 
@@ -28,6 +26,8 @@ addIndication(
 \item{unknownIndicationTable}{Tables to search unknown indications}
 
 \item{indexDate}{Date of the indication}
+
+\item{name}{name of permenant table}
 }
 \value{
 Same cohort adding the indications
@@ -52,7 +52,7 @@ acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 
 cdm[["drug_cohort"]] |>
-  addIndication(cdm, "indication_cohorts", indicationWindow = list(c(0,0)))
+  addIndication("indication_cohorts", indicationWindow = list(c(0,0)))
 }
 
 }

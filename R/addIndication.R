@@ -17,12 +17,12 @@
 #' Get indication for a target cohort
 #'
 #' @param x Table in the cdm
-#' @param cdm A cdm reference created using CDMConnector
 #' @param indicationCohortName Name of indication cohort table
 #' @param indicationCohortId target cohort Id to add indication
 #' @param indicationWindow time window of interests
 #' @param unknownIndicationTable Tables to search unknown indications
 #' @param indexDate Date of the indication
+#' @param name name of permenant table
 #'
 #' @return Same cohort adding the indications
 #'
@@ -45,22 +45,34 @@
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 #'
 #' cdm[["drug_cohort"]] |>
-#'   addIndication(cdm, "indication_cohorts", indicationWindow = list(c(0,0)))
+#'   addIndication("indication_cohorts", indicationWindow = list(c(0,0)))
 #' }
 #'
 addIndication <- function(x,
-                          cdm = attr(x ,"cdm_reference"),
                           indicationCohortName,
                           indicationCohortId = NULL,
                           indicationWindow = list(c(0,0)),
                           unknownIndicationTable = NULL,
-                          indexDate = "cohort_start_date") {
+                          indexDate = "cohort_start_date",
+                          name = NULL) {
+
+  cdm <- omopgenerics::cdmReference(x)
+
+  comp <- newTable(name)
 
   # check inputs
   checkInputs(
     x = x, cdm = cdm, indicationCohortName = indicationCohortName, indicationDate = indexDate,
-    unknownIndicationTable = unknownIndicationTable, window = indicationWindow
+    window = indicationWindow,unknownIndicationTable = unknownIndicationTable, name = name
   )
+
+  if (!(indicationCohortName %in% names(cdm))) {
+    cli::cli_abort("indicationCohortName is not in the cdm reference")
+  }
+
+  if (!all(unknownIndicationTable %in% names(cdm))) {
+    cli::cli_abort("unknownIndicationTable is not in the cdm reference")
+  }
 
   assertNumeric(indicationCohortId,null = TRUE)
 
@@ -68,6 +80,8 @@ addIndication <- function(x,
   if (!inherits(indicationWindow,"list")){
     indicationWindow = list(indicationWindow)
   }
+
+  tablePrefix <- omopgenerics::tmpPrefix()
 
   # nameStyle
   nameformat = "indication_{window_name}_{cohort_name}"
@@ -88,7 +102,18 @@ addIndication <- function(x,
       ind |> dplyr::rename(!!indexDate := "cohort_start_date"),
       by = c("subject_id", indexDate)
     ) |> indicationToStrata() |>
-    CDMConnector::computeQuery()
+    dplyr::compute(
+      name = omopgenerics::uniqueTableName(tablePrefix),
+      temporary = FALSE,
+      overwrite = TRUE
+    )
+
+
+  result <- result |> dplyr::compute(name = comp$name, temporary = comp$temporary)
+
+  omopgenerics::dropTable(
+    cdm = cdm, name = dplyr::starts_with(tablePrefix)
+  )
 
   return(result)
 }
@@ -121,7 +146,11 @@ addCohortIndication <- function(ind, cohortName, window, name, unknown, id) {
       nameStyle = name
     ) |>
       addNoneIndication(win) |>
-      CDMConnector::computeQuery()
+      dplyr::compute(
+        name = omopgenerics::uniqueTableName(tablePrefix),
+        temporary = FALSE,
+        overwrite = TRUE
+      )
 
     if(!is.null(unknown)){
       ind <- ind |> addUnknownIndication(window = win,table = unknown)
@@ -161,7 +190,12 @@ addUnknownIndication <- function(x, window, table) {
   x <- x |>
     dplyr::mutate(!!rlang::sym(unknown) := !!rlang::parse_expr(columns)) |>
     dplyr::mutate(!!rlang::sym(columnsNone) := ifelse(.data[[unknown]] == 1,0, .data[[columnsNone]])) |>
-    dplyr::select(-name) |> CDMConnector::computeQuery()
+    dplyr::select(-name) |>
+    dplyr::compute(
+      name = omopgenerics::uniqueTableName(tablePrefix),
+      temporary = FALSE,
+      overwrite = TRUE
+    )
 
   return(x)
 
@@ -277,7 +311,11 @@ addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binary
   # mantain the number of columns
   x <- x |>
     dplyr::left_join(toAdd, by = binaryColumns) |>
-    CDMConnector::computeQuery()
+    dplyr::compute(
+      name = omopgenerics::uniqueTableName(tablePrefix),
+      temporary = FALSE,
+      overwrite = TRUE
+    )
 
   return(x)
 }
@@ -296,3 +334,14 @@ indicationColumns2 <- function(x) {
 }
 
 
+#' @noRd
+#'
+newTable <- function(name, call = parent.frame()) {
+  assertCharacter(name, length = 1, null = TRUE, na = TRUE, call = call)
+  if (is.null(name) || is.na(name)) {
+    x <- list(name = omopgenerics::uniqueTableName(), temporary = TRUE)
+  } else {
+    x <- list(name = name, temporary = FALSE)
+  }
+  return(x)
+}
