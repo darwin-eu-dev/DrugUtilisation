@@ -40,27 +40,27 @@ checkCdm <- function(cdm) {
   }
 }
 
-checkConceptSet <- function(conceptSet) {
+checkConceptSet <- function(conceptSet, call = parent.frame()) {
   errorMessage <- "conceptSet must be a uniquely named list of integerish,
   no NA are allowed"
   if (!is.list(conceptSet)) {
-    cli::cli_abort(errorMessage)
+    cli::cli_abort(errorMessage, call = call)
   }
   if (!all(sapply(conceptSet, is.numeric))) {
-    cli::cli_abort(errorMessage)
+    cli::cli_abort(errorMessage, call = call)
   }
   x <- unlist(conceptSet)
   if (any(is.na(x))) {
-    cli::cli_abort(errorMessage)
+    cli::cli_abort(errorMessage, call = call)
   }
   if (any(abs(x - round(x)) > sqrt(.Machine$double.eps))) {
-    cli::cli_abort(errorMessage)
+    cli::cli_abort(errorMessage, call = call)
   }
   if (length(names(x)) != length(x)) {
-    cli::cli_abort(errorMessage)
+    cli::cli_abort(errorMessage, call = call)
   }
   if (length(names(x)) != length(unique(names(x)))) {
-    cli::cli_abort(errorMessage)
+    cli::cli_abort(errorMessage, call = call)
   }
 }
 
@@ -118,8 +118,8 @@ checkPriorUseWashout <- function(priorUseWashout) {
 checkCohortDateRange <- function(cohortDateRange) {
   checkmate::assertDate(cohortDateRange, len = 2)
   if (!is.na(cohortDateRange[1]) &
-    !is.na(cohortDateRange[2]) &
-    cohortDateRange[1] > cohortDateRange[2]) {
+      !is.na(cohortDateRange[2]) &
+      cohortDateRange[1] > cohortDateRange[2]) {
     cli::cli_abort(
       "cohortDateRange[1] should be equal or smaller than cohortDateRange[2]"
     )
@@ -159,8 +159,8 @@ checkDurationRange <- function(durationRange) {
   errorMessage <- "durationRange has to be numeric of length 2 with no NA and
       durationRange[1] <= durationRange[2]"
   if (!is.numeric(durationRange) |
-    length(durationRange) != 2 |
-    any(is.na(durationRange))) {
+      length(durationRange) != 2 |
+      any(is.na(durationRange))) {
     cli::cli_abort(errorMessage)
   }
   if (durationRange[1] > durationRange[2]) {
@@ -172,8 +172,8 @@ checkDailyDoseRange <- function(dailyDoseRange) {
   errorMessage <- "dailyDoseRange has to be numeric of length 2 with no NA and
       dailyDoseRange[1] <= dailyDoseRange[2]"
   if (!is.numeric(dailyDoseRange) |
-    length(dailyDoseRange) != 2 |
-    any(is.na(dailyDoseRange))) {
+      length(dailyDoseRange) != 2 |
+      any(is.na(dailyDoseRange))) {
     cli::cli_abort(errorMessage)
   }
   if (dailyDoseRange[1] > dailyDoseRange[2]) {
@@ -289,8 +289,8 @@ checkIngredientConceptId <- function(ingredientConceptId, cdm) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
   }
   if (cdm[["concept"]] %>%
-    dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
-    dplyr::pull("concept_class_id") != "Ingredient"
+      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+      dplyr::pull("concept_class_id") != "Ingredient"
   ) {
     cli::cli_abort("ingredientConceptId is not found in vocabulary")
   }
@@ -683,7 +683,7 @@ isInteger <- function(integer) {
     return(FALSE)
   } else {
     if (!is.infinite(integer) &&
-      abs(integer - round(integer)) > sqrt(.Machine$double.eps)) {
+        abs(integer - round(integer)) > sqrt(.Machine$double.eps)) {
       return(FALSE)
     } else {
       return(TRUE)
