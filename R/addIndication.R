@@ -133,7 +133,7 @@ indicationName <- function(window, termination = "") {
 
 #' Add cohort indications
 #' @noRd
-addCohortIndication <- function(ind, cohortName, window, name, unknown, id , prefix = tablePrefix) {
+addCohortIndication <- function(ind, cohortName, window, name, unknown, id , prefix) {
   for (w in seq_len(length(window))) {
 
     win <- window[[w]]
@@ -163,7 +163,7 @@ addCohortIndication <- function(ind, cohortName, window, name, unknown, id , pre
 
 #' Add unknown indications
 #' @noRd
-addUnknownIndication <- function(x, window, table, prefix = tablePrefix) {
+addUnknownIndication <- function(x, window, table, prefix) {
 
   for (tab in table){
 
@@ -222,7 +222,7 @@ addNoneIndication <- function(x, window) {
 indicationToStrata <- function(cohort,
                                indicationVariables = indicationColumns2(cohort),
                                keep = FALSE,
-                               prefix = tablePrefix){
+                               prefix){
 
 
   # original cohort to keep attributes
@@ -286,7 +286,7 @@ groupIndications <- function(indicationVariables) {
 #'
 #' @noRd
 #'
-addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binaryColumns, prefix = tablePrefix) {
+addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binaryColumns, prefix) {
   # initial checks
   checkInputs(
     x = x, binaryColumns = binaryColumns, newColumn = newColumn, label = label
