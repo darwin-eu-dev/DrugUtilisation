@@ -302,12 +302,15 @@ checkSample <- function(sample) {
   }
 }
 
-checkIndicationCohortName <- function(indicationCohortName, cdm) {
+checkIndicationCohortName <- function(indicationCohortName) {
   if (!is.character(indicationCohortName) & length(indicationCohortName) == 1) {
     cli::cli_abort("indicationCohortName must be a character of length 1.")
   }
-  if (!(indicationCohortName %in% names(cdm))) {
-    cli::cli_abort("indicationCohortName is not in the cdm reference")
+}
+
+checkName <- function(Name) {
+  if (!is.character(Name) & length(Name) == 1 & !is.null(Name)) {
+    cli::cli_abort("name must be a character of length 1.")
   }
 }
 
@@ -324,14 +327,11 @@ checkIndicationGap <- function(indicationGap) {
   }
 }
 
-checkUnknownIndicationTable <- function(unknownIndicationTable, cdm) {
+checkUnknownIndicationTable <- function(unknownIndicationTable) {
   if (!is.null(unknownIndicationTable)) {
     errorMessage <- "unknownIndicationTable must point to a table in the cdm"
     if (!is.character(unknownIndicationTable)) {
       cli::cli_abort(errorMessage)
-    }
-    if (!all(unknownIndicationTable %in% names(cdm))) {
-      cli::cli_abort("unknownIndicationTable is not in the cdm reference")
     }
   }
 }

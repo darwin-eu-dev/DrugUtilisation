@@ -80,7 +80,8 @@ Imports:
     tictoc,
     omopgenerics (>= 0.2.3),
     visOmopResults,
-    lifecycle
+    lifecycle,
+    stringr
 Depends: 
     R (>= 2.10)
 LazyData: true

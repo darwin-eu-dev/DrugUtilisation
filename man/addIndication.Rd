@@ -6,25 +6,28 @@
 \usage{
 addIndication(
   x,
-  cdm = lifecycle::deprecated(),
   indicationCohortName,
-  indicationGap = 0,
+  indicationCohortId = NULL,
+  indicationWindow = list(c(0, 0)),
   unknownIndicationTable = NULL,
-  indicationDate = "cohort_start_date"
+  indexDate = "cohort_start_date",
+  name = NULL
 )
 }
 \arguments{
 \item{x}{Table in the cdm}
 
-\item{cdm}{Deprecated.}
-
 \item{indicationCohortName}{Name of indication cohort table}
 
-\item{indicationGap}{Gap between the event and the indication}
+\item{indicationCohortId}{target cohort Id to add indication}
+
+\item{indicationWindow}{time window of interests}
 
 \item{unknownIndicationTable}{Tables to search unknown indications}
 
-\item{indicationDate}{Date of the indication}
+\item{indexDate}{Date of the indication}
+
+\item{name}{name of permenant table}
 }
 \value{
 Same cohort adding the indications
@@ -48,11 +51,8 @@ cdm <- generateConceptCohortSet(
 acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
 
-cdm[["drug_cohort"]] \%>\%
-  addIndication(
-    indicationCohortName = "indication_cohorts",
-    indicationGap = c(0, 30, 365)
-  )
+cdm[["drug_cohort"]] |>
+  addIndication("indication_cohorts", indicationWindow = list(c(0,0)))
 }
 
 }

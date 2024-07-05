@@ -43,20 +43,9 @@
 #' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
 #'   addIndication(
 #'     indicationCohortName = "indication_cohorts",
-#'     indicationGap = c(0, 30, 365)
+#'     indicationWindow = list(c(0,0),c(-30,0),c(-365,0))
 #'   )
 #'
-#' summariseIndication(cdm[["drug_cohort"]])
-#'
-#' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
-#'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) %>%
-#'   addSex()
-#'
-#' summariseIndication(
-#'   cdm[["drug_cohort"]], strata = list(
-#'     "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
-#'   )
-#' )
 #' }
 #'
 summariseIndication <- function(cohort,
