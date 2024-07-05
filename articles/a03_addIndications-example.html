@@ -185,34 +185,29 @@ However, other arguments can be specified using the additional
 parameters. An example is provided below.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
 <span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
-<span>    indicationGap <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, <span class="fl">365</span><span class="op">)</span>,</span>
+<span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_030_1720179664&gt; [?? x 16]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpHXSuqE/file1c7767cdbdf7.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_006_1720180392&gt; [?? x 7]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1//tmp/RtmpEuMtJ2/file1bed4869a1f1.duckdb]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1       <span style="text-decoration: underline;">4</span>590 1968-08-09        1968-08-16     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1       <span style="text-decoration: underline;">1</span>427 1979-07-07        1979-07-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1       <span style="text-decoration: underline;">1</span>150 1951-12-04        1951-12-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1       <span style="text-decoration: underline;">2</span>412 1985-10-20        1985-10-27     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1       <span style="text-decoration: underline;">3</span>240 1990-12-30        1991-01-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        409 2011-11-17        2011-11-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        487 1972-09-11        1972-09-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        871 1971-09-20        1971-10-04     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1       <span style="text-decoration: underline;">3</span>748 2008-08-09        2008-08-16     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1       <span style="text-decoration: underline;">4</span>409 2016-09-29        2016-10-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1       <span style="text-decoration: underline;">2</span>392 1942-09-17        1942-10-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1       <span style="text-decoration: underline;">2</span>414 1919-05-31        1919-06-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1       <span style="text-decoration: underline;">2</span>651 1951-04-27        1951-05-04     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1       <span style="text-decoration: underline;">3</span>260 1983-02-02        1983-02-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        191 1946-04-17        1946-05-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1       <span style="text-decoration: underline;">4</span>534 1973-02-22        1973-03-08     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        651 1997-01-22        1997-02-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        761 1988-07-26        1988-08-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1       <span style="text-decoration: underline;">2</span>654 1955-01-06        1955-01-20     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1       <span style="text-decoration: underline;">4</span>270 1980-12-06        1980-12-13     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 12 more variables: indication_gap_0_bronchitis &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_sinusitis &lt;dbl&gt;, indication_gap_0_none &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_0_unknown &lt;dbl&gt;, indication_gap_30_sinusitis &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_bronchitis &lt;dbl&gt;, indication_gap_30_none &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_30_unknown &lt;dbl&gt;, indication_gap_365_bronchitis &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_gap_365_sinusitis &lt;dbl&gt;, indication_gap_365_none &lt;dbl&gt;, …</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: indication_0_to_0 &lt;chr&gt;, indication_m30_to_0 &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   indication_m365_to_0 &lt;chr&gt;</span></span></span></code></pre></div>
 <p>Use <code>indicationGap</code> to specify the indication gaps, which
 are defined as the gap between the event and the indication.
 Additionally, you can use <code>unknownIndicationTable</code> to specify
@@ -223,61 +218,33 @@ the tables to look for unknown indication.</p>
 <p>To create a summary table of the indications cohort, you can use the
 <code><a href="../reference/summariseIndication.html">summariseIndication()</a></code> function.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
-<span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
-<span>    indicationGap <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, <span class="fl">365</span><span class="op">)</span>,</span>
-<span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"variable_name"</span>, <span class="st">"estimate_name"</span>, <span class="st">"estimate_value"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 26 × 3</span></span></span>
-<span><span class="co">#&gt;    variable_name            estimate_name estimate_value     </span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number records           count         13860              </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number subjects          count         2679               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Indication on index date count         2518               </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Indication on index date percentage    18.1673881673882   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Indication on index date count         1                  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Indication on index date percentage    0.00721500721500722</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Indication on index date count         163                </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Indication on index date percentage    1.17604617604618   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Indication on index date count         11178              </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Indication on index date percentage    80.6493506493507   </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 16 more rows</span></span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># cdm[["acetaminophen_users"]] %&gt;%</span></span>
+<span><span class="co">#   addIndication(</span></span>
+<span><span class="co">#     cdm = cdm, </span></span>
+<span><span class="co">#     indicationCohortName = "indications_cohort",</span></span>
+<span><span class="co">#     indicationGap =  c(0, 30, 365),</span></span>
+<span><span class="co">#     unknownIndicationTable =  c("condition_occurrence")</span></span>
+<span><span class="co">#   ) %&gt;%</span></span>
+<span><span class="co">#   summariseIndication(cdm) %&gt;%</span></span>
+<span><span class="co">#   select("variable_name", "estimate_name", "estimate_value")</span></span></code></pre></div>
 <p>You can also summarise the indications by using the
 <code>strata</code> argument in the <code><a href="../reference/summariseIndication.html">summariseIndication()</a></code>
 function. In the example below, it is summarized by
 <code>ageGroup</code> and <code>sex</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
-<span>    cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
-<span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
-<span>    indicationGap <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
-<span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="../reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span></span>
-<span>    <span class="va">cdm</span>,</span>
-<span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age"</span> <span class="op">=</span> <span class="st">"age_group"</span>, <span class="st">"sex"</span> <span class="op">=</span> <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="st">"variable_name"</span>, <span class="st">"estimate_name"</span>, <span class="st">"estimate_value"</span>,<span class="st">"strata_name"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 50 × 4</span></span></span>
-<span><span class="co">#&gt;    variable_name            estimate_name estimate_value      strata_name</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> number records           count         13860               overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> number subjects          count         2679                overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Indication on index date count         2518                overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Indication on index date percentage    18.1673881673882    overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> Indication on index date count         1                   overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> Indication on index date percentage    0.00721500721500722 overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Indication on index date count         163                 overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Indication on index date percentage    1.17604617604618    overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> Indication on index date count         11178               overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> Indication on index date percentage    80.6493506493507    overall    </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 40 more rows</span></span></span></code></pre></div>
+<span><span class="co"># cdm[["acetaminophen_users"]] %&gt;%</span></span>
+<span><span class="co">#   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) %&gt;%</span></span>
+<span><span class="co">#   addIndication(</span></span>
+<span><span class="co">#     cdm = cdm,</span></span>
+<span><span class="co">#     indicationCohortName = "indications_cohort",</span></span>
+<span><span class="co">#     indicationGap =  c(0),</span></span>
+<span><span class="co">#     unknownIndicationTable =  c("condition_occurrence")</span></span>
+<span><span class="co">#   ) %&gt;%</span></span>
+<span><span class="co">#   summariseIndication(</span></span>
+<span><span class="co">#     cdm,</span></span>
+<span><span class="co">#     strata = list("age" = "age_group", "sex" = "sex")) %&gt;%</span></span>
+<span><span class="co">#       select("variable_name", "estimate_name", "estimate_value","strata_name")</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

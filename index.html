@@ -1539,9 +1539,9 @@ hour
 <span><span class="co">#&gt; $ indication_gap_365_headache  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_365_none      &lt;dbl&gt; 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0,…</span></span>
 <span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span></code></pre></div>
-<p>We can combine the indications in a single column using the <code><a href="reference/indicationToStrata.html">indicationToStrata()</a></code> function. This column can be used as stratification of the results if needed:</p>
+<p>We can combine the indications in a single column using the <code>indicationToStrata()</code> function. This column can be used as stratification of the results if needed:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/indicationToStrata.html">indicationToStrata</a></span><span class="op">(</span>keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">indicationToStrata</span><span class="op">(</span>keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 19</span></span>
