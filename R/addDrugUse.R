@@ -239,8 +239,8 @@ addDrugUse <- function(cohort,
       dplyr::pull()
 
     cohort <- cohort %>%
-      addInitialDailyDose(cohortInfo, sameIndexMode, units, cdm) %>%
-      addCumulativeDose(
+      addInitialDailyDoseDrugUse(cohortInfo, sameIndexMode, units, cdm) %>%
+      addCumulativeDoseDrugUse(
         cohortInfo, cdm, gapEra, sameIndexMode, overlapMode, eraJoinMode, units
       )
   }
@@ -322,7 +322,7 @@ addInfo <- function(cohort,
   return(cohort)
 }
 
-addInitialDailyDose <- function(cohort,
+addInitialDailyDoseDrugUse <- function(cohort,
                                 cohortInfo,
                                 sameIndexMode,
                                 units,
@@ -381,7 +381,7 @@ addInitialDailyDose <- function(cohort,
   return(cohort)
 }
 
-addNumberErasDrugUseDrugUse <- function(cohort, cohortInfo, gapEra, cdm) {
+addNumberErasDrugUse <- function(cohort, cohortInfo, gapEra, cdm) {
   cohort %>%
     dplyr::left_join(
       cohortInfo %>%
@@ -419,7 +419,7 @@ addNumberErasDrugUseDrugUse <- function(cohort, cohortInfo, gapEra, cdm) {
     )
 }
 
-addCumulativeDose <- function(cohort,
+addCumulativeDoseDrugUse <- function(cohort,
                               cohortInfo,
                               cdm,
                               gapEra,
