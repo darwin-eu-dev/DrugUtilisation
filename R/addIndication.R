@@ -94,14 +94,14 @@ addIndication <- function(x,
     dplyr::distinct()
 
   # add indications that are cohorts
-  ind <- addCohortIndication(ind, indicationCohortName, indicationWindow,nameformat,unknownIndicationTable,indicationCohortId)
+  ind <- addCohortIndication(ind, indicationCohortName, indicationWindow,nameformat,unknownIndicationTable,indicationCohortId, prefix = tablePrefix)
 
   # add the indication columns to the original table
   result <- x |>
     dplyr::left_join(
       ind |> dplyr::rename(!!indexDate := "cohort_start_date"),
       by = c("subject_id", indexDate)
-    ) |> indicationToStrata() |>
+    ) |> indicationToStrata(prefix = tablePrefix) |>
     dplyr::compute(
       name = omopgenerics::uniqueTableName(tablePrefix),
       temporary = FALSE,
@@ -133,7 +133,7 @@ indicationName <- function(window, termination = "") {
 
 #' Add cohort indications
 #' @noRd
-addCohortIndication <- function(ind, cohortName, window, name, unknown, id) {
+addCohortIndication <- function(ind, cohortName, window, name, unknown, id , prefix = tablePrefix) {
   for (w in seq_len(length(window))) {
 
     win <- window[[w]]
@@ -147,13 +147,13 @@ addCohortIndication <- function(ind, cohortName, window, name, unknown, id) {
     ) |>
       addNoneIndication(win) |>
       dplyr::compute(
-        name = omopgenerics::uniqueTableName(tablePrefix),
+        name = omopgenerics::uniqueTableName(prefix),
         temporary = FALSE,
         overwrite = TRUE
       )
 
     if(!is.null(unknown)){
-      ind <- ind |> addUnknownIndication(window = win,table = unknown)
+      ind <- ind |> addUnknownIndication(window = win,table = unknown, prefix = prefix)
     }
 
   }
@@ -163,7 +163,7 @@ addCohortIndication <- function(ind, cohortName, window, name, unknown, id) {
 
 #' Add unknown indications
 #' @noRd
-addUnknownIndication <- function(x, window, table) {
+addUnknownIndication <- function(x, window, table, prefix = tablePrefix) {
 
   for (tab in table){
 
@@ -192,7 +192,7 @@ addUnknownIndication <- function(x, window, table) {
     dplyr::mutate(!!rlang::sym(columnsNone) := ifelse(.data[[unknown]] == 1,0, .data[[columnsNone]])) |>
     dplyr::select(-name) |>
     dplyr::compute(
-      name = omopgenerics::uniqueTableName(tablePrefix),
+      name = omopgenerics::uniqueTableName(prefix),
       temporary = FALSE,
       overwrite = TRUE
     )
@@ -221,7 +221,8 @@ addNoneIndication <- function(x, window) {
 #' @noRd
 indicationToStrata <- function(cohort,
                                indicationVariables = indicationColumns2(cohort),
-                               keep = FALSE){
+                               keep = FALSE,
+                               prefix = tablePrefix){
 
 
   # original cohort to keep attributes
@@ -235,7 +236,7 @@ indicationToStrata <- function(cohort,
     cohort <- cohort |>
       addBinaryFromCategorical(
         binaryColumns = indications[[k]]$names,
-        newColumn = indications[[k]]$new_name, label = indications[[k]]$label
+        newColumn = indications[[k]]$new_name, label = indications[[k]]$label, prefix = prefix
       )
   }
 
@@ -285,7 +286,7 @@ groupIndications <- function(indicationVariables) {
 #'
 #' @noRd
 #'
-addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binaryColumns) {
+addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binaryColumns, prefix = tablePrefix) {
   # initial checks
   checkInputs(
     x = x, binaryColumns = binaryColumns, newColumn = newColumn, label = label
@@ -312,7 +313,7 @@ addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binary
   x <- x |>
     dplyr::left_join(toAdd, by = binaryColumns) |>
     dplyr::compute(
-      name = omopgenerics::uniqueTableName(tablePrefix),
+      name = omopgenerics::uniqueTableName(prefix),
       temporary = FALSE,
       overwrite = TRUE
     )
