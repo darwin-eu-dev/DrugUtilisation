@@ -103,13 +103,11 @@ addDrugUtilisation <- function(cohort,
 #' `addDrugUtilisation()` for efficiency.
 #'
 #' @param cohort Cohort in the cdm
+#' @param conceptSet List of concepts to be included.
 #' @param indexDate Name of a column that indicates the date to start the
 #' analysis.
 #' @param censorDate Name of a column that indicates the date to stop the
 #' analysis, if NULL end of individuals observation is used.
-#' @param conceptSet List of concepts to be included. If NULL all the
-#' descendants of ingredient concept id will be used.
-#' ingredientConceptId = NULL,
 #' @param restrictIncident Whether to include only incident prescriptions in the
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
@@ -137,12 +135,13 @@ addDrugUtilisation <- function(cohort,
 #' }
 #'
 addNumberExposures <- function(cohort,
+                               conceptSet,
                                indexDate = "cohort_start_date",
                                censorDate = "cohort_end_date",
-                               conceptSet = NULL,
                                restrictIncident = TRUE,
                                nameStyle = "number_exposures_{concept_name}",
                                name = NULL) {
+  checkConceptSet(conceptSet)
   cohort |>
     addDrugUseInternal(
       indexDate = indexDate,
@@ -163,6 +162,448 @@ addNumberExposures <- function(cohort,
       name = name)
 }
 
+#' To add a new column with the cumulative dose. To add multiple columns use
+#' `addDrugUtilisation()` for efficiency.
+#'
+#' @param cohort Cohort in the cdm.
+#' @param ingredientConceptId Ingredient OMOP concept that we are interested for
+#' the study. It is a compulsory input, no default value is provided.
+#' @param conceptSet List of concepts to be included. If NULL all the
+#' descendants of ingredient concept id will be used.
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
+#'
+#' @return The same cohort with the added column.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' cdm$cohort1|>
+#'   addCumulativeDose(ingredientConceptId = 1125315)
+#' }
+#'
+addCumulativeDose <- function(cohort,
+                              ingredientConceptId,
+                              conceptSet = NULL,
+                              indexDate = "cohort_start_date",
+                              censorDate = "cohort_end_date",
+                              restrictIncident = TRUE,
+                              nameStyle = "cumulative_dose_{concept_name}_{ingredient}",
+                              name = NULL) {
+  cohort |>
+    addDrugUseInternal(
+      indexDate = indexDate,
+      censorDate = censorDate,
+      conceptSet = conceptSet,
+      ingredientConceptId = ingredientConceptId,
+      restrictIncident = restrictIncident,
+      numberExposures = FALSE,
+      numberEras = FALSE,
+      exposedTime = FALSE,
+      timeToExposure = FALSE,
+      initialQuantity = FALSE,
+      cumulativeQuantity = FALSE,
+      initialDailyDose = FALSE,
+      cumulativeDose = TRUE,
+      gapEra = 0,
+      nameStyle = nameStyle,
+      name = name)
+}
+
+#' To add a new column with the initial daily dose. To add multiple columns use
+#' `addDrugUtilisation()` for efficiency.
+#'
+#' @param cohort Cohort in the cdm.
+#' @param ingredientConceptId Ingredient OMOP concept that we are interested for
+#' the study. It is a compulsory input, no default value is provided.
+#' @param conceptSet List of concepts to be included. If NULL all the
+#' descendants of ingredient concept id will be used.
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
+#'
+#' @return The same cohort with the added column.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' cdm$cohort1|>
+#'   addInitialDailyDose(ingredientConceptId = 1125315)
+#' }
+#'
+addInitialDailyDose <- function(cohort,
+                                ingredientConceptId,
+                                conceptSet = NULL,
+                                indexDate = "cohort_start_date",
+                                censorDate = "cohort_end_date",
+                                restrictIncident = TRUE,
+                                nameStyle = "initial_daily_dose_{concept_name}_{ingredient}",
+                                name = NULL) {
+  cohort |>
+    addDrugUseInternal(
+      indexDate = indexDate,
+      censorDate = censorDate,
+      conceptSet = conceptSet,
+      ingredientConceptId = ingredientConceptId,
+      restrictIncident = restrictIncident,
+      numberExposures = FALSE,
+      numberEras = FALSE,
+      exposedTime = FALSE,
+      timeToExposure = FALSE,
+      initialQuantity = FALSE,
+      cumulativeQuantity = FALSE,
+      initialDailyDose = TRUE,
+      cumulativeDose = FALSE,
+      gapEra = 0,
+      nameStyle = nameStyle,
+      name = name)
+}
+
+#' To add a new column with the cumulative quantity. To add multiple columns use
+#' `addDrugUtilisation()` for efficiency.
+#'
+#' @param cohort Cohort in the cdm.
+#' @param conceptSet List of concepts to be included.
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
+#'
+#' @return The same cohort with the added column.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
+#' )
+#'
+#' cdm$dus_cohort |>
+#'   addCumulativeQuantity(conceptSet = codelist)
+#' }
+#'
+addCumulativeQuantity <- function(cohort,
+                                  conceptSet,
+                                  indexDate = "cohort_start_date",
+                                  censorDate = "cohort_end_date",
+                                  restrictIncident = TRUE,
+                                  nameStyle = "cumulative_quantity_{concept_name}",
+                                  name = NULL) {
+  checkConceptSet(conceptSet)
+  cohort |>
+    addDrugUseInternal(
+      indexDate = indexDate,
+      censorDate = censorDate,
+      conceptSet = conceptSet,
+      ingredientConceptId = NULL,
+      restrictIncident = restrictIncident,
+      numberExposures = FALSE,
+      numberEras = FALSE,
+      exposedTime = FALSE,
+      timeToExposure = FALSE,
+      initialQuantity = FALSE,
+      cumulativeQuantity = TRUE,
+      initialDailyDose = FALSE,
+      cumulativeDose = FALSE,
+      gapEra = 0,
+      nameStyle = nameStyle,
+      name = name)
+}
+
+#' To add a new column with the initial quantity. To add multiple columns use
+#' `addDrugUtilisation()` for efficiency.
+#'
+#' @param cohort Cohort in the cdm.
+#' @param conceptSet List of concepts to be included.
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
+#'
+#' @return The same cohort with the added column.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
+#' )
+#'
+#' cdm$dus_cohort |>
+#'   addInitialQuantity(conceptSet = codelist)
+#' }
+#'
+addInitialQuantity <- function(cohort,
+                               conceptSet,
+                               indexDate = "cohort_start_date",
+                               censorDate = "cohort_end_date",
+                               restrictIncident = TRUE,
+                               nameStyle = "initial_quantity_{concept_name}",
+                               name = NULL) {
+  checkConceptSet(conceptSet)
+  cohort |>
+    addDrugUseInternal(
+      indexDate = indexDate,
+      censorDate = censorDate,
+      conceptSet = conceptSet,
+      ingredientConceptId = NULL,
+      restrictIncident = restrictIncident,
+      numberExposures = FALSE,
+      numberEras = FALSE,
+      exposedTime = FALSE,
+      timeToExposure = FALSE,
+      initialQuantity = TRUE,
+      cumulativeQuantity = FALSE,
+      initialDailyDose = FALSE,
+      cumulativeDose = FALSE,
+      gapEra = 0,
+      nameStyle = nameStyle,
+      name = name)
+}
+
+#' To add a new column with the time to exposure. To add multiple columns use
+#' `addDrugUtilisation()` for efficiency.
+#'
+#' @param cohort Cohort in the cdm.
+#' @param conceptSet List of concepts to be included.
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
+#'
+#' @return The same cohort with the added column.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
+#' )
+#'
+#' cdm$dus_cohort |>
+#'   addTimeToExposure(conceptSet = codelist)
+#' }
+#'
+addTimeToExposure <- function(cohort,
+                              conceptSet,
+                              indexDate = "cohort_start_date",
+                              censorDate = "cohort_end_date",
+                              restrictIncident = TRUE,
+                              nameStyle = "time_to_exposure_{concept_name}",
+                              name = NULL) {
+  checkConceptSet(conceptSet)
+  cohort |>
+    addDrugUseInternal(
+      indexDate = indexDate,
+      censorDate = censorDate,
+      conceptSet = conceptSet,
+      ingredientConceptId = NULL,
+      restrictIncident = restrictIncident,
+      numberExposures = FALSE,
+      numberEras = FALSE,
+      exposedTime = FALSE,
+      timeToExposure = TRUE,
+      initialQuantity = FALSE,
+      cumulativeQuantity = FALSE,
+      initialDailyDose = FALSE,
+      cumulativeDose = FALSE,
+      gapEra = 0,
+      nameStyle = nameStyle,
+      name = name)
+}
+
+#' To add a new column with the exposed time. To add multiple columns use
+#' `addDrugUtilisation()` for efficiency.
+#'
+#' @param cohort Cohort in the cdm.
+#' @param conceptSet List of concepts to be included.
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
+#'
+#' @return The same cohort with the added column.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
+#' )
+#'
+#' cdm$dus_cohort |>
+#'   addExposedTime(conceptSet = codelist)
+#' }
+#'
+addExposedTime <- function(cohort,
+                           conceptSet,
+                           indexDate = "cohort_start_date",
+                           censorDate = "cohort_end_date",
+                           restrictIncident = TRUE,
+                           gapEra = 1,
+                           nameStyle = "exposed_time_{concept_name}",
+                           name = NULL) {
+  checkConceptSet(conceptSet)
+  cohort |>
+    addDrugUseInternal(
+      indexDate = indexDate,
+      censorDate = censorDate,
+      conceptSet = conceptSet,
+      ingredientConceptId = NULL,
+      restrictIncident = restrictIncident,
+      numberExposures = FALSE,
+      numberEras = FALSE,
+      exposedTime = TRUE,
+      timeToExposure = FALSE,
+      initialQuantity = FALSE,
+      cumulativeQuantity = FALSE,
+      initialDailyDose = FALSE,
+      cumulativeDose = FALSE,
+      gapEra = gapEra,
+      nameStyle = nameStyle,
+      name = name)
+}
+
+#' To add a new column with the number of eras. To add multiple columns use
+#' `addDrugUtilisation()` for efficiency.
+#'
+#' @param cohort Cohort in the cdm.
+#' @param conceptSet List of concepts to be included.
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
+#' @param restrictIncident Whether to include only incident prescriptions in the
+#' analysis. If FALSE all prescriptions that overlap with the study period will
+#' be included.
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
+#' @param nameStyle Character string to specify the nameStyle of the new columns.
+#' @param name Name of the new computed column if NULL a temporary tables is
+#' created.
+#'
+#' @return The same cohort with the added column.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
+#' )
+#'
+#' cdm$dus_cohort |>
+#'   addNumberEras(conceptSet = codelist)
+#' }
+#'
+addNumberEras <- function(cohort,
+                          conceptSet,
+                          indexDate = "cohort_start_date",
+                          censorDate = "cohort_end_date",
+                          restrictIncident = TRUE,
+                          gapEra = 1,
+                          nameStyle = "number_eras_{concept_name}",
+                          name = NULL) {
+  checkConceptSet(conceptSet)
+  cohort |>
+    addDrugUseInternal(
+      indexDate = indexDate,
+      censorDate = censorDate,
+      conceptSet = conceptSet,
+      ingredientConceptId = NULL,
+      restrictIncident = restrictIncident,
+      numberExposures = FALSE,
+      numberEras = TRUE,
+      exposedTime = FALSE,
+      timeToExposure = FALSE,
+      initialQuantity = FALSE,
+      cumulativeQuantity = FALSE,
+      initialDailyDose = FALSE,
+      cumulativeDose = FALSE,
+      gapEra = gapEra,
+      nameStyle = nameStyle,
+      name = name)
+}
 
 addDrugUseInternal <- function(x,
                                indexDate,
