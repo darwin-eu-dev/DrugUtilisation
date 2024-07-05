@@ -31,6 +31,9 @@ analysis, if NULL end of individuals observation is used.}
 analysis. If FALSE all prescriptions that overlap with the study period will
 be included.}
 
+\item{gapEra}{Number of days between two continuous exposures to be
+considered in the same era.}
+
 \item{nameStyle}{Character string to specify the nameStyle of the new columns.}
 
 \item{name}{Name of the new computed column if NULL a temporary tables is

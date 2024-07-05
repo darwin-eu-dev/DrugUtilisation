@@ -191,7 +191,7 @@ addNumberExposures <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' cdm$cohort_1 |>
+#' cdm$cohort1|>
 #'   addCumulativeDose(ingredientConceptId = 1125315)
 #' }
 #'
@@ -252,7 +252,7 @@ addCumulativeDose <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' cdm$cohort_1 |>
+#' cdm$cohort1|>
 #'   addInitialDailyDose(ingredientConceptId = 1125315)
 #' }
 #'
@@ -485,6 +485,8 @@ addTimeToExposure <- function(cohort,
 #' @param restrictIncident Whether to include only incident prescriptions in the
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
 #' @param name Name of the new computed column if NULL a temporary tables is
 #' created.
@@ -549,6 +551,8 @@ addExposedTime <- function(cohort,
 #' @param restrictIncident Whether to include only incident prescriptions in the
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
 #' @param name Name of the new computed column if NULL a temporary tables is
 #' created.
