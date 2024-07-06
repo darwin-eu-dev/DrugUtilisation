@@ -165,9 +165,7 @@ summariseDoseCoverage <- function(cdm,
   if (!is.null(sampleSize)) {
     dailyDose <- dailyDose |>
       dplyr::group_by(.data$ingredient_name) |>
-      dplyr::mutate(rand_id = dplyr::sample_n()) |>
-      dplyr::filter(.data$rand_id <= sampleSize) |>
-      dplyr::select(!"rand_id") |>
+      dplyr::sample_n(size = sampleSize, replace = FALSE) |>
       dplyr::ungroup()
   } else {
     sampleSize <- NA
