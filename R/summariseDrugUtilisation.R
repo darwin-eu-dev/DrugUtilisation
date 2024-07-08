@@ -18,7 +18,6 @@
 #' cohorts.
 #'
 #' @param cohort Cohort with drug use variables and strata.
-#' @param cdm Deprecated.
 #' @param strata Stratification list.
 #' @param drugUseEstimates Estimates that we want for the columns.
 #' @param indexDate Name of a column that indicates the date to start the
