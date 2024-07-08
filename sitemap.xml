@@ -1,147 +1,54 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/404.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a01_introCreateCohort.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a02_scalingOfInstantiateCohorts.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a03_addIndications-example.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a04_addDrugInfo.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a05_treatmentDiscontinuation.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a06_treatmentSummary.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a07_characteriseACohort.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/routePatternDose.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/DrugUtilisation-package.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addCumulativeDose.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addCumulativeQuantity.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addDailyDose.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addDrugUse.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addDrugUtilisation.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addExposedTime.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addIndication.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addInitialDailyDose.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addInitialQuantity.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addNumberEras.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addNumberExposures.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addRoute.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addTimeToExposure.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/benchmarkDUS.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/dailyDoseCoverage.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateAtcCohortSet.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateDrugUtilisationCohortSet.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateIngredientCohortSet.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/mockDrugUtilisation.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/optionsTableIndication.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/patternTable.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/patternsWithFormula.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/plotTreatment.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/readConceptList.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/reexports.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/stratifyByUnit.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseDrugUse.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseIndication.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromCohort.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromConceptSet.html</loc>
-  </url>
-  <url>
-    <loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/tableIndication.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/404.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/LICENSE.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a01_introCreateCohort.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a02_scalingOfInstantiateCohorts.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a03_addIndications-example.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a04_addDrugInfo.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a05_treatmentDiscontinuation.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a06_treatmentSummary.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a07_characteriseACohort.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/routePatternDose.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/authors.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/news/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/DrugUtilisation-package.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addCumulativeDose.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addCumulativeQuantity.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addDailyDose.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addDrugUse.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addDrugUtilisation.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addExposedTime.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addIndication.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addInitialDailyDose.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addInitialQuantity.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addNumberEras.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addNumberExposures.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addRoute.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addTimeToExposure.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/benchmarkDUS.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/dailyDoseCoverage.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateAtcCohortSet.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateDrugUtilisationCohortSet.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateIngredientCohortSet.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/mockDrugUtilisation.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/optionsTableDoseCoverage.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/optionsTableIndication.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/patternTable.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/patternsWithFormula.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/pipe.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/plotTreatment.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/readConceptList.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/reexports.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/stratifyByUnit.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseDoseCoverage.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseDrugUse.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseIndication.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromCohort.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromConceptSet.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/tableDoseCoverage.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/tableIndication.html</loc></url>
 </urlset>
+
