@@ -17,16 +17,5 @@ The function returns information of the coverage of computeDailyDose.R
 for the selected ingredients and concept sets
 }
 \description{
-Check coverage of daily dose computation in a sample of the cdm for selected
-concept sets and ingredient
-}
-\examples{
-\donttest{
-library(DrugUtilisation)
-
-cdm <- mockDrugUtilisation()
-
-dailyDoseCoverage(cdm, 1125315)
-}
-
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }

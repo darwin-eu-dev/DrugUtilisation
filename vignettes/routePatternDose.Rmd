@@ -74,10 +74,10 @@ addDailyDose(
 )
 ```
 
-There is also a function, `dailyDoseCoverage`, to check the coverage of daily dose computation for chosen concept sets and ingredients.
+There is also a function, `summariseDoseCoverage`, to check the coverage of daily dose computation for chosen concept sets and ingredients.
 ```{r, eval=TRUE}
 
-suppressWarnings(dailyDoseCoverage(cdm, 1125315))
+suppressWarnings(summariseDoseCoverage(cdm, 1125315))
 
 
 ```

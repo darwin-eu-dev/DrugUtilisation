@@ -112,9 +112,9 @@ test_that("functionality of addDailyDose function",{
       "fixed amount formulation", "time based with denominator",
       "time based no denominator", "concentration formulation"
     ) %in%
-    {patterns1 %>%
-      dplyr::pull("formula_name") %>%
-      unique()})
+      {patterns1 %>%
+          dplyr::pull("formula_name") %>%
+          unique()})
   )
 
   drugFormula <- patterns1 %>%
@@ -216,12 +216,32 @@ test_that("functionality of addDailyDose function",{
       dplyr::pull("drug_concept_id")
   ))
 
-  coverage <- dailyDoseCoverage(cdm, 1)
-
+  coverage <- summariseDoseCoverage(cdm, 1)
   expect_true(inherits(coverage, "summarised_result"))
+  # check suppress works
+  coverage_sup <- omopgenerics::suppress(coverage, minCellCount = 200)
+  expect_true(all(coverage_sup$estimate_value |> unique() %in% c("0", NA)))
+  coverage_sup <- omopgenerics::suppress(coverage, minCellCount = 50)
+  expect_true(all(is.na(
+    coverage_sup |>
+      dplyr::filter(strata_level == "overall", grepl("missing", estimate_name)) |>
+      dplyr::pull("estimate_value")
+  )))
+  expect_true(all(!is.na(
+    coverage_sup |>
+      dplyr::filter(strata_level == "overall", !grepl("missing", estimate_name)) |>
+      dplyr::pull("estimate_value")
+  )))
+
+  # test estimates
+  coverage <- summariseDoseCoverage(cdm, 1, estimates = "mean")
+  expect_true(all(coverage$estimate_name |> unique() == c("count", "mean")))
+
+  # test min records
+  coverage <- summariseDoseCoverage(cdm, 1, sampleSize = 50)
+  expect_true(coverage$estimate_value[1] == "50")
+  expect_true(settings(coverage)$sample_size == 50)
 
   #check it works without specifying cdm object
   expect_no_error(addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))
-
-
 })
