@@ -4,18 +4,27 @@
 \alias{requirePriorUseWashout}
 \title{Generates a cohort of the drug use of a certain list of concepts.}
 \usage{
-requirePriorUseWashout(cohort, washout, name = tableName(cohort))
+requirePriorUseWashout(
+  cohort,
+  priorUseWashout,
+  cohortId = NULL,
+  name = tableName(cohort)
+)
 }
 \arguments{
 \item{cohort}{A cohort table in a cdm reference.}
 
-\item{washout}{The length of washout to be applied.}
+\item{priorUseWashout}{The length of priorUseWashout to be applied.}
 
-\item{name}{Name of the new cohort with the washout. Default name is the original
+\item{cohortId}{IDs of the cohorts to modify. The default is NULL meaning all
+cohorts will be used; otherwise, only the specified cohorts will be modified,
+and the rest will remain unchanged.}
+
+\item{name}{Name of the new cohort with the priorUseWashout Default name is the original
 cohort name.}
 }
 \value{
-The function returns the cohort after applying the specified washout.
+The function returns the cohort after applying the specified priorUseWashout.
 }
 \description{
 Generates a cohort of the drug use of a certain list of concepts.
@@ -23,7 +32,7 @@ Generates a cohort of the drug use of a certain list of concepts.
 \examples{
 \donttest{
 cdm <- mockDrugUtilisation()
-requirePriorUseWashout(cohort = cdm$cohort1, washout = 90)
+requirePriorUseWashout(cohort = cdm$cohort1, priorUseWashout = 90, cohortId = c(2,3))
 CDMConnector::cdmDisconnect(cdm = cdm)
 }
 

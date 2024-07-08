@@ -4,21 +4,21 @@ test_that("input validation", {
   expect_no_error(
     requirePriorUseWashout(
       cohort = cdm$cohort1,
-      washout = 90
+      priorUseWashout = 90
     )
   )
 
   expect_no_error(
     requirePriorUseWashout(
       cohort = cdm$cohort1,
-      washout = Inf
+      priorUseWashout = Inf
     )
   )
 
   expect_no_error(
     requirePriorUseWashout(
       cohort = cdm$cohort1,
-      washout = Inf,
+      priorUseWashout = Inf,
       name = "cohort2"
     )
   )
@@ -26,35 +26,35 @@ test_that("input validation", {
   expect_error(
     requirePriorUseWashout(
       cohort = cdm$cohort1,
-      washout = -90
+      priorUseWashout = -90
     )
   )
 
   expect_error(
     requirePriorUseWashout(
       cohort = cdm,
-      washout = 90
+      priorUseWashout = 90
     )
   )
 
   expect_error(
     requirePriorUseWashout(
       cohort = "cohort1",
-      washout = 90
+      priorUseWashout = 90
     )
   )
 
   expect_error(
     requirePriorUseWashout(
       cohort = cdm$cohort1,
-      washout = "90"
+      priorUseWashout = "90"
     )
   )
 
   expect_error(
     requirePriorUseWashout(
       cohort = cdm$cohort1,
-      washout = 90,
+      priorUseWashout = 90,
       name = cohort2
     )
   )
@@ -62,18 +62,16 @@ test_that("input validation", {
   expect_error(
     cdm$cohort3 <- requirePriorUseWashout(
       cohort = cdm$cohort1,
-      washout = 90,
+      priorUseWashout = 90,
       name = "cohort2"
     )
   )
 
-  expect_error(
+  expect_message(
     requirePriorUseWashout(
       cohort = cdm$cohort1,
-      washout = 0,
-      name = "cohort2"
-    ),
-    "Washout specified is 0 meaning nothing will be applied. Suggest rechecking the washout."
+      priorUseWashout = 0
+    )
   )
 
   CDMConnector::cdmDisconnect(cdm = cdm)
@@ -102,16 +100,15 @@ test_that("input validation", {
 
   cdm <-
     mockDrugUtilisation(
-      connectionDetails,
+      #connectionDetails,
       cohort1 = cohort1,
       observation_period = observationPeriod
     )
 
-  expect_error(
+  expect_message(
     requirePriorUseWashout(cohort = cdm$cohort1,
-                           washout = 90,
-                           name = "cohort2"),
-    "Cohort is empty so washout cannot be applied. Suggest rechecking the cohort."
+                           priorUseWashout = 90,
+                           name = "cohort2")
   )
 
   CDMConnector::cdmDisconnect(cdm = cdm)
@@ -149,7 +146,7 @@ test_that("requirePrioUseWashout example", {
     )
 
   cdm$cohort2 <- requirePriorUseWashout(cohort = cdm$cohort1,
-                                        washout = 90,
+                                        priorUseWashout = 90,
                                         name = "cohort2")
 
   expect_true((cdm$cohort1 |>
@@ -171,7 +168,7 @@ test_that("requirePrioUseWashout example", {
   )
 
   cdm$cohort2 <- requirePriorUseWashout(cohort = cdm$cohort1,
-                                        washout = 10,
+                                        priorUseWashout = 10,
                                         name = "cohort2")
 
   expect_equal(
@@ -183,7 +180,7 @@ test_that("requirePrioUseWashout example", {
   )
 
   cdm$cohort2 <- requirePriorUseWashout(cohort = cdm$cohort1,
-                                        washout = Inf,
+                                        priorUseWashout = Inf,
                                         name = "cohort2")
 
   expect_equal(
