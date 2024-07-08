@@ -168,7 +168,7 @@ summariseDoseCoverage <- function(cdm,
       dplyr::sample_n(size = sampleSize, replace = FALSE) |>
       dplyr::ungroup()
   } else {
-    sampleSize <- NA
+    sampleSize <- as.integer(NA)
   }
 
   # summarise
