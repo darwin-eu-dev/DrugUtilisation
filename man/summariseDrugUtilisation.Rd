@@ -70,8 +70,6 @@ quantity of the identified prescription.}
 \item{initialDailyDose}{Whether to add a column with the initial daily dose.}
 
 \item{cumulativeDose}{Whether to add a column with the cumulative dose.}
-
-\item{cdm}{Deprecated.}
 }
 \value{
 A summary of drug utilisation stratified by cohort_name and strata_name
