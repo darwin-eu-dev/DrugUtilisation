@@ -79,6 +79,7 @@ Imports:
     omopgenerics (>= 0.2.0),
     visOmopResults,
     lifecycle,
+    stringr,
     CohortConstructor
 Depends: 
     R (>= 2.10)
