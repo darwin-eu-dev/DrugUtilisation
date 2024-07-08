@@ -6,18 +6,18 @@
 \usage{
 summariseTreatmentFromCohort(
   cohort,
-  strata = list(),
   window,
   treatmentCohortName,
   treatmentCohortId = NULL,
+  strata = list(),
+  indexDate = "cohort_start_date",
+  censorDate = NULL,
   combination = FALSE,
-  minCellCount = 5
+  minCellCount = lifecycle::deprecated()
 )
 }
 \arguments{
 \item{cohort}{Cohort with drug use variables and strata.}
-
-\item{strata}{Stratification list.}
 
 \item{window}{Window where to summarise the treatments.}
 
@@ -27,9 +27,17 @@ interest treatments.}
 \item{treatmentCohortId}{Cohort definition id of interest from
 treatmentCohortName.}
 
+\item{strata}{Stratification list.}
+
+\item{indexDate}{Variable in x that contains the date to compute the
+intersection.}
+
+\item{censorDate}{Whether to censor overlap events at a specific date or a
+column date of x. If NULL, end of observation will be used.}
+
 \item{combination}{Whether to include combination treatments.}
 
-\item{minCellCount}{Below this number counts will be suppressed.}
+\item{minCellCount}{\verb{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}}
 }
 \value{
 A summary of the drug use stratified by cohort_name and strata_name
@@ -54,7 +62,7 @@ print(result)
 
 cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] \%>\%
   addSex() \%>\%
-  addAge(ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+  addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
 
 summariseDrugUse(
   cdm[["dus_cohort"]], strata = list(

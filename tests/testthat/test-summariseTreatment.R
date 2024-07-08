@@ -6,9 +6,42 @@ test_that("test summariseTreatment", {
     x <- cdm$cohort1 %>%
       summariseTreatmentFromCohort(
         treatmentCohortName = "cohort2",
-        window = list(c(0, 30), c(31, 365)),
-        minCellCount = 0
+        window = list(c(0, 30), c(31, 365))
       )
   )
   expect_true(inherits(x, "summarised_result"))
+  expect_true(all(x$variable_name |> unique() == c("cohort_1", "cohort_2", "cohort_3", "untreated")))
+  expect_true(all(x$additional_level |> unique() == c("0 to 30", "31 to 365")))
+
+  # test concept works
+  expect_no_error(
+    x <- cdm$cohort1 %>%
+      summariseTreatmentFromConceptSet(
+        treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
+        window = list(c(0, Inf))
+      )
+  )
+  expect_true(inherits(x, "summarised_result"))
+  expect_true(all(
+    x |> dplyr::filter(group_level == "cohort_1") |> dplyr::pull("variable_name") ==
+      c("a", "a", "c", "c", "b", "b", "untreated", "untreated")
+  ))
+  expect_true(all(x$additional_level |> unique() == c("0 to Inf")))
+
+  # test order in cohort works
+  expect_no_error(
+    x <- cdm$cohort1 %>%
+      summariseTreatmentFromCohort(
+        treatmentCohortName = "cohort2",
+        treatmentCohortId = c(3, 2),
+        window = list(c(0, 30), c(31, 365))
+      )
+  )
+  expect_true(inherits(x, "summarised_result"))
+  expect_true(all(x$variable_name |> unique() == c("cohort_3", "cohort_2", "untreated")))
+  expect_true(all(x$additional_level |> unique() == c("0 to 30", "31 to 365")))
+
+  # test suppress
+  x_sup <- omopgenerics::suppress(x)
+  expect_true(all(is.na(x_sup |> dplyr::filter(estimate_value != "0") |> dplyr::pull("estimate_name"))))
 })

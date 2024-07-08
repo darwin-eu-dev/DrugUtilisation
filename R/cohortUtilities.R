@@ -184,16 +184,13 @@ erafy <- function(x,
     dplyr::ungroup() %>%
     dplyr::arrange() %>%
     dplyr::select(
-      "cohort_definition_id", "subject_id", "era_id", "name", "date_event"
+      dplyr::all_of(group), "era_id", "name", "date_event"
     ) %>%
     tidyr::pivot_wider(names_from = "name", values_from = "date_event") %>%
     dplyr::mutate(!!end := as.Date(!!CDMConnector::dateadd(
       date = end, number = -gap, interval = "day"
     ))) %>%
-    dplyr::select(-"era_id") |>
-    dplyr::compute(
-      temporary = FALSE, overwrite = TRUE, name = attr(x, "tbl_name")
-    )
+    dplyr::select(dplyr::all_of(c(group, start, end)))
   return(x)
 }
 

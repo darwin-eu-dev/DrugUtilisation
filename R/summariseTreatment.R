@@ -17,14 +17,18 @@
 #' This function is used to summarise the dose table over multiple cohorts.
 #'
 #' @param cohort Cohort with drug use variables and strata.
-#' @param strata Stratification list.
 #' @param window Window where to summarise the treatments.
 #' @param treatmentCohortName Name of a cohort in the cdm that contains the
 #' interest treatments.
 #' @param treatmentCohortId Cohort definition id of interest from
 #' treatmentCohortName.
+#' @param strata Stratification list.
+#' @param indexDate Variable in x that contains the date to compute the
+#' intersection.
+#' @param censorDate Whether to censor overlap events at a specific date or a
+#' column date of x. If NULL, end of observation will be used.
 #' @param combination Whether to include combination treatments.
-#' @param minCellCount Below this number counts will be suppressed.
+#' @param minCellCount ```r lifecycle::badge("deprecated")```
 #'
 #' @return A summary of the drug use stratified by cohort_name and strata_name
 #'
@@ -33,83 +37,100 @@
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(PatientProfiles)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
-#' )
-#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addDrugUse(ingredientConceptId = 1125315)
-#' result <- summariseDrugUse(cdm[["dus_cohort"]])
-#' print(result)
-#'
-#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addSex() %>%
-#'   addAge(ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
-#'
-#' summariseDrugUse(
-#'   cdm[["dus_cohort"]], strata = list(
-#'    "age_group" = "age_group", "sex" = "sex",
-#'    "age_group and sex" = c("age_group", "sex")
+#' cdm$cohort1 %>%
+#'   summariseTreatmentFromCohort(
+#'     treatmentCohortName = "cohort2",
+#'     window = list(c(0, 30), c(31, 365))
 #'   )
-#' )
 #' }
 #'
 summariseTreatmentFromCohort <- function(cohort,
-                                         strata = list(),
                                          window,
                                          treatmentCohortName,
                                          treatmentCohortId = NULL,
+                                         strata = list(),
+                                         indexDate = "cohort_start_date",
+                                         censorDate = NULL,
                                          combination = FALSE,
-                                         minCellCount = 5){
+                                         minCellCount = lifecycle::deprecated()){
+
+  if (lifecycle::is_present(minCellCount)) {
+    lifecycle::deprecate_warn("0.7.0", "summariseCodeUse(minCellCount)", with = "omopgenerics::suppress()")
+  }
+
   return(summariseTreatment(cohort = cohort,
                             strata = strata,
                             window = window,
+                            indexDate = indexDate,
+                            censorDate = censorDate,
                             treatmentCohortName = treatmentCohortName,
                             treatmentCohortId   = treatmentCohortId,
-                            combination  = combination,
-                            minCellCount = minCellCount))
+                            combination  = combination))
 
 }
 
 #'This function is used to summarise the dose table over multiple cohorts.
 #'
 #' @param cohort Cohort with drug use variables and strata.
-#' @param strata Stratification list.
 #' @param window Window where to summarise the treatments.
 #' @param treatmentConceptSet Concept set list to summarise.
+#' @param strata Stratification list.
+#' @param indexDate Variable in x that contains the date to compute the
+#' intersection.
+#' @param censorDate Whether to censor overlap events at a specific date or a
+#' column date of x. If NULL, end of observation will be used.
 #' @param combination Whether to include combination treatments.
-#' @param minCellCount Below this number counts will be suppressed.
+#' @param minCellCount ```r lifecycle::badge("deprecated")```
 #'
 #' @return A summary of the drug use stratified by cohort_name and strata_name
 #'
 #' @export
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm$cohort1 %>%
+#'   summariseTreatmentFromConceptSet(
+#'     treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
+#'     window = list(c(0, Inf))
+#'   )
+#' }
 #'
 summariseTreatmentFromConceptSet <- function(cohort,
-                                             strata = list(),
                                              window,
                                              treatmentConceptSet,
+                                             strata = list(),
+                                             indexDate = "cohort_start_date",
+                                             censorDate = NULL,
                                              combination = FALSE,
-                                             minCellCount = 5){
+                                             minCellCount = lifecycle::deprecated()){
+  if (lifecycle::is_present(minCellCount)) {
+    lifecycle::deprecate_warn("0.7.0", "summariseCodeUse(minCellCount)", with = "omopgenerics::suppress()")
+  }
+
   return(summariseTreatment(cohort = cohort,
                             strata = strata,
                             window = window,
+                            indexDate = indexDate,
+                            censorDate = censorDate,
                             treatmentConceptSet = treatmentConceptSet,
-                            combination  = combination,
-                            minCellCount = minCellCount))
+                            combination  = combination))
 }
 
 
 summariseTreatment <- function(cohort,
                                strata = list(),
                                window,
+                               indexDate,
+                               censorDate,
                                treatmentCohortName = NULL,
                                treatmentCohortId = NULL,
                                treatmentConceptSet = NULL,
                                combination = FALSE,
-                               minCellCount = 5) {
+                               minCellCount = lifecycle::deprecated()) {
   if (!is.list(window)) {
     window <- list(window)
   }
@@ -118,6 +139,8 @@ summariseTreatment <- function(cohort,
   checkmate::checkList(strata, types = "character")
   checkmate::checkTRUE(all(unlist(strata) %in% colnames(cohort)))
   checkmate::checkCharacter(treatmentCohortName, null.ok = TRUE)
+  checkmate::checkCharacter(censorDate, null.ok = TRUE)
+  checkmate::checkCharacter(indexDate)
 
   # combination
   if (combination) {
@@ -149,9 +172,18 @@ summariseTreatment <- function(cohort,
         targetCohortTable = treatmentCohortName,
         targetCohortId = treatmentCohortId,
         targetEndDate = NULL,
+        indexDate = indexDate,
+        censorDate = censorDate,
         window = window,
         nameStyle = "{window_name}_{cohort_name}"
       )
+    if (is.null(treatmentCohortId)) {
+      treatmentCohortId <- omopgenerics::settings(cdm[[treatmentCohortName]])$cohort_definition_id |> sort()
+    }
+    variableLevel <- omopgenerics::settings(cdm[[treatmentCohortName]]) |>
+      dplyr::arrange(.data$cohort_definition_id) |>
+      dplyr::pull("cohort_name")
+    variableLevel <- c(variableLevel[treatmentCohortId], "untreated")
   }
 
   # add concept intersect
@@ -159,9 +191,12 @@ summariseTreatment <- function(cohort,
     cohort <- cohort %>%
       PatientProfiles::addConceptIntersectFlag(
         conceptSet = treatmentConceptSet,
+        indexDate = indexDate,
+        censorDate = censorDate,
         window = window,
         nameStyle = "{window_name}_{concept_name}"
       )
+    variableLevel <- c(names(treatmentConceptSet), "untreated")
   }
 
   # create untreated
@@ -191,27 +226,34 @@ summariseTreatment <- function(cohort,
     tidyr::separate_wider_delim(
       cols = "variable_name",
       delim = "_",
-      names = c("window_name", "new_variable_name"),
+      names = c("window", "variable_name"),
       too_few = "align_end",
       too_many = "merge",
       cols_remove = TRUE
     ) %>%
-    dplyr::rename("variable_name" = "new_variable_name") %>%
-    dplyr::filter(!is.na(.data$window_name)) |>
+    dplyr::filter(!is.na(.data$window)) |>
     dplyr::left_join(
       dplyr::tibble(
-        "window_name" = paste0("window", seq_along(window)),
-        "window" = namesWindow
+        "window" = paste0("window", seq_along(window)),
+        "window_name" = namesWindow
       ),
-      by = "window_name"
+      by = "window"
     ) %>%
     dplyr::arrange(
       .data$group_level, .data$strata_name, .data$strata_level,
       .data$window_name, .data$variable_name
     ) %>%
-    dplyr::select(-c("window_name", "additional_name", "additional_level")) %>%
-    visOmopResults::uniteAdditional(cols = "window") |>
-    PatientProfiles::addCdmName(cdm = cdm)
+    dplyr::select(-c("window", "additional_name", "additional_level")) %>%
+    visOmopResults::uniteAdditional(cols = "window_name") |>
+    PatientProfiles::addCdmName(cdm = cdm) |>
+    dplyr::mutate(variable_name = factor(.data$variable_name, levels = variableLevel)) |>
+    dplyr::group_by_at(c(
+      "result_id", "cdm_name", "group_name",  "group_level", "strata_name",
+      "strata_level", "additional_name", "additional_level"
+    )) |>
+    dplyr::arrange(.data$variable_name, .by_group = TRUE) |>
+    dplyr::ungroup() |>
+    dplyr::mutate(variable_name = as.character(.data$variable_name))
 
   result <- result |>
     omopgenerics::newSummarisedResult(settings = dplyr::tibble(

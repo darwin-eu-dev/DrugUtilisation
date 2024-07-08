@@ -47,7 +47,7 @@ print(result)
 
 cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] \%>\%
   addSex() \%>\%
-  addAge(ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+  addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
 
 summariseDrugUse(
   cdm[["dus_cohort"]], strata = list(

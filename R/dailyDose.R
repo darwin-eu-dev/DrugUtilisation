@@ -21,6 +21,8 @@
 #' @param cdm A cdm reference
 #' @param ingredientConceptId ingredientConceptId for which to filter the
 #' drugs of interest
+#' @param name Name of the computed table, if NULL a temporary table will be
+#' generated.
 #'
 #' @return same input table
 #' @export
@@ -39,7 +41,8 @@
 #'
 addDailyDose <- function(drugExposure,
                          cdm = attr(drugExposure, "cdm_reference"),
-                         ingredientConceptId) {
+                         ingredientConceptId,
+                         name = NULL) {
   # initial checks
   checkInputs(
     drugExposure = drugExposure, ingredientConceptId = ingredientConceptId,
@@ -79,8 +82,9 @@ addDailyDose <- function(drugExposure,
         "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
         "quantity"
       )
-    ) %>%
-    dplyr::compute()
+    )
+
+  drugExposure <- drugExposure |> compute2(name)
 
   cdm <- omopgenerics::dropTable(cdm = cdm, name = nm)
 
@@ -90,8 +94,12 @@ addDailyDose <- function(drugExposure,
 #' Check coverage of daily dose computation in a sample of the cdm for selected
 #' concept sets and ingredient
 #'
-#' @param cdm A cdm reference created using CDMConnector
-#' @param ingredientConceptId Code indicating the ingredient of interest
+#' @param cdm A cdm reference created using CDMConnector.
+#' @param ingredientConceptId Code indicating the ingredient of interest.
+#' @param estimates Estimates to obtain.
+#' @param sampleSize Maximum number of records of an ingredient to estimate dose
+#'  coverage. If an ingredient has more, a random sample equal to `sampleSize`
+#'  will be considered. If NULL, all records will be used.
 #'
 #' @return The function returns information of the coverage of computeDailyDose.R
 #' for the selected ingredients and concept sets
@@ -103,13 +111,20 @@ addDailyDose <- function(drugExposure,
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' dailyDoseCoverage(cdm, 1125315)
+#' summariseDoseCoverage(cdm, 1125315)
 #' }
 #'
-dailyDoseCoverage <- function(cdm,
-                              ingredientConceptId) {
+summariseDoseCoverage <- function(cdm,
+                                  ingredientConceptId,
+                                  estimates = c(
+                                    "count_missing", "percentage_missing",
+                                    "mean", "sd", "q25", "median", "q75"
+                                  ),
+                                  sampleSize = NULL) {
   # initial checks
-  checkInputs(cdm = cdm)
+  checkInputs(cdm = cdm, ingredientConceptId = ingredientConceptId)
+  checkmate::assertIntegerish(x = sampleSize,lower = 0, len = 1, null.ok = TRUE, any.missing = FALSE, )
+  checkmate::assertCharacter(estimates)
 
   # get daily dosage
   dailyDose <- cdm[["drug_exposure"]] %>%
@@ -147,38 +162,69 @@ dailyDoseCoverage <- function(cdm,
     ) %>%
     dplyr::collect()
 
+  if (!is.null(sampleSize)) {
+    dailyDose <- dailyDose |>
+      dplyr::group_by(.data$ingredient_name) |>
+      dplyr::sample_n(size = sampleSize, replace = FALSE) |>
+      dplyr::ungroup()
+  } else {
+    sampleSize <- as.integer(NA)
+  }
+
   # summarise
   dailyDoseSummary <- dailyDose %>%
     dplyr::mutate(dplyr::across(
       c("route", "unit", "pattern_id", "ingredient_name"),
-      ~ dplyr::if_else(is.na(.x), "NA", as.character(.x))
-    )) |>
+      ~ dplyr::if_else(is.na(.x), "missing", as.character(.x))
+    )) %>%
     PatientProfiles::summariseResult(
       group = list("ingredient_name"),
       includeOverallGroup = FALSE,
       strata = list("unit", c("route", "unit"), c("unit", "route", "pattern_id")),
       includeOverallStrata = TRUE,
       variables = "daily_dose",
-      estimates = c(
-        "count_missing", "percentage_missing", "mean", "sd", "min", "q05",
-        "q25", "median", "q75", "q95", "max"
-      )
+      estimates = estimates
     ) %>%
+    suppressWarnings() |>
     dplyr::filter(
       !(.data$strata_name %in% c("Overall", "route")) |
         .data$variable_name != "daily_dose" |
         .data$estimate_name %in% c("count", "percentage")
     ) |>
-    dplyr::mutate("cdm_name" = omopgenerics::cdmName(cdm))
+    dplyr::mutate(
+      "cdm_name" = omopgenerics::cdmName(cdm),
+      variable_name = dplyr::if_else(
+        grepl("missing", .data$estimate_name), "Missing dose", .data$variable_name
+      )
+    )
   dailyDoseSummary <- dailyDoseSummary |>
     omopgenerics::newSummarisedResult(settings = dplyr::tibble(
       "result_id" = unique(dailyDoseSummary$result_id),
       "package_name" = "DrugUtilisation",
       "package_version" = as.character(utils::packageVersion("DrugUtilisation")),
-      "result_type" = "dose_coverage"
+      "result_type" = "dose_coverage",
+      "sample_size" = sampleSize
     ))
 
   return(dailyDoseSummary)
+}
+
+#' Check coverage of daily dose computation in a sample of the cdm for selected
+#' concept sets and ingredient
+#'
+#' `r lifecycle::badge("deprecated")`
+#'
+#' @param cdm A cdm reference created using CDMConnector
+#' @param ingredientConceptId Code indicating the ingredient of interest
+#'
+#' @return The function returns information of the coverage of computeDailyDose.R
+#' for the selected ingredients and concept sets
+#' @export
+#'
+#'
+dailyDoseCoverage <- function(cdm,
+                              ingredientConceptId) {
+  lifecycle::deprecate_stop(when = "0.7.0", what = "dailyDoseCoverage()", with = "summariseDoseCoverage()")
 }
 
 standardUnits <- function(drugExposure) {

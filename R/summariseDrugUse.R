@@ -43,7 +43,7 @@
 #'
 #' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
 #'   addSex() %>%
-#'   addAge(ageGroup = list("<40" = c(0, 30), ">40" = c(40, 150)))
+#'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
 #'
 #' summariseDrugUse(
 #'   cdm[["dus_cohort"]], strata = list(
@@ -94,8 +94,7 @@ summariseDrugUse<- function(cohort,
       result_type = "summarised_drug_use",
       package_name = "DrugUtilisation",
       package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    )) |>
-    omopgenerics::suppress(minCellCount = 5)
+    ))
 
   return(result)
 }

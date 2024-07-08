@@ -33,6 +33,7 @@
 #' library(DrugUtilisation)
 #' library(PatientProfiles)
 #' library(CodelistGenerator)
+#' library(CDMConnector)
 #'
 #' cdm <- mockDrugUtilisation()
 #' indications <- list("headache" = 378253, "asthma" = 317009)
@@ -42,20 +43,9 @@
 #' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
 #'   addIndication(
 #'     indicationCohortName = "indication_cohorts",
-#'     indicationGap = c(0, 30, 365)
+#'     indicationWindow = list(c(0,0),c(-30,0),c(-365,0))
 #'   )
 #'
-#' summariseIndication(cdm[["drug_cohort"]])
-#'
-#' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
-#'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) %>%
-#'   addSex()
-#'
-#' summariseIndication(
-#'   cdm[["drug_cohort"]], strata = list(
-#'     "age_group" = "age_group", "age_group and sex" = c("age_group", "sex")
-#'   )
-#' )
 #' }
 #'
 summariseIndication <- function(cohort,
@@ -121,8 +111,7 @@ summariseIndication <- function(cohort,
       result_type = "summarised_indication",
       package_name = "DrugUtilisation",
       package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    )) |>
-    omopgenerics::suppress(minCellCount = 5)
+    ))
 
   return(result)
 }
