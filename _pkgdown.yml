@@ -18,7 +18,7 @@ reference:
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
-  - matches("addDrugUtilisation|summariseDrugUtilisation|addNumberExposures|addNumberEras|addExposedTime|addTimeToExposure|addInitialQuantity|addCumulativeQuantity|addCumulativeDose|addInitialDailyDose")
+  - matches("addDrugUtilisation|summariseDrugUtilisation|tableDrugUtilisation|optionsTableDrugUtilisation|addNumberExposures|addNumberEras|addExposedTime|addTimeToExposure|addInitialQuantity|addCumulativeQuantity|addCumulativeDose|addInitialDailyDose")
 - subtitle: Summarise treatments during certain windows
   desc: Summarise the use of different treatments during certain windows
 - contents:

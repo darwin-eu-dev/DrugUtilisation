@@ -1,4 +1,4 @@
-# Copyright 2022 DARWIN EU (C)
+# Copyright 2024 DARWIN EU (C)
 #
 # This file is part of DrugUtilisation
 #
@@ -282,6 +282,141 @@ tableDoseCoverage <- function(result,
   )
 }
 
+#' Format a drug_utilisation object into a visual table.
+#'
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param result A summarised_result object with results from
+#' summariseDrugUtilisation().
+#' @param header A vector containing which elements should go into the header
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`.
+#' @param splitStrata If TRUE strata columns will be splitted.
+#' @param cohortName If TRUE cohort names will be displayed.
+#' @param cdmName If TRUE database names will be displayed.
+#' @param groupColumn Column to use as group labels.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", "tibble".
+#' @param formatEstimateName Named list of estimate name's to join, sorted by
+#' computation order. Indicate estimate_name's between <...>.
+#' @param .options Named list with additional formatting options.
+#' DrugUtilisation::optionsTableDrugUtilisation() shows allowed
+#' arguments and their default values.
+#'
+#' @examples
+#' \donttest{
+#'
+#' library(DrugUtilisation)
+#' library(CodelistGenerator)
+#'
+#' cdm <- mockDrugUtilisation()
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' )
+#' cdm[["dus_cohort"]] %>%
+#'   summariseDrugUtilisation(ingredientConceptId = 1125315) |>
+#'   tableDrugUtilisation()
+#' }
+#'
+#' @return A table with a formatted version of summariseIndication() results.
+#'
+#' @export
+#'
+tableDrugUtilisation <- function(result,
+                                 header = c("group", "strata"),
+                                 splitStrata = TRUE,
+                                 cohortName = TRUE,
+                                 cdmName = TRUE,
+                                 groupColumn = NULL,
+                                 type = "gt",
+                                 formatEstimateName = c(
+                                   "N" = "<count>",
+                                   "N (%)" = "<count_missing> (<percentage_missing> %)",
+                                   "Mean (SD)" = "<mean> (<sd>)",
+                                   "Median (Q25 - Q75)" = "<median> (<q25> - <q75>)"
+                                 ),
+                                 .options = list()) {
+  # check input and filter result
+  if (!cohortName & "cohort_name" %in% groupColumn) {
+    cli::cli_abort("If `cohortName = FALSE`, `cohort_name` cannot be used in `groupColumn`.")
+  }
+  if (!cdmName & "cdm_name" %in% groupColumn) {
+    cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
+  }
+  if (!is.null(header)) {
+    if (any(! header %in% c("cdm_name", "group", "strata", "variable"))) {
+      cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`")
+    }
+    if (!is.null(groupColumn)) {
+      if (grepl(paste0(header, collapse = "|"), groupColumn)) {
+        cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
+      }
+    }
+  }
+  result <- result |>
+    omopgenerics::newSummarisedResult() |>
+    visOmopResults::filterSettings(.data$result_type == "drug_utilisation")
+
+  if (nrow(result) == 0) {
+    cli::cli_abort("There are no results with `result_type = drug_utilisation`")
+  }
+  checkmate::assertLogical(cohortName, any.missing = FALSE)
+  checkmate::assertLogical(cdmName, any.missing = FALSE)
+  checkmate::assertLogical(splitStrata, any.missing = FALSE)
+  checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
+
+  # .options
+  .options = defaultTableOptions(.options)
+
+  # Split
+  split <- c("additional")
+
+  # Exclude columns, rename, and split
+  excludeColumns <- c("result_id", "estimate_type")
+  if (!cohortName) {
+    if ("group" %in% header) {
+      cli::cli_warn(c("!" = "Dropping group from header as `cohortName = FALSE`."))
+      header <- header[!"group" %in% header]
+    }
+    excludeColumns <- c(excludeColumns, "group_name", "group_level")
+  } else {
+    split <- c(split, "group")
+  }
+
+  if (!cdmName) {
+    if ("cdm_name" %in% header) {
+      cli::cli_warn(c("!" = "Dropping cdm_name from header as `cdmName = FALSE`."))
+      header <- header[!"cdm_name" %in% header]
+    }
+    excludeColumns <- c(excludeColumns, "cdm_name")
+    renameColumns <- character()
+  } else {
+    renameColumns <- c("Database name" = "cdm_name")
+  }
+  if (!"variable_name" %in% groupColumn) {
+    renameColumns <- c(renameColumns, "Variable" = "variable_name")
+  }
+  if (!"variable_level" %in% groupColumn) {
+    renameColumns <- c(renameColumns, "Concept set" = "variable_level")
+  }
+
+  # split
+  if (splitStrata) {
+    split <- c(split, "strata")
+  }
+
+  # table
+  visOmopResults::visOmopTable(
+    result = result,
+    formatEstimateName = formatEstimateName,
+    header = header,
+    split = split,
+    groupColumn = groupColumn,
+    renameColumns = renameColumns,
+    type = type,
+    excludeColumns = excludeColumns,
+    .options = .options
+  )
+}
 
 
 defaultTableOptions <- function(.options) {
@@ -332,5 +467,25 @@ optionsTableIndication <- function() {
 #' }
 #'
 optionsTableDoseCoverage <- function() {
+  defaultTableOptions(NULL)
+}
+
+#' Additional arguments for the functions tableDrugUtilisation
+#'
+#' @description
+#' It provides a list of allowed inputs for .option argument in tableDoseCoverage,
+#' and their given default values.
+#'
+#'
+#' @return The default .options named list.
+#'
+#' @export
+#'
+#' @examples
+#' {
+#' optionsTableDrugUtilisation()
+#' }
+#'
+optionsTableDrugUtilisation <- function() {
   defaultTableOptions(NULL)
 }
