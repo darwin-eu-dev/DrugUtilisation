@@ -96,7 +96,7 @@ benchmarkDrugUtilisation <- function(cdm,
       limit = "all"
     )
 
-    omopgenerics::cohort_count(cdm[[name]])
+    omopgenerics::cohortCount(cdm[[name]])
 
     t <- tictoc::toc(quiet = TRUE)
 
