@@ -350,6 +350,9 @@ optionsTableDoseCoverage <- function() {
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
 #' computation order. Indicate estimate_name's between <...>.
+#' @param .options Named list with additional formatting options.
+#' DrugUtilisation::optionsTable() shows allowed arguments and their
+#' default values.
 #'
 #' @examples
 #' \donttest{

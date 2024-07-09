@@ -35,6 +35,10 @@ in order. Allowed values: \code{cdm_name}, \code{cohort_name}, \code{strata}, \c
 
 \item{formatEstimateName}{Named list of estimate name's to join, sorted by
 computation order. Indicate estimate_name's between <...>.}
+
+\item{.options}{Named list with additional formatting options.
+DrugUtilisation::optionsTable() shows allowed arguments and their
+default values.}
 }
 \value{
 A table with a formatted version of summariseDrugCoverage() results.
