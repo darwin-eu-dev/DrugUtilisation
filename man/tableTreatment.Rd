@@ -20,14 +20,15 @@ tableTreatment(
 summariseTreatmentFromCohort() or summariseTreatmentFromConceptSet().}
 
 \item{header}{A vector containing which elements should go into the header
-in order. Allowed are: \code{cdm_name}, \code{cohort_name}, \code{strata}, \code{variable},
+in order. Allowed values: \code{cdm_name}, \code{cohort_name}, \code{strata}, \code{variable},
 \code{estimate} and \code{window_name}.}
 
 \item{splitStrata}{If TRUE strata columns will be splitted.}
 
 \item{cdmName}{If TRUE database names will be displayed.}
 
-\item{groupColumn}{Column to use as group labels.}
+\item{groupColumn}{Column to use as group labels. Allowed values: \code{cdm_name},
+\code{cohort_name}, \code{strata}, \code{variable}, \code{estimate} and \code{window_name}.}
 
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", "tibble".}
@@ -46,11 +47,13 @@ A table with a formatted version of summariseDrugCoverage() results.
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
+result <- cdm$cohort1 \%>\%
+  summariseTreatmentFromConceptSet(
+    treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
+    window = list(c(0, 180), c(181, 360))
+  )
 
-result <- summariseDoseCoverage(cdm, 1125315)
-
-tableDoseCoverage(result)
-
+tableTreatment(result)
 
 CDMConnector::cdmDisconnect(cdm = cdm)
 }
