@@ -24,8 +24,9 @@ reference:
 - contents:
   - matches("summariseTreatment|plotTreatment")
 - subtitle: Complementary functions
+  desc: Complementary functions
 - contents:
-  - matches("readConceptList|mockDrugUtilisation")
+  - matches("readConceptList|mockDrugUtilisation|requirePriorUseWashout")
 - subtitle: Benchmarking function
   desc: Function to test performance of different functions in DrugUtilisation
 - contents:

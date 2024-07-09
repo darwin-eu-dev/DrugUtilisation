@@ -296,6 +296,13 @@ checkIngredientConceptId <- function(ingredientConceptId, cdm) {
   }
 }
 
+checkCohortId <- function(cohort, cohortId) {
+  checkmate::assertNumeric(cohortId, null.ok = T, min.len = 1)
+  if (!isTRUE(all(cohortId %in% (DrugUtilisation::cohortCount(cohort) %>% dplyr::pull("cohort_definition_id"))))) {
+    cli::cli_abort("some of the cohortId specified not found in the cohort")
+  }
+}
+
 checkSample <- function(sample) {
   if (isInteger(sample)) {
     cli::cli_abort("sample is not an integer of length 1")
