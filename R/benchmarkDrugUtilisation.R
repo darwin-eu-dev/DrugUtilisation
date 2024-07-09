@@ -25,16 +25,19 @@
 #' @export
 #' @examples
 #' \donttest{
-#' cdm <- DrugUtilisation::mockDrugUtilisation()
-#' timings <- DrugUtilisation::benchmarkDUS(cdm)
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' timings <- benchmarkDrugUtilisation(cdm)
+#'
+#' timings
 #' }
-benchmarkDUS <- function(
-    cdm,
-    numberOfCohort = 1:4,
-    indicationCohortName = "cohort1",
-    ingredientId = 1125315,
-    drugExposureName = "drug_exposure") {
-
+benchmarkDrugUtilisation <- function(cdm,
+                                     numberOfCohort = 1:4,
+                                     indicationCohortName = "cohort1",
+                                     ingredientId = 1125315,
+                                     drugExposureName = "drug_exposure") {
 
   errorMessage <- checkmate::makeAssertCollection()
 
