@@ -22,7 +22,6 @@ Function to stratify a conceptSet by unit
 \examples{
 \donttest{
 library(DrugUtilisation)
-library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
 

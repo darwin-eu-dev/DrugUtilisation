@@ -49,7 +49,6 @@ To add a new column with the number of eras. To add multiple columns use
 \examples{
 \donttest{
 library(DrugUtilisation)
-library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
 codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")

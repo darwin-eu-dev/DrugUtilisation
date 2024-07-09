@@ -34,7 +34,6 @@
 #'
 #' @examples
 #' \donttest{
-#' library(CodelistGenerator)
 #' library(CDMConnector)
 #' library(DrugUtilisation)
 #'
@@ -105,8 +104,8 @@ generateDrugUtilisationCohortSet <- function(cdm,
   )
 
   # get conceptSet
-  cohortSet <- dplyr::tibble(cohort_name = names(conceptSet)) %>%
-    dplyr::mutate(cohort_definition_id = dplyr::row_number()) %>%
+  cohortSet <- dplyr::tibble(cohort_name = names(conceptSet)) |>
+    dplyr::mutate(cohort_definition_id = dplyr::row_number()) |>
     dplyr::select("cohort_definition_id", "cohort_name") |>
     dplyr::mutate(
       duration_range_min = as.character(1),

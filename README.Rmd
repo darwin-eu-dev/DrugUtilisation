@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/darwin-eu/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/DrugUtilisation/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://lifecycle.r-lib.org/articles/stages.html)
 
-## WARNING: This package is under development.
+
 
 * **addDailyDose** function works for the following patterns in the drug_strength table:
 
@@ -77,7 +77,6 @@ conceptList <- readConceptList(here::here("Concepts"), cdm)
 Or we can build our own list using other packages (e.g. CodelistGenerator)
 
 ```{r}
-library(CodelistGenerator)
 conceptList <- getDrugIngredientCodes(cdm, "acetaminophen")
 conceptList
 ```

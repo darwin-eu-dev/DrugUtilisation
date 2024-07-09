@@ -34,7 +34,6 @@ cohorts.
 \donttest{
 library(DrugUtilisation)
 library(PatientProfiles)
-library(CodelistGenerator)
 library(CDMConnector)
 
 cdm <- mockDrugUtilisation()
@@ -42,7 +41,7 @@ indications <- list("headache" = 378253, "asthma" = 317009)
 cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
-cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] \%>\%
+cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] |>
   addIndication(
     indicationCohortName = "indication_cohorts",
     indicationWindow = list(c(0,0),c(-30,0),c(-365,0))

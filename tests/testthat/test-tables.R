@@ -51,7 +51,7 @@ test_that("tableIndication works", {
       observation_period = observationPeriod
     )
 
-  res <- cdm[["cohort1"]] %>%
+  res <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(0,0),c(-7,0),c(-30,0),c(-Inf,0)),
       unknownIndicationTable = "condition_occurrence"
@@ -84,10 +84,10 @@ test_that("tableIndication works", {
   # ) %in% colnames(tib)))
   #
   # # strata
-  # res <- res %>%
+  # res <- res |>
   #   PatientProfiles::addAge(
   #     ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))
-  #   ) %>%
+  #   ) |>
   #   PatientProfiles::addSex()
   #
   # result <- summariseIndication(
@@ -149,7 +149,7 @@ test_that("tableDoseCoverage", {
     concept_id = 1, concept_name = "ingredient 1", domain_id = "Drug",
     vocabulary_id = "RxNorm", concept_class_id = "Ingredient",
     standard_concept = "S"
-  ) %>%
+  ) |>
     dplyr::bind_rows(
       dplyr::tibble(
         concept_id =  c(
@@ -161,13 +161,13 @@ test_that("tableDoseCoverage", {
           15316978
         ), concept_name = "NA", domain_id = "Drug", vocabulary_id = "RxNorm",
         concept_class_id = "Clinical Drug", standard_concept = "S"
-      ) %>%
+      ) |>
         dplyr::mutate(concept_name = paste0("drug", concept_id))
     )
-  concept <- mockConcept %>%
-    dplyr::anti_join(conceptsToAdd, by = "concept_id") %>%
+  concept <- mockConcept |>
+    dplyr::anti_join(conceptsToAdd, by = "concept_id") |>
     dplyr::bind_rows(conceptsToAdd)
-  concept_ancestor <- mockConceptAncestor %>%
+  concept_ancestor <- mockConceptAncestor |>
     dplyr::bind_rows(dplyr::tibble(
       ancestor_concept_id = 1,
       descendant_concept_id = conceptsToAdd$concept_id,

@@ -25,7 +25,7 @@ library(dplyr)
 
 cdm <- mockDrugUtilisation()
 
-cdm[["drug_exposure"]] \%>\%
+cdm[["drug_exposure"]] |>
   addRoute()
 }
 

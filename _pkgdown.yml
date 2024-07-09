@@ -14,7 +14,7 @@ reference:
 - subtitle: Add daily dose
   desc: Tools to compute the daily dose, see when it can be computed
 - contents:
-  - matches("addDailyDose|addPattern|addRoute|summariseDoseCoverage|dailyDoseCoverage|patternTable|stratifyByUnit|patternsWithFormula|tableDoseCoverage|optionsTableDoseCoverage")
+  - matches("addDailyDose|addPattern|addRoute|summariseDoseCoverage|patternTable|patternsWithFormula|tableDoseCoverage|optionsTableDoseCoverage")
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
@@ -22,7 +22,7 @@ reference:
 - subtitle: Summarise treatments during certain windows
   desc: Summarise the use of different treatments during certain windows
 - contents:
-  - matches("summariseTreatment|plotTreatment")
+  - matches("Treatment")
 - subtitle: Complementary functions
   desc: Complementary functions
 - contents:
@@ -30,8 +30,8 @@ reference:
 - subtitle: Benchmarking function
   desc: Function to test performance of different functions in DrugUtilisation
 - contents:
-  - matches("benchmarkDUS")
+  - matches("benchmark")
 - subtitle: Deprecated functions
   desc: This functions has been deprecated
 - contents:
-  - matches("addDrugUse|summariseDrugUse|indicationToStrata")
+  - matches("addDrugUse|summariseDrugUse|indicationToStrata|dailyDoseCoverage|stratifyByUnit")

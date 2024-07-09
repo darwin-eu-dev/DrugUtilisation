@@ -30,19 +30,18 @@
 #' \donttest{
 #' library(DrugUtilisation)
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 #' )
-#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
+#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] |>
 #'   addDrugUse(ingredientConceptId = 1125315)
 #' result <- summariseDrugUse(cdm[["dus_cohort"]])
 #' print(result)
 #'
-#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] %>%
-#'   addSex() %>%
+#' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] |>
+#'   addSex() |>
 #'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
 #'
 #' summariseDrugUse(
@@ -76,14 +75,14 @@ summariseDrugUse<- function(cohort,
   )
 
   # update cohort_names
-  cohort <- cohort %>% PatientProfiles::addCohortName() %>% dplyr::collect()
+  cohort <- cohort |> PatientProfiles::addCohortName() |> dplyr::collect()
 
   # summarise drug use columns
   result <- PatientProfiles::summariseResult(
     table = cohort, group = list("cohort_name" = "cohort_name"),
     strata = strata, variables = drugUseColumns(cohort),
     estimates = drugUseEstimates
-  ) %>%
+  ) |>
     dplyr::mutate(
       cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA))
     )
@@ -108,7 +107,7 @@ summariseDrugUse<- function(cohort,
 #' @noRd
 #'
 drugUseColumns <- function(cohort) {
-  cohort %>%
+  cohort |>
     dplyr::select(
       dplyr::any_of(c(
         "number_exposures", "duration", "cumulative_quantity", "number_eras",
@@ -116,6 +115,6 @@ drugUseColumns <- function(cohort) {
       )),
       dplyr::starts_with("initial_daily_dose"),
       dplyr::starts_with("cumulative_dose")
-    ) %>%
+    ) |>
     colnames()
 }

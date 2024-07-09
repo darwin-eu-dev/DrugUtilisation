@@ -30,27 +30,27 @@ cdm <- cdmFromCon(
 )
 
 # keyWord <- "influenza"
-# x <- cdm[["concept"]] %>%
-#   filter(grepl(keyWord, concept_name, ignore.case = T)) %>%
+# x <- cdm[["concept"]] |>
+#   filter(grepl(keyWord, concept_name, ignore.case = T)) |>
 #   filter(standard_concept == "S")
-# x %>%
-#   filter(domain_id == "Condition") %>%
+# x |>
+#   filter(domain_id == "Condition") |>
 #   print(n = 200)
-# x %>%
-#   filter(domain_id == "Measurement") %>%
+# x |>
+#   filter(domain_id == "Measurement") |>
 #   print(n = 200)
-# x %>%
-#   filter(domain_id == "Observation") %>%
+# x |>
+#   filter(domain_id == "Observation") |>
 #   print(n = 200)
-# x %>%
-#   filter(domain_id == "Procedure") %>%
+# x |>
+#   filter(domain_id == "Procedure") |>
 #   print(n = 200)
-# cdm[["concept_ancestor"]] %>%
-#   filter(ancestor_concept_id == 1516976) %>%
-#   left_join(cdm[["concept"]] %>% rename(descendant_concept_id = concept_id)) %>%
-#   select("concept_name", "descendant_concept_id") %>%
-#   filter(!grepl("Box", concept_name)) %>%
-#   arrange(descendant_concept_id) %>%
+# cdm[["concept_ancestor"]] |>
+#   filter(ancestor_concept_id == 1516976) |>
+#   left_join(cdm[["concept"]] |> rename(descendant_concept_id = concept_id)) |>
+#   select("concept_name", "descendant_concept_id") |>
+#   filter(!grepl("Box", concept_name)) |>
+#   arrange(descendant_concept_id) |>
 #   print(n = 100)
 
 listCodes <- c(
@@ -64,25 +64,25 @@ listCodes <- c(
 # while (prevList != length(listCodes)) {
 #   prevList <- length(listCodes)
 #   listCodes <- c(
-#     cdm[["concept_ancestor"]] %>%
-#       filter(descendant_concept_id %in% listCodes) %>%
+#     cdm[["concept_ancestor"]] |>
+#       filter(descendant_concept_id %in% listCodes) |>
 #       pull(ancestor_concept_id),
 #     listCodes
-#   ) %>%
+#   ) |>
 #     unique()
 #   print(prevList)
 # }
 
-concept <- cdm[["concept"]] %>%
-  filter(concept_id %in% listCodes) %>%
+concept <- cdm[["concept"]] |>
+  filter(concept_id %in% listCodes) |>
   collect()
 
-concept_ancestor <- cdm[["concept_ancestor"]] %>%
-  filter(ancestor_concept_id %in% listCodes & descendant_concept_id %in% listCodes) %>%
+concept_ancestor <- cdm[["concept_ancestor"]] |>
+  filter(ancestor_concept_id %in% listCodes & descendant_concept_id %in% listCodes) |>
   collect()
 
-drug_strength <- cdm[["drug_strength"]] %>%
-  filter(drug_concept_id %in% listCodes & ingredient_concept_id %in% listCodes) %>%
+drug_strength <- cdm[["drug_strength"]] |>
+  filter(drug_concept_id %in% listCodes & ingredient_concept_id %in% listCodes) |>
   collect()
 
 write_csv(concept, here("extras", "concept.csv"))
