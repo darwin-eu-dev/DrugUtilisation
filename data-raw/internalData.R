@@ -33,7 +33,7 @@ domainInformation <- readr::read_csv(
 )
 
 formulas <- readr::read_csv(
-  here::here("data-raw", "pattern_assessment_for_dose_final.csv"),
+  here::here("inst", "pattern_assessment_for_dose_final.csv"),
   col_types = list(
     pattern_id = "numeric",
     amount = "character",
