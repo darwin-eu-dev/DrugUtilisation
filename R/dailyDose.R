@@ -34,8 +34,8 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' cdm[["drug_exposure"]] %>%
-#'   filter(drug_concept_id == 2905077) %>%
+#' cdm[["drug_exposure"]] |>
+#'   filter(drug_concept_id == 2905077) |>
 #'   addDailyDose(ingredientConceptId = 1125315)
 #' }
 #'
@@ -52,30 +52,30 @@ addDailyDose <- function(drugExposure,
   nm <- uniqueTmpName()
 
   # select only pattern_id and unit
-  dailyDose <- drugExposure %>%
+  dailyDose <- drugExposure |>
     dplyr::select(
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
       "quantity"
-    ) %>%
+    ) |>
     dplyr::distinct() %>%
     dplyr::mutate(days_exposed = !!CDMConnector::datediff(
       start = "drug_exposure_start_date",
       end = "drug_exposure_end_date"
-    ) + 1) %>%
+    ) + 1) |>
     dplyr::inner_join(
       drugStrengthPattern(cdm = cdm, ingredientConceptId = ingredientConceptId),
       by = "drug_concept_id"
-    ) %>%
-    standardUnits() %>%
-    applyFormula() %>%
+    ) |>
+    standardUnits() |>
+    applyFormula() |>
     dplyr::select(
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
       "quantity", "daily_dose", "unit"
-    ) %>%
+    ) |>
     dplyr::compute(temporary = FALSE, overwrite = TRUE, name = nm)
 
   # add the information back to the initial table
-  drugExposure <- drugExposure %>%
+  drugExposure <- drugExposure |>
     dplyr::left_join(
       dailyDose,
       by = c(
@@ -127,14 +127,14 @@ summariseDoseCoverage <- function(cdm,
   checkmate::assertCharacter(estimates)
 
   # get daily dosage
-  dailyDose <- cdm[["drug_exposure"]] %>%
+  dailyDose <- cdm[["drug_exposure"]] |>
     dplyr::inner_join(
-      cdm[["concept_ancestor"]] %>%
-        dplyr::filter(.data$ancestor_concept_id %in% .env$ingredientConceptId) %>%
-        dplyr::select("drug_concept_id" = "descendant_concept_id") %>%
+      cdm[["concept_ancestor"]] |>
+        dplyr::filter(.data$ancestor_concept_id %in% .env$ingredientConceptId) |>
+        dplyr::select("drug_concept_id" = "descendant_concept_id") |>
         dplyr::distinct(),
       by = "drug_concept_id"
-    ) %>%
+    ) |>
     dplyr::select(
       "drug_concept_id", "drug_exposure_start_date", "drug_exposure_end_date",
       "quantity"
@@ -142,24 +142,24 @@ summariseDoseCoverage <- function(cdm,
     dplyr::mutate(days_exposed = !!CDMConnector::datediff(
       start = "drug_exposure_start_date",
       end = "drug_exposure_end_date"
-    ) + 1) %>%
+    ) + 1) |>
     dplyr::left_join(
       drugStrengthPattern(cdm = cdm, ingredientConceptId = ingredientConceptId),
       by = "drug_concept_id"
-    ) %>%
-    standardUnits() %>%
-    applyFormula() %>%
+    ) |>
+    standardUnits() |>
+    applyFormula() |>
     dplyr::select(
       "drug_concept_id", "daily_dose", "unit", "pattern_id",
       "concept_id" =  "ingredient_concept_id"
-    ) %>%
-    addRoute() %>%
+    ) |>
+    addRoute() |>
     dplyr::left_join(
-      cdm[["concept"]] %>%
-        dplyr::rename("ingredient_name" = "concept_name") %>%
+      cdm[["concept"]] |>
+        dplyr::rename("ingredient_name" = "concept_name") |>
         dplyr::select("concept_id", "ingredient_name"),
       by = "concept_id"
-    ) %>%
+    ) |>
     dplyr::collect()
 
   if (!is.null(sampleSize)) {
@@ -172,11 +172,11 @@ summariseDoseCoverage <- function(cdm,
   }
 
   # summarise
-  dailyDoseSummary <- dailyDose %>%
+  dailyDoseSummary <- dailyDose |>
     dplyr::mutate(dplyr::across(
       c("route", "unit", "pattern_id", "ingredient_name"),
       ~ dplyr::if_else(is.na(.x), "missing", as.character(.x))
-    )) %>%
+    )) |>
     PatientProfiles::summariseResult(
       group = list("ingredient_name"),
       includeOverallGroup = FALSE,
@@ -184,7 +184,7 @@ summariseDoseCoverage <- function(cdm,
       includeOverallStrata = TRUE,
       variables = "daily_dose",
       estimates = estimates
-    ) %>%
+    ) |>
     suppressWarnings() |>
     dplyr::filter(
       !(.data$strata_name %in% c("Overall", "route")) |
@@ -228,7 +228,7 @@ dailyDoseCoverage <- function(cdm,
 }
 
 standardUnits <- function(drugExposure) {
-  drugExposure %>%
+  drugExposure |>
     dplyr::mutate(
       amount_value = dplyr::if_else(
         .data$amount_unit_concept_id == 9655,
@@ -249,7 +249,7 @@ standardUnits <- function(drugExposure) {
     )
 }
 applyFormula <- function(drugExposure) {
-  drugExposure %>%
+  drugExposure |>
     dplyr::mutate(
       daily_dose = dplyr::case_when(
         is.na(.data$quantity) ~

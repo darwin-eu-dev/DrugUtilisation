@@ -49,24 +49,24 @@ cdmSubset <- function(cdm,
 
   subjects <- cdm[[cohortName]]
   if (!is.null(cohortId)) {
-    subjects <- subjects %>%
+    subjects <- subjects |>
       dplyr::filter(.data$cohort_definition_id == .env$cohortId)
   }
-  subjects <- subjects %>%
-    dplyr::select("person_id" = "subject_id") %>%
-    dplyr::distinct() %>%
+  subjects <- subjects |>
+    dplyr::select("person_id" = "subject_id") |>
+    dplyr::distinct() |>
     dplyr::compute()
 
-  if (subjects %>% dplyr::tally() %>% dplyr::pull("n") == 0) {
+  if (subjects |> dplyr::tally() |> dplyr::pull("n") == 0) {
     stop("No individual selected with these specifications.")
   }
 
-  if (subjects %>%
-      dplyr::tally() %>%
+  if (subjects |>
+      dplyr::tally() |>
       dplyr::pull("n") !=
-      subjects %>%
-      dplyr::inner_join(cdm[["person"]], by = "person_id") %>%
-      dplyr::tally() %>%
+      subjects |>
+      dplyr::inner_join(cdm[["person"]], by = "person_id") |>
+      dplyr::tally() |>
       dplyr::pull("n")) {
     warning("Not all subjects are present in person table.")
   }
@@ -98,13 +98,13 @@ cdmSample <- function(cdm,
 
   numberIndividuals <- as.numeric(numberIndividuals)
 
-  if (numberIndividuals > cdm[["person"]] %>% dplyr::tally() %>% dplyr::pull("n")) {
+  if (numberIndividuals > cdm[["person"]] |> dplyr::tally() |> dplyr::pull("n")) {
     stop("numberIndividuals is bigger than individuals in the cdm reference.")
   }
 
-  subjects <- cdm[["person"]] %>%
-    dplyr::select("person_id") %>%
-    dplyr::slice_sample(n = numberIndividuals) %>%
+  subjects <- cdm[["person"]] |>
+    dplyr::select("person_id") |>
+    dplyr::slice_sample(n = numberIndividuals) |>
     dplyr::compute()
 
   cdm <- cdmSubsetSubjects(cdm, subjects, tablesToSubset)
@@ -125,7 +125,7 @@ cdmSubsetSubjects <- function(cdm,
       } else {
         return(FALSE)
       }
-    }) %>%
+    }) |>
       unlist()
     tablesToSubset <- names(cdm)[tablesToSubset]
   }
@@ -135,8 +135,8 @@ cdmSubsetSubjects <- function(cdm,
   checkmate::assertTRUE(all(tablesToSubset %in% names(cdm)))
 
   newCdmTables <- lapply(tablesToSubset, function(x){
-    cdm[[x]] %>%
-      dplyr::inner_join(subjects, by = "person_id") %>%
+    cdm[[x]] |>
+      dplyr::inner_join(subjects, by = "person_id") |>
       dplyr::compute()
   })
 

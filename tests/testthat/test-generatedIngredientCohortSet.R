@@ -18,11 +18,11 @@ test_that("test same results for ingredient cohorts", {
   )
 
   # Collect data from DuckDB tables into R data frames
-  cohort_1_df <- cdm$test_cohort_1 %>%
-    dplyr::collect() %>%
+  cohort_1_df <- cdm$test_cohort_1 |>
+    dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
-  cohort_2_df <- cdm$test_cohort_2 %>%
-    dplyr::collect() %>%
+  cohort_2_df <- cdm$test_cohort_2 |>
+    dplyr::collect() |>
     dplyr::arrange(subject_id, cohort_start_date)
 
   attr(cohort_1_df, "cohort_set") <- attr(cohort_1_df, "cohort_set") |>
@@ -58,7 +58,7 @@ test_that("handle empty ingredient name gracefully", {
 #     name = "date_range_test"
 #   )
 #
-#   cohort_df <- cdm$date_range_test %>% dplyr::collect()
+#   cohort_df <- cdm$date_range_test |> dplyr::collect()
 #
 #   expect_true(all(
 #     cohort_df$cohort_start_date >= as.Date("2020-01-01") &

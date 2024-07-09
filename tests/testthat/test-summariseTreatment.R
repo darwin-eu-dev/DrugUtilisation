@@ -3,7 +3,7 @@ test_that("test summariseTreatment", {
     connectionDetails = connectionDetails
   )
   expect_no_error(
-    x <- cdm$cohort1 %>%
+    x <- cdm$cohort1 |>
       summariseTreatmentFromCohort(
         treatmentCohortName = "cohort2",
         window = list(c(0, 30), c(31, 365))
@@ -15,7 +15,7 @@ test_that("test summariseTreatment", {
 
   # test concept works
   expect_no_error(
-    x <- cdm$cohort1 %>%
+    x <- cdm$cohort1 |>
       summariseTreatmentFromConceptSet(
         treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
         window = list(c(0, Inf))
@@ -30,7 +30,7 @@ test_that("test summariseTreatment", {
 
   # test order in cohort works
   expect_no_error(
-    x <- cdm$cohort1 %>%
+    x <- cdm$cohort1 |>
       summariseTreatmentFromCohort(
         treatmentCohortName = "cohort2",
         treatmentCohortId = c(3, 2),

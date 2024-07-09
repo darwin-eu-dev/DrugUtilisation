@@ -39,9 +39,9 @@ indications <-
 cdm <-
   generateConceptCohortSet(cdm, name = "indications_cohort", indications)
 
-cohortCount(cdm[["indications_cohort"]]) %>%
+cohortCount(cdm[["indications_cohort"]]) |>
   left_join(
-    cohortSet(cdm[["indications_cohort"]]) %>%
+    cohortSet(cdm[["indications_cohort"]]) |>
       select(cohort_definition_id, cohort_name),
     by = "cohort_definition_id"
   )

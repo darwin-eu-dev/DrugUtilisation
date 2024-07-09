@@ -39,7 +39,7 @@
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm$cohort1 %>%
+#' cdm$cohort1 |>
 #'   summariseTreatmentFromCohort(
 #'     treatmentCohortName = "cohort2",
 #'     window = list(c(0, 30), c(31, 365))
@@ -92,7 +92,7 @@ summariseTreatmentFromCohort <- function(cohort,
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm$cohort1 %>%
+#' cdm$cohort1 |>
 #'   summariseTreatmentFromConceptSet(
 #'     treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
 #'     window = list(c(0, Inf))
@@ -153,13 +153,13 @@ summariseTreatment <- function(cohort,
   } else {
     namesWindow <- lapply(window, function(x) {
       paste0(as.character(x[1]), " to ", as.character(x[2]))
-    }) %>%
+    }) |>
       unlist()
   }
   names(window) <- paste0("window", seq_along(window))
 
   # interest variables
-  cohort <- cohort %>%
+  cohort <- cohort |>
     dplyr::select(dplyr::all_of(c(
       "cohort_definition_id", "subject_id", "cohort_start_date",
       "cohort_end_date", unique(unname(unlist(strata)))
@@ -167,7 +167,7 @@ summariseTreatment <- function(cohort,
 
   # add cohort intersect
   if (!is.null(treatmentCohortName)) {
-    cohort <- cohort %>%
+    cohort <- cohort |>
       PatientProfiles::addCohortIntersectFlag(
         targetCohortTable = treatmentCohortName,
         targetCohortId = treatmentCohortId,
@@ -188,7 +188,7 @@ summariseTreatment <- function(cohort,
 
   # add concept intersect
   if (!is.null(treatmentConceptSet)) {
-    cohort <- cohort %>%
+    cohort <- cohort |>
       PatientProfiles::addConceptIntersectFlag(
         conceptSet = treatmentConceptSet,
         indexDate = indexDate,
@@ -201,12 +201,12 @@ summariseTreatment <- function(cohort,
 
   # create untreated
   for (win in names(window)) {
-    cohort <- cohort %>%
+    cohort <- cohort |>
       dplyr::mutate(!!!untreated(colnames(cohort), win))
   }
-  cohort <- cohort %>%
-    dplyr::compute() %>%
-    PatientProfiles::addCohortName() %>%
+  cohort <- cohort |>
+    dplyr::compute() |>
+    PatientProfiles::addCohortName() |>
     dplyr::collect()
 
   # summarise
@@ -222,7 +222,7 @@ summariseTreatment <- function(cohort,
   cols <- colnames(result)
 
   # correct names
-  result <- result %>%
+  result <- result |>
     tidyr::separate_wider_delim(
       cols = "variable_name",
       delim = "_",
@@ -230,7 +230,7 @@ summariseTreatment <- function(cohort,
       too_few = "align_end",
       too_many = "merge",
       cols_remove = TRUE
-    ) %>%
+    ) |>
     dplyr::filter(!is.na(.data$window)) |>
     dplyr::left_join(
       dplyr::tibble(
@@ -238,12 +238,12 @@ summariseTreatment <- function(cohort,
         "window_name" = namesWindow
       ),
       by = "window"
-    ) %>%
+    ) |>
     dplyr::arrange(
       .data$group_level, .data$strata_name, .data$strata_level,
       .data$window_name, .data$variable_name
-    ) %>%
-    dplyr::select(-c("window", "additional_name", "additional_level")) %>%
+    ) |>
+    dplyr::select(-c("window", "additional_name", "additional_level")) |>
     visOmopResults::uniteAdditional(cols = "window_name") |>
     PatientProfiles::addCdmName(cdm = cdm) |>
     dplyr::mutate(variable_name = factor(.data$variable_name, levels = variableLevel)) |>
@@ -269,7 +269,7 @@ summariseTreatment <- function(cohort,
 untreated <- function(cols, w) {
   col <- cols[startsWith(cols, w)]
   sum <- paste0(".data[[\"", col, "\"]]", collapse = " + ")
-  paste0("dplyr::if_else(", sum, " > 0, 0, 1)") %>%
-    rlang::parse_exprs() %>%
+  paste0("dplyr::if_else(", sum, " > 0, 0, 1)") |>
+    rlang::parse_exprs() |>
     rlang::set_names(paste0(w, "_untreated"))
 }

@@ -33,7 +33,6 @@ package.
 
 ```{r setup, message = FALSE, warning = FALSE}
 library(DrugUtilisation)
-library(CodelistGenerator)
 library(dplyr)
 library(CDMConnector)
 
@@ -223,7 +222,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   gapEra = 30 # default as 0
 )
 
-attrition(cdm$simvastin_3) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_3) |> select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 From the **simvastin_3** cohort attrition, we can see that when
@@ -247,7 +246,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   priorUseWashout = 30
 )
 
-attrition(cdm$simvastin_4) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_4) |> select(number_records, reason, excluded_records, excluded_subjects)
 
 ```
 
@@ -269,7 +268,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   priorObservation = 30
 )
 
-attrition(cdm$simvastin_5) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_5) |> select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 ### cohortDateRange parameter
@@ -289,7 +288,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   cohortDateRange = as.Date(c("2010-01-01", "2011-01-01"))
 )
 
-attrition(cdm$simvastin_6) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_6) |> select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 ### limit parameter
@@ -313,7 +312,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm,
   limit = "First"
 )
 
-attrition(cdm$simvastin_7) %>% select(number_records, reason, excluded_records, excluded_subjects)
+attrition(cdm$simvastin_7) |> select(number_records, reason, excluded_records, excluded_subjects)
 ```
 
 If we just wanted to get the first-ever era, we can also use this

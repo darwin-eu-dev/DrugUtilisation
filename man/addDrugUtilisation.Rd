@@ -79,13 +79,12 @@ Add new columns with drug use related information
 \examples{
 \donttest{
 library(DrugUtilisation)
-library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
 cdm <- generateDrugUtilisationCohortSet(
   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 )
-cdm[["dus_cohort"]] \%>\%
+cdm[["dus_cohort"]] |>
   addDrugUtilisation(ingredientConceptId = 1125315)
 }
 

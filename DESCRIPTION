@@ -31,8 +31,17 @@ Authors@R: c(
         "Marta", "Alcalde-Herraiz", 
         email = "marta.alcaldeherraiz@ndorms.ox.ac.uk", 
         role = c("ctb"), comment = c(ORCID = "0009-0002-4405-1814")
-    )
-    )
+    ),
+    person(
+        "Nuria", "Mercade-Besora", , 
+        email = "nuria.mercadebesora@ndorms.ox.ac.uk", role = c("aut"), 
+        comment = c(ORCID = "0009-0006-7948-3747")
+    ),
+    person(
+        "Xihang", "Chen", , 
+        email = "xihang.chen@ndorms.ox.ac.uk", role = c("aut"), 
+        comment = c(ORCID = "0009-0001-8112-8959")
+    ))
 Description: Summarise patient-level drug utilisation cohorts using data mapped 
     to the Observational Medical Outcomes Partnership (OMOP) common data model. 
     New users and prevalent users cohorts can be generated and their 
@@ -48,7 +57,6 @@ Suggests:
     here,
     RPostgres,
     duckdb,
-    CodelistGenerator,
     knitr,
     PaRe,
     rmarkdown,
@@ -64,6 +72,7 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     CDMConnector (>= 1.4.0),
+    CodelistGenerator (>= 3.0.0),
     checkmate,
     DBI,
     dbplyr,
@@ -75,7 +84,6 @@ Imports:
     RJSONIO,
     cli,
     PatientProfiles (>= 1.0.0),
-    magrittr,
     purrr,
     tictoc,
     omopgenerics (>= 0.2.3),

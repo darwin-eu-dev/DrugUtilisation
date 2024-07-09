@@ -32,7 +32,6 @@
 #' \donttest{
 #' library(DrugUtilisation)
 #' library(PatientProfiles)
-#' library(CodelistGenerator)
 #' library(CDMConnector)
 #'
 #' cdm <- mockDrugUtilisation()
@@ -40,7 +39,7 @@
 #' cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 #' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
-#' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] %>%
+#' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] |>
 #'   addIndication(
 #'     indicationCohortName = "indication_cohorts",
 #'     indicationWindow = list(c(0,0),c(-30,0),c(-365,0))
@@ -69,7 +68,7 @@ summariseIndication <- function(cohort,
   indicationVariables <- indicationColumns(cohort)
 
   # update cohort_names
-  cohort <- cohort %>% PatientProfiles::addCohortName() %>% dplyr::collect()
+  cohort <- cohort |> PatientProfiles::addCohortName() |> dplyr::collect()
 
   # summarise indication columns
   result <- PatientProfiles::summariseResult(
@@ -77,7 +76,7 @@ summariseIndication <- function(cohort,
     includeOverallGroup = FALSE, includeOverallStrata = TRUE,
     strata = strata, variables = indicationVariables,
     estimates = c("count", "percentage")
-  ) %>%
+  ) |>
     PatientProfiles::addCdmName(cdm = cdm) |>
     dplyr::mutate(
       variable_level = dplyr::if_else(
@@ -90,7 +89,7 @@ summariseIndication <- function(cohort,
             x<- as.character(NA)
           }
           return(x)
-        }) %>%
+        }) |>
           unlist(),
         as.character(NA)
       ),
@@ -99,7 +98,7 @@ summariseIndication <- function(cohort,
         lapply(strsplit(.data$variable_name, "_"), function(x) {
           x <- paste0(x[1:min(3, length(x))], collapse = "_")
           x <- indicationColumnName(x)
-        }) %>%
+        }) |>
           unlist(),
         .data$variable_name
       )

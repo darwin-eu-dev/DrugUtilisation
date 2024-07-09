@@ -49,13 +49,13 @@ test_that("create patterns, correct output", {
  )))
 
  expect_true(nrow(patternTab) == 3)
- expect_true(all(patternTab %>% dplyr::select(number_concepts) %>% dplyr::pull() == c(1,1,1)))
- patternTab %>%
-   dplyr::filter(.data$validity == "pattern with formula") %>%
-   nrow() %>%
+ expect_true(all(patternTab |> dplyr::select(number_concepts) |> dplyr::pull() == c(1,1,1)))
+ patternTab |>
+   dplyr::filter(.data$validity == "pattern with formula") |>
+   nrow() |>
    expect_equal(2)
- patternTab %>%
-   dplyr::filter(.data$validity != "pattern with formula") %>%
-   nrow() %>%
+ patternTab |>
+   dplyr::filter(.data$validity != "pattern with formula") |>
+   nrow() |>
    expect_equal(1)
 })

@@ -35,7 +35,6 @@ summariseTreatment function.
 \dontrun{
 library(duckdb)
 library(CDMConnector)
-library(CodelistGenerator)
 library(PatientProfiles)
 library(DrugUtilisation)
 

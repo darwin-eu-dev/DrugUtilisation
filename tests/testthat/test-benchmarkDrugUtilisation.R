@@ -6,7 +6,7 @@ test_that("test benchmarking function", {
   # current mock only have concept set of length 4
   # add daily dose only work with 1 ingredient at the moment
   # benchmarking multiple cohorts
-  timings <- benchmarkDUS(cdm,
+  timings <- benchmarkDrugUtilisation(cdm,
     ingredientId = 1125315,
     numberOfCohort = 1:4
   )
