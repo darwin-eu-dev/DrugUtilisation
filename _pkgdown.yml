@@ -10,15 +10,15 @@ reference:
 - subtitle: Indication functions
   desc: Indication functions are used to summarise and obtain the indication information
 - contents:
-  - matches("addIndication|summariseIndication|tableIndication|optionsTableIndication")
+  - matches("addIndication|summariseIndication|tableIndication|defaultTableOptions")
 - subtitle: Add daily dose
   desc: Tools to compute the daily dose, see when it can be computed
 - contents:
-  - matches("addDailyDose|addPattern|addRoute|summariseDoseCoverage|dailyDoseCoverage|patternTable|stratifyByUnit|patternsWithFormula|tableDoseCoverage|optionsTableDoseCoverage")
+  - matches("addDailyDose|addPattern|addRoute|summariseDoseCoverage|dailyDoseCoverage|patternTable|stratifyByUnit|patternsWithFormula|tableDoseCoverage")
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
-  - matches("addDrugUtilisation|summariseDrugUtilisation|tableDrugUtilisation|optionsTableDrugUtilisation|addNumberExposures|addNumberEras|addExposedTime|addTimeToExposure|addInitialQuantity|addCumulativeQuantity|addCumulativeDose|addInitialDailyDose")
+  - matches("addDrugUtilisation|summariseDrugUtilisation|tableDrugUtilisation|addNumberExposures|addNumberEras|addExposedTime|addTimeToExposure|addInitialQuantity|addCumulativeQuantity|addCumulativeDose|addInitialDailyDose")
 - subtitle: Summarise treatments during certain windows
   desc: Summarise the use of different treatments during certain windows
 - contents:

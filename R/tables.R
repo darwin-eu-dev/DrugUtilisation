@@ -29,7 +29,7 @@
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param .options Named list with additional formatting options.
-#' DrugUtilisation::optionsTableIndication() shows allowed
+#' DrugUtilisation::defaultTableOptions() shows allowed
 #' arguments and their default values.
 #'
 #' @examples
@@ -94,7 +94,7 @@ tableIndication <- function(result,
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
-  .options = defaultTableOptions(.options)
+  .options = defaultTableOptionsInternal(.options)
 
   # Split
   split <- c("additional")
@@ -166,7 +166,7 @@ tableIndication <- function(result,
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
 #' computation order. Indicate estimate_name's between <...>.
 #' @param .options Named list with additional formatting options.
-#' DrugUtilisation::optionstableDoseCoverage() shows allowed
+#' DrugUtilisation::defaultTableOptions() shows allowed
 #' arguments and their default values.
 #'
 #' @examples
@@ -230,7 +230,7 @@ tableDoseCoverage <- function(result,
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
-  .options = defaultTableOptions(.options)
+  .options = defaultTableOptionsInternal(.options)
 
   # Split
   split <- c("additional")
@@ -299,7 +299,7 @@ tableDoseCoverage <- function(result,
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
 #' computation order. Indicate estimate_name's between <...>.
 #' @param .options Named list with additional formatting options.
-#' DrugUtilisation::optionsTableDrugUtilisation() shows allowed
+#' DrugUtilisation::defaultTableOptions() shows allowed
 #' arguments and their default values.
 #'
 #' @examples
@@ -365,7 +365,7 @@ tableDrugUtilisation <- function(result,
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
-  .options = defaultTableOptions(.options)
+  .options = defaultTableOptionsInternal(.options)
 
   # Split
   split <- c("additional")
@@ -419,7 +419,7 @@ tableDrugUtilisation <- function(result,
 }
 
 
-defaultTableOptions <- function(.options) {
+defaultTableOptionsInternal <- function(.options = NULL) {
 
   defaults <- visOmopResults::optionsVisOmopTable()
 
@@ -430,10 +430,10 @@ defaultTableOptions <- function(.options) {
   return(defaults)
 }
 
-#' Additional arguments for the functions tableIndication
+#' Additional arguments for the table functions.
 #'
 #' @description
-#' It provides a list of allowed inputs for .option argument in tableIndication,
+#' It provides a list of allowed inputs for .option argument in table functions,
 #' and their given default values.
 #'
 #'
@@ -443,49 +443,12 @@ defaultTableOptions <- function(.options) {
 #'
 #' @examples
 #' {
-#' optionsTableIndication()
+#' defaultTableOptions()
 #' }
 #'
-optionsTableIndication <- function() {
-  defaultTableOptions(NULL)
+defaultTableOptions <- function() {
+
+  defaultTableOptionsInternal(NULL)
+
 }
 
-#' Additional arguments for the functions tableDoseCoverage
-#'
-#' @description
-#' It provides a list of allowed inputs for .option argument in tableDoseCoverage,
-#' and their given default values.
-#'
-#'
-#' @return The default .options named list.
-#'
-#' @export
-#'
-#' @examples
-#' {
-#' optionsTableDoseCoverage()
-#' }
-#'
-optionsTableDoseCoverage <- function() {
-  defaultTableOptions(NULL)
-}
-
-#' Additional arguments for the functions tableDrugUtilisation
-#'
-#' @description
-#' It provides a list of allowed inputs for .option argument in tableDoseCoverage,
-#' and their given default values.
-#'
-#'
-#' @return The default .options named list.
-#'
-#' @export
-#'
-#' @examples
-#' {
-#' optionsTableDrugUtilisation()
-#' }
-#'
-optionsTableDrugUtilisation <- function() {
-  defaultTableOptions(NULL)
-}

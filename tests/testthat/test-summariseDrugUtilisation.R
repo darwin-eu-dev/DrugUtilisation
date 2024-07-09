@@ -44,7 +44,9 @@ test_that("summariseDrugUtilisation works", {
   )
 
   x0 <- cdm$dus_cohort |>
-    summariseDrugUtilisation(ingredientConceptId = 1125315)
+    summariseDrugUtilisation(
+
+    )
   expect_true(inherits(x0, "summarised_result"))
   expect_true(all(unique(x0$variable_name) == c(
     'number records', 'number subjects', 'number exposures', 'time to exposure',

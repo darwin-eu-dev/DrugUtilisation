@@ -41,7 +41,7 @@ in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{varia
 computation order. Indicate estimate_name's between <...>.}
 
 \item{.options}{Named list with additional formatting options.
-DrugUtilisation::optionstableDoseCoverage() shows allowed
+DrugUtilisation::defaultTableOptions() shows allowed
 arguments and their default values.}
 }
 \value{

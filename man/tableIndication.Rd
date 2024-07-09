@@ -34,7 +34,7 @@ in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{varia
 "flextable", "tibble".}
 
 \item{.options}{Named list with additional formatting options.
-DrugUtilisation::optionsTableIndication() shows allowed
+DrugUtilisation::defaultTableOptions() shows allowed
 arguments and their default values.}
 }
 \value{

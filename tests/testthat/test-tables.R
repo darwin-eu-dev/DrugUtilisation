@@ -303,7 +303,7 @@ test_that("tableDrugUtilisation", {
   )))
 
   # other options working
-  tib1 <- tableDrugUtilisation(result, type = "tibble", cohortName = FALSE, splitStrata = FALSE)
+  expect_warning(tib1 <- tableDrugUtilisation(result, type = "tibble", cohortName = FALSE, splitStrata = FALSE))
   expect_true(all(colnames(tib1) == c(
     'Database name', 'Strata name', 'Strata level', 'Variable', 'Concept set', 'Estimate name', 'Estimate value'
   )))
