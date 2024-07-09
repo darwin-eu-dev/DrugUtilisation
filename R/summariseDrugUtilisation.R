@@ -165,7 +165,7 @@ summariseDrugUtilisation <- function(cohort,
         .default = .data$variable_level
       )
     ) |>
-    dplyr::select(omopgenerics::resultColumns()) |>
+    dplyr::select(dplyr::all_of(omopgenerics::resultColumns())) |>
     dplyr::arrange(.data$result_id, .data$group_name, .data$group_level, .data$strata_name, .data$strata_level)
 
   result <- result |>
