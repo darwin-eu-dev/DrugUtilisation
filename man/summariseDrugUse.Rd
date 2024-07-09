@@ -39,13 +39,13 @@ cdm <- mockDrugUtilisation()
 cdm <- generateDrugUtilisationCohortSet(
   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
 )
-cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] \%>\%
+cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] |>
   addDrugUse(ingredientConceptId = 1125315)
 result <- summariseDrugUse(cdm[["dus_cohort"]])
 print(result)
 
-cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] \%>\%
-  addSex() \%>\%
+cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] |>
+  addSex() |>
   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
 
 summariseDrugUse(

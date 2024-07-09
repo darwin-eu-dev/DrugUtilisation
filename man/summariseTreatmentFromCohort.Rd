@@ -50,7 +50,7 @@ This function is used to summarise the dose table over multiple cohorts.
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
-cdm$cohort1 \%>\%
+cdm$cohort1 |>
   summariseTreatmentFromCohort(
     treatmentCohortName = "cohort2",
     window = list(c(0, 30), c(31, 365))

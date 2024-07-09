@@ -188,11 +188,12 @@ vocabularyTables <- function(concept, concept_ancestor, drug_strength, concept_r
       valid_end_date = as.Date("2100-01-01")
     )
   }
-  list(
-    concept = concept, concept_ancestor = concept_ancestor,
-    drug_strength = drug_strength, concept_relationship = concept_relationship
-  ) |>
-    return()
+  return(
+    list(
+      concept = concept, concept_ancestor = concept_ancestor,
+      drug_strength = drug_strength, concept_relationship = concept_relationship
+    )
+  )
 }
 
 #' To add the cohort set if NULL

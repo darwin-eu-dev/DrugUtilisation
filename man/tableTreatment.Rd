@@ -47,7 +47,7 @@ A table with a formatted version of summariseDrugCoverage() results.
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
-result <- cdm$cohort1 \%>\%
+result <- cdm$cohort1 |>
   summariseTreatmentFromConceptSet(
     treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
     window = list(c(0, 180), c(181, 360))

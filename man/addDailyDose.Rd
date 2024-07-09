@@ -36,8 +36,8 @@ library(dplyr)
 
 cdm <- mockDrugUtilisation()
 
-cdm[["drug_exposure"]] \%>\%
-  filter(drug_concept_id == 2905077) \%>\%
+cdm[["drug_exposure"]] |>
+  filter(drug_concept_id == 2905077) |>
   addDailyDose(ingredientConceptId = 1125315)
 }
 
