@@ -76,7 +76,6 @@ Imports:
     RJSONIO,
     cli,
     PatientProfiles (>= 1.0.0),
-    magrittr,
     purrr,
     tictoc,
     omopgenerics (>= 0.2.3),
