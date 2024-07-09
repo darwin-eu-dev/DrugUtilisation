@@ -30,7 +30,7 @@ reference:
 - subtitle: Benchmarking function
   desc: Function to test performance of different functions in DrugUtilisation
 - contents:
-  - matches("benchmarkDUS")
+  - matches("benchmark")
 - subtitle: Deprecated functions
   desc: This functions has been deprecated
 - contents:
