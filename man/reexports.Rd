@@ -6,6 +6,8 @@
 \alias{reexports}
 \alias{getDrugIngredientCodes}
 \alias{getATCCodes}
+\alias{codesFromCohort}
+\alias{codesFromConceptSet}
 \alias{cohortCount}
 \alias{settings}
 \alias{attrition}
@@ -20,7 +22,7 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{CodelistGenerator}{\code{\link[CodelistGenerator]{getATCCodes}}, \code{\link[CodelistGenerator]{getDrugIngredientCodes}}}
+  \item{CodelistGenerator}{\code{\link[CodelistGenerator]{codesFromCohort}}, \code{\link[CodelistGenerator]{codesFromConceptSet}}, \code{\link[CodelistGenerator]{getATCCodes}}, \code{\link[CodelistGenerator]{getDrugIngredientCodes}}}
 
   \item{omopgenerics}{\code{\link[omopgenerics]{attrition}}, \code{\link[omopgenerics]{bind}}, \code{\link[omopgenerics]{cohortCodelist}}, \code{\link[omopgenerics]{cohortCount}}, \code{\link[omopgenerics]{exportSummarisedResult}}, \code{\link[omopgenerics]{settings}}, \code{\link[omopgenerics]{suppress}}}
 }}
