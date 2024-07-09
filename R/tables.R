@@ -267,18 +267,16 @@ tableDoseCoverage <- function(result,
   }
 
   # table
-  suppressMessages(
-    visOmopResults::visOmopTable(
-      result = result,
-      formatEstimateName = formatEstimateName,
-      header = header,
-      split = split,
-      groupColumn = groupColumn,
-      renameColumns = renameColumns,
-      type = type,
-      excludeColumns = excludeColumns,
-      .options = .options
-    )
+  visOmopResults::visOmopTable(
+    result = result,
+    formatEstimateName = formatEstimateName,
+    header = header,
+    split = split,
+    groupColumn = groupColumn,
+    renameColumns = renameColumns,
+    type = type,
+    excludeColumns = excludeColumns,
+    .options = .options
   )
 }
 
@@ -430,6 +428,10 @@ tableTreatment <- function(result,
   if (splitStrata) {
     split <- c(split, "strata")
   }
+
+  header[header == "window_name"] <- "additional"
+  header[header == "cohort_name"] <- "group"
+  header[header == "variable_name"] <- "variable"
 
   # table
   visOmopResults::visOmopTable(
