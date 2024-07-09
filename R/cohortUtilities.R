@@ -97,49 +97,6 @@ erafyCohort <- function(cohort, gap) {
 }
 
 #' @noRd
-requirePriorUseWashout <- function(cohort, washout) {
-  if (sumcounts(cohort) > 0 & washout > 0) {
-    name <- attr(cohort, "tbl_name")
-    cohort <- cohort %>%
-      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) %>%
-      dplyr::arrange(.data$cohort_start_date) %>%
-      dplyr::mutate(id = dplyr::row_number()) %>%
-      dplyr::compute(name = uniqueTmpName(), temporary = FALSE, overwrite = TRUE)
-    cohort <- cohort %>%
-      dplyr::left_join(
-        cohort %>%
-          dplyr::mutate(id = .data$id + 1) %>%
-          dplyr::select(
-            "cohort_definition_id", "subject_id", "id",
-            "prior_date" = "cohort_end_date"
-          ),
-        by = c("cohort_definition_id", "subject_id", "id")
-      ) %>%
-      dplyr::mutate(
-        prior_time = !!CDMConnector::datediff("prior_date", "cohort_start_date")
-      )
-    if (is.infinite(washout)) {
-      cohort <- cohort %>%
-        dplyr::filter(is.na(.data$prior_date))
-    } else {
-      cohort <- cohort %>%
-        dplyr::filter(
-          is.na(.data$prior_date) | .data$prior_time >= .env$washout
-        )
-    }
-    cohort <- cohort %>%
-      dplyr::select(-c("id", "prior_date", "prior_time")) %>%
-      dplyr::arrange() %>%
-      dplyr::ungroup() %>%
-      dplyr::compute(name = name, temporary = FALSE, overwrite = TRUE)
-    res <- paste("require prior use washout of", washout, "days")
-    cohort <- cohort |>
-      omopgenerics::recordCohortAttrition(reason = res)
-  }
-  return(cohort)
-}
-
-#' @noRd
 trimStartDate <- function(cohort, startDate) {
   if (sumcounts(cohort) > 0 & !is.na(startDate)) {
     cohort <- cohort %>%
