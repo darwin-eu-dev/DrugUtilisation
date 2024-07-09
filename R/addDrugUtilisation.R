@@ -57,7 +57,7 @@
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 #' )
-#' cdm[["dus_cohort"]] %>%
+#' cdm[["dus_cohort"]] |>
 #'   addDrugUtilisation(ingredientConceptId = 1125315)
 #' }
 #'

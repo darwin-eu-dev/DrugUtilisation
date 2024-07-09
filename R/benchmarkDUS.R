@@ -93,7 +93,7 @@ benchmarkDUS <- function(
       limit = "all"
     )
 
-    CDMConnector::cohort_count(cdm[[name]])
+    omopgenerics::cohort_count(cdm[[name]])
 
     t <- tictoc::toc(quiet = TRUE)
 
@@ -105,7 +105,7 @@ benchmarkDUS <- function(
 
     tictoc::tic()
 
-    cdm[[name]] %>%
+    cdm[[name]] |>
       addIndication(indicationCohortName = indicationCohortName, indicationWindow = list(c(0,0)),
         unknownIndicationTable = NULL
       )
@@ -142,7 +142,7 @@ benchmarkDUS <- function(
 
     tictoc::tic()
 
-    cdm[[name]] %>%
+    cdm[[name]] |>
       summariseDrugUse(cdm = cdm)
 
     time_record[[paste0("summarise drug use ", j)]] <- dplyr::tibble(
@@ -163,13 +163,12 @@ benchmarkDUS <- function(
     time_taken_secs = as.numeric(t$toc - t$tic)
   )
 
-  time_record <- dplyr::bind_rows(time_record) %>%
-    dplyr::mutate(time_taken_secs = round(.data$time_taken_secs, 2)) %>%
-    dplyr::mutate(time_taken_mins = round(.data$time_taken_secs / 60, 2)) %>%
-    dplyr::mutate(time_taken_hours = round(.data$time_taken_mins / 60, 2)) %>%
-    #dplyr::mutate(dbms = CDMConnector::dbms(cdm)) %>%
-    dplyr::mutate(person_n = cdm$person %>%
-                    dplyr::count() %>%
+  time_record <- dplyr::bind_rows(time_record) |>
+    dplyr::mutate(time_taken_secs = round(.data$time_taken_secs, 2)) |>
+    dplyr::mutate(time_taken_mins = round(.data$time_taken_secs / 60, 2)) |>
+    dplyr::mutate(time_taken_hours = round(.data$time_taken_mins / 60, 2)) |>
+    dplyr::mutate(person_n = cdm$person |>
+                    dplyr::count() |>
                     dplyr::pull())
 
   return(time_record)

@@ -111,7 +111,7 @@ requirePriorUseWashout <- function(cohort,
     cohort <- cohort |>
       omopgenerics::recordCohortAttrition(reason = res)
 
-    CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
+    omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
     return(cohort)
   } else {
     presentIds <- omopgenerics::settings(cohort) |>
@@ -161,7 +161,7 @@ requirePriorUseWashout <- function(cohort,
 
       cohort <- cdm[[name]]
 
-      CDMConnector::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
+      omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
 
       return(cohort)
     }

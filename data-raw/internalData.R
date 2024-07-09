@@ -48,7 +48,7 @@ formulas <- readr::read_csv(
     formula_name = "character",
     unit = "character"
   )
-) %>%
+) |>
   dplyr::mutate(
     amount_numeric = dplyr::if_else(!is.na(.data$amount), 1, 0),
     numerator_numeric = dplyr::if_else(!is.na(.data$numerator), 1, 0),
@@ -64,19 +64,19 @@ routes <- readr::read_csv(
     route = "character",
     id = "numeric"
   )
-) %>%
+) |>
   dplyr::select("dose_form_concept_id" = "id", "route")
 
-patternsWithFormula <- formulas %>%
+patternsWithFormula <- formulas |>
   dplyr::mutate(
     amount = dplyr::if_else(.data$amount_numeric == 1, "number", NA_character_),
     numerator = dplyr::if_else(.data$numerator_numeric == 1, "number", NA_character_),
     denominator = dplyr::if_else(.data$denominator_numeric == 1, "number", NA_character_)
-  ) %>%
+  ) |>
   dplyr::select(
     "pattern_id", "amount", "amount_unit", "numerator", "numerator_unit",
     "denominator", "denominator_unit", "formula_name"
-  ) %>%
+  ) |>
   dplyr::left_join(
     dplyr::tibble(
       formula_name = c("concentration formulation", "fixed amount formulation", "time based with denominator", "time based no denominator"),
@@ -87,7 +87,7 @@ patternsWithFormula <- formulas %>%
 
 usethis::use_data(patternsWithFormula, internal = FALSE, overwrite = TRUE)
 
-patterns <- formulas %>%
+patterns <- formulas |>
   dplyr::select(
     "pattern_id", "amount_numeric", "amount_unit_concept_id",
     "numerator_numeric", "numerator_unit_concept_id", "denominator_numeric",

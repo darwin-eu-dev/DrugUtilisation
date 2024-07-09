@@ -805,7 +805,7 @@ library(dplyr)
 ```
 
 ``` r
-settings(cdm[["dus_cohort"]]) %>% glimpse()
+settings(cdm[["dus_cohort"]]) |> glimpse()
 #> Rows: 1
 #> Columns: 11
 #> $ cohort_definition_id    <int> 1
@@ -834,7 +834,7 @@ cohortCount(cdm[["dus_cohort"]])
 Cohort attrition:
 
 ``` r
-attrition(cdm[["dus_cohort"]]) %>% glimpse()
+attrition(cdm[["dus_cohort"]]) |> glimpse()
 #> Rows: 2
 #> Columns: 7
 #> $ cohort_definition_id <int> 1, 1
@@ -866,7 +866,7 @@ Then we can add the indication using the function `addIndication`. That
 will add a new column for each indication gap and indication.
 
 ``` r
-x <- cdm[["dus_cohort"]] %>%
+x <- cdm[["dus_cohort"]] |>
   addIndication(
     indicationCohortName = "indications_cohort", indicationGap = c(0, 30, 365), 
     unknownIndicationTable = c("condition_occurrence")
@@ -898,7 +898,7 @@ We can combine the indications in a single column using the
 stratification of the results if needed:
 
 ``` r
-x <- x %>% indicationToStrata(keep = TRUE)
+x <- x |> indicationToStrata(keep = TRUE)
 glimpse(x)
 #> Rows: ??
 #> Columns: 19
@@ -925,7 +925,7 @@ glimpse(x)
 ```
 
 ``` r
-table(x %>% pull("indication_gap_365"))
+table(x |> pull("indication_gap_365"))
 #> 
 #>               Headache              Influenza Influenza and Headache 
 #>                      5                      5                      2 
@@ -984,7 +984,7 @@ summariseIndication(x, cdm)
 ```
 
 ``` r
-summariseIndication(x, cdm) %>% glimpse()
+summariseIndication(x, cdm) |> glimpse()
 #> ℹ The following estimates will be computed:
 #> • indication_gap_0_headache: count, percentage
 #> • indication_gap_0_influenza: count, percentage
@@ -1029,8 +1029,8 @@ create a `age_group` and `sex` columns using PatientProfiles and then we
 use it as strata
 
 ``` r
-x <- x %>%
-  PatientProfiles::addAge(ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
+x <- x |>
+  PatientProfiles::addAge(ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) |>
   PatientProfiles::addSex()
 summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex")))
 #> ℹ The following estimates will be computed:
@@ -1072,7 +1072,7 @@ summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "se
 ```
 
 ``` r
-summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex"))) %>% glimpse()
+summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex"))) |> glimpse()
 #> ℹ The following estimates will be computed:
 #> • indication_gap_0_headache: count, percentage
 #> • indication_gap_0_influenza: count, percentage
@@ -1116,8 +1116,8 @@ drug_exposure or the whole drug exposure (can be very computationally
 expensive).
 
 ``` r
-cdm[["drug_exposure"]] %>%
- addDailyDose(ingredientConceptId = 1125315) %>%
+cdm[["drug_exposure"]] |>
+ addDailyDose(ingredientConceptId = 1125315) |>
  glimpse()
 #> Rows: ??
 #> Columns: 9
@@ -1174,7 +1174,7 @@ You can add columns related to the drug use using `addDrugUse`. You
 always have to provide a reference ingredient.
 
 ``` r
-x <- x %>%
+x <- x |>
  addDrugUse(
    ingredientConceptId = 1125315,
    dose = TRUE,

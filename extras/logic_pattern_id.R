@@ -1,7 +1,7 @@
 #build the pattern table using cratePatternsTable.R
 
 # logic for valid versus non valid pattern: already implemented in the previous function
-#patternfile <- patternfile %>%
+#patternfile <- patternfile |>
 #  dplyr::mutate(
 #    valid =
 #      dplyr::if_else ((!is.na(amount) & grepl("gram|international unit|liter|milliequivalent", amount_unit) & is.na(denominator_unit) & is.na(numerator_unit)) |
@@ -13,7 +13,7 @@
 # standards will be milliliter, milligram and international unit
 
 # add pattern id
-patternfile <- patternfile %>%
+patternfile <- patternfile |>
   dplyr::mutate(pattern_id = dplyr::case_when(
     !is.na(amount) & amount_unit_concept_id == 8718 & is.na(numerator_unit_concept_id) & is.na(denominator_unit_concept_id) ~ 1,
     !is.na(amount) & amount_unit_concept_id == 9655 & is.na(numerator_unit_concept_id) & is.na(denominator_unit_concept_id) ~ 2,
@@ -28,7 +28,7 @@ patternfile <- patternfile %>%
   ))
 
 # add pattern_name
-patternfile <- patternfile %>%
+patternfile <- patternfile |>
   dplyr::mutate(pattern_name = dplyr::case_when(
     !is.na(amount) & amount_unit_concept_id == 8718 & is.na(numerator_unit_concept_id) & is.na(denominator_unit_concept_id) ~ "international_unit",
     !is.na(amount) & amount_unit_concept_id == 9655 & is.na(numerator_unit_concept_id) & is.na(denominator_unit_concept_id) ~ "milligram",
@@ -43,9 +43,9 @@ patternfile <- patternfile %>%
   ))
 
 # add daily dose unit
-patternfile <- patternfile %>%
+patternfile <- patternfile |>
   mutate(pattern_id = ifelse(valid == FALSE, NA, pattern_id))
-patternfile <- patternfile %>%
+patternfile <- patternfile |>
   dplyr::mutate(unit = dplyr::case_when(
     pattern_id %in% c(1) ~ "international unit",
     pattern_id %in% c(2,4,6,7,8,9) ~ "milligram",

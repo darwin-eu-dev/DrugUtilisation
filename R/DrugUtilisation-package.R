@@ -7,6 +7,6 @@
 #' @importFrom rlang .data
 #' @importFrom rlang .env
 #' @importFrom rlang :=
-#' @importFrom dplyr %>%
+#' @importFrom dplyr |>
 ## usethis namespace: end
 NULL

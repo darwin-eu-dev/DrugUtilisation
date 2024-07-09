@@ -212,8 +212,8 @@ checkTargetCohortName <- function(targetCohortName, cdm) {
   if (!(targetCohortName %in% names(cdm))) {
     cli::cli_abort("targetCohortName is not in the cdm reference")
   }
-  numberRows <- cdm[[targetCohortName]] %>%
-    dplyr::tally() %>%
+  numberRows <- cdm[[targetCohortName]] |>
+    dplyr::tally() |>
     dplyr::pull()
   if (numberRows == 0) {
     cli::cli_abort("targetCohort is empty")
@@ -288,8 +288,8 @@ checkIngredientConceptId <- function(ingredientConceptId, cdm) {
   if (!isInteger(ingredientConceptId)) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
   }
-  if (cdm[["concept"]] %>%
-      dplyr::filter(.data$concept_id == .env$ingredientConceptId) %>%
+  if (cdm[["concept"]] |>
+      dplyr::filter(.data$concept_id == .env$ingredientConceptId) |>
       dplyr::pull("concept_class_id") != "Ingredient"
   ) {
     cli::cli_abort("ingredientConceptId is not found in vocabulary")
@@ -298,7 +298,7 @@ checkIngredientConceptId <- function(ingredientConceptId, cdm) {
 
 checkCohortId <- function(cohort, cohortId) {
   checkmate::assertNumeric(cohortId, null.ok = T, min.len = 1)
-  if (!isTRUE(all(cohortId %in% (DrugUtilisation::cohortCount(cohort) %>% dplyr::pull("cohort_definition_id"))))) {
+  if (!isTRUE(all(cohortId %in% (DrugUtilisation::cohortCount(cohort) |> dplyr::pull("cohort_definition_id"))))) {
     cli::cli_abort("some of the cohortId specified not found in the cohort")
   }
 }
@@ -329,7 +329,7 @@ checkIndicationGap <- function(indicationGap) {
   if (sum(indicationGap < 0) > 0) {
     cli::cli_abort(errorMessage)
   }
-  if (!(lapply(indicationGap, isInteger) %>% unlist() %>% all())) {
+  if (!(lapply(indicationGap, isInteger) |> unlist() |> all())) {
     cli::cli_abort(errorMessage)
   }
 }
@@ -351,11 +351,11 @@ checkIndicationVariables <- function(indicationVariables, cohort) {
   if (!all(indicationVariables %in% colnames(cohort))) {
     cli::cli_abort(errorMessage)
   }
-  cohort <- cohort %>%
-    dplyr::select(dplyr::all_of(indicationVariables)) %>%
-    utils::head(1) %>%
+  cohort <- cohort |>
+    dplyr::select(dplyr::all_of(indicationVariables)) |>
+    utils::head(1) |>
     dplyr::collect()
-  variableType <- PatientProfiles::variableTypes(cohort)$variable_type %>%
+  variableType <- PatientProfiles::variableTypes(cohort)$variable_type |>
     unique()
   if (!all(variableType %in% c("binary", "categorical", "numeric", "integer"))) {
     cli::cli_abort(
@@ -582,8 +582,8 @@ checkTablesToCharacterize <- function(tablesToCharacterize, cdm) {
 }
 
 checkDrugUseEstimates <- function(drugUseEstimates) {
-  choices <- PatientProfiles::availableEstimates(fullQuantiles = TRUE) %>%
-    dplyr::filter(.data$variable_type == "numeric") %>%
+  choices <- PatientProfiles::availableEstimates(fullQuantiles = TRUE) |>
+    dplyr::filter(.data$variable_type == "numeric") |>
     dplyr::pull("estimate_name")
   errorMessage <- paste0(
     "drugUseEstimates must be a subset of: ", paste0(choices, collapse = ", ")

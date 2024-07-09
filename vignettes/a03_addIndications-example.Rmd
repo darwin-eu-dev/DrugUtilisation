@@ -86,9 +86,9 @@ indications <-
 cdm <-
   CDMConnector::generateConceptCohortSet(cdm, name = "indications_cohort", indications)
 
-cohortCount(cdm[["indications_cohort"]]) %>%
+cohortCount(cdm[["indications_cohort"]]) |>
   left_join(
-    settings(cdm[["indications_cohort"]]) %>%
+    settings(cdm[["indications_cohort"]]) |>
       select(cohort_definition_id, cohort_name),
     by = "cohort_definition_id"
   )
@@ -116,14 +116,14 @@ Use `indicationGap` to specify the indication gaps, which are defined as the gap
 To create a summary table of the indications cohort, you can use the `summariseIndication()` function.
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
-# cdm[["acetaminophen_users"]] %>%
+# cdm[["acetaminophen_users"]] |>
 #   addIndication(
 #     cdm = cdm, 
 #     indicationCohortName = "indications_cohort",
 #     indicationGap =  c(0, 30, 365),
 #     unknownIndicationTable =  c("condition_occurrence")
-#   ) %>%
-#   summariseIndication(cdm) %>%
+#   ) |>
+#   summariseIndication(cdm) |>
 #   select("variable_name", "estimate_name", "estimate_value")
 
 ```
@@ -132,17 +132,17 @@ You can also summarise the indications by using the `strata` argument in the `su
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 
-# cdm[["acetaminophen_users"]] %>%
-#   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) %>%
+# cdm[["acetaminophen_users"]] |>
+#   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
 #   addIndication(
 #     cdm = cdm,
 #     indicationCohortName = "indications_cohort",
 #     indicationGap =  c(0),
 #     unknownIndicationTable =  c("condition_occurrence")
-#   ) %>%
+#   ) |>
 #   summariseIndication(
 #     cdm,
-#     strata = list("age" = "age_group", "sex" = "sex")) %>%
+#     strata = list("age" = "age_group", "sex" = "sex")) |>
 #       select("variable_name", "estimate_name", "estimate_value","strata_name")
 
 ```

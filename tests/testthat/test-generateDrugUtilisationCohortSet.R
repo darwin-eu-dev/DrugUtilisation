@@ -72,74 +72,74 @@ test_that("basic functionality drug_conceptId", {
   # check cdm reference in attributes
   expect_true(!is.null(attr(cdm1$dus, "cdm_reference", exact = TRUE)))
 
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 4)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
     gapEra = 13
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 4)
+  expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 4)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
     gapEra = 14
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 3)
+  expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 3)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
     gapEra = 31
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 3)
+  expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 3)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
     gapEra = 32
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 2)
+  expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 2)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
     gapEra = 153
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 2)
+  expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 2)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
     gapEra = 154
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 1)
   cdm1 <- generateDrugUtilisationCohortSet(
     cdm, "dus", acetaminophen,
     gapEra = 1500
   )
-  expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 1)
   # # check first era
   # cdm1 <- generateDrugUtilisationCohortSet(
   #   cdm, "dus", acetaminophen,
   #   gapEra = 1, limit = "first"
   # )
-  # expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  # expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 1)
   # expect_true(
-  #   cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
+  #   cdm1$dus |> dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   # )
   # expect_true(
-  #   cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2020-04-30")
+  #   cdm1$dus |> dplyr::pull("cohort_end_date") == as.Date("2020-04-30")
   # )
   # cdm1 <- generateDrugUtilisationCohortSet(
   #   cdm, "dus", acetaminophen,
   #   gapEra = 40, limit = "first"
   # )
-  # expect_true(cdm1$dus %>% dplyr::tally() %>% dplyr::pull() == 1)
+  # expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 1)
   # expect_true(
-  #   cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
+  #   cdm1$dus |> dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   # )
   # expect_true(
-  #   cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2020-09-11")
+  #   cdm1$dus |> dplyr::pull("cohort_end_date") == as.Date("2020-09-11")
   # )
   # cdm1 <- generateDrugUtilisationCohortSet(
   #   cdm, "dus", acetaminophen,
   #   gapEra = 1500, limit = "First"
   # )
   # expect_true(
-  #   cdm1$dus %>% dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
+  #   cdm1$dus |> dplyr::pull("cohort_start_date") == as.Date("2020-04-01")
   # )
   # expect_true(
-  #   cdm1$dus %>% dplyr::pull("cohort_end_date") == as.Date("2021-03-24")
+  #   cdm1$dus |> dplyr::pull("cohort_end_date") == as.Date("2021-03-24")
   # )
 })
 
@@ -156,37 +156,37 @@ test_that("basic functionality drug_conceptId", {
 #     )
 #   )
 #   expect_true(
-#     cdm[["dus"]] %>%
-#       dplyr::filter(.data$cohort_start_date < start) %>%
-#       dplyr::tally() %>%
+#     cdm[["dus"]] |>
+#       dplyr::filter(.data$cohort_start_date < start) |>
+#       dplyr::tally() |>
 #       dplyr::pull() == 0
 #   )
 #   expect_true(
-#     cdm[["dus"]] %>%
-#       dplyr::filter(.data$cohort_end_date > end) %>%
-#       dplyr::tally() %>%
+#     cdm[["dus"]] |>
+#       dplyr::filter(.data$cohort_end_date > end) |>
+#       dplyr::tally() |>
 #       dplyr::pull() == 0
 #   )
 #   expect_true(
-#     cdm[["drug_exposure"]] %>%
-#       dplyr::filter(.data$drug_exposure_start_date <= .env$start) %>%
-#       dplyr::filter(.data$drug_exposure_end_date >= .env$start) %>%
-#       dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
+#     cdm[["drug_exposure"]] |>
+#       dplyr::filter(.data$drug_exposure_start_date <= .env$start) |>
+#       dplyr::filter(.data$drug_exposure_end_date >= .env$start) |>
+#       dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) |>
 #       dplyr::pull("n") ==
-#       cdm[["dus"]] %>%
-#         dplyr::filter(.data$cohort_start_date == .env$start) %>%
-#         dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
+#       cdm[["dus"]] |>
+#         dplyr::filter(.data$cohort_start_date == .env$start) |>
+#         dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) |>
 #         dplyr::pull("n")
 #   )
 #   expect_true(
-#     cdm[["drug_exposure"]] %>%
-#       dplyr::filter(.data$drug_exposure_start_date <= .env$end) %>%
-#       dplyr::filter(.data$drug_exposure_end_date >= .env$end) %>%
-#       dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) %>%
+#     cdm[["drug_exposure"]] |>
+#       dplyr::filter(.data$drug_exposure_start_date <= .env$end) |>
+#       dplyr::filter(.data$drug_exposure_end_date >= .env$end) |>
+#       dplyr::summarise(n = dplyr::n_distinct(.data$person_id)) |>
 #       dplyr::pull("n") ==
-#       cdm[["dus"]] %>%
-#         dplyr::filter(.data$cohort_end_date == .env$end) %>%
-#         dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) %>%
+#       cdm[["dus"]] |>
+#         dplyr::filter(.data$cohort_end_date == .env$end) |>
+#         dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) |>
 #         dplyr::pull("n")
 #   )
 #   cdm <- generateDrugUtilisationCohortSet(
@@ -194,9 +194,9 @@ test_that("basic functionality drug_conceptId", {
 #     gapEra = 0, cohortDateRange = c(start, end)
 #   )
 #
-#   sapply(list(cdm[["dus_date"]] %>% dplyr::pull("cohort_start_date")), function(x) inherits(x, "Date"))
+#   sapply(list(cdm[["dus_date"]] |> dplyr::pull("cohort_start_date")), function(x) inherits(x, "Date"))
 #
-#   sapply(list(cdm[["dus_date"]] %>% dplyr::pull("cohort_end_date")), function(x) inherits(x, "Date"))
+#   sapply(list(cdm[["dus_date"]] |> dplyr::pull("cohort_end_date")), function(x) inherits(x, "Date"))
 # })
 
 test_that("priorUseWashout", {
@@ -231,20 +231,20 @@ test_that("priorUseWashout", {
     durationRange = c(0, Inf)
   )
   expect_true(
-    cdm[["bp_cohorts_test"]] %>%
-      dplyr::filter(subject_id == 2) %>%
-      dplyr::tally() %>%
+    cdm[["bp_cohorts_test"]] |>
+      dplyr::filter(subject_id == 2) |>
+      dplyr::tally() |>
       dplyr::pull() == 1
   )
   # expect_true(
-  #   cdm[["bp_cohorts_test"]] %>%
-  #     dplyr::filter(subject_id == 1) %>%
-  #     dplyr::tally() %>%
+  #   cdm[["bp_cohorts_test"]] |>
+  #     dplyr::filter(subject_id == 1) |>
+  #     dplyr::tally() |>
   #     dplyr::pull() == 0
   # )
   expect_true(
-    cdm[["bp_cohorts_test"]] %>%
-      dplyr::filter(subject_id == 2) %>%
+    cdm[["bp_cohorts_test"]] |>
+      dplyr::filter(subject_id == 2) |>
       dplyr::pull("cohort_end_date") == as.Date("2020-12-31")
   )
 })
@@ -278,11 +278,11 @@ test_that("priorUseWashout", {
 #   )
 #
 #
-#   expect_true(cdm1[["test_missing"]] %>%
-#     dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%
+#   expect_true(cdm1[["test_missing"]] |>
+#     dplyr::filter(cohort_start_date == as.Date("2021-03-01")) |>
 #     dplyr::pull(cohort_end_date) == as.Date("2021-03-01"))
-#   expect_true(cdm1[["test_missing"]] %>%
-#     dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
+#   expect_true(cdm1[["test_missing"]] |>
+#     dplyr::filter(cohort_start_date == as.Date("2021-02-12")) |>
 #     dplyr::pull(cohort_end_date) == as.Date("2021-02-12"))
 #
 #   # test durationRange and missingEndDate work at the same time
@@ -296,11 +296,11 @@ test_that("priorUseWashout", {
 #   )
 #
 #   # check the number is correct with missingEndDate
-#   expect_true(cdm2[["test_missing"]] %>%
-#     dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%
+#   expect_true(cdm2[["test_missing"]] |>
+#     dplyr::filter(cohort_start_date == as.Date("2021-03-01")) |>
 #     dplyr::pull(cohort_end_date) == as.Date("2021-03-10"))
-#   expect_true(cdm2[["test_missing"]] %>%
-#     dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
+#   expect_true(cdm2[["test_missing"]] |>
+#     dplyr::filter(cohort_start_date == as.Date("2021-02-12")) |>
 #     dplyr::pull(cohort_end_date) == as.Date("2021-02-21"))
 #
 #
@@ -337,11 +337,11 @@ test_that("priorUseWashout", {
 #
 #   # non-missing durations: 2,2,3 --> mean, mode and median are all 2 (floor())
 #
-#   expect_true(cdm2[["test_both"]] %>%
-#     dplyr::filter(cohort_start_date == as.Date("2021-03-01")) %>%
+#   expect_true(cdm2[["test_both"]] |>
+#     dplyr::filter(cohort_start_date == as.Date("2021-03-01")) |>
 #     dplyr::pull(cohort_end_date) == as.Date("2021-03-02"))
-#   expect_true(cdm2[["test_both"]] %>%
-#     dplyr::filter(cohort_start_date == as.Date("2021-02-12")) %>%
+#   expect_true(cdm2[["test_both"]] |>
+#     dplyr::filter(cohort_start_date == as.Date("2021-02-12")) |>
 #     dplyr::pull(cohort_end_date) == as.Date("2021-02-13"))
 # })
 #
@@ -406,7 +406,7 @@ test_that("priorUseWashout", {
 #     imputeDuration = "median"
 #   )
 #
-#   expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%
+#   expect_true(cdm$missing_end |> dplyr::filter(cohort_start_date == as.Date("2000-01-01")) |>
 #     dplyr::pull("cohort_end_date") == as.Date("2000-01-01") + median(c(15, 31, 31) - 1))
 #
 #   expect_warning(
@@ -418,7 +418,7 @@ test_that("priorUseWashout", {
 #     )
 #   )
 #
-#   expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%
+#   expect_true(cdm$missing_end |> dplyr::filter(cohort_start_date == as.Date("2000-01-01")) |>
 #                 dplyr::pull("cohort_end_date") == as.Date("2000-01-01") +
 #                 as.integer(round(mean(c(15, 31, 31))) - 1))
 #
@@ -431,7 +431,7 @@ test_that("priorUseWashout", {
 #     )
 #   )
 #
-#   expect_true(cdm$missing_end %>% dplyr::filter(cohort_start_date == as.Date("2000-01-01")) %>%
+#   expect_true(cdm$missing_end |> dplyr::filter(cohort_start_date == as.Date("2000-01-01")) |>
 #                 dplyr::pull("cohort_end_date") == as.Date("2000-01-01") +
 #                 31 - 1)
 #

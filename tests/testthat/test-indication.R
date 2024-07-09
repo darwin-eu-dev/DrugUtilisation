@@ -64,13 +64,13 @@ test_that("test case single indication", {
     )
   #check it works without cdm object specified
 
-  expect_no_error(cdm[["cohort1"]] %>%
+  expect_no_error(cdm[["cohort1"]] |>
     addIndication(indicationCohortName = "cohort2", indicationWindow = list(c(0,0)),
       unknownIndicationTable = NULL
     ))
 
   # check for indication 0
-  res0 <- cdm[["cohort1"]] %>%
+  res0 <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(0,0)),
       unknownIndicationTable = NULL
@@ -82,18 +82,18 @@ test_that("test case single indication", {
   ))
 
   expect_true(
-    res0 %>%
-      dplyr::filter(.data$subject_id == 3) %>%
+    res0 |>
+      dplyr::filter(.data$subject_id == 3) |>
       dplyr::pull("indication_0_to_0") == "Asthma"
   )
   expect_true(
-    all(res0 %>%
-          dplyr::filter(.data$subject_id != 3) %>%
+    all(res0 |>
+          dplyr::filter(.data$subject_id != 3) |>
           dplyr::pull("indication_0_to_0") == "None")
   )
 
   # check for indication 1
-  res1 <- cdm[["cohort1"]] %>%
+  res1 <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(-1,0)),
       unknownIndicationTable = NULL
@@ -106,18 +106,18 @@ test_that("test case single indication", {
 
 
   expect_true(
-    res1 %>%
-      dplyr::filter(.data$subject_id == 3) %>%
+    res1 |>
+      dplyr::filter(.data$subject_id == 3) |>
       dplyr::pull("indication_m1_to_0") == "Asthma"
   )
   expect_true(
-    all(res1 %>%
-          dplyr::filter(.data$subject_id != 3) %>%
+    all(res1 |>
+          dplyr::filter(.data$subject_id != 3) |>
           dplyr::pull("indication_m1_to_0") == "None")
   )
 
   # check for indication 2
-  res2 <- cdm[["cohort1"]] %>%
+  res2 <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(-2,0)),
       unknownIndicationTable = NULL
@@ -130,19 +130,19 @@ test_that("test case single indication", {
   ))
 
   expect_true(all(
-    res2 %>%
+    res2 |>
       dplyr::arrange(
         .data$subject_id,
         .data$cohort_start_date,
         .data$cohort_definition_id,
         .data$cohort_end_date
-      ) %>%
+      ) |>
       dplyr::pull("indication_m2_to_0")==
     c("Asthma", "None", "None", "Asthma")
   ))
 
   # check for all indication Gap
-  resinf <- cdm[["cohort1"]] %>%
+  resinf <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(-Inf,0)),
       unknownIndicationTable = NULL
@@ -155,14 +155,14 @@ test_that("test case single indication", {
 
 
   expect_true(any(identical(
-    resinf %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    resinf |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_minf_to_0"),
     c("Asthma", "Covid and Asthma", "None", "Asthma")
   ),
   identical(
-    resinf %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    resinf |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_minf_to_0"),
     c("Asthma", "Asthma and Covid", "None", "Asthma")
   )
@@ -223,7 +223,7 @@ test_that("test case single indication with unknown indication table", {
   )
 
   # check for indication 0
-  res0 <- cdm[["cohort1"]] %>%
+  res0 <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(0,0)),
       unknownIndicationTable = "condition_occurrence"
@@ -235,14 +235,14 @@ test_that("test case single indication with unknown indication table", {
   ))
 
   expect_true(identical(
-    res0 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res0 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_0_to_0"),
     c("None", "None", "None", "Asthma")
   ))
 
   # check for indication 1
-  res1 <- cdm[["cohort1"]] %>%
+  res1 <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(-1,0)),
       unknownIndicationTable = "condition_occurrence"
@@ -254,14 +254,14 @@ test_that("test case single indication with unknown indication table", {
   ))
 
   expect_true(identical(
-    res1 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res1 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m1_to_0"),
     c("None", "Unknown", "None", "Asthma")
   ))
 
   # check for indication 6
-  res6 <- cdm[["cohort1"]] %>%
+  res6 <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(-6,0)),
       unknownIndicationTable = "condition_occurrence"
@@ -273,14 +273,14 @@ test_that("test case single indication with unknown indication table", {
   ))
 
   expect_true(identical(
-    res6 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res6 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m6_to_0"),
     c("Asthma", "Unknown", "None", "Asthma")
   ))
 
   # check all gaps simultaniously
-  res016 <- cdm[["cohort1"]] %>%
+  res016 <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2", indicationWindow = list(c(0,0),c(-1,0),c(-6,0)),
       unknownIndicationTable = "condition_occurrence"
@@ -293,27 +293,27 @@ test_that("test case single indication with unknown indication table", {
   ))
 
   expect_true(identical(
-    res016 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res016 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_0_to_0"),
-    res0 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res0 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_0_to_0")
   ))
   expect_true(identical(
-    res016 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res016 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m1_to_0"),
-    res1 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res1 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m1_to_0")
   ))
   expect_true(identical(
-    res016 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res016 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m6_to_0"),
-    res6 %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res6 |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m6_to_0")
   ))
 })
@@ -374,7 +374,7 @@ test_that("test indicationDate", {
     )
 
   # original
-  res012inf <- cdm[["cohort1"]] %>%
+  res012inf <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2",
       indicationWindow = list(c(0,0),c(-1,0),c(-2,0),c(-Inf,0)), unknownIndicationTable = NULL
@@ -388,9 +388,9 @@ test_that("test indicationDate", {
   )
 
   # change indicationDate
-  cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
+  cdm[["cohort1"]] <- cdm[["cohort1"]] |>
     dplyr::rename("start_date" = "cohort_start_date")
-  res012infS <- cdm[["cohort1"]] %>%
+  res012infS <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2",
       indicationWindow = list(c(0,0),c(-1,0),c(-2,0),c(-Inf,0)), unknownIndicationTable = NULL,
@@ -407,27 +407,27 @@ test_that("test indicationDate", {
     setdiff(colnames(res012inf), colnames(res012infS)) == "cohort_start_date"
   )
   expect_true(identical(
-    res012inf %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res012inf |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_0_to_0"),
-    res012infS %>%
-      dplyr::arrange(.data$subject_id, .data$start_date) %>%
+    res012infS |>
+      dplyr::arrange(.data$subject_id, .data$start_date) |>
       dplyr::pull("indication_0_to_0")
   ))
   expect_true(identical(
-    res012inf %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res012inf |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m1_to_0"),
-    res012infS %>%
-      dplyr::arrange(.data$subject_id, .data$start_date) %>%
+    res012infS |>
+      dplyr::arrange(.data$subject_id, .data$start_date) |>
       dplyr::pull("indication_m1_to_0")
   ))
   expect_true(identical(
-    res012inf %>%
-      dplyr::arrange(.data$subject_id, .data$cohort_start_date) %>%
+    res012inf |>
+      dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m2_to_0"),
-    res012infS %>%
-      dplyr::arrange(.data$subject_id, .data$start_date) %>%
+    res012infS |>
+      dplyr::arrange(.data$subject_id, .data$start_date) |>
       dplyr::pull("indication_m2_to_0")
   ))
 
@@ -487,7 +487,7 @@ test_that("test attributes", {
       observation_period = observationPeriod
     )
 
-  cdm[["cohort1new"]] <- cdm[["cohort1"]] %>%
+  cdm[["cohort1new"]] <- cdm[["cohort1"]] |>
     addIndication(
       indicationCohortName = "cohort2",
       indicationWindow = list(c(0,0),c(-1,0),c(-2,0),c(-Inf,0)), unknownIndicationTable = NULL
@@ -558,7 +558,7 @@ test_that("test attributes", {
 #       observation_period = observationPeriod
 #     )
 #
-#   res <- cdm[["cohort1"]] %>%
+#   res <- cdm[["cohort1"]] |>
 #     addIndication(
 #       indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
 #       unknownIndicationTable = "condition_occurrence"
@@ -572,10 +572,10 @@ test_that("test attributes", {
 #   expect_true(any(grepl("Indication during prior 30 days", result$variable_name)))
 #   expect_true(any(grepl("Indication any time prior", result$variable_name)))
 #
-#   res <- res %>%
+#   res <- res |>
 #     PatientProfiles::addAge(
 #       ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))
-#     ) %>%
+#     ) |>
 #     PatientProfiles::addSex()
 #
 #   result <- summariseIndication(
@@ -584,9 +584,9 @@ test_that("test attributes", {
 #
 #   expect_true(inherits(result, "summarised_result"))
 #   x <- tidyr::expand_grid(
-#     group_level = omopgenerics::settings(res) %>% dplyr::pull("cohort_name"),
+#     group_level = omopgenerics::settings(res) |> dplyr::pull("cohort_name"),
 #     strata_name = c("overall", "age_group", "sex", "age_group &&& sex")
-#   ) %>%
+#   ) |>
 #     dplyr::left_join(
 #       dplyr::tibble(
 #         strata_name = c(
@@ -603,10 +603,10 @@ test_that("test attributes", {
 #     )
 #   expect_identical(
 #     nrow(result),
-#     result %>%
+#     result |>
 #       dplyr::inner_join(
 #         x, by = c("group_level", "strata_name", "strata_level")
-#       ) %>%
+#       ) |>
 #       nrow()
 #   )
 #   expect_true(any(grepl("Indication on index date", result$variable_name)))
