@@ -34,7 +34,6 @@ This function is used to summarise the dose table over multiple cohorts.
 \donttest{
 library(DrugUtilisation)
 library(PatientProfiles)
-library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
 cdm <- generateDrugUtilisationCohortSet(

@@ -732,7 +732,6 @@ Or we can build our own list using other packages
 (e.g. CodelistGenerator)
 
 ``` r
-library(CodelistGenerator)
 conceptList <- getDrugIngredientCodes(cdm, "acetaminophen")
 conceptList
 #> 

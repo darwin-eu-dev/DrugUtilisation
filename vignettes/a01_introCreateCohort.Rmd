@@ -33,7 +33,6 @@ package.
 
 ```{r setup, message = FALSE, warning = FALSE}
 library(DrugUtilisation)
-library(CodelistGenerator)
 library(dplyr)
 library(CDMConnector)
 

@@ -34,7 +34,6 @@
 #'
 #' @examples
 #' \donttest{
-#' library(CodelistGenerator)
 #' library(CDMConnector)
 #' library(DrugUtilisation)
 #'

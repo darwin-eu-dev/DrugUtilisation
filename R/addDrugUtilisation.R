@@ -52,7 +52,6 @@
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' cdm <- generateDrugUtilisationCohortSet(
@@ -122,7 +121,6 @@ addDrugUtilisation <- function(cohort,
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
@@ -307,7 +305,6 @@ addInitialDailyDose <- function(cohort,
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
@@ -370,7 +367,6 @@ addCumulativeQuantity <- function(cohort,
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
@@ -433,7 +429,6 @@ addInitialQuantity <- function(cohort,
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
@@ -498,7 +493,6 @@ addTimeToExposure <- function(cohort,
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
@@ -564,7 +558,6 @@ addExposedTime <- function(cohort,
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")

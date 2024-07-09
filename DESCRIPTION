@@ -48,7 +48,6 @@ Suggests:
     here,
     RPostgres,
     duckdb,
-    CodelistGenerator,
     knitr,
     PaRe,
     rmarkdown,

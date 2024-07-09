@@ -31,7 +31,6 @@ some examples for its usage.
 
 ```{r, message= FALSE, warning=FALSE}
 library(DrugUtilisation)
-library(CodelistGenerator)
 library(CDMConnector)
 library(dplyr)
 library(PatientProfiles)

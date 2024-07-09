@@ -48,7 +48,6 @@ Generates a cohort of the drug use of a certain list of concepts.
 }
 \examples{
 \donttest{
-library(CodelistGenerator)
 library(CDMConnector)
 library(DrugUtilisation)
 

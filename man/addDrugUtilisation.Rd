@@ -79,7 +79,6 @@ Add new columns with drug use related information
 \examples{
 \donttest{
 library(DrugUtilisation)
-library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
 cdm <- generateDrugUtilisationCohortSet(

@@ -85,7 +85,6 @@
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
 #' cdm <- generateDrugUtilisationCohortSet(
