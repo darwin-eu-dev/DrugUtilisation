@@ -294,7 +294,7 @@ test_that("tableDrugUtilisation", {
   default <- tableDrugUtilisation(result)
   expect_true("gt_tbl" %in% class(default))
   expect_true(all(colnames(default$`_data`) == c(
-    'Database name', 'Variable', 'Concept set', 'Estimate name',
+    'Database name', 'Variable', 'Unit', 'Estimate name', 'Concept set', 'Ingredient',
     '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Overall',
     '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Female',
     '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Male',
@@ -305,25 +305,36 @@ test_that("tableDrugUtilisation", {
   # other options working
   expect_warning(tib1 <- tableDrugUtilisation(result, type = "tibble", cohortName = FALSE, splitStrata = FALSE))
   expect_true(all(colnames(tib1) == c(
-    'Database name', 'Strata name', 'Strata level', 'Variable', 'Concept set', 'Estimate name', 'Estimate value'
+    "Database name", "Strata name", "Strata level", "Variable", "Unit", "Estimate name", "Estimate value", "Concept set", "Ingredient"
   )))
 
   fx1 <- tableDrugUtilisation(result, header = c("cdm_name", "group"), groupColumn = "variable_name", type = "flextable")
   expect_true("flextable" %in% class(fx1))
   expect_true(all(colnames(fx1$body$dataset) == c(
-    'Variable name', 'Sex', 'Concept set', 'Estimate name', 'Database name\nDUS MOCK\nCohort name\nCohort 1', 'Database name\nDUS MOCK\nCohort name\nCohort 2'
+    'Variable name', 'Sex', 'Unit', 'Estimate name', 'Concept set', 'Ingredient', 'Database name\nDUS MOCK\nCohort name\nCohort 1', 'Database name\nDUS MOCK\nCohort name\nCohort 2'
   )))
   expect_true(all(fx1$body$dataset$`Variable name` |> levels() == c(
-    'Cumulative dose (milligram)', 'Cumulative quantity', 'Exposed time', 'Initial daily dose (milligram)', 'Initial quantity',
-    'Number eras', 'Number exposures', 'Number records', 'Number subjects', 'Time to exposure'
+    'Cumulative dose', 'Cumulative quantity', 'Exposed time', 'Initial daily dose', 'Initial quantity', 'Number eras', 'Number exposures', 'Number records', 'Number subjects', 'Time to exposure'
   )))
 
-  gt1 <- tableDrugUtilisation(result, header = c("group"))
+  gt1 <- tableDrugUtilisation(result |> dplyr::filter(additional_level != "ingredient_1125315_descendants &&& acetaminophen"),
+                              header = c("group"), ingredient = FALSE)
   expect_true(all(colnames(gt1$`_data`) == c(
-    'Database name', 'Sex', 'Variable', 'Concept set', 'Estimate name', '[header]Cohort name\n[header_level]Cohort 1', '[header]Cohort name\n[header_level]Cohort 2'
+    'Database name', 'Sex', 'Variable', 'Unit', 'Estimate name', 'Concept set', '[header]Cohort name\n[header_level]Cohort 1', '[header]Cohort name\n[header_level]Cohort 2'
+  )))
+
+  gt2 <- tableDrugUtilisation(result |> dplyr::filter(is.na(variable_level)))
+  expect_true(all(colnames(gt2$`_data`) == c(
+    'Database name', 'Variable', 'Estimate name', 'Concept set',
+    '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Overall',
+    '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Female',
+    '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Male',
+    '[header]Cohort name\n[header_level]Cohort 2\n[header]Sex\n[header_level]Overall',
+    '[header]Cohort name\n[header_level]Cohort 2\n[header]Sex\n[header_level]Male'
   )))
 
   # expected errors
+  expect_error(tableDrugUtilisation(result |> dplyr::filter(is.na(variable_level)), conceptSet = FALSE))
   expect_error(tableDrugUtilisation(result, header = "variable", groupColumn = "variable_name"))
   expect_error(tableDrugUtilisation(result, groupColumn = "cdm_name", cdmName = FALSE))
   expect_error(tableDrugUtilisation(result, header = "hi"))

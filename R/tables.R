@@ -293,7 +293,13 @@ tableDoseCoverage <- function(result,
 #' @param splitStrata If TRUE strata columns will be splitted.
 #' @param cohortName If TRUE cohort names will be displayed.
 #' @param cdmName If TRUE database names will be displayed.
-#' @param groupColumn Column to use as group labels.
+#' @param conceptSet If TRUE concept sets name will be displayed.
+#' @param ingredient If TRUE ingredients names will be displayed for dose
+#' calculation.
+#' @param groupColumn Column to use as group labels, these can be:
+#' "cdm_name", "cohort_name", "concept_set", "variable_name", and/or
+#' "ingredient". If strata is split, any of the levels can be used, otherwise
+#' "strata_name" and "strata_level" can be used for table group format.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -326,18 +332,32 @@ tableDrugUtilisation <- function(result,
                                  splitStrata = TRUE,
                                  cohortName = TRUE,
                                  cdmName = TRUE,
+                                 conceptSet = TRUE,
+                                 ingredient = TRUE,
                                  groupColumn = NULL,
                                  type = "gt",
                                  formatEstimateName = c(
-                                   "N" = "<count>",
                                    "N (%)" = "<count_missing> (<percentage_missing> %)",
+                                   "N" = "<count>",
                                    "Mean (SD)" = "<mean> (<sd>)",
                                    "Median (Q25 - Q75)" = "<median> (<q25> - <q75>)"
                                  ),
                                  .options = list()) {
   # check input and filter result
+  result <- result |>
+    omopgenerics::newSummarisedResult() |>
+    visOmopResults::filterSettings(.data$result_type == "drug_utilisation")
+  if (nrow(result) == 0) {
+    cli::cli_abort("There are no results with `result_type = drug_utilisation`")
+  }
   if (!cohortName & "cohort_name" %in% groupColumn) {
     cli::cli_abort("If `cohortName = FALSE`, `cohort_name` cannot be used in `groupColumn`.")
+  }
+  if (!conceptSet & "concept_set" %in% groupColumn) {
+    cli::cli_abort("If `conceptSet = FALSE`, `concept_set` cannot be used in `groupColumn`.")
+  }
+  if (!ingredient & "ingredient" %in% groupColumn) {
+    cli::cli_abort("If `ingredient = FALSE`, `ingredient` cannot be used in `groupColumn`.")
   }
   if (!cdmName & "cdm_name" %in% groupColumn) {
     cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
@@ -352,23 +372,27 @@ tableDrugUtilisation <- function(result,
       }
     }
   }
-  result <- result |>
-    omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "drug_utilisation")
-
-  if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = drug_utilisation`")
+  if (!is.null(groupColumn)) {
+    options <- c("cdm_name", "cohort_name", "concept_set", "ingredient", "variable_name")
+    if (splitStrata) {
+      options <- c(options, visOmopResults::strataColumns(result))
+    } else {
+      options <- c(options, "strata_name", "strata_level")
+    }
+    if (any(!groupColumn %in% options)) {
+      cli::cli_abort("`groupColumn` can only be one of: {paste0(options, collapse = ', ')}")
+    }
   }
+
   checkmate::assertLogical(cohortName, any.missing = FALSE)
+  checkmate::assertLogical(conceptSet, any.missing = FALSE)
+  checkmate::assertLogical(ingredient, any.missing = FALSE)
   checkmate::assertLogical(cdmName, any.missing = FALSE)
   checkmate::assertLogical(splitStrata, any.missing = FALSE)
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
   .options = defaultTableOptionsInternal(.options)
-
-  # Split
-  split <- c("additional")
 
   # Exclude columns, rename, and split
   excludeColumns <- c("result_id", "estimate_type")
@@ -378,8 +402,9 @@ tableDrugUtilisation <- function(result,
       header <- header[!"group" %in% header]
     }
     excludeColumns <- c(excludeColumns, "group_name", "group_level")
+    split <- character()
   } else {
-    split <- c(split, "group")
+    split <- c("group")
   }
 
   if (!cdmName) {
@@ -395,8 +420,52 @@ tableDrugUtilisation <- function(result,
   if (!"variable_name" %in% groupColumn) {
     renameColumns <- c(renameColumns, "Variable" = "variable_name")
   }
-  if (!"variable_level" %in% groupColumn) {
-    renameColumns <- c(renameColumns, "Concept set" = "variable_level")
+  if (!all(is.na(result$variable_level))) {
+    renameColumns <- c(renameColumns, "Unit" = "variable_level")
+  } else if (all(is.na(result$variable_level)) & !"variable" %in% header) {
+    excludeColumns <- c(excludeColumns, "variable_level")
+  }
+  if (!ingredient & !conceptSet) {
+    splitAd <- result |>
+      visOmopResults::splitAdditional()
+    concepts <- unique(splitAd$concept_set)
+    concepts <- concepts[!concepts %in% "overall"]
+    if (length(concepts) > 1) {
+      cli::cli_abort("conceptSet cannot be FALSE if there is more than one.")
+    }
+    excludeColumns <- c(excludeColumns, "additional_name", "additional_level")
+  } else {
+    split <- c(split, "additional")
+    if (!ingredient & conceptSet) {
+      result <- result |>
+        visOmopResults::splitAdditional()
+      ingr <- unique(result$ingredient)
+      ingr <- ingr[!ingr %in% "overall"]
+      if (length(ingr) > 2) {
+        cli::cli_abort("ingredient cannot be FALSE if there is more than one in the results.")
+      }
+      result <- result |>
+        dplyr::select(!"ingredient") |>
+        visOmopResults::uniteAdditional(cols = "concept_set")
+    }
+    if (ingredient & !conceptSet) {
+      result <- result |>
+        visOmopResults::splitAdditional()
+      concepts <- unique(result$concept_set)
+      concepts <- concepts[!concepts %in% "overall"]
+      if (length(concepts) > 1) {
+        cli::cli_abort("conceptSet cannot be FALSE if there is more than one in the results.")
+      }
+      if ("ingredient" %in% colnames(result)) {
+        result <- result |>
+          dplyr::select(!"concept_set") |>
+          visOmopResults::uniteAdditional(cols = "ingredient")
+      } else {
+        result <- result |>
+          dplyr::select(!"concept_set") |>
+          visOmopResults::uniteAdditional()
+      }
+    }
   }
 
   # split

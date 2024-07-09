@@ -10,11 +10,13 @@ tableDrugUtilisation(
   splitStrata = TRUE,
   cohortName = TRUE,
   cdmName = TRUE,
+  conceptSet = TRUE,
+  ingredient = TRUE,
   groupColumn = NULL,
   type = "gt",
-  formatEstimateName = c(N = "<count>", `N (\%)` =
-    "<count_missing> (<percentage_missing> \%)", `Mean (SD)` = "<mean> (<sd>)",
-    `Median (Q25 - Q75)` = "<median> (<q25> - <q75>)"),
+  formatEstimateName = c(`N (\%)` = "<count_missing> (<percentage_missing> \%)", N =
+    "<count>", `Mean (SD)` = "<mean> (<sd>)", `Median (Q25 - Q75)` =
+    "<median> (<q25> - <q75>)"),
   .options = list()
 )
 }
@@ -31,7 +33,15 @@ in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{varia
 
 \item{cdmName}{If TRUE database names will be displayed.}
 
-\item{groupColumn}{Column to use as group labels.}
+\item{conceptSet}{If TRUE concept sets name will be displayed.}
+
+\item{ingredient}{If TRUE ingredients names will be displayed for dose
+calculation.}
+
+\item{groupColumn}{Column to use as group labels, these can be:
+"cdm_name", "cohort_name", "concept_set", "variable_name", and/or
+"ingredient". If strata is split, any of the levels can be used, otherwise
+"strata_name" and "strata_level" can be used for table group format.}
 
 \item{type}{Type of desired formatted table, possibilities: "gt",
 "flextable", "tibble".}

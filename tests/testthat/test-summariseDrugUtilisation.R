@@ -49,16 +49,21 @@ test_that("summariseDrugUtilisation works", {
   expect_true(all(unique(x0$variable_name) == c(
     'number records', 'number subjects', 'number exposures', 'time to exposure',
     'cumulative quantity', 'initial quantity', 'number eras', 'exposed time',
-    'cumulative dose (milligram)', 'initial daily dose (milligram)'
+    'cumulative dose', 'initial daily dose'
   )))
-  expect_true(all(unique(x0$variable_level) %in% c(
-    NA, "ingredient_1125315_descendants", "ingredient_1125315_descendants - 1125315"
-  )))
+  expect_true(all(unique(x0$variable_level) %in% c(NA, "milligram")))
   expect_true(settings(x0)$result_type == "drug_utilisation")
+  expect_true(all(visOmopResults::additionalColumns(x0) == c("concept_set", "ingredient")))
+  expect_true(
+    x0 |> dplyr:::filter(grepl("dose", variable_name)) |> dplyr::pull("variable_level") |> unique() == "milligram"
+  )
+  expect_true(
+    x0 |> dplyr:::filter(grepl("dose", variable_name)) |> dplyr::pull("additional_level") |> unique() == "ingredient_1125315_descendants &&& acetaminophen"
+  )
   # suppress works
   expect_true(all(
     unique(x0 |> omopgenerics::suppress(minCellCount = 3) |> dplyr::filter(group_level == "cohort_2") |> dplyr::pull("estimate_value")) %in%
-      c(NA_character_, "0")
+      c(NA_character_, "0", "NaN")
   ))
 
   # strata and concept set
@@ -69,11 +74,13 @@ test_that("summariseDrugUtilisation works", {
   expect_true(all(unique(x1$variable_name) == c(
     'number records', 'number subjects', 'number exposures', 'time to exposure',
     'cumulative quantity', 'initial quantity', 'number eras', 'exposed time',
-    'cumulative dose (milligram)', 'initial daily dose (milligram)'
+    'cumulative dose', 'initial daily dose'
   )))
-  expect_true(all(unique(x1$variable_level) %in% c(
-    NA, "ingredient_1503297_descendants", "ingredient_1125315_descendants", "ingredient_1125315_descendants - 1125315", "ingredient_1503297_descendants - 1503297"
-  )))
+  expect_true(all(unique(x1$variable_level) %in% c(NA, "milligram")))
+  expect_true(all(
+    x1 |> dplyr:::filter(grepl("dose", variable_name)) |> dplyr::pull("additional_level") |> unique() == c(
+      "ingredient_1125315_descendants &&& acetaminophen", "ingredient_1503297_descendants &&& metformin")
+  ))
   expect_true(settings(x1)$result_type == "drug_utilisation")
   expect_true(all(x1 |> visOmopResults::strataColumns() == c("sex")))
 
@@ -85,9 +92,27 @@ test_that("summariseDrugUtilisation works", {
   expect_true(all(unique(x2$variable_name) == c(
     'number records', 'number subjects', 'number exposures', 'time to exposure',
     'cumulative quantity', 'initial quantity', 'number eras', 'exposed time',
-    'cumulative dose (milligram)', 'initial daily dose (milligram)'
+    'cumulative dose', 'initial daily dose'
   )))
   expect_true(all(unique(x2$variable_level) %in% c(
-    NA, "acetaminophen", "acetaminophen - 1125315"
+    NA, "milligram"
   )))
+  expect_true(all(
+    x2 |> dplyr:::filter(grepl("dose", variable_name)) |> dplyr::pull("additional_level") |> unique() == c(
+      "acetaminophen &&& acetaminophen")
+  ))
+  # test censor and index  and no ingredient
+  x3 <- cdm$dus_cohort |>
+    dplyr::mutate(cohort_start = cohort_start_date, cohort_end = cohort_end_date) |>
+    summariseDrugUtilisation(conceptSet = codelist, indexDate = "cohort_start", censorDate = "cohort_end", initialDailyDose = FALSE, cumulativeDose = FALSE)
+  expect_true(inherits(x3, "summarised_result"))
+  expect_true(all(unique(x3$variable_name) == c(
+    'number records', 'number subjects', 'number exposures', 'time to exposure',
+    'cumulative quantity', 'initial quantity', 'number eras', 'exposed time'
+  )))
+  expect_true(is.na(unique(x3$variable_level)))
+  expect_true(all(
+    x3 |> dplyr::pull("additional_level") |> unique() == c(
+      "overall", "acetaminophen")
+  ))
 })

@@ -89,21 +89,18 @@ summariseDrugUtilisation <- function(cohort,
   conceptSet <- validateConceptSet(conceptSet, ingredientConceptId, cdm)
 
   # concept dictionary
-  dic <- dplyr::tibble(concept_name = names(conceptSet)) |>
+  dic <- dplyr::tibble(concept_set = names(conceptSet)) |>
     dplyr::mutate(
-      variable_level_id = paste0("xxid", dplyr::row_number(), "xx"),
-      variable_level = paste0("id", dplyr::row_number())
-      )
-  names(conceptSet) <- dic$variable_level_id
-
-
+      concept_set_name_id = paste0("xxid", dplyr::row_number(), "xx"),
+      concept_set_name = paste0("id", dplyr::row_number())
+    )
+  names(conceptSet) <- dic$concept_set_name_id
 
   # add drug utilisation
   cohort <- cohort |>
     dplyr::select(dplyr::all_of(c(
-      "cohort_definition_id", "subject_id", "cohort_start_date",
-      "cohort_end_date", unique(unlist(strata))
-      ))) |>
+      "cohort_definition_id", "subject_id", indexDate, censorDate, unique(unlist(strata))
+    ))) |>
     PatientProfiles::addCohortName() |>
     addDrugUseInternal(
       indexDate = indexDate,
@@ -125,8 +122,8 @@ summariseDrugUtilisation <- function(cohort,
     dplyr::collect()
 
   initialCols <- c(
-    "cohort_definition_id", "subject_id", "cohort_start_date",
-    "cohort_end_date", unique(unlist(strata))
+    "cohort_definition_id", "subject_id", indexDate, censorDate,
+    unique(unlist(strata))
   )
   drugUseCols <- colnames(cohort)
   drugUseCols <- drugUseCols[!drugUseCols %in% initialCols]
@@ -137,36 +134,43 @@ summariseDrugUtilisation <- function(cohort,
     "initial_daily_dose_"
   )
 
-
-
   # summarise drug use columns
-  result <- PatientProfiles::summariseResult(
-    table = cohort, group = list("cohort_name" = "cohort_name"),
-    strata = strata, variables = drugUseCols,
-    estimates = drugUseEstimates
-  ) %>%
+  result <- suppressMessages(
+    PatientProfiles::summariseResult(
+      table = cohort, group = list("cohort_name" = "cohort_name"),
+      strata = strata, variables = drugUseCols,
+      estimates = drugUseEstimates
+    )) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA)),
-      unit =  gsub("_xx.*", "", gsub(paste0(variableNames, collapse = "|"), "", .data$variable_name)),
+      variable_level =  gsub("_xx.*|xx.*", "", gsub(paste0(variableNames, collapse = "|"), "", .data$variable_name)),
       variable_level = dplyr::if_else(
+        nchar(.data$variable_level) == 0 | grepl("records|subjects", .data$variable_level),
+        NA, .data$variable_level
+      ),
+      concept_set_name = dplyr::if_else(
         .data$variable_name %in% c("number records", "number subjects"),
         NA,
         gsub(".*_xx|xx_.*|xx.*", "", .data$variable_name)
-        ),
-      ingredient = gsub(".*xx_|.*xx", "", .data$variable_name),
-      ingredient = dplyr::if_else(nchar(.data$ingredient) == 0, NA, .data$ingredient),
+      ),
+      ingredient_id = gsub(".*xx_|.*xx", "", .data$variable_name),
+      ingredient_id = dplyr::if_else(
+        nchar(.data$ingredient_id) == 0 | grepl("records|subjects", .data$variable_level),
+        NA, as.numeric(.data$ingredient_id)),
       !!!variableNameExp(variableNames)
     ) |>
-    dplyr::left_join(dic, by = "variable_level") |>
-    dplyr::mutate(
-      variable_level = dplyr::case_when(
-        !is.na(.data$concept_name) & is.na(.data$ingredient) ~ .data$concept_name,
-        !is.na(.data$concept_name) & !is.na(.data$ingredient) ~ paste0(.data$concept_name, " - ", .data$ingredient),
-        .default = .data$variable_level
-      )
+    dplyr::left_join(dic, by = "concept_set_name") |>
+    dplyr::left_join(
+      cdm$concept |>
+        dplyr::select("ingredient_id" = "concept_id", "ingredient" = "concept_name"),
+      by = "ingredient_id",
+      copy = TRUE
     ) |>
+    dplyr::select(-c(dplyr::starts_with("additional"))) |>
+    visOmopResults::uniteAdditional(cols = c("concept_set", "ingredient")) |>
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns())) |>
-    dplyr::arrange(.data$result_id, .data$group_name, .data$group_level, .data$strata_name, .data$strata_level)
+    dplyr::arrange(.data$result_id, .data$group_name, .data$group_level, .data$strata_name, .data$strata_level) |>
+    suppressWarnings()
 
   result <- result |>
     omopgenerics::newSummarisedResult(settings = dplyr::tibble(
@@ -182,11 +186,7 @@ summariseDrugUtilisation <- function(cohort,
 variableNameExp <- function(variableNames) {
   expr <- "dplyr::case_when("
   for (var in variableNames) {
-    if (!grepl("dose", var)) {
-      expr <- paste0(expr, "grepl('", var, "', .data$variable_name) ~ '", gsub("_", " ", substring(var, 0, nchar(var)-1)), "',")
-    } else {
-      expr <- paste0(expr, "grepl('", var, "', .data$variable_name) ~ ", "paste0('", gsub("_", " ", var), "',", "'(', .data$unit, ')')", ",")
-    }
+    expr <- paste0(expr, "grepl('", var, "', .data$variable_name) ~ '", gsub("_", " ", substring(var, 0, nchar(var)-1)), "',")
   }
   expr <- paste0(expr, ".default = .data$variable_name)") |> rlang::parse_exprs() |> rlang::set_names("variable_name")
 }
