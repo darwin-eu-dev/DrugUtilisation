@@ -1360,8 +1360,7 @@ hour
 <code class="sourceCode R"><span><span class="va">conceptList</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/readConceptList.html">readConceptList</a></span><span class="op">(</span><span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="st">"Concepts"</span><span class="op">)</span>, <span class="va">cdm</span><span class="op">)</span></span></code></pre></div>
 <p>Or we can build our own list using other packages (e.g. CodelistGenerator)</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CodelistGenerator/" class="external-link">CodelistGenerator</a></span><span class="op">)</span></span>
-<span><span class="va">conceptList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"acetaminophen"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">conceptList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"acetaminophen"</span><span class="op">)</span></span>
 <span><span class="va">conceptList</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── 1 codelist ──────────────────────────────────────────────────────────────────</span></span>
@@ -1422,7 +1421,7 @@ hour
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/settings.html" class="external-link">settings</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/settings.html" class="external-link">settings</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 1</span></span>
 <span><span class="co">#&gt; Columns: 11</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id    &lt;int&gt; 1</span></span>
@@ -1445,7 +1444,7 @@ hour
 <span><span class="co">#&gt; 1                    1             70              62</span></span></code></pre></div>
 <p>Cohort attrition:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 2</span></span>
 <span><span class="co">#&gt; Columns: 7</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id &lt;int&gt; 1, 1</span></span>
@@ -1472,7 +1471,7 @@ hour
 <span><span class="co">#&gt; 2                    2             46              46</span></span></code></pre></div>
 <p>Then we can add the indication using the function <code>addIndication</code>. That will add a new column for each indication gap and indication.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
 <span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>, indicationGap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span>, <span class="fl">365</span><span class="op">)</span>, </span>
 <span>    unknownIndicationTable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
@@ -1499,7 +1498,7 @@ hour
 <span><span class="co">#&gt; $ indication_gap_365_unknown   &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0,…</span></span></code></pre></div>
 <p>We can combine the indications in a single column using the <code>indicationToStrata()</code> function. This column can be used as stratification of the results if needed:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">indicationToStrata</span><span class="op">(</span>keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">|&gt;</span> <span class="fu">indicationToStrata</span><span class="op">(</span>keep <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 19</span></span>
@@ -1524,7 +1523,7 @@ hour
 <span><span class="co">#&gt; $ indication_gap_30            &lt;chr&gt; "None", "None", "None", "Influenza", "Non…</span></span>
 <span><span class="co">#&gt; $ indication_gap_365           &lt;chr&gt; "Influenza", "None", "None", "Influenza a…</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="st">"indication_gap_365"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">x</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="st">"indication_gap_365"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;               Headache              Influenza Influenza and Headache </span></span>
 <span><span class="co">#&gt;                      5                      5                      2 </span></span>
@@ -1579,7 +1578,7 @@ hour
 <span><span class="co">#&gt; #   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">cdm</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">cdm</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ The following estimates will be computed:</span></span>
 <span><span class="co">#&gt; • indication_gap_0_headache: count, percentage</span></span>
 <span><span class="co">#&gt; • indication_gap_0_influenza: count, percentage</span></span>
@@ -1620,8 +1619,8 @@ hour
 </h3>
 <p>All summarise functions have the option to add strata. Strata will always point to preexisting columns. Here we can see an example where we create a <code>age_group</code> and <code>sex</code> columns using PatientProfiles and then we use it as strata</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span>  <span class="fu">PatientProfiles</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html" class="external-link">addAge</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">39</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">59</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">79</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">PatientProfiles</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html" class="external-link">addAge</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">39</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">59</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">79</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">PatientProfiles</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html" class="external-link">addSex</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">cdm</span>, strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ The following estimates will be computed:</span></span>
@@ -1661,7 +1660,7 @@ hour
 <span><span class="co">#&gt; #   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">cdm</span>, strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">cdm</span>, strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ℹ The following estimates will be computed:</span></span>
 <span><span class="co">#&gt; • indication_gap_0_headache: count, percentage</span></span>
 <span><span class="co">#&gt; • indication_gap_0_influenza: count, percentage</span></span>
@@ -1702,8 +1701,8 @@ hour
 </h3>
 <p>We can compute daily dose for a certain ingredient from a subset of drug_exposure or the whole drug exposure (can be very computationally expensive).</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"drug_exposure"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
-<span> <span class="fu"><a href="reference/addDailyDose.html">addDailyDose</a></span><span class="op">(</span>ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"drug_exposure"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span> <span class="fu"><a href="reference/addDailyDose.html">addDailyDose</a></span><span class="op">(</span>ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 9</span></span>
@@ -1755,7 +1754,7 @@ hour
 </h3>
 <p>You can add columns related to the drug use using <code>addDrugUse</code>. You always have to provide a reference ingredient.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">|&gt;</span></span>
 <span> <span class="fu"><a href="reference/addDrugUse.html">addDrugUse</a></span><span class="op">(</span></span>
 <span>   ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span>,</span>
 <span>   dose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -1844,6 +1843,8 @@ hour
 <li>Mike Du <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-9517-8834" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Yuchen Guo <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-0847-4855" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Kim Lopez-Guell <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-8462-8668" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Nuria Mercade-Besora <br><small class="roles"> Author </small> <a href="https://orcid.org/0009-0006-7948-3747" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Xihang Chen <br><small class="roles"> Author </small> <a href="https://orcid.org/0009-0001-8112-8959" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -1855,7 +1856,7 @@ hour
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell.</p>
+  <p>Developed by Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Nuria Mercade-Besora, Xihang Chen.</p>
 </div>
 
 <div class="pkgdown-footer-right">

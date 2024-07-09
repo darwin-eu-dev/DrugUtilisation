@@ -27,7 +27,7 @@
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addNumberExposures.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addRoute.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/addTimeToExposure.html</loc></url>
-<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/benchmarkDUS.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/benchmarkDrugUtilisation.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/dailyDoseCoverage.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateAtcCohortSet.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/generateDrugUtilisationCohortSet.html</loc></url>
@@ -38,7 +38,6 @@
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/optionsTableIndication.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/patternTable.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/patternsWithFormula.html</loc></url>
-<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/pipe.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/plotTreatment.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/readConceptList.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/reexports.html</loc></url>
@@ -51,5 +50,6 @@
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseTreatmentFromConceptSet.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/tableDoseCoverage.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/tableIndication.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/tableTreatment.html</loc></url>
 </urlset>
 

@@ -114,110 +114,39 @@ column date of x. If NULL, end of observation will be used.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/" class="external-link">PatientProfiles</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CodelistGenerator/" class="external-link">CodelistGenerator</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">cdm</span>, <span class="st">"dus_cohort"</span>, <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"acetaminophen"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Washout specified is 0 meaning nothing will be applied. Suggest rechecking the</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> priorUseWashout.</span>
-<span class="r-in"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="addDrugUse.html">addDrugUse</a></span><span class="op">(</span>ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="summariseDrugUse.html">summariseDrugUse</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> names of group will be ignored</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> number_exposures: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> duration: min, q05, q25, median, q75, q95, max, mean, sd, count_missing,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> cumulative_quantity: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> number_eras: min, q05, q25, median, q75, q95, max, mean, sd, count_missing,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> initial_quantity: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> impute_daily_dose_percentage: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> impute_duration_percentage: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> initial_daily_dose_milligram: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> cumulative_dose_milligram: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Table is collected to memory as not all requested estimates are supported on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   the database side</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-09 16:37:41.373712</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-09 16:37:41.525691</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 101 × 13</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    result_id cdm_name group_name  group_level   strata_name strata_level</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 91 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addSex.html" class="external-link">addSex</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="pipe.html">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addAge.html" class="external-link">addAge</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"&lt;40"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">39</span><span class="op">)</span>, <span class="st">"&gt;=40"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="summariseDrugUse.html">summariseDrugUse</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">cdm</span><span class="op">[[</span><span class="st">"dus_cohort"</span><span class="op">]</span><span class="op">]</span>, strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>   <span class="st">"age_group"</span> <span class="op">=</span> <span class="st">"age_group"</span>, <span class="st">"sex"</span> <span class="op">=</span> <span class="st">"sex"</span>,</span></span>
-<span class="r-in"><span>   <span class="st">"age_group and sex"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">■■■■■■■■■■■■■■■■■■■■■■■■■■■■    </span>  90% | ETA:  0s</span>
+<span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu">summariseTreatmentFromCohort</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    treatmentCohortName <span class="op">=</span> <span class="st">"cohort2"</span>,</span></span>
+<span class="r-in"><span>    window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">30</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">31</span>, <span class="fl">365</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> names of group will be ignored</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> names of strata will be ignored</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> number_exposures: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> duration: min, q05, q25, median, q75, q95, max, mean, sd, count_missing,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> cumulative_quantity: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> number_eras: min, q05, q25, median, q75, q95, max, mean, sd, count_missing,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> initial_quantity: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> impute_daily_dose_percentage: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> impute_duration_percentage: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> initial_daily_dose_milligram: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> cumulative_dose_milligram: min, q05, q25, median, q75, q95, max, mean, sd,</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Table is collected to memory as not all requested estimates are supported on</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   the database side</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-09 16:37:42.783107</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-09 16:37:43.432753</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 808 × 13</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    result_id cdm_name group_name  group_level   strata_name strata_level</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1 DUS MOCK cohort_name acetaminophen overall     overall     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 798 more rows</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> window1_cohort_3: count, percentage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> window1_cohort_1: count, percentage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> window2_cohort_1: count, percentage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> window1_cohort_2: count, percentage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> window2_cohort_2: count, percentage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> window2_cohort_3: count, percentage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> window1_untreated: count, percentage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> window2_untreated: count, percentage</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-09 18:42:28.979823</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-09 18:42:29.050253</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 48 × 13</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    result_id cdm_name group_name  group_level strata_name strata_level</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>         1 DUS MOCK cohort_name cohort_1    overall     overall     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 38 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span>
@@ -230,7 +159,7 @@ column date of x. If NULL, end of observation will be used.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell.</p>
+  <p>Developed by Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Nuria Mercade-Besora, Xihang Chen.</p>
 </div>
 
 <div class="pkgdown-footer-right">
