@@ -342,11 +342,12 @@ optionsTableDoseCoverage <- function() {
 #' @param result A summarised_result object with results from
 #' summariseTreatmentFromCohort() or summariseTreatmentFromConceptSet().
 #' @param header A vector containing which elements should go into the header
-#' in order. Allowed are: `cdm_name`, `cohort_name`, `strata`, `variable`,
+#' in order. Allowed values: `cdm_name`, `cohort_name`, `strata`, `variable`,
 #' `estimate` and `window_name`.
 #' @param splitStrata If TRUE strata columns will be splitted.
 #' @param cdmName If TRUE database names will be displayed.
-#' @param groupColumn Column to use as group labels.
+#' @param groupColumn Column to use as group labels. Allowed values: `cdm_name`,
+#' `cohort_name`, `strata`, `variable`, `estimate` and `window_name`.
 #' @param type Type of desired formatted table, possibilities: "gt",
 #' "flextable", "tibble".
 #' @param formatEstimateName Named list of estimate name's to join, sorted by
@@ -357,11 +358,13 @@ optionsTableDoseCoverage <- function() {
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
+#' result <- cdm$cohort1 %>%
+#'   summariseTreatmentFromConceptSet(
+#'     treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
+#'     window = list(c(0, 180), c(181, 360))
+#'   )
 #'
-#' result <- summariseDoseCoverage(cdm, 1125315)
-#'
-#' tableDoseCoverage(result)
-#'
+#' tableTreatment(result)
 #'
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
@@ -380,49 +383,34 @@ tableTreatment <- function(result,
                              "N (%)" = "<count> (<percentage> %)"),
                            .options = list()) {
   opts <- c(
-    "cdm_name", "cohort_name", "strata", "variable", "estimate", "window_name")
-  assertChoice(header, choices = opts, null = TRUE)
-  assertChoice(groupColumn, choices = opts, null = TRUE)
+    "cdm_name", "cohort_name", "strata", "variable_name", "estimate", "window_name")
+  assertChoice(header, choices = opts, null = TRUE, unique = TRUE)
+  assertChoice(groupColumn, choices = opts, null = TRUE, unique = TRUE)
   assertChoice(type, choices = c("gt", "flextable", "tibble"), length = 1)
+  assertClass(result, class = "summarised_result")
+  assertLogical(splitStrata, length = 1)
+  assertLogical(cdmName, length = 1)
 
-  if (!is.null(header)) {
-    if (any(!header %in% c("cdm_name", "group", "strata", "variable", "estimate"))) {
-      cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`, `estimate`")
-    }
-    if (!is.null(groupColumn)) {
-      if (grepl(paste0(header, collapse = "|"), groupColumn)) {
-        cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
-      }
-    }
+  commonArguments <- intersect(header, groupColumn)
+  if (length(commonArguments) > 0) {
+    cli::cli_abort("header and groupColumn must be mutually exclusive: {commonArguments} {?is/are} present in both.")
   }
+
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "dose_coverage")
+    visOmopResults::filterSettings(.data$result_type == "summarised_treatment")
   if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = dose_coverage`")
+    cli::cli_abort("There are no results with `result_type = summarised_treatment`")
   }
-  checkmate::assertLogical(ingridientName, any.missing = FALSE)
-  checkmate::assertLogical(cdmName, any.missing = FALSE)
-  checkmate::assertLogical(splitStrata, any.missing = FALSE)
-  checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
   .options = defaultTableOptions(.options)
 
   # Split
-  split <- c("additional")
+  split <- c("group", "additional")
 
   # Exclude columns, rename, and split
   excludeColumns <- c("result_id", "estimate_type", "variable_level")
-  if (!ingridientName) {
-    if ("group" %in% header) {
-      cli::cli_warn(c("!" = "Dropping group from header as `ingridientName = FALSE`."))
-      header <- header[!"group" %in% header]
-    }
-    excludeColumns <- c(excludeColumns, "group_name", "group_level")
-  } else {
-    split <- c(split, "group")
-  }
 
   if (!cdmName) {
     if ("cdm_name" %in% header) {
@@ -435,7 +423,7 @@ tableTreatment <- function(result,
     renameColumns <- c("Database name" = "cdm_name")
   }
   if (!"variable_name" %in% groupColumn) {
-    renameColumns <- c(renameColumns, "Variable" = "variable_name")
+    renameColumns <- c(renameColumns, "Treatment" = "variable_name")
   }
 
   # split
@@ -444,17 +432,15 @@ tableTreatment <- function(result,
   }
 
   # table
-  suppressMessages(
-    visOmopResults::visOmopTable(
-      result = result,
-      formatEstimateName = formatEstimateName,
-      header = header,
-      split = split,
-      groupColumn = groupColumn,
-      renameColumns = renameColumns,
-      type = type,
-      excludeColumns = excludeColumns,
-      .options = .options
-    )
+  visOmopResults::visOmopTable(
+    result = result,
+    formatEstimateName = formatEstimateName,
+    header = header,
+    split = split,
+    groupColumn = groupColumn,
+    renameColumns = renameColumns,
+    type = type,
+    excludeColumns = excludeColumns,
+    .options = .options
   )
 }
