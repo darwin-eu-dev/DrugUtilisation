@@ -7,6 +7,9 @@
 \alias{settings}
 \alias{attrition}
 \alias{cohortCodelist}
+\alias{bind}
+\alias{suppress}
+\alias{exportSummarisedResult}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -14,6 +17,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{omopgenerics}{\code{\link[omopgenerics]{attrition}}, \code{\link[omopgenerics]{cohortCodelist}}, \code{\link[omopgenerics]{cohortCount}}, \code{\link[omopgenerics]{settings}}}
+  \item{omopgenerics}{\code{\link[omopgenerics]{attrition}}, \code{\link[omopgenerics]{bind}}, \code{\link[omopgenerics]{cohortCodelist}}, \code{\link[omopgenerics]{cohortCount}}, \code{\link[omopgenerics]{exportSummarisedResult}}, \code{\link[omopgenerics]{settings}}, \code{\link[omopgenerics]{suppress}}}
 }}
 

@@ -40,3 +40,16 @@ A summary of the drug use stratified by cohort_name and strata_name
 \description{
 This function is used to summarise the dose table over multiple cohorts.
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+
+cdm <- mockDrugUtilisation()
+cdm$cohort1 \%>\%
+  summariseTreatmentFromConceptSet(
+    treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
+    window = list(c(0, Inf))
+  )
+}
+
+}

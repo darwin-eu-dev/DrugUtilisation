@@ -48,28 +48,13 @@ This function is used to summarise the dose table over multiple cohorts.
 \examples{
 \donttest{
 library(DrugUtilisation)
-library(PatientProfiles)
-library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation()
-cdm <- generateDrugUtilisationCohortSet(
-  cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
-)
-cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] \%>\%
-  addDrugUse(ingredientConceptId = 1125315)
-result <- summariseDrugUse(cdm[["dus_cohort"]])
-print(result)
-
-cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] \%>\%
-  addSex() \%>\%
-  addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
-
-summariseDrugUse(
-  cdm[["dus_cohort"]], strata = list(
-   "age_group" = "age_group", "sex" = "sex",
-   "age_group and sex" = c("age_group", "sex")
+cdm$cohort1 \%>\%
+  summariseTreatmentFromCohort(
+    treatmentCohortName = "cohort2",
+    window = list(c(0, 30), c(31, 365))
   )
-)
 }
 
 }
