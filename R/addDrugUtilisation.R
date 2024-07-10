@@ -787,12 +787,12 @@ addDrugUseInternal <- function(x,
       toJoin <- toJoin |>
         dplyr::mutate(
           "drug_exposure_start_date" = dplyr::if_else(
-            .data$drug_exposure_start_date <= .data$cohort_start_date,
-            .data$cohort_start_date, .data$drug_exposure_start_date
+            .data$drug_exposure_start_date <= .data[[indexDate]],
+            .data[[indexDate]], .data$drug_exposure_start_date
           ),
           "drug_exposure_end_date" = dplyr::if_else(
-            .data$drug_exposure_end_date >= .data$cohort_end_date,
-            .data$cohort_end_date, .data$drug_exposure_end_date
+            .data$drug_exposure_end_date >= .data[[censorDate]],
+            .data[[censorDate]], .data$drug_exposure_end_date
           )
         ) %>%
         dplyr::mutate("exposed_time" = as.integer(!!CDMConnector::datediff(
@@ -833,7 +833,7 @@ addDrugUseInternal <- function(x,
         dplyr::filter(
           .data$drug_exposure_start_date == min(
             .data$drug_exposure_start_date, na.rm = TRUE) |
-            .data$drug_exposure_start_date <= .data$cohort_start_date
+            .data$drug_exposure_start_date <= .data[[indexDate]]
         ) |>
         dplyr::ungroup()
     }
@@ -890,7 +890,7 @@ addDrugUseInternal <- function(x,
             dplyr::filter(
               .data$drug_exposure_start_date == min(
                 .data$drug_exposure_start_date, na.rm = TRUE) |
-                .data$drug_exposure_start_date <= .data$cohort_start_date) |>
+                .data$drug_exposure_start_date <= .data[[indexDate]]) |>
             dplyr::ungroup()
         }
       }
