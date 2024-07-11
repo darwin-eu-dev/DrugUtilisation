@@ -92,5 +92,23 @@ summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315) |>
 
 The output will summarise the usage of acetaminophen in the database. For example, overall there were $13$ records of acetaminophen use and none missing in terms of the duration and strength. By default the output will also include the mean, median, lower and upper quartiles and standard deviation of the daily dose of acetaminophen (calculated using `addDailyDose()`). The results will also be stratified by unit, route (which we saw in `addRoute()` function) and pattern (which we saw in `patternTable()` function).
 
+One may wish to display the output of `summariseDoseCoverage()` in a gt table form like so: 
 
+```{r, message= FALSE, warning=FALSE}
+summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315) |>
+  tableDoseCoverage()
+```
 
+The user also has the freedom to customize the gt table output. For example the following will suppress the `cdmName`:
+
+```{r, message= FALSE, warning=FALSE}
+summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315) |>
+  tableDoseCoverage(cdmName = F)
+```
+
+Additionally, if the user wants to specify a title for the gt output, they could try the following:
+
+```{r, message= FALSE, warning=FALSE}
+summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315) |>
+  tableDoseCoverage(.options = list(title = "Title of summariseDoseCoverage"))
+```
