@@ -30,14 +30,16 @@
 #' @examples
 #' \donttest{
 #' cdm <- mockDrugUtilisation()
-#' requirePriorUseWashout(cohort = cdm$cohort1, priorUseWashout = 90, cohortId = c(2,3))
+#' cdm$cohort1 <- cdm$cohort1 |>
+#'   requirePriorDrugWashout(priorUseWashout = 90, cohortId = c(2,3))
+#' attrition(cdm$cohort1)
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
-requirePriorUseWashout <- function(cohort,
-                                   priorUseWashout,
-                                   cohortId = NULL,
-                                   name = tableName(cohort)) {
+requirePriorDrugWashout <- function(cohort,
+                                    priorUseWashout,
+                                    cohortId = NULL,
+                                    name = omopgenerics::tableName(cohort)) {
 
   cdm <- omopgenerics::cdmReference(cohort)
 
@@ -45,36 +47,22 @@ requirePriorUseWashout <- function(cohort,
     cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout, name = name
   )
 
-  if (is.null(cohortId)){
-    record_counts <- omopgenerics::cohortCount(cohort) |>
-      dplyr::pull("number_records")
-  } else {
-    record_counts <- omopgenerics::cohortCount(cohort) |>
-      dplyr::filter(.data$cohort_definition_id %in% cohortId) |>
-      dplyr::pull("number_records")
+  if (is.null(cohortId)) {
+    cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
   }
 
-  if (all(record_counts == 0)){
-    cli::cli_inform("The specified cohorts are all empty so priorUseWashout
-    cannot be applied. Suggest rechecking the cohort.")
-    if (name == tableName(cohort)) {
-      return(cohort)
-    } else if (name != tableName(cohort)){
+  record_counts <- omopgenerics::cohortCount(cohort) |>
+    dplyr::filter(.data$cohort_definition_id %in% cohortId) |>
+    dplyr::pull("number_records")
+
+  if (all(record_counts == 0) | priorUseWashout == 0) {
+    if (name != tableName(cohort)){
       cohort <- cohort |>
         dplyr::compute(name = name, temporary = FALSE, overwrite = TRUE)
-      return(cohort)
     }
-  } else if(priorUseWashout == 0){
-    cli::cli_inform("Washout specified is 0 meaning nothing will be applied.
-                   Suggest rechecking the priorUseWashout.")
-    if (name == tableName(cohort)) {
-      return(cohort)
-    } else if (name != tableName(cohort)){
-      cohort <- cohort |>
-        dplyr::compute(name = name, temporary = FALSE, overwrite = TRUE)
-      return(cohort)
-    }
-  } else if (is.null(cohortId)){
+    return(cohort)
+  }
+
     cohort <- cohort |>
       dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
       dplyr::arrange(.data$cohort_start_date) |>
@@ -149,20 +137,20 @@ requirePriorUseWashout <- function(cohort,
           is.na(.data$prior_date) | .data$prior_time >= .env$priorUseWashout)
     }
     included <- included |>
-        dplyr::select(-c("id", "prior_date", "prior_time")) |>
-        dplyr::arrange() |>
-        dplyr::ungroup() |>
-        dplyr::compute(name = uniqueTmpName(), temporary = FALSE, overwrite = TRUE)
-      res <- paste("require prior use priorUseWashout of", priorUseWashout, "days")
-      included <- included |>
-        omopgenerics::recordCohortAttrition(reason = res)
+      dplyr::select(-c("id", "prior_date", "prior_time")) |>
+      dplyr::arrange() |>
+      dplyr::ungroup() |>
+      dplyr::compute(name = uniqueTmpName(), temporary = FALSE, overwrite = TRUE)
+    res <- paste("require prior use priorUseWashout of", priorUseWashout, "days")
+    included <- included |>
+      omopgenerics::recordCohortAttrition(reason = res)
 
-      cdm <- omopgenerics::bind(included, excluded, name = name)
+    cdm <- omopgenerics::bind(included, excluded, name = name)
 
-      cohort <- cdm[[name]]
+    cohort <- cdm[[name]]
 
-      omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
+    omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
 
-      return(cohort)
-    }
+    return(cohort)
+  }
 }
