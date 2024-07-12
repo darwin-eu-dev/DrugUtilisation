@@ -31,7 +31,7 @@ considered in the same era.}
 
 \item{imputeDuration}{Deprecated.}
 
-\item{priorUseWashout}{Prior days without exposure.}
+\item{priorUseWashout}{Deprecated.}
 
 \item{priorObservation}{Deprecated.}
 

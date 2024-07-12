@@ -269,23 +269,16 @@ test_that("test cohortId, example 1", {
                                         name = "cohort3")
 
   expect_equal(
-    (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+    cdm$cohort3 |> dplyr::tally() |> dplyr::pull("n") |> as.numeric(),
     4
   )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        priorUseWashout = 90,
-                                        cohortId = 1,
-                                        name = "cohort3")
+  cdm$cohort3 <- cdm$cohort1 |>
+    requirePriorDrugWashout(
+      priorUseWashout = 90, cohortId = 1, name = "cohort3")
 
   expect_equal(
-    (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+    cdm$cohort3 |> dplyr::tally() |> dplyr::pull("n") |> as.numeric(),
     3
   )
 

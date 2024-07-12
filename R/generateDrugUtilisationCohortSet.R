@@ -23,10 +23,11 @@
 #' considered in the same era.
 #' @param durationRange Deprecated.
 #' @param imputeDuration Deprecated.
-#' @param priorUseWashout Prior days without exposure.
+#' @param priorUseWashout Deprecated.
 #' @param priorObservation Deprecated.
 #' @param cohortDateRange Deprecated.
 #' @param limit Deprecated.
+#'
 #' @return The function returns the 'cdm' object with the created tables as
 #' references of the object.
 #'
