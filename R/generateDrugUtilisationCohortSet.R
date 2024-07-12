@@ -19,10 +19,10 @@
 #' @param cdm A cdm_reference object.
 #' @param name Name of the GeneratedCohortSet
 #' @param conceptSet Named list of concept sets.
-#' @param durationRange Deprecated.
-#' @param imputeDuration Deprecated.
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era.
+#' @param durationRange Deprecated.
+#' @param imputeDuration Deprecated.
 #' @param priorUseWashout Prior days without exposure.
 #' @param priorObservation Deprecated.
 #' @param cohortDateRange Deprecated.
@@ -59,79 +59,67 @@
 generateDrugUtilisationCohortSet <- function(cdm,
                                              name,
                                              conceptSet,
+                                             gapEra = 1,
                                              durationRange = lifecycle::deprecated(),
                                              imputeDuration = lifecycle::deprecated(),
-                                             gapEra = 0,
-                                             priorUseWashout = 0,
+                                             priorUseWashout = lifecycle::deprecated(),
                                              priorObservation = lifecycle::deprecated(),
                                              cohortDateRange = lifecycle::deprecated(),
                                              limit = lifecycle::deprecated()) {
 
   if (lifecycle::is_present(durationRange)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateDrugUtilisationCohortSet(durationRange = )"
+      when = "0.7.0",
+      what = "generateDrugUtilisationCohortSet(durationRange = )"
     )
   }
   if (lifecycle::is_present(imputeDuration)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateDrugUtilisationCohortSet(imputeDuration = )"
+      when = "0.7.0", what = "generateDrugUtilisationCohortSet(imputeDuration = )"
+    )
+  }
+  if (lifecycle::is_present(priorUseWashout)) {
+    lifecycle::deprecate_warn(
+      when = "0.7.0",
+      what = "generateDrugUtilisationCohortSet(priorUseWashout = )",
+      with = "requirePriorDrugWashout()"
     )
   }
   if (lifecycle::is_present(priorObservation)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateDrugUtilisationCohortSet(priorObservation = )"
+      when = "0.7.0",
+      what = "generateDrugUtilisationCohortSet(priorObservation = )",
+      with = "requireObservationBeforeDrug()"
     )
   }
   if (lifecycle::is_present(cohortDateRange)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateDrugUtilisationCohortSet(cohortDateRange = )"
+      when = "0.7.0",
+      what = "generateDrugUtilisationCohortSet(cohortDateRange = )",
+      with = "requireDrugInDateRange()"
     )
   }
   if (lifecycle::is_present(limit)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateDrugUtilisationCohortSet(limit = )"
+      when = "0.7.0",
+      what = "generateDrugUtilisationCohortSet(limit = )",
+      with = "requireIsFirstDrugEntry()"
     )
   }
 
-  priorObservation <- 0
-  cohortDateRange <- as.Date(c(NA, NA))
-
-  checkInputs(
-    cdm = cdm, name = name, conceptSet = conceptSet,
-    limit = "all", priorObservation = priorObservation, gapEra = gapEra,
-    priorUseWashout = priorUseWashout, cohortDateRange = cohortDateRange,
-    imputeDuration = "none", durationRange = c(1, Inf)
-  )
+  checkInputs(cdm = cdm, name = name, conceptSet = conceptSet, gapEra = gapEra)
 
   # get conceptSet
   cohortSet <- dplyr::tibble(cohort_name = names(conceptSet)) |>
     dplyr::mutate(cohort_definition_id = dplyr::row_number()) |>
     dplyr::select("cohort_definition_id", "cohort_name") |>
-    dplyr::mutate(
-      duration_range_min = as.character(1),
-      duration_range_max = as.character(Inf),
-      impute_duration = "none",
-      gap_era = as.character(.env$gapEra),
-      prior_use_washout = as.character(.env$priorUseWashout),
-      prior_observation = as.character(dplyr::coalesce(
-        .env$priorObservation, as.numeric(NA)
-      )),
-      cohort_date_range_start = as.character(.env$cohortDateRange[1]),
-      cohort_date_range_end = as.character(.env$cohortDateRange[2]),
-      limit = "all"
-    )
+    dplyr::mutate(gap_era = as.character(.env$gapEra))
 
   conceptSet <- conceptSetFromConceptSetList(conceptSet, cohortSet)
 
-  cdm[[name]] <- subsetTables(
-    cdm, conceptSet, name
-  ) |>
+  cdm[[name]] <- subsetTables(cdm, conceptSet, name) |>
     omopgenerics::newCohortTable(cohortSetRef = cohortSet) |>
-    erafyCohort(gapEra) |>
-    requirePriorUseWashout(priorUseWashout) |>
-    requirePriorObservation(priorObservation) |>
-    trimStartDate(cohortDateRange[1]) |>
-    trimEndDate(cohortDateRange[2])
+    erafyCohort(gapEra)
 
   dropTmpTables(cdm)
 
