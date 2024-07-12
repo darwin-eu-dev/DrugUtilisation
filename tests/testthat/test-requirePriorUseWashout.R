@@ -1,22 +1,22 @@
 test_that("input validation", {
   skip_on_cran()
-  cdm <- mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(connectionDetails)
   expect_no_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = 90
     )
   )
 
   expect_no_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = Inf
     )
   )
 
   expect_no_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = Inf,
       name = "cohort2"
@@ -24,7 +24,7 @@ test_that("input validation", {
   )
 
   expect_no_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = Inf,
       cohortId = c(1, 3),
@@ -33,14 +33,14 @@ test_that("input validation", {
   )
 
   expect_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = -90
     )
   )
 
   expect_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = Inf,
       cohortId = c(1, 3, 4),
@@ -49,7 +49,7 @@ test_that("input validation", {
   )
 
   expect_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = Inf,
       cohortId = "1",
@@ -58,28 +58,28 @@ test_that("input validation", {
   )
 
   expect_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm,
       priorUseWashout = 90
     )
   )
 
   expect_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = "cohort1",
       priorUseWashout = 90
     )
   )
 
   expect_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = "90"
     )
   )
 
   expect_error(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = 90,
       name = cohort2
@@ -87,7 +87,7 @@ test_that("input validation", {
   )
 
   expect_error(
-    cdm$cohort3 <- requirePriorUseWashout(
+    cdm$cohort3 <- requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = 90,
       name = "cohort2"
@@ -95,7 +95,7 @@ test_that("input validation", {
   )
 
   expect_message(
-    requirePriorUseWashout(
+    requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = 0
     )
@@ -127,13 +127,13 @@ test_that("input validation", {
 
   cdm <-
     mockDrugUtilisation(
-      #connectionDetails,
+      connectionDetails,
       cohort1 = cohort1,
       observation_period = observationPeriod
     )
 
   expect_message(
-    requirePriorUseWashout(cohort = cdm$cohort1,
+    requirePriorDrugWashout(cohort = cdm$cohort1,
                            priorUseWashout = 90,
                            name = "cohort2")
   )
@@ -172,7 +172,7 @@ test_that("requirePrioUseWashout example", {
       observation_period = observationPeriod
     )
 
-  cdm$cohort2 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort2 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         name = "cohort2")
 
@@ -194,7 +194,7 @@ test_that("requirePrioUseWashout example", {
     2
   )
 
-  cdm$cohort2 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort2 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 10,
                                         name = "cohort2")
 
@@ -206,7 +206,7 @@ test_that("requirePrioUseWashout example", {
     3
   )
 
-  cdm$cohort2 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort2 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = Inf,
                                         name = "cohort2")
 
@@ -252,7 +252,7 @@ test_that("test cohortId, example 1", {
       observation_period = observationPeriod
     )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         name = "cohort3")
 
@@ -264,7 +264,7 @@ test_that("test cohortId, example 1", {
     2
   )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 0,
                                         name = "cohort3")
 
@@ -276,7 +276,7 @@ test_that("test cohortId, example 1", {
     4
   )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         cohortId = 1,
                                         name = "cohort3")
@@ -289,7 +289,7 @@ test_that("test cohortId, example 1", {
     3
   )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         cohortId = 2,
                                         name = "cohort3")
@@ -302,7 +302,7 @@ test_that("test cohortId, example 1", {
     3
   )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         cohortId = c(1,2),
                                         name = "cohort3")
@@ -348,7 +348,7 @@ test_that("test cohortId, example 2", {
       observation_period = observationPeriod
     )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         name = "cohort3")
 
@@ -360,7 +360,7 @@ test_that("test cohortId, example 2", {
     4
   )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 0,
                                         name = "cohort3")
 
@@ -372,7 +372,7 @@ test_that("test cohortId, example 2", {
     4
   )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         cohortId = 1,
                                         name = "cohort3")
@@ -385,7 +385,7 @@ test_that("test cohortId, example 2", {
     4
   )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         cohortId = 2,
                                         name = "cohort3")
@@ -398,7 +398,7 @@ test_that("test cohortId, example 2", {
     4
   )
 
-  cdm$cohort3 <- requirePriorUseWashout(cohort = cdm$cohort1,
+  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
                                         priorUseWashout = 90,
                                         cohortId = c(1,2),
                                         name = "cohort3")

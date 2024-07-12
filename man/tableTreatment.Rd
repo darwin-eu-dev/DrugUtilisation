@@ -37,7 +37,7 @@ in order. Allowed values: \code{cdm_name}, \code{cohort_name}, \code{strata}, \c
 computation order. Indicate estimate_name's between <...>.}
 
 \item{.options}{Named list with additional formatting options.
-DrugUtilisation::optionsTable() shows allowed arguments and their
+DrugUtilisation::defaultTableOptions() shows allowed arguments and their
 default values.}
 }
 \value{

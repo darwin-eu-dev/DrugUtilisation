@@ -45,7 +45,6 @@ This function is used to summarise the dose table over multiple cohorts.
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
-
 cdm$cohort1 |>
   summariseTreatmentFromConceptSet(
     treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),

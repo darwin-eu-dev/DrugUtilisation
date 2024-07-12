@@ -14,16 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Generates a cohort of the drug use of a certain list of concepts.
+#' Require prior days with no exposure.
 #'
 #' @param cohort A cohort table in a cdm reference.
 #' @param priorUseWashout The length of priorUseWashout to be applied.
 #' @param cohortId IDs of the cohorts to modify. The default is NULL meaning all
 #' cohorts will be used; otherwise, only the specified cohorts will be modified,
 #' and the rest will remain unchanged.
-#' @param name Name of the new cohort with the priorUseWashout Default name is the original
-#' cohort name.
-#' @return The function returns the cohort after applying the specified priorUseWashout.
+#' @param name Name of the new cohort. Default name is the original cohort name.
+#'
+#' @return The cohort table object with the requirements applied.
 #'
 #' @export
 #'
@@ -41,9 +41,9 @@ requirePriorDrugWashout <- function(cohort,
                                     cohortId = NULL,
                                     name = omopgenerics::tableName(cohort)) {
   # check inputs
-  cdm <- omopgenerics::cdmReference(cohort)
   checkInputs(
-    cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout, name = name
+    cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout,
+    name = name
   )
   if (is.null(cohortId)) {
     cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
@@ -74,59 +74,203 @@ requirePriorDrugWashout <- function(cohort,
 
   cohort <- cohort |>
     dplyr::compute(name = name, temporary = FALSE) |>
-    omopgenerics::recordCohortAttrition(reason = reason)
+    omopgenerics::newCohortTable(.softValidation = TRUE) |>
+    omopgenerics::recordCohortAttrition(reason = reason, cohortId = cohortId)
 
   return(cohort)
 }
 
-#' Title
+#' Require only first record per subject.
 #'
-#' @param cohort
-#' @param cohortId
-#' @param name
+#' @param cohort A cohort table in a cdm reference.
+#' @param cohortId IDs of the cohorts to modify. The default is NULL meaning all
+#' cohorts will be used; otherwise, only the specified cohorts will be modified,
+#' and the rest will remain unchanged.
+#' @param name Name of the new cohort. Default name is the original cohort name.
 #'
-#' @return
+#' @return The cohort table object with the requirements applied.
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' cdm <- mockDrugUtilisation()
+#' cdm$cohort1 <- cdm$cohort1 |>
+#'   requireIsFirstDrugEntry()
+#' attrition(cdm$cohort1)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+#'
 requireIsFirstDrugEntry <- function(cohort,
                                     cohortId = NULL,
                                     name = omopgenerics::tableName(cohort)) {
+  # check inputs
+  checkInputs(
+    cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout,
+    name = name
+  )
+  if (is.null(cohortId)) {
+    cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
+  }
 
+  reason <- "require is the first entry"
+
+  record_counts <- omopgenerics::cohortCount(cohort) |>
+    dplyr::filter(.data$cohort_definition_id %in% cohortId) |>
+    dplyr::pull("number_records")
+
+  if (any(record_counts > 0)) {
+    cohort <- cohort |>
+      dplyr::group_by(.data$subject_id,.data$cohort_definition_id) |>
+      dplyr::filter(
+        .data$cohort_start_date == min(.data$cohort_start_date, na.rm = TRUE) |
+          (!.data$cohort_definition_id %in% .env$cohortId)
+      ) |>
+      dplyr::ungroup()
+  }
+
+  cohort <- cohort |>
+    dplyr::compute(name = name, temporary = FALSE) |>
+    omopgenerics::newCohortTable(.softValidation = TRUE) |>
+    omopgenerics::recordCohortAttrition(reason = reason, cohortId = cohortId)
+
+  return(cohort)
 }
 
-#' Title
+#' Require number of days of observation before the drug starts.
 #'
-#' @param cohort
-#' @param prioObservation
-#' @param cohortId
-#' @param name
+#' @param cohort A cohort table in a cdm reference.
+#' @param prioObservation Number of days of prior observation so the records are
+#' considered.
+#' @param cohortId IDs of the cohorts to modify. The default is NULL meaning all
+#' cohorts will be used; otherwise, only the specified cohorts will be modified,
+#' and the rest will remain unchanged.
+#' @param name Name of the new cohort. Default name is the original cohort name.
 #'
-#' @return
+#' @return The cohort table object with the requirements applied.
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' cdm <- mockDrugUtilisation()
+#' cdm$cohort1 <- cdm$cohort1 |>
+#'   requireObservationBeforeDrug(prioObservation = 365, cohortId = 1)
+#' attrition(cdm$cohort1)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+#'
 requireObservationBeforeDrug <- function(cohort,
                                          prioObservation,
                                          cohortId = NULL,
                                          name = omopgenerics::tableName(cohort)) {
+  # check inputs
+  checkInputs(
+    cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout,
+    name = name
+  )
+  if (is.null(cohortId)) {
+    cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
+  }
 
+  reason <- "require prior observation of {prioObservation} day{?s}"
+
+  record_counts <- omopgenerics::cohortCount(cohort) |>
+    dplyr::filter(.data$cohort_definition_id %in% cohortId) |>
+    dplyr::pull("number_records")
+
+  if (any(record_counts > 0)) {
+    id <- omopgenerics::uniqueId(exclude = colnames(cohort))
+    cohort <- cohort |>
+      PatientProfiles::addPriorObservationQuery(
+        indexDate = "cohort_start_date", priorObservationName = id,
+        priorObservationType = "days"
+      ) |>
+      dplyr::filter(
+        .data[[id]] >= .env$prioObservation |
+          (!.data$cohort_definition_id %in% .env$cohortId)
+      ) |>
+      dplyr::select(!dplyr::all_of(id))
+  }
+
+  cohort <- cohort |>
+    dplyr::compute(name = name, temporary = FALSE) |>
+    omopgenerics::newCohortTable(.softValidation = TRUE) |>
+    omopgenerics::recordCohortAttrition(reason = reason, cohortId = cohortId)
+
+  return(cohort)
 }
 
-#' Title
+#' Restrict to observations that have an indexDate within a certain range.
 #'
-#' @param cohort
-#' @param dateRange
-#' @param cohortId
-#' @param name
+#' @param cohort A cohort table in a cdm reference.
+#' @param dateRange Date interval to consider.
+#' @param indexDate Column that points to a date column in cohort.
+#' @param cohortId IDs of the cohorts to modify. The default is NULL meaning all
+#' cohorts will be used; otherwise, only the specified cohorts will be modified,
+#' and the rest will remain unchanged.
+#' @param name Name of the new cohort. Default name is the original cohort name.
 #'
-#' @return
+#' @return The cohort table object with the requirements applied.
+#'
 #' @export
 #'
 #' @examples
+#' \donttest{
+#' cdm <- mockDrugUtilisation()
+#' cdm$cohort1 <- cdm$cohort1 |>
+#'   requireDrugInDateRange(
+#'     dateRange = as.Date(c("2020-01-01", NA)), cohortId = 1)
+#' attrition(cdm$cohort1)
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+#'
 requireDrugInDateRange <- function(cohort,
                                    dateRange,
+                                   indexDate = "cohort_start_date",
                                    cohortId = NULL,
                                    name = omopgenerics::tableName(cohort)) {
+  # check inputs
+  checkInputs(
+    cohort = cohort, cohortId = cohortId, indexDate = indexDate, name = name
+  )
+  if (!inherits(dateRange, "Date") | length(dateRange) != 2) {
+    cli::cli_abort("`dateRange` is not a date of length 2")
+  }
+  if (is.null(cohortId)) {
+    cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
+  }
 
+  if (all(is.na(dateRange))) {
+    reason <- "No date restrictions to {indexDate}"
+  } else if (is.na(dateRange[1])) {
+    reason <- "require {indexDate} before {dateRange[2]}"
+    cohort <- cohort |>
+      dplyr::filter(
+        .data[[indexDate]] <= !!.env$dateRange[2] |
+          (!.data$cohort_definition_id %in% .env$cohortId)
+      )
+  } else if (is.na(dateRange[2])) {
+    reason <- "require {indexDate} after {dateRange[1]}"
+    cohort <- cohort |>
+      dplyr::filter(
+        .data[[indexDate]] >= !!.env$dateRange[1] |
+          (!.data$cohort_definition_id %in% .env$cohortId)
+      )
+  } else {
+    reason <- "require {indexDate} between {dateRange[1]} to {dateRange[2]}"
+    cohort <- cohort |>
+      dplyr::filter(
+        (.data[[indexDate]] >= !!.env$dateRange[1] &
+           .data[[indexDate]] <= !!.env$dateRange[2]) |
+          (!.data$cohort_definition_id %in% .env$cohortId)
+      )
+  }
+
+  cohort <- cohort |>
+    dplyr::compute(name = name, temporary = FALSE) |>
+    omopgenerics::newCohortTable(.softValidation = TRUE) |>
+    omopgenerics::recordCohortAttrition(reason = reason, cohortId = cohortId)
+
+  return(cohort)
 }
