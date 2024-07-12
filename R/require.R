@@ -40,117 +40,93 @@ requirePriorDrugWashout <- function(cohort,
                                     priorUseWashout,
                                     cohortId = NULL,
                                     name = omopgenerics::tableName(cohort)) {
-
+  # check inputs
   cdm <- omopgenerics::cdmReference(cohort)
-
   checkInputs(
     cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout, name = name
   )
-
   if (is.null(cohortId)) {
     cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
   }
+
+  reason <- "require prior use priorUseWashout of {priorUseWashout} day{?s}"
 
   record_counts <- omopgenerics::cohortCount(cohort) |>
     dplyr::filter(.data$cohort_definition_id %in% cohortId) |>
     dplyr::pull("number_records")
 
-  if (all(record_counts == 0) | priorUseWashout == 0) {
-    if (name != tableName(cohort)){
-      cohort <- cohort |>
-        dplyr::compute(name = name, temporary = FALSE, overwrite = TRUE)
-    }
-    return(cohort)
-  }
-
+  if (any(record_counts > 0) & priorUseWashout > 0) {
     cohort <- cohort |>
-      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
-      dplyr::arrange(.data$cohort_start_date) |>
-      dplyr::mutate(id = dplyr::row_number()) |>
-      dplyr::compute(name = uniqueTmpName(), temporary = FALSE, overwrite = TRUE)
-    cohort <- cohort |>
-      dplyr::left_join(
+      dplyr::anti_join(
         cohort |>
-          dplyr::mutate(id = .data$id + 1) |>
-          dplyr::select(
-            "cohort_definition_id", "subject_id", "id",
-            "prior_date" = "cohort_end_date"
-          ),
-        by = c("cohort_definition_id", "subject_id", "id")
-      ) %>%
-      dplyr::mutate(
-        prior_time = !!CDMConnector::datediff("prior_date", "cohort_start_date")
+          dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) |>
+          dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
+          dplyr::mutate("prior_end_date" = dplyr::lead(
+            .data$cohort_end_date, order_by = .data$cohort_start_date)) |>
+          dplyr::ungroup() %>%
+          dplyr::mutate(prior_time = !!CDMConnector::datediff(
+            "prior_end_date", "cohort_start_date")) |>
+          dplyr::filter(.data$prior_time < .env$priorUseWashout) |>
+          dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date"),
+        by = c("cohort_definition_id", "subject_id", "cohort_start_date")
       )
-    if (is.infinite(priorUseWashout)) {
-      cohort <- cohort |>
-        dplyr::filter(is.na(.data$prior_date))
-    } else {
-      cohort <- cohort |>
-        dplyr::filter(
-          is.na(.data$prior_date) | .data$prior_time >= .env$priorUseWashout
-        )
-    }
-    cohort <- cohort |>
-      dplyr::select(-c("id", "prior_date", "prior_time")) |>
-      dplyr::arrange() |>
-      dplyr::ungroup() |>
-      dplyr::compute(name = name, temporary = FALSE, overwrite = TRUE)
-    res <- paste("require prior use priorUseWashout of", priorUseWashout, "days")
-    cohort <- cohort |>
-      omopgenerics::recordCohortAttrition(reason = res)
-
-    omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
-    return(cohort)
-  } else {
-    presentIds <- omopgenerics::settings(cohort) |>
-      dplyr::pull("cohort_definition_id")
-    excludedIds <- setdiff(presentIds, cohortId)
-    included <- cohort |>
-      CohortConstructor::subsetCohorts(cohortId = cohortId, name = "tmp_included")
-    excluded <- cohort |>
-      CohortConstructor::subsetCohorts(cohortId = excludedIds, name = "tmp_excluded")
-
-    included <- included |>
-      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
-      dplyr::arrange(.data$cohort_start_date) |>
-      dplyr::mutate(id = dplyr::row_number()) |>
-      dplyr::compute(name = uniqueTmpName(), temporary = FALSE, overwrite = TRUE)
-    included <- included |>
-      dplyr::left_join(
-        included |>
-          dplyr::mutate(id = .data$id + 1) |>
-          dplyr::select(
-            "cohort_definition_id", "subject_id", "id",
-            "prior_date" = "cohort_end_date"
-          ),
-        by = c("cohort_definition_id", "subject_id", "id")
-      ) %>%
-      dplyr::mutate(
-        prior_time = !!CDMConnector::datediff("prior_date", "cohort_start_date")
-      )
-    if (is.infinite(priorUseWashout)) {
-      included <- included |>
-        dplyr::filter(is.na(.data$prior_date))
-    } else {
-      included <- included |>
-        dplyr::filter(
-          is.na(.data$prior_date) | .data$prior_time >= .env$priorUseWashout)
-    }
-    included <- included |>
-      dplyr::select(-c("id", "prior_date", "prior_time")) |>
-      dplyr::arrange() |>
-      dplyr::ungroup() |>
-      dplyr::compute(name = uniqueTmpName(), temporary = FALSE, overwrite = TRUE)
-    res <- paste("require prior use priorUseWashout of", priorUseWashout, "days")
-    included <- included |>
-      omopgenerics::recordCohortAttrition(reason = res)
-
-    cdm <- omopgenerics::bind(included, excluded, name = name)
-
-    cohort <- cdm[[name]]
-
-    omopgenerics::dropTable(cdm = cdm, name = dplyr::starts_with("tmp_"))
-
-    return(cohort)
   }
+
+  cohort <- cohort |>
+    dplyr::compute(name = name, temporary = FALSE) |>
+    omopgenerics::recordCohortAttrition(reason = reason)
+
+  return(cohort)
+}
+
+#' Title
+#'
+#' @param cohort
+#' @param cohortId
+#' @param name
+#'
+#' @return
+#' @export
+#'
+#' @examples
+requireIsFirstDrugEntry <- function(cohort,
+                                    cohortId = NULL,
+                                    name = omopgenerics::tableName(cohort)) {
+
+}
+
+#' Title
+#'
+#' @param cohort
+#' @param prioObservation
+#' @param cohortId
+#' @param name
+#'
+#' @return
+#' @export
+#'
+#' @examples
+requireObservationBeforeDrug <- function(cohort,
+                                         prioObservation,
+                                         cohortId = NULL,
+                                         name = omopgenerics::tableName(cohort)) {
+
+}
+
+#' Title
+#'
+#' @param cohort
+#' @param dateRange
+#' @param cohortId
+#' @param name
+#'
+#' @return
+#' @export
+#'
+#' @examples
+requireDrugInDateRange <- function(cohort,
+                                   dateRange,
+                                   cohortId = NULL,
+                                   name = omopgenerics::tableName(cohort)) {
+
 }
