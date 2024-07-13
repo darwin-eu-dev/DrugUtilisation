@@ -56,25 +56,36 @@ requirePriorDrugWashout <- function(cohort,
     dplyr::pull("number_records")
 
   if (any(record_counts > 0) & priorUseWashout > 0) {
+    toExclude <- cohort |>
+      dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) |>
+      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
+      dplyr::mutate("prior_end_date" = dplyr::lead(
+        .data$cohort_end_date, order_by = .data$cohort_start_date)) |>
+      dplyr::ungroup()
+    if (is.infinite(priorUseWashout)) {
+      toExclude <- toExclude |> dplyr::filter(!is.na(.data$prior_end_date))
+    } else {
+      toExclude <- toExclude %>%
+        dplyr::mutate(prior_time = !!CDMConnector::datediff(
+          "prior_end_date", "cohort_start_date")) |>
+        dplyr::filter(.data$prior_time < .env$priorUseWashout)
+    }
     cohort <- cohort |>
       dplyr::anti_join(
-        cohort |>
-          dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) |>
-          dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
-          dplyr::mutate("prior_end_date" = dplyr::lead(
-            .data$cohort_end_date, order_by = .data$cohort_start_date)) |>
-          dplyr::ungroup() %>%
-          dplyr::mutate(prior_time = !!CDMConnector::datediff(
-            "prior_end_date", "cohort_start_date")) |>
-          dplyr::filter(.data$prior_time < .env$priorUseWashout) |>
+        toExclude |>
           dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date"),
         by = c("cohort_definition_id", "subject_id", "cohort_start_date")
       )
   }
 
+  set <- settings(cohort) |>
+    newSettings(
+      col = "prior_use_washout", value = priorUseWashout, cohortId = cohortId
+    )
+
   cohort <- cohort |>
     dplyr::compute(name = name, temporary = FALSE) |>
-    omopgenerics::newCohortTable(.softValidation = TRUE) |>
+    omopgenerics::newCohortTable(.softValidation = TRUE, cohortSetRef = set) |>
     omopgenerics::recordCohortAttrition(reason = reason, cohortId = cohortId)
 
   return(cohort)
@@ -129,9 +140,12 @@ requireIsFirstDrugEntry <- function(cohort,
       dplyr::ungroup()
   }
 
+  set <- settings(cohort) |>
+    newSettings(col = "limit", value = "first_entry", cohortId = cohortId)
+
   cohort <- cohort |>
     dplyr::compute(name = name, temporary = FALSE) |>
-    omopgenerics::newCohortTable(.softValidation = TRUE) |>
+    omopgenerics::newCohortTable(.softValidation = TRUE, cohortSetRef = set) |>
     omopgenerics::recordCohortAttrition(reason = reason, cohortId = cohortId)
 
   return(cohort)
@@ -140,7 +154,7 @@ requireIsFirstDrugEntry <- function(cohort,
 #' Require number of days of observation before the drug starts.
 #'
 #' @param cohort A cohort table in a cdm reference.
-#' @param prioObservation Number of days of prior observation so the records are
+#' @param priorObservation Number of days of prior observation so the records are
 #' considered.
 #' @param cohortId IDs of the cohorts to modify. The default is NULL meaning all
 #' cohorts will be used; otherwise, only the specified cohorts will be modified,
@@ -155,25 +169,23 @@ requireIsFirstDrugEntry <- function(cohort,
 #' \donttest{
 #' cdm <- mockDrugUtilisation()
 #' cdm$cohort1 <- cdm$cohort1 |>
-#'   requireObservationBeforeDrug(prioObservation = 365, cohortId = 1)
+#'   requireObservationBeforeDrug(priorObservation = 365, cohortId = 1)
 #' attrition(cdm$cohort1)
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 requireObservationBeforeDrug <- function(cohort,
-                                         prioObservation,
+                                         priorObservation,
                                          cohortId = NULL,
                                          name = omopgenerics::tableName(cohort)) {
   # check inputs
-  checkInputs(
-    cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout,
-    name = name
-  )
+  checkInputs(cohort = cohort, cohortId = cohortId, name = name)
+  assertNumeric(priorObservation, integerish = T, length = 1, min = 0)
   if (is.null(cohortId)) {
     cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
   }
 
-  reason <- "require prior observation of {prioObservation} day{?s}"
+  reason <- "require prior observation of {priorObservation} day{?s}"
 
   record_counts <- omopgenerics::cohortCount(cohort) |>
     dplyr::filter(.data$cohort_definition_id %in% cohortId) |>
@@ -187,15 +199,21 @@ requireObservationBeforeDrug <- function(cohort,
         priorObservationType = "days"
       ) |>
       dplyr::filter(
-        .data[[id]] >= .env$prioObservation |
+        .data[[id]] >= .env$priorObservation |
           (!.data$cohort_definition_id %in% .env$cohortId)
       ) |>
       dplyr::select(!dplyr::all_of(id))
   }
 
+  set <- settings(cohort) |>
+    newSettings(
+      col = "prior_drug_observation", value = priorObservation,
+      cohortId = cohortId
+    )
+
   cohort <- cohort |>
     dplyr::compute(name = name, temporary = FALSE) |>
-    omopgenerics::newCohortTable(.softValidation = TRUE) |>
+    omopgenerics::newCohortTable(.softValidation = TRUE, cohortSetRef = set) |>
     omopgenerics::recordCohortAttrition(reason = reason, cohortId = cohortId)
 
   return(cohort)
@@ -249,25 +267,31 @@ requireDrugInDateRange <- function(cohort,
     reason <- "require {indexDate} before {dateRange[2]}"
     cohort <- cohort |>
       dplyr::filter(
-        .data[[indexDate]] <= !!.env$dateRange[2] |
-          (!.data$cohort_definition_id %in% .env$cohortId)
+        .data[[indexDate]] <= !!dateRange[2] |
+          (!.data$cohort_definition_id %in% !!cohortId)
       )
   } else if (is.na(dateRange[2])) {
     reason <- "require {indexDate} after {dateRange[1]}"
     cohort <- cohort |>
       dplyr::filter(
-        .data[[indexDate]] >= !!.env$dateRange[1] |
-          (!.data$cohort_definition_id %in% .env$cohortId)
+        .data[[indexDate]] >= !!dateRange[1] |
+          (!.data$cohort_definition_id %in% !!cohortId)
       )
   } else {
     reason <- "require {indexDate} between {dateRange[1]} to {dateRange[2]}"
     cohort <- cohort |>
       dplyr::filter(
-        (.data[[indexDate]] >= !!.env$dateRange[1] &
-           .data[[indexDate]] <= !!.env$dateRange[2]) |
-          (!.data$cohort_definition_id %in% .env$cohortId)
+        (.data[[indexDate]] >= !!dateRange[1] &
+           .data[[indexDate]] <= !!dateRange[2]) |
+          !(.data$cohort_definition_id %in% !!cohortId)
       )
   }
+
+  set <- settings(cohort) |>
+    newSettings(
+      col = paste0("min_", indexDate), value = dateRange[1], cohortId = cohortId) |>
+    newSettings(
+      col = paste0("max_", indexDate), value = dateRange[2], cohortId = cohortId)
 
   cohort <- cohort |>
     dplyr::compute(name = name, temporary = FALSE) |>
@@ -275,4 +299,21 @@ requireDrugInDateRange <- function(cohort,
     omopgenerics::recordCohortAttrition(reason = reason, cohortId = cohortId)
 
   return(cohort)
+}
+
+newSettings <- function(set, col, value, cohortId) {
+  if (col %in% colnames(set)) {
+    set <- set |>
+      dplyr::mutate(!!col := dplyr::if_else(
+        .data$cohort_definition_id %in% .env$cohortId,
+        as.character(value), NA_character_
+      ))
+  } else {
+    set <- set |>
+      dplyr::mutate(!!col := dplyr::if_else(
+        .data$cohort_definition_id %in% .env$cohortId,
+        as.character(value), .data[[col]]
+      ))
+  }
+  return(set)
 }

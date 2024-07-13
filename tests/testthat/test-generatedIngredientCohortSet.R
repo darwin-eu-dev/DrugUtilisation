@@ -55,7 +55,9 @@ test_that("date works", {
     cdm = cdm,
     ingredient = "acetaminophen",
     name = "date_range_test"
-  ) |>
+  )
+
+  cdm$date_range_test <- cdm$date_range_test |>
     requireDrugInDateRange(
       dateRange = c(as.Date("2020-01-01"), as.Date("2020-12-31"))) |>
     requireDrugInDateRange(
