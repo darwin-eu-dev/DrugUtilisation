@@ -17,7 +17,9 @@
 #' Require prior days with no exposure.
 #'
 #' @param cohort A cohort table in a cdm reference.
-#' @param priorUseWashout The length of priorUseWashout to be applied.
+#' @param priorUseWashout The length of priorUseWashout to be applied. NOTE that
+#' if priorUseWashout is infinity requireIsFirstDrugEntry will be called
+#' instead.
 #' @param cohortId IDs of the cohorts to modify. The default is NULL meaning all
 #' cohorts will be used; otherwise, only the specified cohorts will be modified,
 #' and the rest will remain unchanged.
@@ -49,6 +51,13 @@ requirePriorDrugWashout <- function(cohort,
     cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
   }
 
+  if (is.infinite(priorUseWashout)) {
+    c("!" = "priorUseWashout is infinity -> calling requireIsFirstDrugEntry()") |>
+      cli::cli_inform()
+    cohort <- cohort |>
+      requireIsFirstDrugEntry(cohortId = cohortId, name = name)
+    return(cohort)
+  }
   reason <- "require prior use priorUseWashout of {priorUseWashout} day{?s}"
 
   record_counts <- omopgenerics::cohortCount(cohort) |>
@@ -56,23 +65,17 @@ requirePriorDrugWashout <- function(cohort,
     dplyr::pull("number_records")
 
   if (any(record_counts > 0) & priorUseWashout > 0) {
-    toExclude <- cohort |>
-      dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) |>
-      dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
-      dplyr::mutate("prior_end_date" = dplyr::lead(
-        .data$cohort_end_date, order_by = .data$cohort_start_date)) |>
-      dplyr::ungroup()
-    if (is.infinite(priorUseWashout)) {
-      toExclude <- toExclude |> dplyr::filter(!is.na(.data$prior_end_date))
-    } else {
-      toExclude <- toExclude %>%
-        dplyr::mutate(prior_time = !!CDMConnector::datediff(
-          "prior_end_date", "cohort_start_date")) |>
-        dplyr::filter(.data$prior_time < .env$priorUseWashout)
-    }
     cohort <- cohort |>
       dplyr::anti_join(
-        toExclude |>
+        cohort |>
+          dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) |>
+          dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
+          dplyr::mutate("prior_end_date" = dplyr::lag(
+            .data$cohort_end_date, order_by = .data$cohort_start_date)) |>
+          dplyr::ungroup() %>%
+          dplyr::mutate(prior_time = !!CDMConnector::datediff(
+            "prior_end_date", "cohort_start_date")) |>
+          dplyr::filter(.data$prior_time < .env$priorUseWashout) |>
           dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date"),
         by = c("cohort_definition_id", "subject_id", "cohort_start_date")
       )
@@ -116,10 +119,7 @@ requireIsFirstDrugEntry <- function(cohort,
                                     cohortId = NULL,
                                     name = omopgenerics::tableName(cohort)) {
   # check inputs
-  checkInputs(
-    cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout,
-    name = name
-  )
+  checkInputs(cohort = cohort, cohortId = cohortId, name = name)
   if (is.null(cohortId)) {
     cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
   }
@@ -302,18 +302,16 @@ requireDrugInDateRange <- function(cohort,
 }
 
 newSettings <- function(set, col, value, cohortId) {
-  if (col %in% colnames(set)) {
-    set <- set |>
-      dplyr::mutate(!!col := dplyr::if_else(
-        .data$cohort_definition_id %in% .env$cohortId,
-        as.character(value), NA_character_
-      ))
+  if (!col %in% colnames(set)) {
+    no <- "NA_character_"
   } else {
-    set <- set |>
-      dplyr::mutate(!!col := dplyr::if_else(
-        .data$cohort_definition_id %in% .env$cohortId,
-        as.character(value), .data[[col]]
-      ))
+    no <- ".data[['{col}']]" |> glue::glue()
   }
+  newCol <- "dplyr::if_else(.data$cohort_definition_id %in% .env$cohortId,
+        as.character(value), {no})" |>
+    glue::glue() |>
+    rlang::parse_exprs() |>
+    rlang::set_names(col)
+  set <- set |> dplyr::mutate(!!!newCol)
   return(set)
 }

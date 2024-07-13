@@ -23,7 +23,7 @@ test_that("input validation", {
     )
   )
 
-  expect_no_error(
+  expect_message(
     requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = Inf,
@@ -94,15 +94,12 @@ test_that("input validation", {
     )
   )
 
-  expect_message(
+  expect_no_error(
     requirePriorDrugWashout(
       cohort = cdm$cohort1,
       priorUseWashout = 0
     )
   )
-
-  CDMConnector::cdmDisconnect(cdm = cdm)
-
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = as.integer(c()),
@@ -132,7 +129,7 @@ test_that("input validation", {
       observation_period = observationPeriod
     )
 
-  expect_message(
+  expect_no_error(
     requirePriorDrugWashout(cohort = cdm$cohort1,
                            priorUseWashout = 90,
                            name = "cohort2")
