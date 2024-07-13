@@ -231,9 +231,11 @@ requireDrugInDateRange <- function(cohort,
                                    cohortId = NULL,
                                    name = omopgenerics::tableName(cohort)) {
   # check inputs
-  checkInputs(
-    cohort = cohort, cohortId = cohortId, indexDate = indexDate, name = name
-  )
+  checkInputs(cohort = cohort, cohortId = cohortId, name = name)
+  assertCharacter(indexDate, length = 1)
+  if (!indexDate %in% colnames(cohort)) {
+    cli::cli_abort("{.var {indexDate}} (indexDate) is not a column in cohort.")
+  }
   if (!inherits(dateRange, "Date") | length(dateRange) != 2) {
     cli::cli_abort("`dateRange` is not a date of length 2")
   }

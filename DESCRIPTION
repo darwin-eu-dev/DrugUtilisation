@@ -81,7 +81,6 @@ Imports:
     lubridate,
     tidyr,
     rlang,
-    RJSONIO,
     cli,
     PatientProfiles (>= 1.0.0),
     purrr,
@@ -89,8 +88,7 @@ Imports:
     omopgenerics (>= 0.2.3),
     visOmopResults,
     lifecycle,
-    stringr,
-    CohortConstructor
+    stringr
 Depends: 
     R (>= 2.10)
 LazyData: true
