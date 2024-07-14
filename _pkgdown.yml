@@ -6,11 +6,16 @@ reference:
 - subtitle: Generate a drug utilisation cohort set
   desc: Generate a cohort of drug use
 - contents:
-  - matches("generateDrugUtilisationCohortSet|generateAtcCohortSet|generateIngredientCohortSet")
+  - generateDrugUtilisationCohortSet
+  - generateIngredientCohortSet
+  - generateAtcCohortSet
+  desc: Apply inclusion criteria to the drug cohorts
+- contents:
+  - matches("require*")
 - subtitle: Indication functions
   desc: Indication functions are used to summarise and obtain the indication information
 - contents:
-  - matches("addIndication|summariseIndication|tableIndication|defaultTableOptions")
+  - matches("*Indication")
 - subtitle: Add daily dose
   desc: Tools to compute the daily dose, see when it can be computed
 - contents:
@@ -18,7 +23,7 @@ reference:
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
-  - matches("addDrugUtilisation|summariseDrugUtilisation|tableDrugUtilisation|addNumberExposures|addNumberEras|addExposedTime|addTimeToExposure|addInitialQuantity|addCumulativeQuantity|addCumulativeDose|addInitialDailyDose")
+  - matches("*DrugUtilisation|addNumberExposures|addNumberEras|addExposedTime|addTimeToExposure|addInitialQuantity|addCumulativeQuantity|addCumulativeDose|addInitialDailyDose")
 - subtitle: Summarise treatments during certain windows
   desc: Summarise the use of different treatments during certain windows
 - contents:
@@ -26,7 +31,7 @@ reference:
 - subtitle: Complementary functions
   desc: Complementary functions
 - contents:
-  - matches("readConceptList|mockDrugUtilisation|requirePriorUseWashout")
+  - matches("mockDrugUtilisation|defaultTableOptions")
 - subtitle: Benchmarking function
   desc: Function to test performance of different functions in DrugUtilisation
 - contents:
@@ -34,4 +39,4 @@ reference:
 - subtitle: Deprecated functions
   desc: This functions has been deprecated
 - contents:
-  - matches("addDrugUse|summariseDrugUse|indicationToStrata|dailyDoseCoverage|stratifyByUnit")
+  - matches("addDrugUse|summariseDrugUse|indicationToStrata|dailyDoseCoverage|stratifyByUnit|readConceptList")

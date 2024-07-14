@@ -8,15 +8,15 @@ generateIngredientCohortSet(
   cdm,
   name,
   ingredient = NULL,
+  doseForm = NULL,
+  ingredientRange = c(1, Inf),
+  gapEra = 1,
   durationRange = lifecycle::deprecated(),
   imputeDuration = lifecycle::deprecated(),
-  gapEra = 0,
-  priorUseWashout = 0,
+  priorUseWashout = lifecycle::deprecated(),
   priorObservation = lifecycle::deprecated(),
   cohortDateRange = lifecycle::deprecated(),
-  limit = lifecycle::deprecated(),
-  doseForm = NULL,
-  ingredientRange = c(1, Inf)
+  limit = lifecycle::deprecated()
 )
 }
 \arguments{
@@ -34,21 +34,6 @@ each name leads to a combined set of descendant concept codes for the
 specified ingredients, creating distinct cohort_definition_id for each
 named group.}
 
-\item{durationRange}{Deprecated.}
-
-\item{imputeDuration}{Deprecated.}
-
-\item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
-
-\item{priorUseWashout}{Prior days without exposure.}
-
-\item{priorObservation}{Deprecated.}
-
-\item{cohortDateRange}{Deprecated.}
-
-\item{limit}{Deprecated.}
-
 \item{doseForm}{Only descendants codes with the specified dose form
 will be returned. If NULL, descendant codes will be returned regardless
 of dose form.}
@@ -58,6 +43,21 @@ associated with a specific number of ingredients. Must be a vector of length
 two with the first element the minimum number of ingredients allowed and
 the second the maximum. A value of c(2, 2) would restrict to only concepts
 associated with two ingredients.}
+
+\item{gapEra}{Number of days between two continuous exposures to be
+considered in the same era.}
+
+\item{durationRange}{Deprecated.}
+
+\item{imputeDuration}{Deprecated.}
+
+\item{priorUseWashout}{Deprecated}
+
+\item{priorObservation}{Deprecated.}
+
+\item{cohortDateRange}{Deprecated.}
+
+\item{limit}{Deprecated.}
 }
 \value{
 The function returns the 'cdm' object with the created cohorts as

@@ -19,22 +19,25 @@
 #' @param cdm A cdm_reference object.
 #' @param name Name of the GeneratedCohortSet
 #' @param atcName Names of ATC of interest.
-#' @param durationRange Deprecated.
-#' @param imputeDuration Deprecated.
-#' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era.
-#' @param priorUseWashout Prior days without exposure.
-#' @param priorObservation Deprecated.
-#' @param cohortDateRange Deprecated.
-#' @param limit Deprecated.
 #' @param level ATC level. Can be one or more of "ATC 1st", "ATC 2nd",
 #' "ATC 3rd", "ATC 4th", and "ATC 5th"
 #' @param doseForm Only descendants codes with the specified dose form
 #' will be returned. If NULL, descendant codes will be returned regardless
 #' of dose form.
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
+#' @param durationRange Deprecated.
+#' @param imputeDuration Deprecated.
+#' @param priorUseWashout Deprecated
+#' @param priorObservation Deprecated.
+#' @param cohortDateRange Deprecated.
+#' @param limit Deprecated.
+#'
 #' @return The function returns the 'cdm' object with the created cohorts as
 #' references of the object.
+#'
 #' @export
+#'
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
@@ -47,54 +50,66 @@
 generateAtcCohortSet <- function(cdm,
                                  name,
                                  atcName = NULL,
+                                 level = c("ATC 1st"),
+                                 doseForm = NULL,
+                                 gapEra = 1,
                                  durationRange = lifecycle::deprecated(),
                                  imputeDuration = lifecycle::deprecated(),
-                                 gapEra = 0,
-                                 priorUseWashout = 0,
+                                 priorUseWashout = lifecycle::deprecated(),
                                  priorObservation = lifecycle::deprecated(),
                                  cohortDateRange = lifecycle::deprecated(),
-                                 limit = lifecycle::deprecated(),
-                                 level = c("ATC 1st"),
-                                 doseForm = NULL) {
+                                 limit = lifecycle::deprecated()) {
 
   if (lifecycle::is_present(durationRange)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateAtcCohortSet(durationRange = )"
+      when = "0.7.0",
+      what = "generateAtcCohortSet(durationRange = )"
     )
   }
   if (lifecycle::is_present(imputeDuration)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateAtcCohortSet(imputeDuration = )"
+      when = "0.7.0", what = "generateAtcCohortSet(imputeDuration = )"
+    )
+  }
+  if (lifecycle::is_present(priorUseWashout)) {
+    lifecycle::deprecate_warn(
+      when = "0.7.0",
+      what = "generateAtcCohortSet(priorUseWashout = )",
+      with = "requirePriorDrugWashout()"
     )
   }
   if (lifecycle::is_present(priorObservation)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateAtcCohortSet(priorObservation = )"
+      when = "0.7.0",
+      what = "generateAtcCohortSet(priorObservation = )",
+      with = "requireObservationBeforeDrug()"
     )
   }
   if (lifecycle::is_present(cohortDateRange)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateAtcCohortSet(cohortDateRange = )"
+      when = "0.7.0",
+      what = "generateAtcCohortSet(cohortDateRange = )",
+      with = "requireDrugInDateRange()"
     )
   }
   if (lifecycle::is_present(limit)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateDrugUtilisationCohortSet(limit = )"
+      when = "0.7.0",
+      what = "generateAtcCohortSet(limit = )",
+      with = "requireIsFirstDrugEntry()"
     )
   }
 
   conceptSet <- CodelistGenerator::getATCCodes(cdm,
     name = atcName,
     level = level,
-    doseForm = doseForm,
-    withConceptDetails = FALSE
+    doseForm = doseForm
   )
 
   cdm <- DrugUtilisation::generateDrugUtilisationCohortSet(
     cdm = cdm,
     name = name,
     conceptSet = conceptSet,
-    priorUseWashout = priorUseWashout,
     gapEra = gapEra
   )
 

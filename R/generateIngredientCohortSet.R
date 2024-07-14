@@ -27,14 +27,6 @@
 #' each name leads to a combined set of descendant concept codes for the
 #' specified ingredients, creating distinct cohort_definition_id for each
 #' named group.
-#' @param durationRange Deprecated.
-#' @param imputeDuration Deprecated.
-#' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era.
-#' @param priorUseWashout Prior days without exposure.
-#' @param priorObservation Deprecated.
-#' @param cohortDateRange Deprecated.
-#' @param limit Deprecated.
 #' @param doseForm Only descendants codes with the specified dose form
 #' will be returned. If NULL, descendant codes will be returned regardless
 #' of dose form.
@@ -43,6 +35,15 @@
 #' two with the first element the minimum number of ingredients allowed and
 #' the second the maximum. A value of c(2, 2) would restrict to only concepts
 #' associated with two ingredients.
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
+#' @param durationRange Deprecated.
+#' @param imputeDuration Deprecated.
+#' @param priorUseWashout Deprecated
+#' @param priorObservation Deprecated.
+#' @param cohortDateRange Deprecated.
+#' @param limit Deprecated.
+#'
 #' @return The function returns the 'cdm' object with the created cohorts as
 #' references of the object.
 #'
@@ -63,39 +64,53 @@
 generateIngredientCohortSet <- function(cdm,
                                         name,
                                         ingredient = NULL,
+                                        doseForm = NULL,
+                                        ingredientRange = c(1, Inf),
+                                        gapEra = 1,
                                         durationRange = lifecycle::deprecated(),
                                         imputeDuration = lifecycle::deprecated(),
-                                        gapEra = 0,
-                                        priorUseWashout = 0,
+                                        priorUseWashout = lifecycle::deprecated(),
                                         priorObservation = lifecycle::deprecated(),
                                         cohortDateRange = lifecycle::deprecated(),
-                                        limit = lifecycle::deprecated(),
-                                        doseForm = NULL,
-                                        ingredientRange = c(1, Inf)) {
+                                        limit = lifecycle::deprecated()) {
 
   if (lifecycle::is_present(durationRange)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateIngredientCohortSet(durationRange = )"
+      when = "0.7.0",
+      what = "generateIngredientCohortSet(durationRange = )"
     )
   }
   if (lifecycle::is_present(imputeDuration)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateIngredientCohortSet(imputeDuration = )"
+      when = "0.7.0", what = "generateIngredientCohortSet(imputeDuration = )"
+    )
+  }
+  if (lifecycle::is_present(priorUseWashout)) {
+    lifecycle::deprecate_warn(
+      when = "0.7.0",
+      what = "generateIngredientCohortSet(priorUseWashout = )",
+      with = "requirePriorDrugWashout()"
     )
   }
   if (lifecycle::is_present(priorObservation)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateIngredientCohortSet(priorObservation = )"
+      when = "0.7.0",
+      what = "generateIngredientCohortSet(priorObservation = )",
+      with = "requireObservationBeforeDrug()"
     )
   }
   if (lifecycle::is_present(cohortDateRange)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateIngredientCohortSet(cohortDateRange = )"
+      when = "0.7.0",
+      what = "generateIngredientCohortSet(cohortDateRange = )",
+      with = "requireDrugInDateRange()"
     )
   }
   if (lifecycle::is_present(limit)) {
     lifecycle::deprecate_warn(
-      when = "0.6.2", what = "generateIngredientCohortSet(limit = )"
+      when = "0.7.0",
+      what = "generateIngredientCohortSet(limit = )",
+      with = "requireIsFirstDrugEntry()"
     )
   }
 
@@ -104,8 +119,7 @@ generateIngredientCohortSet <- function(cdm,
       cdm = cdm,
       name = ingredient,
       doseForm = doseForm,
-      ingredientRange = ingredientRange,
-      withConceptDetails = FALSE
+      ingredientRange = ingredientRange
     )
   } else {
     conceptSet <- lapply(ingredient, function(values) {
@@ -114,8 +128,7 @@ generateIngredientCohortSet <- function(cdm,
           cdm = cdm,
           name = value,
           doseForm = doseForm,
-          ingredientRange = ingredientRange,
-          withConceptDetails = FALSE
+          ingredientRange = ingredientRange
         )
       }) |>
         unname() |>
@@ -128,8 +141,7 @@ generateIngredientCohortSet <- function(cdm,
     cdm = cdm,
     name = name,
     conceptSet = conceptSet,
-    gapEra = gapEra,
-    priorUseWashout = priorUseWashout
+    gapEra = gapEra
   )
 
   cdm[[name]] <- cdm[[name]] |>

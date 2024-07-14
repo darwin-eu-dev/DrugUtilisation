@@ -241,6 +241,7 @@ test_that("test subfunctions", {
   ## addNumberExposures
   codes <- CodelistGenerator::getDrugIngredientCodes(
     cdm = cdm, name = "acetaminophen")
+  names(codes) <- "acetaminophen"
   expect_identical(
     x0$number_exposures_ingredient_1125315_descendants,
     cdm$dus_cohort |>

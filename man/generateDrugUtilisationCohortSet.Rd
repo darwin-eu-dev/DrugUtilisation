@@ -8,10 +8,10 @@ generateDrugUtilisationCohortSet(
   cdm,
   name,
   conceptSet,
+  gapEra = 1,
   durationRange = lifecycle::deprecated(),
   imputeDuration = lifecycle::deprecated(),
-  gapEra = 0,
-  priorUseWashout = 0,
+  priorUseWashout = lifecycle::deprecated(),
   priorObservation = lifecycle::deprecated(),
   cohortDateRange = lifecycle::deprecated(),
   limit = lifecycle::deprecated()
@@ -24,14 +24,14 @@ generateDrugUtilisationCohortSet(
 
 \item{conceptSet}{Named list of concept sets.}
 
+\item{gapEra}{Number of days between two continuous exposures to be
+considered in the same era.}
+
 \item{durationRange}{Deprecated.}
 
 \item{imputeDuration}{Deprecated.}
 
-\item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
-
-\item{priorUseWashout}{Prior days without exposure.}
+\item{priorUseWashout}{Deprecated.}
 
 \item{priorObservation}{Deprecated.}
 
