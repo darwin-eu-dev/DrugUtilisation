@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0.900</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.900</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,12 +53,6 @@
 
       <dl><dt>
 
-          <code><a href="generateAtcCohortSet.html">generateAtcCohortSet()</a></code>
-
-        </dt>
-        <dd>Generates a cohort of the drug use of ATC name(s) of interest.</dd>
-      </dl><dl><dt>
-
           <code><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code>
 
         </dt>
@@ -69,6 +63,41 @@
 
         </dt>
         <dd>Generates a cohort of the drug use of ingredient name(s) of interest.</dd>
+      </dl><dl><dt>
+
+          <code><a href="generateAtcCohortSet.html">generateAtcCohortSet()</a></code>
+
+        </dt>
+        <dd>Generates a cohort of the drug use of ATC name(s) of interest.</dd>
+      </dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="requireDrugInDateRange.html">requireDrugInDateRange()</a></code>
+
+        </dt>
+        <dd>Restrict to observations that have an indexDate within a certain range.</dd>
+      </dl><dl><dt>
+
+          <code><a href="requireIsFirstDrugEntry.html">requireIsFirstDrugEntry()</a></code>
+
+        </dt>
+        <dd>Require only first record per subject.</dd>
+      </dl><dl><dt>
+
+          <code><a href="requireObservationBeforeDrug.html">requireObservationBeforeDrug()</a></code>
+
+        </dt>
+        <dd>Require number of days of observation before the drug starts.</dd>
+      </dl><dl><dt>
+
+          <code><a href="requirePriorDrugWashout.html">requirePriorDrugWashout()</a></code>
+
+        </dt>
+        <dd>Require prior days with no exposure.</dd>
       </dl></div><div class="section level2">
 
       <h3 id="indication-functions">Indication functions<a class="anchor" aria-label="anchor" href="#indication-functions"></a></h3>
@@ -86,12 +115,6 @@
 
         </dt>
         <dd>Get indication for a target cohort</dd>
-      </dl><dl><dt>
-
-          <code><a href="defaultTableOptions.html">defaultTableOptions()</a></code>
-
-        </dt>
-        <dd>Additional arguments for the table functions.</dd>
       </dl><dl><dt>
 
           <code><a href="summariseIndication.html">summariseIndication()</a></code>
@@ -218,6 +241,24 @@
         <dd>To add a new column with the time to exposure. To add multiple columns use <code><a href="../reference/addDrugUtilisation.html">addDrugUtilisation()</a></code> for efficiency.</dd>
       </dl><dl><dt>
 
+          <code><a href="benchmarkDrugUtilisation.html">benchmarkDrugUtilisation()</a></code>
+
+        </dt>
+        <dd>Run benchmark of drug utilisation cohort generation</dd>
+      </dl><dl><dt>
+
+          <code><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code>
+
+        </dt>
+        <dd>Generates a cohort of the drug use of a certain list of concepts.</dd>
+      </dl><dl><dt>
+
+          <code><a href="mockDrugUtilisation.html">mockDrugUtilisation()</a></code>
+
+        </dt>
+        <dd>It creates a mock database for testing drugutilisation package</dd>
+      </dl><dl><dt>
+
           <code><a href="summariseDrugUtilisation.html">summariseDrugUtilisation()</a></code>
 
         </dt>
@@ -276,22 +317,16 @@
 
       <dl><dt>
 
+          <code><a href="defaultTableOptions.html">defaultTableOptions()</a></code>
+
+        </dt>
+        <dd>Additional arguments for the table functions.</dd>
+      </dl><dl><dt>
+
           <code><a href="mockDrugUtilisation.html">mockDrugUtilisation()</a></code>
 
         </dt>
         <dd>It creates a mock database for testing drugutilisation package</dd>
-      </dl><dl><dt>
-
-          <code><a href="readConceptList.html">readConceptList()</a></code>
-
-        </dt>
-        <dd>Get concept ids from a provided path to json files</dd>
-      </dl><dl><dt>
-
-          <code><a href="requirePriorUseWashout.html">requirePriorUseWashout()</a></code>
-
-        </dt>
-        <dd>Generates a cohort of the drug use of a certain list of concepts.</dd>
       </dl></div><div class="section level2">
 
       <h3 id="benchmarking-function">Benchmarking function<a class="anchor" aria-label="anchor" href="#benchmarking-function"></a></h3>
@@ -332,6 +367,12 @@
           <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
         <dd>Check coverage of daily dose computation in a sample of the cdm for selected concept sets and ingredient</dd>
+      </dl><dl><dt>
+
+          <code><a href="readConceptList.html">readConceptList()</a></code>
+
+        </dt>
+        <dd>Get concept ids from a provided path to json files</dd>
       </dl><dl><dt>
 
           <code><a href="stratifyByUnit.html">stratifyByUnit()</a></code>

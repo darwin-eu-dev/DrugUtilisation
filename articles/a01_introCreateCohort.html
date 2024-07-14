@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0.900</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.900</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@
                         <h4 data-toc-skip class="author">Marti Catala,
 Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li</h4>
             
-            <h4 data-toc-skip class="date">2024-07-10</h4>
+            <h4 data-toc-skip class="date">2024-07-14</h4>
       
 
       <div class="d-none name"><code>a01_introCreateCohort.Rmd</code></div>
@@ -111,8 +111,10 @@ see an example:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conceptSet_json</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/codesFromConceptSet.html" class="external-link">codesFromConceptSet</a></span><span class="op">(</span><span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org//reference/here.html" class="external-link">here</a></span><span class="op">(</span><span class="st">"inst/Concept"</span><span class="op">)</span>, <span class="va">cdm</span><span class="op">)</span></span>
 <span><span class="va">conceptSet_json</span></span>
-<span><span class="co">#&gt; $asthma</span></span>
-<span><span class="co">#&gt; [1] 317009</span></span></code></pre></div>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">1 codelist</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────────</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; - asthma (1 codes)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="concept-list-listed-directly">Concept list listed directly<a class="anchor" aria-label="anchor" href="#concept-list-listed-directly"></a>
@@ -136,7 +138,7 @@ CodelistGenerator.</p>
 <span><span class="va">conceptSet_ingredient</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span><span class="va">cdm</span>, name <span class="op">=</span> <span class="st">"simvastatin"</span><span class="op">)</span></span>
 <span><span class="va">conceptSet_ingredient</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - simvastatin (3 codes)</span></span></code></pre></div>
+<span><span class="co">#&gt; - 36567_simvastatin (3 codes)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="concept-list-from-an-atc-code">Concept list from an ATC code<a class="anchor" aria-label="anchor" href="#concept-list-from-an-atc-code"></a>
@@ -150,7 +152,7 @@ from CodelistGenerator package.</p>
 <span>                              name <span class="op">=</span> <span class="st">"ALIMENTARY TRACT AND METABOLISM"</span><span class="op">)</span></span>
 <span><span class="va">conceptSet_ATC</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - alimentary_tract_and_metabolism (1 codes)</span></span></code></pre></div>
+<span><span class="co">#&gt; - A_alimentary_tract_and_metabolism (1 codes)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -180,19 +182,19 @@ could also use <code>conceptSet_json_1</code> or
 <span><span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_1</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;asthma_1&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1023-azure:R 4.4.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         69 2020-09-02        2020-11-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        136 2004-07-05        2006-04-27     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         74 2019-04-13        2019-10-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1          6 2021-11-24        2022-10-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        143 2017-12-15        2018-05-22     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        184 2012-04-11        2013-01-04     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        122 2018-10-16        2020-08-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        124 2005-10-19        2009-06-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        125 2020-11-19        2021-06-28     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         21 1982-04-22        2003-07-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         21 1982-04-22        2003-07-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         25 2001-06-29        2016-10-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         99 1989-03-11        1990-03-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        148 2011-05-24        2017-06-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         85 1998-12-22        2006-02-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         96 2019-08-18        2020-07-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        117 1991-11-16        2017-05-25     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        136 2004-07-05        2006-04-27     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        122 2018-10-16        2020-08-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         74 2019-04-13        2019-10-25     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>The count of the cohort can be assessed using
 <code><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/cohortCount.html" class="external-link">cohortCount()</a></code> from CDMConnector.</p>
@@ -228,19 +230,19 @@ See an example below:</p>
 <span><span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_2</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;asthma_2&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1023-azure:R 4.4.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         17 2017-07-25        2021-06-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         79 2022-10-04        2022-10-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        114 2022-10-27        2022-11-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        135 2012-08-23        2013-01-22     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         93 1980-05-27        1987-09-17     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        131 2022-08-24        2022-08-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         35 2006-10-26        2016-05-31     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         54 1993-04-25        1995-06-29     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1          2 2013-08-11        2013-08-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         81 2022-03-05        2022-09-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        143 2017-12-15        2018-01-08     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        184 2012-04-11        2012-06-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        122 2018-10-16        2019-04-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         74 2019-04-13        2019-10-20     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         21 1982-04-22        1991-04-15     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         25 2001-06-29        2015-02-20     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         99 1989-03-11        1989-11-22     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1        148 2011-05-24        2017-02-01     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         69 2020-09-02        2020-11-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         85 1998-12-22        2005-06-03     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -262,19 +264,19 @@ changing this parameter.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_3</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;asthma_3&gt; [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1023-azure:R 4.4.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         78 1969-04-05        1971-07-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        141 2008-04-29        2011-10-26     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1          6 2021-11-24        2022-10-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         58 2016-03-28        2020-07-23     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         33 2017-12-30        2019-01-28     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         45 2021-10-06        2021-12-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         91 2022-06-30        2022-11-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         29 2006-12-06        2013-04-27     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         93 1980-05-27        1994-10-08     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        181 2013-07-28        2016-01-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         66 2018-06-21        2019-01-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        149 2009-02-21        2009-03-03     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         21 1982-04-22        2003-07-18     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        123 1986-09-05        1990-02-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         63 2009-12-22        2014-08-29     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        117 1991-11-16        2017-05-25     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        184 2012-04-11        2013-01-04     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         11 2016-03-09        2019-07-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         83 2017-07-07        2019-11-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        122 2018-10-16        2020-08-01     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">asthma_3</span><span class="op">)</span></span>
@@ -304,19 +306,19 @@ for the ingredient <em>simvastatin</em>. See an example below:</p>
 <span><span class="op">)</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">simvastin_1</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [?? x 4]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1022-azure:R 4.4.1/:memory:]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1023-azure:R 4.4.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         20 1999-01-09        2010-07-15     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         98 2017-05-27        2018-08-10     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1        116 2002-12-17        2007-06-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        157 1970-09-27        1977-02-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         73 2021-03-10        2021-04-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         24 2017-11-17        2018-03-29     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         45 2021-08-13        2021-11-23     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         56 2022-04-14        2022-04-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1        120 2018-09-03        2018-09-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         29 2004-02-04        2011-11-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         64 2010-01-19        2011-01-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         29 2004-02-04        2011-11-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1        157 1970-09-27        1977-02-05     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         73 2021-03-10        2021-04-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         24 2017-11-17        2018-03-29     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         45 2021-08-13        2021-11-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         56 2022-04-14        2022-04-19     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">simvastin_1</span><span class="op">)</span></span>
@@ -326,10 +328,11 @@ for the ingredient <em>simvastatin</em>. See an example below:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1            109              99</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">simvastin_1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 7</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects reason_id reason          </span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1            109              99         1 Initial qualify…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1            109              99         2 join exposures …</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: excluded_records &lt;int&gt;, excluded_subjects &lt;int&gt;</span></span></span></code></pre></div>
 <div class="section level4">
 <h4 id="imputeduration-and-durationrange-parameters">imputeDuration and durationRange parameters<a class="anchor" aria-label="anchor" href="#imputeduration-and-durationrange-parameters"></a>
@@ -355,10 +358,11 @@ value equal or bigger than the second one. Duration values outside of
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">simvastin_2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 7</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 7</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects reason_id reason          </span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1            109              99         1 Initial qualify…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1            109              99         2 join exposures …</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: excluded_records &lt;int&gt;, excluded_subjects &lt;int&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -406,12 +410,11 @@ decrease.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">simvastin_4</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>            109 Initial qualifying events                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>            107 join exposures separated by…                2                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>            107 require prior use priorUseW…                0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>            107 join exposures separated by…                2                 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="priorobservation-parameter">priorObservation parameter<a class="anchor" aria-label="anchor" href="#priorobservation-parameter"></a>
@@ -432,12 +435,11 @@ within the <em>observation_period</em>.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">simvastin_5</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>            109 Initial qualifying events                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>            107 join exposures separated by…                2                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>            107 require prior use priorUseW…                0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>            107 join exposures separated by…                2                 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="cohortdaterange-parameter">cohortDateRange parameter<a class="anchor" aria-label="anchor" href="#cohortdaterange-parameter"></a>
@@ -457,12 +459,11 @@ within the <em>observation_period</em>.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">simvastin_6</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>            109 Initial qualifying events                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>            107 join exposures separated by…                2                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>            107 require prior use priorUseW…                0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>            107 join exposures separated by…                2                 0</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="limit-parameter">limit parameter<a class="anchor" aria-label="anchor" href="#limit-parameter"></a>
@@ -487,12 +488,11 @@ records has decreased because of the <code>First</code> limit.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">simvastin_7</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">number_records</span>, <span class="va">reason</span>, <span class="va">excluded_records</span>, <span class="va">excluded_subjects</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
 <span><span class="co">#&gt;   number_records reason                       excluded_records excluded_subjects</span></span>
 <span><span class="co">#&gt;            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>            109 Initial qualifying events                   0                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>            107 join exposures separated by…                2                 0</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>            107 require prior use priorUseW…                0                 0</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>            107 join exposures separated by…                2                 0</span></span></code></pre></div>
 <p>If we just wanted to get the first-ever era, we can also use this
 parameter. To achieve that, try the following setting:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">

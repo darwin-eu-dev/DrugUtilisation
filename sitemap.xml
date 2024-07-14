@@ -40,7 +40,10 @@
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/plotTreatment.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/readConceptList.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/reexports.html</loc></url>
-<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/requirePriorUseWashout.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/requireDrugInDateRange.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/requireIsFirstDrugEntry.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/requireObservationBeforeDrug.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/requirePriorDrugWashout.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/stratifyByUnit.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseDoseCoverage.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/reference/summariseDrugUse.html</loc></url>
