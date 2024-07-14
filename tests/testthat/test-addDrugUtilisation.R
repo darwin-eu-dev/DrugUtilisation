@@ -248,7 +248,7 @@ test_that("test subfunctions", {
       addNumberExposures(conceptSet = codes) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date) |>
-      dplyr::pull("number_exposures_161_acetaminophen")
+      dplyr::pull("number_exposures_acetaminophen")
   )
 
   ## addCumulativeDose
