@@ -14,7 +14,9 @@ requirePriorDrugWashout(
 \arguments{
 \item{cohort}{A cohort table in a cdm reference.}
 
-\item{priorUseWashout}{The length of priorUseWashout to be applied.}
+\item{priorUseWashout}{The length of priorUseWashout to be applied. NOTE that
+if priorUseWashout is infinity requireIsFirstDrugEntry will be called
+instead.}
 
 \item{cohortId}{IDs of the cohorts to modify. The default is NULL meaning all
 cohorts will be used; otherwise, only the specified cohorts will be modified,

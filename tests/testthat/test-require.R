@@ -134,8 +134,6 @@ test_that("input validation", {
                            priorUseWashout = 90,
                            name = "cohort2")
   )
-
-  CDMConnector::cdmDisconnect(cdm = cdm)
 })
 
 test_that("requirePrioUseWashout example", {
@@ -214,8 +212,6 @@ test_that("requirePrioUseWashout example", {
        as.numeric()),
     2
   )
-
-  CDMConnector::cdmDisconnect(cdm = cdm)
 
   cohort1 <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 2, 2),
@@ -301,7 +297,6 @@ test_that("requirePrioUseWashout example", {
        as.numeric()),
     2
   )
-  CDMConnector::cdmDisconnect(cdm = cdm)
 })
 
 test_that("test cohortId, example 2", {
@@ -397,5 +392,4 @@ test_that("test cohortId, example 2", {
        as.numeric()),
     4
   )
-  CDMConnector::cdmDisconnect(cdm = cdm)
 })
