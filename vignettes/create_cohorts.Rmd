@@ -22,8 +22,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this vignette we will introduce different ways to create a drug utilisation
-cohort using DrugUtilisation.
+In this vignette we will introduce how to create a DrugUtilisation cohort. The cohort object is deffined in : `r vignette("cohorts", package = "omopgenerics")`
 
 ## Create a cdm object
 

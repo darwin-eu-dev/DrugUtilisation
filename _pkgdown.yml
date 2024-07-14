@@ -2,6 +2,19 @@ url: https://darwin-eu-dev.github.io/DrugUtilisation/
 template:
   bootstrap: 5
 
+articles:
+- title: Package functionalities
+  navbar: Package functionalities
+  contents:
+  - create_cohorts
+  - a02_scalingOfInstantiateCohorts
+  - a03_addIndications-example
+  - a04_addDrugInfo
+  - a05_treatmentDiscontinuation
+  - a06_treatmentSummary
+  - a07_characteriseACohort
+  - routePatternDose
+
 reference:
 - subtitle: Generate a drug utilisation cohort set
   desc: Generate a cohort of drug use
