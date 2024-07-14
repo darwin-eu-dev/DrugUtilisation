@@ -119,8 +119,7 @@ generateIngredientCohortSet <- function(cdm,
       cdm = cdm,
       name = ingredient,
       doseForm = doseForm,
-      ingredientRange = ingredientRange,
-      withConceptDetails = FALSE
+      ingredientRange = ingredientRange
     )
   } else {
     conceptSet <- lapply(ingredient, function(values) {
@@ -129,8 +128,7 @@ generateIngredientCohortSet <- function(cdm,
           cdm = cdm,
           name = value,
           doseForm = doseForm,
-          ingredientRange = ingredientRange,
-          withConceptDetails = FALSE
+          ingredientRange = ingredientRange
         )
       }) |>
         unname() |>

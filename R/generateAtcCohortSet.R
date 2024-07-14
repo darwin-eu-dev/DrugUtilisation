@@ -103,8 +103,7 @@ generateAtcCohortSet <- function(cdm,
   conceptSet <- CodelistGenerator::getATCCodes(cdm,
     name = atcName,
     level = level,
-    doseForm = doseForm,
-    withConceptDetails = FALSE
+    doseForm = doseForm
   )
 
   cdm <- DrugUtilisation::generateDrugUtilisationCohortSet(
