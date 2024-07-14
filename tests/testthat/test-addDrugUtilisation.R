@@ -241,6 +241,7 @@ test_that("test subfunctions", {
   ## addNumberExposures
   codes <- CodelistGenerator::getDrugIngredientCodes(
     cdm = cdm, name = "acetaminophen")
+  names(codes) <- "acetaminophen"
   expect_identical(
     x0$number_exposures_ingredient_1125315_descendants,
     cdm$dus_cohort |>
@@ -317,7 +318,7 @@ test_that("test subfunctions", {
       addNumberEras(conceptSet = codes) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date) |>
-      dplyr::pull(paste0("number_exposures_", names(codes)))
+      dplyr::pull("number_exposures_acetaminophen")
   )
 
   # errors: check correct call to parent frame
