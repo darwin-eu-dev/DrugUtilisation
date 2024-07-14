@@ -318,7 +318,7 @@ test_that("test subfunctions", {
       addNumberEras(conceptSet = codes) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date) |>
-      dplyr::pull("number_exposures_acetaminophen")
+      dplyr::pull("number_eras_acetaminophen")
   )
 
   # errors: check correct call to parent frame
