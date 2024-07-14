@@ -99,8 +99,10 @@ test_that("ingredient list and vector both work", {
   )
   expect_true(length(cdm$test_list |> dplyr::pull("cohort_definition_id") |> unique()) == 2)
 
-  expect_true(all(settings(cdm$test_vector) |> dplyr::pull("cohort_name")|>
-    sort() == c("acetaminophen","metformin", "simvastatin")))
+  expect_true(all(
+    settings(cdm$test_vector) |> dplyr::pull("cohort_name")|> sort() == c(
+      "161_acetaminophen", "36567_simvastatin", "6809_metformin")
+  ))
 
   expect_true(all(settings(cdm$test_list) |> dplyr::pull("cohort_name")|>
                     sort() == c("test_1","test_2")))

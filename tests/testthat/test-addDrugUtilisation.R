@@ -247,7 +247,7 @@ test_that("test subfunctions", {
       addNumberExposures(conceptSet = codes) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date) |>
-      dplyr::pull("number_exposures_acetaminophen")
+      dplyr::pull("number_exposures_161_acetaminophen")
   )
 
   ## addCumulativeDose
@@ -317,7 +317,7 @@ test_that("test subfunctions", {
       addNumberEras(conceptSet = codes) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date) |>
-      dplyr::pull("number_eras_acetaminophen")
+      dplyr::pull(paste0("number_exposures_", names(codes)))
   )
 
   # errors: check correct call to parent frame

@@ -99,7 +99,7 @@ test_that("summariseDrugUtilisation works", {
   )))
   expect_true(all(
     x2 |> dplyr:::filter(grepl("dose", variable_name)) |> dplyr::pull("additional_level") |> unique() == c(
-      "acetaminophen &&& acetaminophen")
+      "161_acetaminophen &&& acetaminophen")
   ))
   # test censor and index  and no ingredient
   x3 <- cdm$dus_cohort |>
@@ -113,6 +113,6 @@ test_that("summariseDrugUtilisation works", {
   expect_true(is.na(unique(x3$variable_level)))
   expect_true(all(
     x3 |> dplyr::pull("additional_level") |> unique() == c(
-      "overall", "acetaminophen")
+      "overall", "161_acetaminophen")
   ))
 })
