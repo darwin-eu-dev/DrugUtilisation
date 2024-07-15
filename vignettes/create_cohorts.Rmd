@@ -28,13 +28,13 @@ The function `generateDrugUtilisationCohortSet` is used to generate cohorts of d
 
 These cohorts can be subsetted to the exposures of interest applying the different inclusion criteria:
 
-- Require that entries are in a certain date range `requireDrugInDateRange`.
+- Require that entries are in a certain date range `requireDrugInDateRange()`.
 
-- Subset to the first entry `requireIsFirstDrugEntry`.
+- Subset to the first entry `requireIsFirstDrugEntry()`.
 
-- Require a certain time in observation before the entries `requireObservationBeforeDrug`.
+- Require a certain time in observation before the entries `requireObservationBeforeDrug()`.
 
-- Require a certain time before exposure `requirePriorDrugWashout`.
+- Require a certain time before exposure `requirePriorDrugWashout()`.
 
 # Creating a `cdm_reference` object
 
@@ -45,7 +45,7 @@ The DrugUtilisation packages contains some mock data that can be useful to test 
 ```{r}
 library(DrugUtilisation)
 
-cdm <- mockDrugUtilisation(numberIndividuals = 100)
+cdm <- mockDrugUtilisation(numberIndividuals = 100, seed = 1)
 
 cdm
 ```
@@ -66,12 +66,14 @@ There are four possible outputs for a conceptSet:
 conceptSet <- list(acetaminophen = c(1, 2, 3))
 conceptSet
 ```
+
 - A `codelist` object, see omopgenerics "a02_concept_set"
 ```{r}
 conceptSet <- list(acetaminophen = c(1, 2, 3)) |> omopgenerics::newCodelist()
 conceptSet
 conceptSet$acetaminophen
 ```
+
 - A `codelist_with_details` object, see omopgenerics "a02_concept_set"
 ```{r}
 conceptSet <- list(acetaminophen = dplyr::tibble(
@@ -110,18 +112,71 @@ library(CodelistGenerator)
 For example we can create a conceptSet based in an ingredient with `getDrugIngredientCodes()`:
 ```{r}
 codes <- getDrugIngredientCodes(cdm = cdm, name = "acetaminophen")
-codes[["161_acetaminophen"]]
+codes[["acetaminophen"]]
+```
+
+We could also use the function `codesFromConceptSet()` to read a concept set from a json file:
+```{r}
+codes <- codesFromConceptSet(path = system.file("acetaminophen.json", package = "DrugUtilisation"), cdm = cdm)
+codes
+```
+
+## The gapEra parameter
+
+```{r}
+
 ```
 
 
+## Create your cohort
 
-See more information in CodelistGenerator vignettes.
-- ingredient
-- json file
-- codelist
-- atc
+We will then create now a cohort with all the drug users of acetaminophen with a gapEra of 30 days.
 
-## The gapEra parameter
+```{r, messages = TRUE}
+codes <- getDrugIngredientCodes(cdm = cdm, name = "acetaminophen")
+cdm <- generateDrugUtilisationCohortSet(cdm = cdm, "acetaminophen_cohort", conceptSet = codes, gapEra = 30)
+cdm
+```
+
+We can compare what we see with what we would expect if we look at the individual with more records we can see how all of them are joined into a single exposure as the records overlap each other:
+
+```{r}
+cdm$drug_exposure |>
+  dplyr::filter(drug_concept_id %in% codes$acetaminophen & person_id == 69)
+```
+
+```{r}
+cdm$acetaminophen_cohort |>
+  dplyr::filter(subject_id == 69)
+```
+
+In this case gapEra did not have a big impact as we can see in the attrition:
+
+```{r}
+attrition(cdm$acetaminophen_cohort)
+```
+
+We can see this particular case of this individual:
+
+```{r}
+cdm$drug_exposure |>
+  dplyr::filter(drug_concept_id %in% codes$acetaminophen & person_id == 50)
+```
+
+In this case we have 3 exposures separated by 3 days, so if we use the 30 days gap both exposures are joined into a single episode, wheras if we would use a gapEra smaller than 3 we would consider them as different episodes.
+
+```{r}
+cdm$acetaminophen_cohort |>
+  dplyr::filter(subject_id == 50)
+```
+
+We can access the other cohort attributes using the adequate functions. In settings we can see that the gapEra used is recorded or with cohortCodelist we can see which was the codelisy used to create the cohort.
+
+```{r}
+settings(cdm$acetaminophen_cohort)
+cohortCount(cdm$acetaminophen_cohort)
+cohortCodelist(cdm$acetaminophen_cohort, cohortId = 1)
+```
 
 # Apply inclusion criteria to drug cohorts
 
