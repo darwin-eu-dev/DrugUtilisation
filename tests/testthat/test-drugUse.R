@@ -982,7 +982,7 @@ test_that("check all estimates", {
   for (k in 1:length(all_estimates)) {
     res <- summariseDrugUse(
       cdm[["dose_table"]],
-      drugUseEstimates = all_estimates[k]
+      estimates = all_estimates[k]
     ) |>
       dplyr::filter(.data$group_name == "cohort_name")
     expect_true(nrow(res[res$variable_name == c("initial_daily_dose"), ]) == 1)
@@ -993,7 +993,7 @@ test_that("check all estimates", {
   res <- summariseDrugUse(
     cdm[["dose_table"]],
     cdm = cdm,
-    drugUseEstimates = all_estimates
+    estimates = all_estimates
   )
 })
 
