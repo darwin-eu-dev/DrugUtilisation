@@ -100,7 +100,8 @@ conceptSet
 conceptSet$acetaminophen
 ```
 
-The package [CodelistGenerator](https://cran.r-project.org/package=CodelistGenerator) can be very useful to create conceptSet.
+The package [CodelistGenerator](https://cran.r-project.org/package=CodelistGenerator)
+can be very useful to create conceptSet.
 
 ```{r}
 library(CodelistGenerator)
