@@ -6,6 +6,7 @@ articles:
 - title: Package functionalities
   navbar: Package functionalities
   contents:
+  - mock_data
   - create_cohorts
   - a02_scalingOfInstantiateCohorts
   - a03_addIndications-example
