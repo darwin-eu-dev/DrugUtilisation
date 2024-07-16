@@ -25,6 +25,7 @@
     <li><a class="dropdown-item" href="../articles/a05_treatmentDiscontinuation.html">Add treatment discontinuation to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a06_treatmentSummary.html">Add treatment summary to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a07_characteriseACohort.html">Characterise a cohort using Drug Utilisation</a></li>
+    <li><a class="dropdown-item" href="../articles/drugUtilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
     <li><a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -52,7 +53,7 @@
 <span>  <span class="va">cohort</span>,</span>
 <span>  cdm <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  drugUseEstimates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"min"</span>, <span class="st">"q05"</span>, <span class="st">"q25"</span>, <span class="st">"median"</span>, <span class="st">"q75"</span>, <span class="st">"q95"</span>, <span class="st">"max"</span>, <span class="st">"mean"</span>, <span class="st">"sd"</span>,</span>
+<span>  estimates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"min"</span>, <span class="st">"q05"</span>, <span class="st">"q25"</span>, <span class="st">"median"</span>, <span class="st">"q75"</span>, <span class="st">"q95"</span>, <span class="st">"max"</span>, <span class="st">"mean"</span>, <span class="st">"sd"</span>,</span>
 <span>    <span class="st">"count_missing"</span>, <span class="st">"percentage_missing"</span><span class="op">)</span>,</span>
 <span>  minCellCount <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -74,7 +75,7 @@
 <dd><p>Stratification list.</p></dd>
 
 
-<dt id="arg-druguseestimates">drugUseEstimates<a class="anchor" aria-label="anchor" href="#arg-druguseestimates"></a></dt>
+<dt id="arg-estimates">estimates<a class="anchor" aria-label="anchor" href="#arg-estimates"></a></dt>
 <dd><p>Estimates that we want for the columns.</p></dd>
 
 
@@ -122,8 +123,8 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Table is collected to memory as not all requested estimates are supported on</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   the database side</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-16 22:36:26.300589</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-16 22:36:26.456096</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-16 23:21:07.384101</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-16 23:21:07.535047</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 101 × 13</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    result_id cdm_name group_name  group_level       strata_name strata_level</span>
@@ -176,8 +177,8 @@
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   count_missing, percentage_missing</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> Table is collected to memory as not all requested estimates are supported on</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   the database side</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-16 22:36:27.757687</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-16 22:36:28.400753</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-16 23:21:08.766269</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-16 23:21:09.399969</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 808 × 13</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    result_id cdm_name group_name  group_level       strata_name strata_level</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span>

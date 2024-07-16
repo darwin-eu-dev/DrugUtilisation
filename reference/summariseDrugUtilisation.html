@@ -27,6 +27,7 @@ cohorts."><meta property="og:image" content="https://darwin-eu-dev.github.io/Dru
     <li><a class="dropdown-item" href="../articles/a05_treatmentDiscontinuation.html">Add treatment discontinuation to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a06_treatmentSummary.html">Add treatment summary to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a07_characteriseACohort.html">Characterise a cohort using Drug Utilisation</a></li>
+    <li><a class="dropdown-item" href="../articles/drugUtilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
     <li><a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -54,12 +55,12 @@ cohorts.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">summariseDrugUtilisation</span><span class="op">(</span></span>
 <span>  <span class="va">cohort</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  drugUseEstimates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q25"</span>, <span class="st">"median"</span>, <span class="st">"q75"</span>, <span class="st">"mean"</span>, <span class="st">"sd"</span>, <span class="st">"count_missing"</span>,</span>
+<span>  estimates <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"q25"</span>, <span class="st">"median"</span>, <span class="st">"q75"</span>, <span class="st">"mean"</span>, <span class="st">"sd"</span>, <span class="st">"count_missing"</span>,</span>
 <span>    <span class="st">"percentage_missing"</span><span class="op">)</span>,</span>
-<span>  indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
-<span>  censorDate <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
 <span>  ingredientConceptId <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  conceptSet <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
+<span>  censorDate <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
 <span>  restrictIncident <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  gapEra <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  numberExposures <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -85,8 +86,18 @@ cohorts.</p>
 <dd><p>Stratification list.</p></dd>
 
 
-<dt id="arg-druguseestimates">drugUseEstimates<a class="anchor" aria-label="anchor" href="#arg-druguseestimates"></a></dt>
+<dt id="arg-estimates">estimates<a class="anchor" aria-label="anchor" href="#arg-estimates"></a></dt>
 <dd><p>Estimates that we want for the columns.</p></dd>
+
+
+<dt id="arg-ingredientconceptid">ingredientConceptId<a class="anchor" aria-label="anchor" href="#arg-ingredientconceptid"></a></dt>
+<dd><p>Ingredient OMOP concept that we are interested for
+the study. It is a compulsory input, no default value is provided.</p></dd>
+
+
+<dt id="arg-conceptset">conceptSet<a class="anchor" aria-label="anchor" href="#arg-conceptset"></a></dt>
+<dd><p>List of concepts to be included. If NULL all the
+descendants of ingredient concept id will be used.</p></dd>
 
 
 <dt id="arg-indexdate">indexDate<a class="anchor" aria-label="anchor" href="#arg-indexdate"></a></dt>
@@ -97,17 +108,6 @@ analysis.</p></dd>
 <dt id="arg-censordate">censorDate<a class="anchor" aria-label="anchor" href="#arg-censordate"></a></dt>
 <dd><p>Name of a column that indicates the date to stop the
 analysis, if NULL end of individuals observation is used.</p></dd>
-
-
-<dt id="arg-ingredientconceptid">ingredientConceptId<a class="anchor" aria-label="anchor" href="#arg-ingredientconceptid"></a></dt>
-<dd><p>Ingredient OMOP concept that we are interested for
-the study. It is a compulsory input, no default value is provided.</p></dd>
-
-
-<dt id="arg-conceptset">conceptSet<a class="anchor" aria-label="anchor" href="#arg-conceptset"></a></dt>
-<dd><p>List of concepts to be included. If NULL all the
-descendants of ingredient concept id will be used.
-ingredientConceptId = NULL,</p></dd>
 
 
 <dt id="arg-restrictincident">restrictIncident<a class="anchor" aria-label="anchor" href="#arg-restrictincident"></a></dt>
