@@ -558,12 +558,6 @@ test_that("summariseIndication", {
       observation_period = observationPeriod
     )
 
-  res <- cdm[["cohort1"]] |>
-    addIndication(
-      indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
-      unknownIndicationTable = "condition_occurrence"
-    )
-
   result <- cdm[["cohort1"]] |>
     summariseIndication(
       indicationCohortName = "cohort2",
