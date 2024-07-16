@@ -241,6 +241,7 @@ We will then create now a cohort with all the drug users of acetaminophen with a
 
 ```{r, messages = TRUE}
 codes <- getDrugIngredientCodes(cdm = cdm, name = "acetaminophen")
+names(codes) <- "acetaminophen"
 cdm <- generateDrugUtilisationCohortSet(cdm = cdm, name = "acetaminophen_cohort", conceptSet = codes, gapEra = 30)
 cdm
 ```
@@ -251,7 +252,7 @@ We can compare what we see with what we would expect if we look at the individua
 
 ```{r}
 cdm$drug_exposure |>
-  dplyr::filter(drug_concept_id %in% codes$acetaminophen & person_id == 69)
+  dplyr::filter(drug_concept_id %in% !!codes$acetaminophen & person_id == 69)
 ```
 
 ```{r}
@@ -269,7 +270,7 @@ We can see this particular case of this individual:
 
 ```{r}
 cdm$drug_exposure |>
-  dplyr::filter(drug_concept_id %in% codes$acetaminophen & person_id == 50)
+  dplyr::filter(drug_concept_id %in% !!codes$acetaminophen & person_id == 50)
 ```
 
 In this case we have 3 exposures separated by 3 days, so if we use the 30 days gap both exposures are joined into a single episode, wheras if we would use a gapEra smaller than 3 we would consider them as different episodes.
@@ -290,6 +291,18 @@ cohortCodelist(cdm$acetaminophen_cohort, cohortId = 1)
 # Apply inclusion criteria to drug cohorts
 
 Once we have created our base cohort using a conceptSet and a gapEra we can apply different restrictions:
+
+To require that the cohort entries (drug episodes) are incident we would usually define a time (`priorUseWashout`) where the individual is not exposed to the drug. This can be achieved using `requirePriorDrugWashout()` function. In this example we would restrict to individuals with 365 days of no exposure:
+
+```{r}
+cdm$acetaminophen_cohort <- cdm$acetaminophen_cohort |>
+  requirePriorDrugWashout(priorUseWashout = 365)
+```
+
+
+requireIsFirstDrugEntry
+requireObservationBeforeDrug
+requireDrugInDateRange
 
 # The order matters
 
@@ -333,6 +346,15 @@ x |>
   ggplot2::theme(legend.position = "none", axis.ticks.y = ggplot2::element_blank())
 ```
 
+Having all this into account the recommended order to apply criteria would be:
+
+1. Require a prior drug washout or require first drug entry (particular case).
+
+2. Require a prior observation before the drug episode.
+
+3. Require the drugs to be in a certain date range.
+
+Although this is the recommended order, your study design may have a different required specification, for example you may be interested on the first exposure that fulfills some criteria. Thus making applying the require first drug entry at the end.
 
 # Alternatives to create cohorts
 
