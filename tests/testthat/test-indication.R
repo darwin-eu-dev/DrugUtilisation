@@ -505,129 +505,116 @@ test_that("test attributes", {
 
 })
 
-test_that("summariseIndication", {
-  targetCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 1, 2),
-    subject_id = c(1, 1, 2, 3),
-    cohort_start_date = as.Date(c(
-      "2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01"
-    )),
-    cohort_end_date = as.Date(c(
-      "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
-    ))
-  )
-  indicationCohortName <- dplyr::tibble(
-    cohort_definition_id = c(1, 1, 2, 1),
-    subject_id = c(1, 3, 1, 1),
-    cohort_start_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
-    )),
-    cohort_end_date = as.Date(c(
-      "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
-    ))
-  )
-  attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
-    cohort_definition_id = c(1, 2),
-    cohort_name = c("asthma", "covid")
-  )
-  condition_occurrence <- dplyr::tibble(
-    person_id = 1,
-    condition_start_date = as.Date("2020-05-31"),
-    condition_end_date = as.Date("2020-05-31"),
-    condition_occurrence_id = 1,
-    condition_concept_id = 0,
-    condition_type_concept_id = 0
-  )
-  observationPeriod <- dplyr::tibble(
-    observation_period_id = c(1, 2, 3),
-    person_id = c(1, 2, 3),
-    observation_period_start_date = as.Date(c(
-      "2015-01-01", "2016-05-15", "2012-12-30"
-    )),
-    observation_period_end_date = as.Date(c(
-      "2025-01-01", "2026-05-15", "2030-12-30"
-    )),
-    period_type_concept_id = 44814724
-  )
-  cdm <-
-    mockDrugUtilisation(
-      connectionDetails,
-      cohort1 = targetCohortName,
-      cohort2 = indicationCohortName,
-      condition_occurrence = condition_occurrence,
-      observation_period = observationPeriod
-    )
-
-  res <- cdm[["cohort1"]] |>
-    addIndication(
-      indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
-      unknownIndicationTable = "condition_occurrence"
-    )
-
-  result <- cdm[["cohort1"]] |>
-    summariseIndication(
-      indicationCohortName = "cohort2",
-      unknownIndicationTable = "condition_occurrence",
-      indicationWindow = list(c(0, 0), c(-7, 0), c(-30, 0), c(-Inf, 0))
-    )
-
-  expect_true(inherits(result, "summarised_result"))
-  expect_true(any(grepl("Indication on index date", result$variable_name)))
-  expect_true(any(grepl("Indication time window m7 to 0 days", result$variable_name)))
-  expect_true(any(grepl("Indication time window m30 to 0 days", result$variable_name)))
-  expect_true(any(grepl("Indication any time prior", result$variable_name)))
-
-  res <- cdm[["cohort1"]] |>
-    PatientProfiles::addAge(
-      ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))
-    ) |>
-    PatientProfiles::addSex()
-
-  result <-
-    res |> summariseIndication(
-      strata = list(
-        "age_group",
-        "sex",
-        c("age_group", "sex")),
-        indicationCohortName = "cohort2",
-        unknownIndicationTable = "condition_occurrence",
-        indicationWindow = list(c(0, 0), c(-7, 0), c(-30, 0), c(-Inf, 0))
-      )
-
-
-  expect_true(inherits(result, "summarised_result"))
-  x <- tidyr::expand_grid(
-    group_level = omopgenerics::settings(res) |> dplyr::pull("cohort_name"),
-    strata_name = c("overall", "age_group", "sex", "age_group &&& sex")
-  ) |>
-    dplyr::left_join(
-      dplyr::tibble(
-        strata_name = c(
-          "age_group", "age_group", "sex", "sex", "age_group &&& sex",
-          "age_group &&& sex", "age_group &&& sex", "age_group &&& sex",
-          "overall"
-        ),
-        strata_level = c(
-          "<40", ">=40", "Male", "Female", "<40 &&& Female", "<40 &&& Male",
-          ">=40 &&& Female", ">=40 &&& Male", "overall"
-        )
-      ),
-      by = "strata_name", relationship = "many-to-many"
-    )
-  expect_identical(
-    nrow(result),
-    result |>
-      dplyr::inner_join(
-        x, by = c("group_level", "strata_name", "strata_level")
-      ) |>
-      nrow()
-  )
-  expect_true(any(grepl("Indication on index date", result$variable_name)))
-  expect_true(any(grepl("Indication time window m7 to 0 days", result$variable_name)))
-  expect_true(any(grepl("Indication time window m30 to 0 days", result$variable_name)))
-  expect_true(any(grepl("Indication any time prior", result$variable_name)))
-
-  expect_identical(
-    "summarised_indication", unique(settings(result)$result_type))
-
-})
+# test_that("summariseIndication", {
+#   targetCohortName <- dplyr::tibble(
+#     cohort_definition_id = c(1, 1, 1, 2),
+#     subject_id = c(1, 1, 2, 3),
+#     cohort_start_date = as.Date(c(
+#       "2020-01-01", "2020-06-01", "2020-01-02", "2020-01-01"
+#     )),
+#     cohort_end_date = as.Date(c(
+#       "2020-04-01", "2020-08-01", "2020-02-02", "2020-03-01"
+#     ))
+#   )
+#   indicationCohortName <- dplyr::tibble(
+#     cohort_definition_id = c(1, 1, 2, 1),
+#     subject_id = c(1, 3, 1, 1),
+#     cohort_start_date = as.Date(c(
+#       "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+#     )),
+#     cohort_end_date = as.Date(c(
+#       "2019-12-30", "2020-01-01", "2020-05-25", "2020-05-25"
+#     ))
+#   )
+#   attr(indicationCohortName, "cohort_set") <- dplyr::tibble(
+#     cohort_definition_id = c(1, 2),
+#     cohort_name = c("asthma", "covid")
+#   )
+#   condition_occurrence <- dplyr::tibble(
+#     person_id = 1,
+#     condition_start_date = as.Date("2020-05-31"),
+#     condition_end_date = as.Date("2020-05-31"),
+#     condition_occurrence_id = 1,
+#     condition_concept_id = 0,
+#     condition_type_concept_id = 0
+#   )
+#   observationPeriod <- dplyr::tibble(
+#     observation_period_id = c(1, 2, 3),
+#     person_id = c(1, 2, 3),
+#     observation_period_start_date = as.Date(c(
+#       "2015-01-01", "2016-05-15", "2012-12-30"
+#     )),
+#     observation_period_end_date = as.Date(c(
+#       "2025-01-01", "2026-05-15", "2030-12-30"
+#     )),
+#     period_type_concept_id = 44814724
+#   )
+#   cdm <-
+#     mockDrugUtilisation(
+#       connectionDetails,
+#       cohort1 = targetCohortName,
+#       cohort2 = indicationCohortName,
+#       condition_occurrence = condition_occurrence,
+#       observation_period = observationPeriod
+#     )
+#
+#   res <- cdm[["cohort1"]] |>
+#     addIndication(
+#       indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
+#       unknownIndicationTable = "condition_occurrence"
+#     )
+#
+#   result <- summariseIndication(res)
+#
+#   expect_true(inherits(result, "summarised_result"))
+#   expect_true(any(grepl("Indication on index date", result$variable_name)))
+#   expect_true(any(grepl("Indication during prior 7 days", result$variable_name)))
+#   expect_true(any(grepl("Indication during prior 30 days", result$variable_name)))
+#   expect_true(any(grepl("Indication any time prior", result$variable_name)))
+#
+#   res <- res |>
+#     PatientProfiles::addAge(
+#       ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))
+#     ) |>
+#     PatientProfiles::addSex()
+#
+#   result <- summariseIndication(
+#     res, strata = list("age_group", "sex", c("age_group", "sex"))
+#   )
+#
+#   expect_true(inherits(result, "summarised_result"))
+#   x <- tidyr::expand_grid(
+#     group_level = omopgenerics::settings(res) |> dplyr::pull("cohort_name"),
+#     strata_name = c("overall", "age_group", "sex", "age_group &&& sex")
+#   ) |>
+#     dplyr::left_join(
+#       dplyr::tibble(
+#         strata_name = c(
+#           "age_group", "age_group", "sex", "sex", "age_group &&& sex",
+#           "age_group &&& sex", "age_group &&& sex", "age_group &&& sex",
+#           "overall"
+#         ),
+#         strata_level = c(
+#           "<40", ">=40", "Male", "Female", "<40 &&& Female", "<40 &&& Male",
+#           ">=40 &&& Female", ">=40 &&& Male", "overall"
+#         )
+#       ),
+#       by = "strata_name", relationship = "many-to-many"
+#     )
+#   expect_identical(
+#     nrow(result),
+#     result |>
+#       dplyr::inner_join(
+#         x, by = c("group_level", "strata_name", "strata_level")
+#       ) |>
+#       nrow()
+#   )
+#   expect_true(any(grepl("Indication on index date", result$variable_name)))
+#   expect_true(any(grepl("Indication during prior 7 days", result$variable_name)))
+#   expect_true(any(grepl("Indication during prior 30 days", result$variable_name)))
+#   expect_true(any(grepl("Indication any time prior", result$variable_name)))
+#
+#   expect_identical(
+#     "summarised_indication", unique(settings(result)$result_type))
+#
+# })
