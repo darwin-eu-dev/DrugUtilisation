@@ -292,12 +292,52 @@ cohortCodelist(cdm$acetaminophen_cohort, cohortId = 1)
 
 Once we have created our base cohort using a conceptSet and a gapEra we can apply different restrictions:
 
+- require a prior un exposed time: `requirePriorDrugWashout()`
+- require that it is the first entry: `requireIsFirstDrugEntry()`
+- require a prior observation in the cdm: `requireObservationBeforeDrug()`
+- require that date are within a certain interval: `requireDrugInDateRange()`
+
+## `requirePriorDrugWashout()`
+
 To require that the cohort entries (drug episodes) are incident we would usually define a time (`priorUseWashout`) where the individual is not exposed to the drug. This can be achieved using `requirePriorDrugWashout()` function. In this example we would restrict to individuals with 365 days of no exposure:
 
 ```{r}
 cdm$acetaminophen_cohort <- cdm$acetaminophen_cohort |>
   requirePriorDrugWashout(priorUseWashout = 365)
 ```
+
+The result will be a cohort with the individuals that fulfill the criteria:
+
+```{r}
+cdm$acetaminophen_cohort
+```
+
+This would also get recorded in the attrition, counts and settings.
+
+In the settings a new column with the specified parameter used:
+
+```{r}
+settings(cdm$acetaminophen_cohort)
+```
+
+The counts will be updated:
+
+```{r}
+cohortCount(cdm$acetaminophen_cohort)
+```
+
+And the attrition will have a new line:
+
+```{r}
+attrition(cdm$acetaminophen_cohort)
+```
+
+The `name` argument can be used to put the result into a different table in our cdm. Whereas the `cohortId` argument is used to apply this criteria to only a restricted set of cohorts (by default the same criteria is applied to all the cohort records). To show this in an example 
+
+```{r}
+
+```
+
 
 
 requireIsFirstDrugEntry
