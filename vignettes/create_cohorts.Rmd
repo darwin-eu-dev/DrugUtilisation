@@ -334,8 +334,6 @@ x |>
 ```
 
 
-
-
 # Alternatives to create cohorts
 
 `generateDrugUtilisationCohortSet()` is a very specif function to create drug users cohorts. Most of the functions in this package need a cohort as input, this cohort will usually be a cohort generated using `generateDrugUtilisationCohortSet()`, but there exist some alternative to create cohorts
