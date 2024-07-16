@@ -466,7 +466,7 @@ attrition(cdm$my_new_cohort)
 
 It is very important to know that the different restrictions are not commutable operations and that different order can lead to different results. Let's see the following example where we have an individual with 4 cohort entries:
 
-```{r, fig.width = 7, fig.height = 2}
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x <- dplyr::tibble(
   "cohort_start_date" = as.Date(c("2010-03-01", "2011-02-15", "2012-03-05", "2013-06-15")),
   "cohort_end_date" = as.Date(c("2010-05-15", "2012-01-01", "2012-05-12", "2013-08-12"))
@@ -477,7 +477,8 @@ y <- dplyr::tibble(
   dplyr::mutate(
     record_id = dplyr::row_number(), 
     distance = as.numeric(end - start + 1),
-    mean = start + distance/2
+    mean = start + distance/2,
+    distance = paste0(distance, " days")
   ) |>
   tidyr::pivot_longer(c("start", "end"))
 x |>
@@ -485,23 +486,26 @@ x |>
   tidyr::pivot_longer(c("cohort_start_date", "cohort_end_date")) |>
   ggplot2::ggplot(ggplot2::aes(x = value, y = 1, group = record_id, label = value)) +
   ggplot2::geom_line(linewidth = 1.5) +
-  ggplot2::lims(y = c(0.75, 1.25)) +
+  ggplot2::lims(y = c(0.8, 1.2)) +
   ggplot2::geom_point(
     ggplot2::aes(x = as.Date("2010-01-01"), y = 1), shape = 23, color = "#00AF6A", size = 5, fill = "#00AF6A"
   ) +
   ggplot2::geom_text(
-    ggplot2::aes(x = as.Date("2010-01-01"), y = 0.95, label = "Start observation", hjust = "left"), color = "#00AF6A"
+    ggplot2::aes(x = as.Date("2010-01-01"), y = 0.92, label = "Start observation", hjust = "left"), color = "#00AF6A"
   ) +
   ggplot2::geom_line(
     data = y,
     ggplot2::aes(x = value, y = 1.05, group = record_id, color = "red"),
     linewidth = 1.1
   ) +
-  ggplot2::geom_text(data = y, ggplot2::aes(x = mean, y = 1.05, label = distance), nudge_y = 0.008) +
+  ggplot2::geom_text(data = y, ggplot2::aes(x = mean, y = 1.09, label = distance), nudge_y = 0.008) +
   ggplot2::xlim(as.Date(c("2010-01-01", "2014-01-01"))) + 
   ggplot2::ylab("") +
   ggplot2::xlab("Time") +
-  ggplot2::theme(legend.position = "none", axis.ticks.y = ggplot2::element_blank())
+  ggplot2::theme(
+    legend.position = "none", 
+    axis.ticks.y = ggplot2::element_blank(),
+    axis.text.y = ggplot2::element_blank())
 ```
 
 In this case we will see the result of combining in different ways 4 inclusion criteria:
@@ -511,12 +515,133 @@ In this case we will see the result of combining in different ways 4 inclusion c
 - **minObs**: `requireObservationBeforeDrug(priorObservation = 365)`
 - **2011-2012** `requireDrugInDateRange(dateRange = as.Date(c("2011-01-01", "2012-12-31)))`
 
+## first and washout
 
+If we would apply the initially the **first** requirement and then the **washout** one we would end with only the first record:
 
-- require a prior un exposed time: `requirePriorDrugWashout()`
-- require that it is the first entry: `requireIsFirstDrugEntry()`
-- require a prior observation in the cdm: `requireObservationBeforeDrug()`
-- require that date are within a certain interval: `requireDrugInDateRange()`
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+colours <- c("#ffb3b3", "#2d862d")
+doplot <- function(x) {
+  x |>
+    dplyr::mutate(record_id = dplyr::row_number()) |>
+    tidyr::pivot_longer(c("cohort_start_date", "cohort_end_date")) |>
+    ggplot2::ggplot(ggplot2::aes(
+      x = value, y = 1, group = record_id, label = value, color = color)) +
+    ggplot2::geom_line(linewidth = 1.5) +
+    ggplot2::lims(y = c(0.75, 1.25)) +
+    ggplot2::xlim(as.Date(c("2010-01-01", "2014-01-01"))) + 
+    ggplot2::ylab("") +
+    ggplot2::xlab("Time") +
+    ggplot2::scale_color_manual(values = colours) +
+    ggplot2::theme(
+      legend.position = "none", 
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank())
+}
+x <- dplyr::tibble(
+  "cohort_start_date" = as.Date(c("2010-03-01", "2011-02-15", "2012-03-05", "2013-06-15")),
+  "cohort_end_date" = as.Date(c("2010-05-15", "2012-01-01", "2012-05-12", "2013-08-12"))
+)
+x |>
+  dplyr::mutate(color = as.factor(c(1, 0, 0, 0))) |>
+  doplot() + 
+  ggplot2::ggtitle("first + washout")
+```
+
+Whereas if we would apply initially the **washout** criteria and then the **first** one the resulting exposure would be the fourth one:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 0, 0, 1))) |>
+  doplot() + 
+  ggplot2::ggtitle("washout + first")
+```
+
+## first and minObs
+
+If we would apply the initially the **first** requirement and then the **minObs** one we would end with no record in the cohort:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 0, 0, 0))) |>
+  doplot() + 
+  ggplot2::ggtitle("first + minObs")
+```
+
+Whereas if we would apply initially the **minObs** criteria and then the **first** one there would be an exposure selected, the second one:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 1, 0, 0))) |>
+  doplot() + 
+  ggplot2::ggtitle("minObs + first")
+```
+
+## first and 2011-2012
+
+If we would apply the initially the **first** requirement and then the **2011-2012** one we would end with no record in the cohort:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 0, 0, 0))) |>
+  doplot() + 
+  ggplot2::ggtitle("first + 2011-2012")
+```
+
+Whereas if we would apply initially the **2011-2012** criteria and then the **first** one there would be an exposure selected, the second one:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 1, 0, 0))) |>
+  doplot() + 
+  ggplot2::ggtitle("2011-2012 + first")
+```
+
+## washout and minObs
+
+If we would apply the initially the **washout** requirement and then the **minObs** one we would end with only the last record selected:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 0, 0, 1))) |>
+  doplot() + 
+  ggplot2::ggtitle("washout + first")
+```
+
+Whereas if we would apply initially the **minObs** criteria and then the **washout** one the second and the fourth exposures are the ones that would be selected:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 1, 0, 1))) |>
+  doplot() + 
+  ggplot2::ggtitle("minObs + washout")
+```
+
+## washout and 2011-2012
+
+If we would apply initially the **washout** requirement and then the **2011-2012** one no record would be selected:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 0, 0, 0))) |>
+  doplot() + 
+  ggplot2::ggtitle("washout + 2011-2012")
+```
+
+Whereas if we would apply initially the **2011-2012** criteria and then the **washout** one the second record would be included:
+
+```{r, echo = FALSE, fig.width = 7, fig.height = 2}
+x |>
+  dplyr::mutate(color = as.factor(c(0, 1, 0, 0))) |>
+  doplot() + 
+  ggplot2::ggtitle("2011-2012 + washout")
+```
+
+## minObs and 2011-2012
+
+Finally `requireObservationBeforeDrug` and `requireDrugInDateRange` will always be commutable operations so the other of this two will always be the same.
+
+## Recommended order
 
 Having all this into account the recommended order to apply criteria would be:
 
