@@ -504,6 +504,20 @@ x |>
   ggplot2::theme(legend.position = "none", axis.ticks.y = ggplot2::element_blank())
 ```
 
+In this case we will see the result of combining in different ways 4 inclusion criteria:
+
+- **first**: `requireIsFirstDrugEntry()`
+- **washout**: `requirePriorDrugWashout(priorUseWashout = 365)`
+- **minObs**: `requireObservationBeforeDrug(priorObservation = 365)`
+- **2011-2012** `requireDrugInDateRange(dateRange = as.Date(c("2011-01-01", "2012-12-31)))`
+
+
+
+- require a prior un exposed time: `requirePriorDrugWashout()`
+- require that it is the first entry: `requireIsFirstDrugEntry()`
+- require a prior observation in the cdm: `requireObservationBeforeDrug()`
+- require that date are within a certain interval: `requireDrugInDateRange()`
+
 Having all this into account the recommended order to apply criteria would be:
 
 1. Require a prior drug washout or require first drug entry (particular case).
