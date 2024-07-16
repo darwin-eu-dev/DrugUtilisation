@@ -366,7 +366,7 @@ test_that("test indicationDate", {
 
   cdm <-
     mockDrugUtilisation(
- #     connectionDetails,
+      connectionDetails,
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
