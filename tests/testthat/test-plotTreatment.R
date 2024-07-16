@@ -69,8 +69,6 @@ test_that("plot treatment (from cohort) works", {
 
   expect_true(ggplot2::is.ggplot(plot2))
 
-  library(PatientProfiles)
-
   treatment3 <- cdm$cohort1 |>
     PatientProfiles::addSex() |>
     PatientProfiles::addAge(ageGroup = list("<40" = c(0, 39), ">40" = c(40, 150))) |>
@@ -159,8 +157,6 @@ test_that("plot treatment (from cohort set) works", {
   )
 
   expect_true(ggplot2::is.ggplot(plot2))
-
-  library(PatientProfiles)
 
   treatment3 <- cdm$cohort1 |>
     PatientProfiles::addSex() |>
