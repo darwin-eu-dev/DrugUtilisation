@@ -581,20 +581,20 @@ checkTablesToCharacterize <- function(tablesToCharacterize, cdm) {
   }
 }
 
-checkDrugUseEstimates <- function(drugUseEstimates) {
+checkEstimates <- function(estimates) {
   choices <- PatientProfiles::availableEstimates(fullQuantiles = TRUE) |>
     dplyr::filter(.data$variable_type == "numeric") |>
     dplyr::pull("estimate_name")
   errorMessage <- paste0(
-    "drugUseEstimates must be a subset of: ", paste0(choices, collapse = ", ")
+    "estimates must be a subset of: ", paste0(choices, collapse = ", ")
   )
-  if (!is.character(drugUseEstimates)) {
+  if (!is.character(estimates)) {
     cli::cli_abort(errorMessage)
   }
-  if (length(drugUseEstimates) != length(unique(drugUseEstimates))) {
+  if (length(estimates) != length(unique(estimates))) {
     cli::cli_abort(errorMessage)
   }
-  if (!all(drugUseEstimates %in% choices)) {
+  if (!all(estimates %in% choices)) {
     cli::cli_abort(errorMessage)
   }
 }
