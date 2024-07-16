@@ -112,7 +112,7 @@ library(CodelistGenerator)
 For example we can create a conceptSet based in an ingredient with `getDrugIngredientCodes()`:
 ```{r}
 codes <- getDrugIngredientCodes(cdm = cdm, name = "acetaminophen")
-codes[["acetaminophen"]]
+codes[["161_acetaminophen"]]
 ```
 
 We could also use the function `codesFromConceptSet()` to read a concept set from a json file:
@@ -332,21 +332,139 @@ And the attrition will have a new line:
 attrition(cdm$acetaminophen_cohort)
 ```
 
-The `name` argument can be used to put the result into a different table in our cdm. Whereas the `cohortId` argument is used to apply this criteria to only a restricted set of cohorts (by default the same criteria is applied to all the cohort records). To show this in an example 
+The `name` argument can be used to put the result into a different table in our cdm (by default the function updates the current cohort table). Whereas the `cohortId` argument is used to apply this criteria to only a restricted set of cohorts (by default the same criteria is applied to all the cohort records). To show this in an example we will create two cohorts (metformin and simvastatin) inside a table named `my_cohort` and then apply the inclusion criteria to only one of them (simvastatin) and save the result to a table named: `my_new_cohort`
 
 ```{r}
+codes <- getDrugIngredientCodes(cdm = cdm, name = c("metformin", "simvastatin"))
+cdm <- generateDrugUtilisationCohortSet(cdm = cdm, name = "my_cohort", conceptSet = codes, gapEra = 30)
+cdm
+settings(cdm$my_cohort)
+cdm$my_new_cohort <- cdm$my_cohort |>
+  requirePriorDrugWashout(priorUseWashout = 365, cohortId = 2, name = "my_new_cohort")
+cdm
+attrition(cdm$my_new_cohort)
+```
 
+## `requireIsFirstDrugEntry()`
+
+To require that the cohort entry (drug episodes) is the first one of the available ones we can use the `requireIsFirstDrugEntry()` function. See example:
+
+```{r}
+cdm$acetaminophen_cohort <- cdm$acetaminophen_cohort |>
+  requireIsFirstDrugEntry()
+```
+
+The result will be a cohort with the individuals that fulfill the criteria:
+
+```{r}
+cdm$acetaminophen_cohort
+```
+
+This would also get recorded in the attrition, counts and settings on top of the already exiting ones.
+
+In the settings a new column with the specified parameter used:
+
+```{r}
+settings(cdm$acetaminophen_cohort)
+```
+
+The counts will be updated:
+
+```{r}
+cohortCount(cdm$acetaminophen_cohort)
+```
+
+And the attrition will have a new line:
+
+```{r}
+attrition(cdm$acetaminophen_cohort)
+```
+
+## `requireObservationBeforeDrug()`
+
+To require that a cohort entry (drug episodes) has a certain time of prior observation we can use the `requireObservationBeforeDrug()` function. See example:
+
+```{r}
+cdm$acetaminophen_cohort <- cdm$acetaminophen_cohort |>
+  requireObservationBeforeDrug(priorObservation = 365)
+```
+
+The result will be a cohort with the individuals that fulfill the criteria:
+
+```{r}
+cdm$acetaminophen_cohort
+```
+
+This would also get recorded in the attrition, counts and settings on top of the already exiting ones.
+
+In the settings a new column with the specified parameter used:
+
+```{r}
+settings(cdm$acetaminophen_cohort)
+```
+
+The counts will be updated:
+
+```{r}
+cohortCount(cdm$acetaminophen_cohort)
+```
+
+And the attrition will have a new line:
+
+```{r}
+attrition(cdm$acetaminophen_cohort)
 ```
 
 
+## `requireDrugInDateRange()`
 
-requireIsFirstDrugEntry
-requireObservationBeforeDrug
-requireDrugInDateRange
+To require that a cohort entry (drug episodes) has a certain date within an specific range we can use the `requireDrugInDateRange()` function. In general you would like to apply this restriction to the incident date (cohort_start_date), but the function is flexible and you can use it to restrict to any other date. See example:
+
+```{r}
+cdm$acetaminophen_cohort <- cdm$acetaminophen_cohort |>
+  requireDrugInDateRange(
+    indexDate = "cohort_start_date", 
+    dateRange = as.Date(c("2000-01-01", "2020-12-31"))
+  )
+```
+
+The result will be a cohort with the individuals that fulfill the criteria:
+
+```{r}
+cdm$acetaminophen_cohort
+```
+
+This would also get recorded in the attrition, counts and settings on top of the already exiting ones.
+
+In the settings a new column with the specified parameter used:
+
+```{r}
+settings(cdm$acetaminophen_cohort)
+```
+
+The counts will be updated:
+
+```{r}
+cohortCount(cdm$acetaminophen_cohort)
+```
+
+And the attrition will have a new line:
+
+```{r}
+attrition(cdm$acetaminophen_cohort)
+```
+
+If you just want to restrict on the lower or upper bound you can just leave the other element as NA and then no condition will be applied, see for example:
+
+```{r}
+cdm$my_new_cohort <- cdm$my_new_cohort |>
+  requireDrugInDateRange(dateRange = as.Date(c(NA, "2010-12-31")))
+attrition(cdm$my_new_cohort)
+```
 
 # The order matters
 
-It is very important to know that the different restrictions are not commutable operations and that different results. Let's see the following example where we have an individual with 4 cohort entries:
+It is very important to know that the different restrictions are not commutable operations and that different order can lead to different results. Let's see the following example where we have an individual with 4 cohort entries:
 
 ```{r, fig.width = 7, fig.height = 2}
 x <- dplyr::tibble(
