@@ -9,9 +9,10 @@ articles:
   a05_treatmentDiscontinuation: a05_treatmentDiscontinuation.html
   a06_treatmentSummary: a06_treatmentSummary.html
   a07_characteriseACohort: a07_characteriseACohort.html
+  a08_addDailyDose: a08_addDailyDose.html
   drugUtilisation: drugUtilisation.html
   routePatternDose: routePatternDose.html
-last_built: 2024-07-16T23:14Z
+last_built: 2024-07-16T23:30Z
 urls:
   reference: https://darwin-eu-dev.github.io/DrugUtilisation/reference
   article: https://darwin-eu-dev.github.io/DrugUtilisation/articles
