@@ -7,24 +7,30 @@ cohorts.}
 \usage{
 summariseIndication(
   cohort,
-  cdm = lifecycle::deprecated(),
   strata = list(),
-  minCellCount = lifecycle::deprecated()
+  indicationCohortName,
+  indicationCohortId = NULL,
+  indicationWindow = list(c(0, 0)),
+  unknownIndicationTable = NULL
 )
 }
 \arguments{
 \item{cohort}{Cohort with indications and strata.}
 
-\item{cdm}{Deprecated.}
-
 \item{strata}{Stratification list.}
 
-\item{minCellCount}{Deprecated.}
+\item{indicationCohortName}{Name of indication cohort table}
+
+\item{indicationCohortId}{target cohort Id to add indication}
+
+\item{indicationWindow}{time window of interests}
+
+\item{unknownIndicationTable}{Tables to search unknown indications}
+
+\item{indexDate}{Date of the indication}
 }
 \value{
-A Tibble with 4 columns: cohort_definition_id, variable, estimate and
-value. There will be one row for each cohort, variable and cohort
-combination.
+A summarise result object
 }
 \description{
 This function is used to summarise the indication table over multiple
