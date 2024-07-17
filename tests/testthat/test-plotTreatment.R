@@ -83,8 +83,6 @@ test_that("plot treatment (from cohort) works", {
   )
 
   expect_true(ggplot2::is.ggplot(plot3))
-
-  CDMConnector::cdmDisconnect(cdm = cdm)
 })
 
 test_that("plot treatment (from cohort set) works", {
@@ -172,6 +170,4 @@ test_that("plot treatment (from cohort set) works", {
   )
 
   expect_true(ggplot2::is.ggplot(plot3))
-
-  CDMConnector::cdmDisconnect(cdm = cdm)
 })

@@ -58,8 +58,6 @@ result <- cdm$cohort1 |>
   )
 
 tableTreatment(result)
-
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

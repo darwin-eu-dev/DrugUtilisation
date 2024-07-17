@@ -38,7 +38,6 @@ cdm$cohort1 <- cdm$cohort1 |>
   requireDrugInDateRange(
     dateRange = as.Date(c("2020-01-01", NA)), cohortId = 1)
 attrition(cdm$cohort1)
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

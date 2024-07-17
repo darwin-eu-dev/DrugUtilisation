@@ -35,7 +35,6 @@ cdm <- mockDrugUtilisation()
 cdm$cohort1 <- cdm$cohort1 |>
   requireObservationBeforeDrug(priorObservation = 365, cohortId = 1)
 attrition(cdm$cohort1)
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }
