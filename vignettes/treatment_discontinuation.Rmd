@@ -1,10 +1,8 @@
 ---
-title: "Add treatment discontinuation to a Drug Utilisation cohort"
-author: "Edward Burn, Martí Català"
-date: "`r Sys.Date()`"
+title: "Assessing time to treatment discontinuation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Add treatment discontinuation to a Drug Utilisation cohort}
+  %\VignetteIndexEntry{Assessing time to treatment discontinuation}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -14,10 +12,90 @@ editor_options:
 ---
 
 ```{r, include = FALSE}
+if (Sys.getenv("EUNOMIA_DATA_FOLDER") == "") Sys.setenv("EUNOMIA_DATA_FOLDER" = tempdir())
+if (!dir.exists(Sys.getenv("EUNOMIA_DATA_FOLDER"))) dir.create(Sys.getenv("EUNOMIA_DATA_FOLDER"))
+if (!CDMConnector::eunomia_is_available()) CDMConnector::downloadEunomiaData()
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
   collapse = TRUE,
   comment = "#>"
 )
+```
+
+# Introduction
+
+Time-to-discontinuation is commonly of interest when summarising adherence to  medications. 
+
+# Time-to-discontinuation of amoxicillin
+For example, let's say we would like to study time-to-discontinuation among new users of amoxicillin in their first 90-days of use. For this we can first create our amoxicillin study cohort, restricting to first occurrence in history. We can then estimate Kaplan-Meier survival curves we can use estimateSingleEventSurvival from the CohortSurvival package, with the follow-up beginning from an individual's cohort start date and discontinuation occurring at their cohort end date. 
+
+Here we'll use the synthetic Eunomia dataset to show how this could be done.
+
+```{r}
+library(CDMConnector)
+library(PatientProfiles)
+library(DrugUtilisation)
+library(CohortSurvival)
+library(dplyr)
+
+db <- DBI::dbConnect(duckdb::duckdb(), 
+                     dbdir = eunomia_dir())
+cdm <- cdm_from_con(
+  con = db,
+  cdm_schema = "main", 
+  write_schema = "main", 
+  cdm_name = "Eunomia"
+)
+
+cdm <- generateIngredientCohortSet(cdm = cdm,
+                                   name = "amoxicillin",
+                                   ingredient = "amoxicillin", 
+                                   gapEra = 7) 
+cdm$amoxicillin <- cdm$amoxicillin |> 
+  requireIsFirstDrugEntry()
+
+discontinuation_summary <- estimateSingleEventSurvival(cdm, 
+                                    targetCohortTable = "amoxicillin", 
+                                    outcomeCohortTable = "amoxicillin", 
+                                    outcomeDateVariable = "cohort_end_date", 
+                                    followUpDays = 90, 
+                                    eventGap = 30)
+```
+
+We can plot our study result like so:
+```{r, out.width="75%"}
+plotSurvival(discontinuation_summary)
+```
+
+Or we can similarly create a table summarising the result
+```{r}
+tableSurvival(discontinuation_summary)
+```
+
+We can also easily stratify our results. Here we add patient demographics to our cohort table using the PatientProfiles packages and then stratify results by age group and sex.
+```{r}
+cdm$amoxicillin <- cdm$amoxicillin |> 
+  addDemographics(ageGroup = list(c(0, 40),
+                                  c(41, Inf))) |> 
+  compute(temporary = FALSE, name = "amoxicillin")
+
+discontinuation_summary <- estimateSingleEventSurvival(cdm, 
+                                                       strata = list(c("age_group"),
+                                                                     c("sex")),
+                                    targetCohortTable = "amoxicillin", 
+                                    outcomeCohortTable = "amoxicillin", 
+                                    outcomeDateVariable = "cohort_end_date", 
+                                    followUpDays = 90, 
+                                    eventGap = 30)
+```
+
+Again we could present our results in a plot or a table.
+```{r, out.width="75%"}
+plotSurvival(discontinuation_summary, 
+             facet = "strata_level")
+```
+
+```{r}
+tableSurvival(discontinuation_summary)
 ```
