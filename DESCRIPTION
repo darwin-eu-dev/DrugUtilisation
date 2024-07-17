@@ -80,7 +80,7 @@ Imports:
     dbplyr,
     dplyr,
     glue,
-    lubridate,
+    clock,
     tidyr,
     rlang,
     cli,
