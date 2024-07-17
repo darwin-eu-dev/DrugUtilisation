@@ -6,6 +6,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Add indications to Drug Utilisation Cohort • DrugUtilisation</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
@@ -33,16 +39,19 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/a01_introCreateCohort.html">Use DrugUtilisation to create a cohort</a></li>
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Package functionalities</h6></li>
+    <li><a class="dropdown-item" href="../articles/mock_data.html">DrugUtilisation mock data</a></li>
+    <li><a class="dropdown-item" href="../articles/create_cohorts.html">Use DrugUtilisation to create a cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a02_scalingOfInstantiateCohorts.html">Scaling of instantiate cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/a03_addIndications-example.html">Add indications to Drug Utilisation Cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a04_addDrugInfo.html">Add drug related information to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a05_treatmentDiscontinuation.html">Add treatment discontinuation to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a06_treatmentSummary.html">Add treatment summary to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/a07_characteriseACohort.html">Characterise a cohort using Drug Utilisation</a></li>
-    <li><a class="dropdown-item" href="../articles/a08_addDailyDose.html">Characterise a cohort using Drug Utilisation</a></li>
     <li><a class="dropdown-item" href="../articles/drugUtilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
     <li><a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
+    <li><a class="dropdown-item" href="../articles/a08_addDailyDose.html">Characterise a cohort using Drug Utilisation</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -67,7 +76,7 @@
                         <h4 data-toc-skip class="author">Marti Catala,
 Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li</h4>
             
-            <h4 data-toc-skip class="date">2024-07-16</h4>
+            <h4 data-toc-skip class="date">2024-07-17</h4>
       
 
       <div class="d-none name"><code>a03_addIndications-example.Rmd</code></div>
@@ -175,20 +184,20 @@ parameters. An example is provided below.</p>
 <span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_006_1721173267&gt; [?? x 7]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1023-azure:R 4.4.1//tmp/Rtmp4mLhkt/file1d9e7eb05b82.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_006_1721204179&gt; [?? x 7]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1023-azure:R 4.4.1//tmp/RtmprJVhK8/file1d5668e77d98.duckdb]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1        895 1980-02-22        1980-03-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        726 1984-08-18        1984-08-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1       <span style="text-decoration: underline;">2</span>357 1953-07-31        1953-08-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1        295 1973-12-07        1973-12-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1       <span style="text-decoration: underline;">1</span>761 1967-07-09        1967-07-23     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1       <span style="text-decoration: underline;">4</span>465 1986-09-17        1986-09-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1       <span style="text-decoration: underline;">3</span>080 1959-11-05        1959-11-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1       <span style="text-decoration: underline;">1</span>482 1986-09-17        1986-09-24     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1       <span style="text-decoration: underline;">1</span>261 1973-01-01        1973-02-04     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1       <span style="text-decoration: underline;">2</span>709 1943-12-17        1943-12-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1       <span style="text-decoration: underline;">3</span>408 1997-01-13        1997-01-20     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1        114 1999-11-18        1999-12-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1       <span style="text-decoration: underline;">2</span>945 1964-11-05        1964-11-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1       <span style="text-decoration: underline;">4</span>370 1968-08-30        1968-09-13     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1        712 2011-07-27        2011-08-03     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1       <span style="text-decoration: underline;">5</span>274 1953-09-29        1953-10-06     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1        565 1960-12-07        1960-12-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1       <span style="text-decoration: underline;">2</span>380 1950-06-28        1950-07-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         99 1980-11-30        1980-12-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1        219 1968-08-28        1968-09-11     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: indication_0_to_0 &lt;chr&gt;, indication_m30_to_0 &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   indication_m365_to_0 &lt;chr&gt;</span></span></span></code></pre></div>

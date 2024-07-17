@@ -1,7 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/404.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/LICENSE.html</loc></url>
-<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a01_introCreateCohort.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a02_scalingOfInstantiateCohorts.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a03_addIndications-example.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a04_addDrugInfo.html</loc></url>
@@ -9,8 +8,10 @@
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a06_treatmentSummary.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a07_characteriseACohort.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/a08_addDailyDose.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/create_cohorts.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/drugUtilisation.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/index.html</loc></url>
+<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/mock_data.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/routePatternDose.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/authors.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/index.html</loc></url>
