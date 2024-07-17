@@ -139,8 +139,10 @@ mockDrugUtilisation <- function(connectionDetails = list(
 
   con <- connectionDetails$con
   writeSchema <- strsplit(connectionDetails[["writeSchema"]], "\\.")[[1]]
-  cdm <- CDMConnector::copyCdmTo(
-    con = con, cdm = cdm, schema = writeSchema, overwrite = TRUE
+  suppressMessages(
+    cdm <- CDMConnector::copyCdmTo(
+      con = con, cdm = cdm, schema = writeSchema, overwrite = TRUE
+    )
   )
 
   return(cdm)

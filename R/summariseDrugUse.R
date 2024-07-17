@@ -19,7 +19,7 @@
 #' @param cohort Cohort with drug use variables and strata.
 #' @param cdm Deprecated.
 #' @param strata Stratification list.
-#' @param drugUseEstimates Estimates that we want for the columns.
+#' @param estimates Estimates that we want for the columns.
 #' @param minCellCount Deprecated.
 #'
 #' @return A summary of the drug use stratified by cohort_name and strata_name
@@ -55,7 +55,7 @@
 summariseDrugUse<- function(cohort,
                             cdm = lifecycle::deprecated(),
                             strata = list(),
-                            drugUseEstimates = c(
+                            estimates = c(
                               "min", "q05", "q25", "median", "q75", "q95",
                               "max", "mean", "sd", "count_missing",
                               "percentage_missing"
@@ -71,7 +71,7 @@ summariseDrugUse<- function(cohort,
   # check inputs
   checkInputs(
     cohort = cohort, cdm = cdm, strata = strata,
-    drugUseEstimates = drugUseEstimates
+    estimates = estimates
   )
 
   # update cohort_names
@@ -81,7 +81,7 @@ summariseDrugUse<- function(cohort,
   result <- PatientProfiles::summariseResult(
     table = cohort, group = list("cohort_name" = "cohort_name"),
     strata = strata, variables = drugUseColumns(cohort),
-    estimates = drugUseEstimates
+    estimates = estimates
   ) |>
     dplyr::mutate(
       cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA))

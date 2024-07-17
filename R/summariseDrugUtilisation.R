@@ -19,16 +19,15 @@
 #'
 #' @param cohort Cohort with drug use variables and strata.
 #' @param strata Stratification list.
-#' @param drugUseEstimates Estimates that we want for the columns.
-#' @param indexDate Name of a column that indicates the date to start the
-#' analysis.
-#' @param censorDate Name of a column that indicates the date to stop the
-#' analysis, if NULL end of individuals observation is used.
+#' @param estimates Estimates that we want for the columns.
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
 #' @param conceptSet List of concepts to be included. If NULL all the
 #' descendants of ingredient concept id will be used.
-#' ingredientConceptId = NULL,
+#' @param indexDate Name of a column that indicates the date to start the
+#' analysis.
+#' @param censorDate Name of a column that indicates the date to stop the
+#' analysis, if NULL end of individuals observation is used.
 #' @param restrictIncident Whether to include only incident prescriptions in the
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
@@ -63,14 +62,14 @@
 #'
 summariseDrugUtilisation <- function(cohort,
                                      strata = list(),
-                                     drugUseEstimates = c(
+                                     estimates = c(
                                        "q25", "median", "q75", "mean", "sd",
                                        "count_missing", "percentage_missing"
                                      ),
-                                     indexDate = "cohort_start_date",
-                                     censorDate = "cohort_end_date",
                                      ingredientConceptId = NULL,
                                      conceptSet = NULL,
+                                     indexDate = "cohort_start_date",
+                                     censorDate = "cohort_end_date",
                                      restrictIncident = TRUE,
                                      gapEra = 1,
                                      numberExposures = TRUE,
@@ -83,7 +82,7 @@ summariseDrugUtilisation <- function(cohort,
                                      cumulativeDose = TRUE) {
 
   # checks
-  checkInputs(cohort = cohort, strata = strata, drugUseEstimates = drugUseEstimates)
+  checkInputs(cohort = cohort, strata = strata, estimates = estimates)
   cdm <- omopgenerics::cdmReference(cohort)
   ingredientConceptId <- validateIngredientConceptId(ingredientConceptId, cdm)
   conceptSet <- validateConceptSet(conceptSet, ingredientConceptId, cdm)
@@ -139,7 +138,7 @@ summariseDrugUtilisation <- function(cohort,
     PatientProfiles::summariseResult(
       table = cohort, group = list("cohort_name" = "cohort_name"),
       strata = strata, variables = drugUseCols,
-      estimates = drugUseEstimates
+      estimates = estimates
     )) %>%
     dplyr::mutate(
       cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA)),

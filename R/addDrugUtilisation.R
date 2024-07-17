@@ -25,7 +25,6 @@
 #' the study. It is a compulsory input, no default value is provided.
 #' @param conceptSet List of concepts to be included. If NULL all the
 #' descendants of ingredient concept id will be used.
-#' ingredientConceptId = NULL,
 #' @param restrictIncident Whether to include only incident prescriptions in the
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
@@ -42,8 +41,8 @@
 #' @param initialDailyDose Whether to add a column with the initial daily dose.
 #' @param cumulativeDose Whether to add a column with the cumulative dose.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
-#' created.
+#' @param name Name of the new computed cohort table, if NULL a temporary tables
+#' is created.
 #'
 #' @return The same cohort with the added columns.
 #'
@@ -111,7 +110,7 @@ addDrugUtilisation <- function(cohort,
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
+#' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
 #'
 #' @return The same cohort with the added columns.
@@ -176,7 +175,7 @@ addNumberExposures <- function(cohort,
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
+#' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
 #'
 #' @return The same cohort with the added column.
@@ -237,7 +236,7 @@ addCumulativeDose <- function(cohort,
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
+#' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
 #'
 #' @return The same cohort with the added column.
@@ -295,7 +294,7 @@ addInitialDailyDose <- function(cohort,
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
+#' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
 #'
 #' @return The same cohort with the added column.
@@ -357,7 +356,7 @@ addCumulativeQuantity <- function(cohort,
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
+#' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
 #'
 #' @return The same cohort with the added column.
@@ -419,7 +418,7 @@ addInitialQuantity <- function(cohort,
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
+#' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
 #'
 #' @return The same cohort with the added column.
@@ -483,7 +482,7 @@ addTimeToExposure <- function(cohort,
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
+#' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
 #'
 #' @return The same cohort with the added column.
@@ -548,7 +547,7 @@ addExposedTime <- function(cohort,
 #' @param gapEra Number of days between two continuous exposures to be
 #' considered in the same era.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
-#' @param name Name of the new computed column if NULL a temporary tables is
+#' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
 #'
 #' @return The same cohort with the added column.
