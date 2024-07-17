@@ -24,8 +24,8 @@ below to see their documentation.
 \describe{
   \item{CodelistGenerator}{\code{\link[CodelistGenerator]{codesFromCohort}}, \code{\link[CodelistGenerator]{codesFromConceptSet}}, \code{\link[CodelistGenerator]{getATCCodes}}, \code{\link[CodelistGenerator]{getDrugIngredientCodes}}}
 
-  \item{omopgenerics}{\code{\link[omopgenerics]{attrition}}, \code{\link[omopgenerics]{bind}}, \code{\link[omopgenerics]{cohortCodelist}}, \code{\link[omopgenerics]{cohortCount}}, \code{\link[omopgenerics]{exportSummarisedResult}}, \code{\link[omopgenerics]{settings}}, \code{\link[omopgenerics]{suppress}}}
-
   \item{PatientProfiles}{\code{\link[PatientProfiles]{mockDisconnect}}}
+
+  \item{omopgenerics}{\code{\link[omopgenerics]{attrition}}, \code{\link[omopgenerics]{bind}}, \code{\link[omopgenerics]{cohortCodelist}}, \code{\link[omopgenerics]{cohortCount}}, \code{\link[omopgenerics]{exportSummarisedResult}}, \code{\link[omopgenerics]{settings}}, \code{\link[omopgenerics]{suppress}}}
 }}
 

@@ -100,7 +100,8 @@ addIndication <- function(x,
     dplyr::left_join(
       ind |> dplyr::rename(!!indexDate := "cohort_start_date"),
       by = c("subject_id", indexDate)
-    ) |> indicationToStrata(prefix = tablePrefix) |>
+    ) |>
+    indicationToStrata(prefix = tablePrefix) |>
     dplyr::compute(
       name = omopgenerics::uniqueTableName(tablePrefix),
       temporary = FALSE,
