@@ -8,15 +8,15 @@ generateAtcCohortSet(
   cdm,
   name,
   atcName = NULL,
+  level = c("ATC 1st"),
+  doseForm = NULL,
+  gapEra = 1,
   durationRange = lifecycle::deprecated(),
   imputeDuration = lifecycle::deprecated(),
-  gapEra = 0,
-  priorUseWashout = 0,
+  priorUseWashout = lifecycle::deprecated(),
   priorObservation = lifecycle::deprecated(),
   cohortDateRange = lifecycle::deprecated(),
-  limit = lifecycle::deprecated(),
-  level = c("ATC 1st"),
-  doseForm = NULL
+  limit = lifecycle::deprecated()
 )
 }
 \arguments{
@@ -26,27 +26,27 @@ generateAtcCohortSet(
 
 \item{atcName}{Names of ATC of interest.}
 
-\item{durationRange}{Deprecated.}
-
-\item{imputeDuration}{Deprecated.}
-
-\item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
-
-\item{priorUseWashout}{Prior days without exposure.}
-
-\item{priorObservation}{Deprecated.}
-
-\item{cohortDateRange}{Deprecated.}
-
-\item{limit}{Deprecated.}
-
 \item{level}{ATC level. Can be one or more of "ATC 1st", "ATC 2nd",
 "ATC 3rd", "ATC 4th", and "ATC 5th"}
 
 \item{doseForm}{Only descendants codes with the specified dose form
 will be returned. If NULL, descendant codes will be returned regardless
 of dose form.}
+
+\item{gapEra}{Number of days between two continuous exposures to be
+considered in the same era.}
+
+\item{durationRange}{Deprecated.}
+
+\item{imputeDuration}{Deprecated.}
+
+\item{priorUseWashout}{Deprecated}
+
+\item{priorObservation}{Deprecated.}
+
+\item{cohortDateRange}{Deprecated.}
+
+\item{limit}{Deprecated.}
 }
 \value{
 The function returns the 'cdm' object with the created cohorts as
