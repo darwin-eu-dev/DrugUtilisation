@@ -36,8 +36,30 @@
 #'
 #' @return A summarised_result object with the percentages of restart, swicth
 #' and not exposed per window.
+#'
 #' @export
 #'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' conceptlist <- list("a" = 1125360, "b" = c(1503297, 1503327))
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm,
+#'   name = "switch_cohort",
+#'   conceptSet = conceptlist
+#' )
+#'
+#' result <- cdm$cohort1 |>
+#'   summariseDrugRestart(switchCohortTable = "switch_cohort")
+#'
+#' tableDrugRestart(result)
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+
 summariseDrugRestart <- function(cohort,
                                  strata = list(),
                                  switchCohortTable = NULL,

@@ -45,3 +45,24 @@ and not exposed per window.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 }
+\examples{
+\donttest{
+library(DrugUtilisation)
+
+cdm <- mockDrugUtilisation()
+
+conceptlist <- list("a" = 1125360, "b" = c(1503297, 1503327))
+cdm <- generateDrugUtilisationCohortSet(
+  cdm = cdm,
+  name = "switch_cohort",
+  conceptSet = conceptlist
+)
+
+result <- cdm$cohort1 |>
+  summariseDrugRestart(switchCohortTable = "switch_cohort")
+
+tableDrugRestart(result)
+
+CDMConnector::cdmDisconnect(cdm = cdm)
+}
+}

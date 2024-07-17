@@ -54,10 +54,16 @@ A table with a formatted version of summariseDrugRestart() results.
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
+
+conceptlist <- list("a" = 1125360, "b" = c(1503297, 1503327))
+cdm <- generateDrugUtilisationCohortSet(
+  cdm = cdm,
+  name = "switch_cohort",
+  conceptSet = conceptlist
+)
+
 result <- cdm$cohort1 |>
-  summariseDrugRestart(
-    switchConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077)
-  )
+  summariseDrugRestart(switchCohortTable = "switch_cohort")
 
 tableDrugRestart(result)
 
