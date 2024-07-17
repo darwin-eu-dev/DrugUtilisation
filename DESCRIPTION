@@ -89,7 +89,8 @@ Imports:
     omopgenerics (>= 0.2.3),
     visOmopResults,
     lifecycle,
-    stringr
+    stringr,
+    CohortSurvival
 Depends: 
     R (>= 2.10)
 LazyData: true
