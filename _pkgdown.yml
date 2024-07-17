@@ -14,7 +14,7 @@ articles:
   - summarise_treatments
   - treatment_discontinuation
   - TBR_add_drug_use
-  - TBR_routePatternDose
+  - TBR_route_pattern_dose
 
 reference:
 - subtitle: Generate a drug utilisation cohort set
