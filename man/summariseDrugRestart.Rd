@@ -7,7 +7,6 @@
 summariseDrugRestart(
   cohort,
   strata = list(),
-  switchConceptSet = NULL,
   switchCohortTable = NULL,
   switchCohortId = NULL,
   followUpDays = Inf,
@@ -20,10 +19,6 @@ summariseDrugRestart(
 
 \item{strata}{List with column names or vectors of column names groups to
 stratify results by.}
-
-\item{switchConceptSet}{A conceptSet that refers to possible alternative
-treatments. Either a conceptSet or a cohort table should be provided, but not
-both.}
 
 \item{switchCohortTable}{A cohort table in the cdm that contains possible
 alternative treatments. Either a conceptSet or a cohort table should be
