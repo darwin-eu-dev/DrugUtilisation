@@ -274,7 +274,7 @@ summariseDrugRestart <- function(cohort,
     omopgenerics::newSummarisedResult(
       settings = dplyr::tibble(
         result_id = unique(results$result_id),
-        result_type = "drug_restart",
+        result_type = "summarise_drug_restart",
         restrict_to_first_discontinuation = restrictToFirstDiscontinuation,
         censor_date = censorDate
       )

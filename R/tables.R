@@ -680,9 +680,9 @@ tableDrugRestart <- function(result,
 
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "drug_restart")
+    visOmopResults::filterSettings(.data$result_type == "summarise_drug_restart")
   if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = drug_restart`")
+    cli::cli_abort("There are no results with `result_type = summarise_drug_restart`")
   }
 
   # .options

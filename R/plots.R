@@ -138,13 +138,136 @@ plotTreatment <- function(result,
 
 }
 
+#' Generate a custom ggplot2 from a summarised_result object generated with
+#' summariseDrugRestart() function.
+#'
+#' @param result A summarised_result object with results from
+#' summariseDrugRestart().
+#' @param facetX Vector of variables to facet by horizontally. Allowed options
+#' are: "cdm_name", "cohort_name", "strata", "variable_name"
+#' @param facetY Vector of variables to facet by vertically Allowed options
+#' are: "cdm_name", "cohort_name", "strata", "variable_name".
+#' @param colour Vector of variables to distinct by colour. Allowed options
+#' are: "cdm_name", "cohort_name", "strata", "variable_name", and
+#' "variable_level".
+#' @param splitStrata Weather to split strata columns.
+#'
+#' @return A ggplot2 object.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' library(DrugUtilisation)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' conceptlist <- list("a" = 1125360, "b" = c(1503297, 1503327))
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm,
+#'   name = "switch_cohort",
+#'   conceptSet = conceptlist
+#' )
+#'
+#' result <- cdm$cohort1 |>
+#'   summariseDrugRestart(switchCohortTable = "switch_cohort")
+#'
+#' plotDrugRestart(result)
+#'
+#' CDMConnector::cdmDisconnect(cdm = cdm)
+#' }
+#'
+plotDrugRestart <- function(result,
+                            facetX = "variable_name",
+                            facetY = c("cdm_name", "cohort_name", "strata"),
+                            colour = "variable_level",
+                            splitStrata = TRUE) {
+  rlang::check_installed("ggplot2")
+  # check input
+  assertChoice(
+    facetX, choices = c("cdm_name", "cohort_name", "strata", "variable_name"),
+    null = TRUE, unique = TRUE)
+  assertChoice(
+    facetY, choices = c("cdm_name", "cohort_name", "strata", "variable_name"),
+    null = TRUE, unique = TRUE)
+  assertLogical(splitStrata, length = 1)
+  assertChoice(
+    colour,
+    choices = c("cdm_name", "cohort_name", "strata", "variable_name", "variable_level"),
+    null = TRUE,
+    unique = TRUE
+  )
+
+  result <- omopgenerics::newSummarisedResult(result) |>
+    visOmopResults::filterSettings(.data$result_type == "summarise_drug_restart") |>
+    dplyr::filter(.data$estimate_name == "percentage")
+
+  if (nrow(result) == 0) {
+    cli::cli_warn(c("!" = "There are no results to plot, returning empty plot"))
+    return(ggplot2::ggplot())
+  }
+
+  # to display order accordingly
+  lev <- c("restart", "switch", "restart and switch", "not treated") |> rev()
+
+  warnDuplicatePoints(result, unique(c(facetX, facetY, colour)))
+
+  if (splitStrata) {
+    strata <- visOmopResults::strataColumns(result)
+    result <- result |> visOmopResults::splitStrata()
+    facetX <- substituteStrata(facetX, strata)
+    facetY <- substituteStrata(facetY, strata)
+    colour <- substituteStrata(colour, strata)
+  } else {
+    result <- result |> dplyr::rename("strata" = "strata_level")
+    strata <- "strata"
+  }
+
+  result <- result |>
+    dplyr::select(
+      "cdm_name", "cohort_name" = "group_level", dplyr::all_of(strata),
+      "variable_name", "estimate_value"
+    ) |>
+    dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
+    dplyr::mutate("variable_name" = factor(.data$variable_name, levels = lev))
+
+  if (length(colour) > 0) {
+    cols <- colour
+    colourLab <- gsub("_", " ", cols) |>
+      paste0(collapse = ", ")
+    colour <- omopgenerics::uniqueId(exclude = colnames(result))
+    result <- result |>
+      tidyr::unite(col = !!colour, dplyr::all_of(cols), remove = FALSE)
+  } else {
+    colour <- NULL
+    colourLab <- NULL
+  }
+
+  if (length(facetX) == 0) facetX <- "."
+  if (length(facetY) == 0) facetY <- "."
+  form <- paste0(
+    paste0(facetY, collapse = " + "), " ~ ", paste0(facetX, collapse = " + ")
+  ) |>
+    stats::as.formula()
+
+  ggplot2::ggplot(
+    data = result,
+    mapping = ggplot2::aes(
+      x = .data$estimate_value,
+      y = .data$variable_level,
+      fill = .data[[colour]]
+    )
+  ) +
+    ggplot2::geom_col() +
+    ggplot2::facet_grid(form) +
+    ggplot2::labs(fill = colourLab, x = "Percentage", y = "Event")
+
+}
+
 warnDuplicatePoints <- function(result, exclude) {
   result <- result |>
-    dplyr::rename(
-      "cohort_name" = "group_level", "window_name" = "additional_level",
-      "strata" = "strata_level"
-    )
-  potential <- c("cdm_name", "cohort_name", "strata", "window_name")
+    dplyr::rename("cohort_name" = "group_level", "strata" = "strata_level")
+  potential <- c("result_id", "cdm_name", "cohort_name", "strata", "variable_name")
   potential <- potential[!potential %in% exclude]
   duplicates <- result |>
     dplyr::select(dplyr::all_of(potential)) |>
