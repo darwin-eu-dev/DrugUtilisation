@@ -1,6 +1,6 @@
 ---
 title: "Characterise a cohort using Drug Utilisation"
-author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li, Xihang Chen"
+author: "Martí Català, Xihang Chen, Theresa Burkard"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

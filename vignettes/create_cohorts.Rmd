@@ -1,6 +1,6 @@
 ---
 title: "Use DrugUtilisation to create a cohort"
-author: "Martí Català, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+author: "Martí Català, Edward Burn"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

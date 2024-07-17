@@ -1,6 +1,6 @@
 ---
 title: "Add treatment summary to a Drug Utilisation cohort"
-author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+author: "Martí Català"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

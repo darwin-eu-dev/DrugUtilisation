@@ -1,6 +1,7 @@
 ---
 title: "Getting drug utilisation related information of subjects in a cohort"
 output: rmarkdown::html_vignette
+author: "Núria Mercadé-Besora, Martí Català"
 vignette: >
   %\VignetteIndexEntry{Getting drug utilisation related information of subjects in a cohort}
   %\VignetteEncoding{UTF-8}

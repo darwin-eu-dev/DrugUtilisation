@@ -1,6 +1,6 @@
 ---
 title: "DrugUtilisation vs CapR"
-author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+author: "Martí Català, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{DrugUtilisation vs CapR}
