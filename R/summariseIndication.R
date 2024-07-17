@@ -52,11 +52,14 @@ summariseIndication <- function(cohort,
                                 strata = list(),
                                 indicationCohortName,
                                 indicationCohortId = NULL,
-                                indicationWindow = list(c(0,0)),
-                                unknownIndicationTable = NULL) {
-    # initialChecks
+                                indicationWindow = list(c(0, 0)),
+                                unknownIndicationTable = NULL,
+                                indexDate = "cohort_start_date") {
+  # initialChecks
   cdm <- omopgenerics::cdmReference(cohort)
-  checkInputs(cohort = cohort, cdm = cdm, strata = strata)
+  checkInputs(cohort = cohort,
+              cdm = cdm,
+              strata = strata)
 
   cohort <-
     cohort |> DrugUtilisation::addIndication(
@@ -64,18 +67,23 @@ summariseIndication <- function(cohort,
       indicationCohortId = indicationCohortId,
       indicationWindow = indicationWindow,
       unknownIndicationTable = unknownIndicationTable,
+      indexDate = indexDate,
       name = NULL
     )
   indicationVariables <- indicationColumns(cohort)
 
   # update cohort_names
-  cohort <- cohort |> PatientProfiles::addCohortName() |> dplyr::collect()
+  cohort <-
+    cohort |> PatientProfiles::addCohortName() |> dplyr::collect()
 
   # summarise indication columns
   result <- PatientProfiles::summariseResult(
-    table = cohort, group = list("cohort_name"),
-    includeOverallGroup = FALSE, includeOverallStrata = TRUE,
-    strata = strata, variables = indicationVariables,
+    table = cohort,
+    group = list("cohort_name"),
+    includeOverallGroup = FALSE,
+    includeOverallStrata = TRUE,
+    strata = strata,
+    variables = indicationVariables,
     estimates = c("count", "percentage")
   ) |>
     PatientProfiles::addCdmName(cdm = cdm) |>
@@ -92,12 +100,14 @@ summariseIndication <- function(cohort,
     )
 
   result <- result |>
-    omopgenerics::newSummarisedResult(settings = dplyr::tibble(
-      result_id = unique(result$result_id),
-      result_type = "summarised_indication",
-      package_name = "DrugUtilisation",
-      package_version = as.character(utils::packageVersion("DrugUtilisation"))
-    ))
+    omopgenerics::newSummarisedResult(
+      settings = dplyr::tibble(
+        result_id = unique(result$result_id),
+        result_type = "summarised_indication",
+        package_name = "DrugUtilisation",
+        package_version = as.character(utils::packageVersion("DrugUtilisation"))
+      )
+    )
 
   return(result)
 }

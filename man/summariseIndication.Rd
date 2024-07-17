@@ -11,7 +11,8 @@ summariseIndication(
   indicationCohortName,
   indicationCohortId = NULL,
   indicationWindow = list(c(0, 0)),
-  unknownIndicationTable = NULL
+  unknownIndicationTable = NULL,
+  indexDate = "cohort_start_date"
 )
 }
 \arguments{
