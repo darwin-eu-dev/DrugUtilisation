@@ -14,7 +14,9 @@ articles:
   - a05_treatmentDiscontinuation
   - a06_treatmentSummary
   - a07_characteriseACohort
+  - drugUtilisation
   - routePatternDose
+  - a08_addDailyDose
 
 reference:
 - subtitle: Generate a drug utilisation cohort set
