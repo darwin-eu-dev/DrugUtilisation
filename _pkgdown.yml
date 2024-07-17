@@ -8,15 +8,13 @@ articles:
   contents:
   - mock_data
   - create_cohorts
-  - a02_scalingOfInstantiateCohorts
-  - a03_addIndications-example
-  - a04_addDrugInfo
-  - a05_treatmentDiscontinuation
-  - a06_treatmentSummary
-  - a07_characteriseACohort
-  - drugUtilisation
-  - routePatternDose
-  - a08_addDailyDose
+  - indication
+  - daily_dose_calculation
+  - drug_utilisation
+  - summarise_treatments
+  - treatment_discontinuation
+  - TBR_add_drug_use
+  - TBR_route_pattern_dose
 
 reference:
 - subtitle: Generate a drug utilisation cohort set
