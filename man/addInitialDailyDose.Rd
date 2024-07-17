@@ -37,7 +37,7 @@ be included.}
 
 \item{nameStyle}{Character string to specify the nameStyle of the new columns.}
 
-\item{name}{Name of the new computed column if NULL a temporary tables is
+\item{name}{Name of the new computed cohort table, if NULL a temporary tables is
 created.}
 }
 \value{

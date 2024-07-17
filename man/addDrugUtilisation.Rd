@@ -37,8 +37,7 @@ analysis, if NULL end of individuals observation is used.}
 the study. It is a compulsory input, no default value is provided.}
 
 \item{conceptSet}{List of concepts to be included. If NULL all the
-descendants of ingredient concept id will be used.
-ingredientConceptId = NULL,}
+descendants of ingredient concept id will be used.}
 
 \item{restrictIncident}{Whether to include only incident prescriptions in the
 analysis. If FALSE all prescriptions that overlap with the study period will
@@ -67,8 +66,8 @@ quantity of the identified prescription.}
 
 \item{nameStyle}{Character string to specify the nameStyle of the new columns.}
 
-\item{name}{Name of the new computed column if NULL a temporary tables is
-created.}
+\item{name}{Name of the new computed cohort table, if NULL a temporary tables
+is created.}
 }
 \value{
 The same cohort with the added columns.

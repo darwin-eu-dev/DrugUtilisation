@@ -25,7 +25,7 @@ tableDrugUtilisation(
 summariseDrugUtilisation().}
 
 \item{header}{A vector containing which elements should go into the header
-in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{variable}.}
+in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{variable}, \code{estimate}.}
 
 \item{splitStrata}{If TRUE strata columns will be splitted.}
 
