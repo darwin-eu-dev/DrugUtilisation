@@ -1,5 +1,5 @@
 ---
-title: "DrugUtilisation mock data"
+title: "Create mock data to test DrugUtilisation package"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{DrugUtilisation mock data}
@@ -17,3 +17,7 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(DrugUtilisation)
 ```
+
+# Introduction
+
+In this vignette we will see
