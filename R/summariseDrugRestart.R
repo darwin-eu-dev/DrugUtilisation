@@ -21,9 +21,6 @@
 #' @param cohort A cohort table.
 #' @param strata List with column names or vectors of column names groups to
 #' stratify results by.
-#' @param switchConceptSet A conceptSet that refers to possible alternative
-#' treatments. Either a conceptSet or a cohort table should be provided, but not
-#' both.
 #' @param switchCohortTable A cohort table in the cdm that contains possible
 #' alternative treatments. Either a conceptSet or a cohort table should be
 #' provided, but not both.
@@ -43,7 +40,6 @@
 #'
 summariseDrugRestart <- function(cohort,
                                  strata = list(),
-                                 switchConceptSet = NULL,
                                  switchCohortTable = NULL,
                                  switchCohortId = NULL,
                                  followUpDays = Inf,
@@ -55,9 +51,9 @@ summariseDrugRestart <- function(cohort,
   assertLogical(restrictToFirstDiscontinuation, length = 1)
   assertCharacter(censorDate, length = 1, null = TRUE)
   assertNumeric(followUpDays, integerish = TRUE, min = 0)
-  if (!is.null(switchConceptSet)) {
-    switchConceptSet <- omopgenerics::newCodelist(switchConceptSet)
-  }
+  # if (!is.null(switchConceptSet)) {
+  #   switchConceptSet <- omopgenerics::newCodelist(switchConceptSet)
+  # }
   if (!is.null(switchCohortTable)) {
     assertCharacter(switchCohortTable, length = 1)
     assertClass(cdm[[switchCohortTable]], class = "cohort_table")
@@ -78,18 +74,18 @@ summariseDrugRestart <- function(cohort,
       }
     }
   }
-  if (!is.null(switchConceptSet) & !is.null(switchCohortTable)) {
-    cli::cli_abort(c("x" = "It is not allowed to use conceptSet and CohortTable at the same time"))
-  }
-  if (is.null(switchConceptSet) & is.null(switchCohortTable)) {
-    cli::cli_abort(c("x" = "One of `switchConceptSet` or `switchCohortTable` arguments must be populated."))
-  }
+  # if (!is.null(switchConceptSet) & !is.null(switchCohortTable)) {
+  #   cli::cli_abort(c("x" = "It is not allowed to use conceptSet and CohortTable at the same time"))
+  # }
+  # if (is.null(switchConceptSet) & is.null(switchCohortTable)) {
+  #   cli::cli_abort(c("x" = "One of `switchConceptSet` or `switchCohortTable` arguments must be populated."))
+  # }
   # warnings
   if (is.null(switchCohortTable) & !is.null(switchCohortId)) {
     cli::cli_warn(c("!" = "cohortId specification only make sense if cohortTable is populated, the argument will be ignored"))
   }
 
-  conceptSet <- list("switch" = unique(unlist(switchConceptSet)))
+  # conceptSet <- list("switch" = unique(unlist(switchConceptSet)))
   prefix <- omopgenerics::tmpPrefix()
   tempName <- omopgenerics::uniqueTableName(prefix = prefix)
   workingCohort <- cohort |> dplyr::compute(name = tempName, temporary = FALSE)
@@ -111,43 +107,41 @@ summariseDrugRestart <- function(cohort,
   }
 
   # get first switch - concept
-  if (!is.null(switchConceptSet)) {
-    results <- workingCohort |>
-      PatientProfiles::addConceptIntersectDays(
-        conceptSet = conceptSet,
-        indexDate = "cohort_end_date",
-        censorDate = censorDate,
-        window = list(c(0, Inf)),
-        nameStyle = "switch_days",
-        name = tempName
-      )
-  }
+  # if (!is.null(switchConceptSet)) {
+  #   results <- workingCohort |>
+  #     PatientProfiles::addConceptIntersectDays(
+  #       conceptSet = conceptSet,
+  #       indexDate = "cohort_end_date",
+  #       censorDate = censorDate,
+  #       window = list(c(0, Inf)),
+  #       nameStyle = "switch_days",
+  #       name = tempName
+  #     )
+  # }
 
   # get first switch - cohort
-  if (!is.null(switchCohortTable)) {
-    results <- workingCohort |>
-      PatientProfiles::addCohortIntersectDays(
-        targetCohortTable = switchCohortTable,
-        targetCohortId = switchCohortId,
-        indexDate = "cohort_end_date",
-        censorDate = censorDate,
-        window = list(c(0, Inf)),
-        nameStyle = "cohort_switch_{cohort_name}",
-        name = tempName
-      ) |>
-      tidyr::pivot_longer(
-        cols = dplyr::starts_with("cohort_switch_"),
-        values_to = "switch_days",
-        names_to = "cohort_switch_name"
-      ) |>
-      dplyr::filter(
-        .data$switch_days == min(.data$switch_days, na.rm = TRUE) | all(is.na(.data$switch_days)),
-        .by = dplyr::all_of(initialCols)
-      ) |>
-      dplyr::select(!dplyr::starts_with("cohort_switch_")) |>
-      dplyr::distinct() |>
-      dplyr::compute(name = tempName, temporary = FALSE)
-  }
+  results <- workingCohort |>
+    PatientProfiles::addCohortIntersectDays(
+      targetCohortTable = switchCohortTable,
+      targetCohortId = switchCohortId,
+      indexDate = "cohort_end_date",
+      censorDate = censorDate,
+      window = list(c(0, Inf)),
+      nameStyle = "cohort_switch_{cohort_name}",
+      name = tempName
+    ) |>
+    tidyr::pivot_longer(
+      cols = dplyr::starts_with("cohort_switch_"),
+      values_to = "switch_days",
+      names_to = "cohort_switch_name"
+    ) |>
+    dplyr::filter(
+      .data$switch_days == min(.data$switch_days, na.rm = TRUE) | all(is.na(.data$switch_days)),
+      .by = dplyr::all_of(initialCols)
+    ) |>
+    dplyr::select(!dplyr::starts_with("cohort_switch_")) |>
+    dplyr::distinct() |>
+    dplyr::compute(name = tempName, temporary = FALSE)
 
   results <- results |>
     dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
@@ -235,10 +229,11 @@ summariseDrugRestart <- function(cohort,
     censorDate <- NA
   }
   results <- dplyr::bind_rows(results, zeroResults) |>
+    dplyr::filter(!.data$variable_name %in% c("number subjects", "number records")) |>
     dplyr::mutate(
       variable_name = factor(
         .data$variable_name,
-        levels = c("number records", "number subjects", variables)
+        levels = variables
       ),
       variable_level = factor(
         .data$variable_level,

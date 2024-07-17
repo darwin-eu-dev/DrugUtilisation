@@ -46,43 +46,42 @@ test_that("summarise drug restart", {
     )
   )
 
-  conceptlist <- list("a" = 1125360, "b" = c(1503297, 1503327))
-  resultsConcept <- cdm$dus_cohort |>
-    summariseDrugRestart(switchConceptSet = conceptlist, followUpDays = c(100, 300, Inf))
-  expect_true(inherits(resultsConcept, "summarised_result"))
+  conceptlist <- list("a" = 1125360, "b" = c(1503297, 1503327), "c" = 1503328)
+  cdm <- generateDrugUtilisationCohortSet(cdm = cdm, name = "switch_cohort", conceptSet = conceptlist)
+  resultsCohort <- cdm$dus_cohort |>
+    summariseDrugRestart(switchCohortTable = "switch_cohort", switchCohortId = 1:2, followUpDays = c(100, 300, Inf))
+
+  expect_true(inherits(resultsCohort, "summarised_result"))
   uniqueVars <- dplyr::tibble(
-    group_level = c(rep("cohort_1", 14), rep("cohort_2", 14)),
+    group_level = c(rep("cohort_1", 12), rep("cohort_2", 12)),
     strata_name = "overall",
     strata_level = "overall",
-    variable_name = c("number records", "number subjects", rep("100 days", 4),
-                      rep("300 days", 4), rep("inf days", 4), "number records",
-                      "number subjects", rep("100 days", 4),
-                      rep("300 days", 4), rep("inf days", 4)),
-    variable_level = c(NA, NA, rep(c("restart", "switch", "restart and switch", "not treated"), 3),
-                       NA, NA, rep(c("restart", "switch", "restart and switch", "not treated"), 3))
+    variable_name = c(rep("100 days", 4), rep("300 days", 4), rep("inf days", 4),
+                      rep("100 days", 4), rep("300 days", 4), rep("inf days", 4)),
+    variable_level = c(rep(c("restart", "switch", "restart and switch", "not treated"), 3),
+                       rep(c("restart", "switch", "restart and switch", "not treated"), 3))
   )
-  uniqueVarsRes <- resultsConcept |> dplyr::distinct(group_level, strata_name, strata_level, variable_name, variable_level)
+  uniqueVarsRes <- resultsCohort |> dplyr::distinct(group_level, strata_name, strata_level, variable_name, variable_level)
   expect_equal(uniqueVars$group_level, uniqueVarsRes$group_level)
   expect_equal(uniqueVars$strata_name, uniqueVarsRes$strata_name)
   expect_equal(uniqueVars$strata_level, uniqueVarsRes$strata_level)
   expect_equal(uniqueVars$variable_name, uniqueVarsRes$variable_name)
   expect_equal(uniqueVars$variable_level, uniqueVarsRes$variable_level)
-  expect_true(settings(resultsConcept)$result_type == "drug_restart")
-  expect_true(is.na(settings(resultsConcept)$censor_date))
+  expect_true(settings(resultsCohort)$result_type == "drug_restart")
+  expect_true(is.na(settings(resultsCohort)$censor_date))
   expect_equal(
-    resultsConcept |> dplyr::filter(estimate_name == "count") |> dplyr::pull("estimate_value"),
-    c('4', '4', '1', '1', '0', '2', '1', '2', '0', '1', '0', '2', '1', '1', '4', '4', '0', '0', '0', '4', '0', '0', '0', '4', '0', '2', '0', '2')
+    resultsCohort |> dplyr::filter(estimate_name == "count") |> dplyr::pull("estimate_value"),
+    c('1', '1', '0', '2', '1', '2', '0', '1', '0', '2', '1', '1', '0', '0', '0', '4', '0', '0', '0', '4', '0', '2', '0', '2')
   )
   # suppress
-  resultsSup <- omopgenerics::suppress(resultsConcept)
+  resultsSup <- omopgenerics::suppress(resultsCohort)
   expect_equal(resultsSup$estimate_value |> unique(), c(NA_character_, "0"))
 
   # from cohort
-  conceptlist <- list("a" = 1125360, "b" = c(1503297, 1503327), "c" = 1503328)
-  cdm <- generateDrugUtilisationCohortSet(cdm = cdm, name = "switch_cohort", conceptSet = conceptlist)
-  resultsCohort <- cdm$dus_cohort |>
-    summariseDrugRestart(switchCohortTable = "switch_cohort", switchCohortId = 1:2, followUpDays = c(100, 300, Inf))
-  expect_equal(resultsConcept, resultsCohort)
+  # conceptlist <- list("a" = 1125360, "b" = c(1503297, 1503327))
+  # resultsConcept <- cdm$dus_cohort |>
+  #   summariseDrugRestart(switchConceptSet = conceptlist, followUpDays = c(100, 300, Inf))
+  # expect_equal(resultsConcept, resultsCohort)
 
   # strata
   resultsStra <- cdm$dus_cohort |>
@@ -95,7 +94,7 @@ test_that("summarise drug restart", {
       switchCohortId = 1:2,
       followUpDays = c(10)
     )
-  expect_true(nrow(resultsStra) == 140)
+  expect_true(nrow(resultsStra) == 112)
   expect_true(all(visOmopResults::strataColumns(resultsStra) == c("age_group", "sex")))
 
   # restrict
@@ -110,7 +109,7 @@ test_that("summarise drug restart", {
     restrict |>
       dplyr::filter(estimate_name == "count", group_level == "cohort_1") |>
       dplyr::pull("estimate_value"),
-    c("5", "4", "0", "1", "0", "4")
+    c("0", "1", "0", "4")
   )
 
   # censor date
@@ -126,7 +125,5 @@ test_that("summarise drug restart", {
 
   # expected errors
   expect_error(summariseDrugRestart(cdm$dus_cohort))
-  expect_error(summariseDrugRestart(cdm$dus_cohort, switchConceptSet = conceptlist, switchCohortTable = "switch_cohort"))
-  expect_warning(summariseDrugRestart(cdm$dus_cohort, switchConceptSet = conceptlist, switchCohortId = 1))
   expect_error(summariseDrugRestart(cdm$dus_cohort, switchCohortTable = "switch_cohort", switchCohortId = 5))
 })

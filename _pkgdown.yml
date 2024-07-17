@@ -28,6 +28,10 @@ reference:
   desc: Summarise the use of different treatments during certain windows
 - contents:
   - matches("Treatment")
+- subtitle: Summarise treatment restart or switch during certain time
+  desc: Summarise the restart of a treatment, or switch to another, during certain time
+- contents:
+  - matches("summariseDrugRestart|tableDrugRestart")
 - subtitle: Complementary functions
   desc: Complementary functions
 - contents:
