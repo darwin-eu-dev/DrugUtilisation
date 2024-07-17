@@ -270,7 +270,13 @@ summariseDrugRestart <- function(cohort,
       .data$group_level, .data$strata_name, .data$strata_level, .data$variable_name,
       .data$variable_level, .data$estimate_name
     ) |>
-    dplyr::mutate(dplyr::across(.cols = c(!"result_id"), ~ as.character(.x))) |>
+    dplyr::mutate(
+      dplyr::across(.cols = c(!"result_id"), ~ as.character(.x)),
+      variable_name = dplyr::if_else(
+        .data$variable_name == "inf days",
+        "End of observation", .data$variable_name
+      )
+    ) |>
     omopgenerics::newSummarisedResult(
       settings = dplyr::tibble(
         result_id = unique(results$result_id),

@@ -226,10 +226,12 @@ plotDrugRestart <- function(result,
   result <- result |>
     dplyr::select(
       "cdm_name", "cohort_name" = "group_level", dplyr::all_of(strata),
-      "variable_name", "estimate_value"
+      "variable_name", "estimate_value", "variable_level"
     ) |>
     dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
-    dplyr::mutate("variable_name" = factor(.data$variable_name, levels = lev))
+    dplyr::mutate("variable_level" = factor(
+      .data$variable_level, levels = lev, labels = stringr::str_to_sentence(lev)
+      ))
 
   if (length(colour) > 0) {
     cols <- colour
@@ -260,7 +262,8 @@ plotDrugRestart <- function(result,
   ) +
     ggplot2::geom_col() +
     ggplot2::facet_grid(form) +
-    ggplot2::labs(fill = colourLab, x = "Percentage", y = "Event")
+    ggplot2::labs(fill = colourLab, x = "Percentage", y = "Event") +
+    ggplot2::theme(legend.title = ggplot2::element_blank())
 
 }
 

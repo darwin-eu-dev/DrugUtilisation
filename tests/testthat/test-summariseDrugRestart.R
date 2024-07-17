@@ -56,8 +56,8 @@ test_that("summarise drug restart", {
     group_level = c(rep("cohort_1", 12), rep("cohort_2", 12)),
     strata_name = "overall",
     strata_level = "overall",
-    variable_name = c(rep("100 days", 4), rep("300 days", 4), rep("inf days", 4),
-                      rep("100 days", 4), rep("300 days", 4), rep("inf days", 4)),
+    variable_name = c(rep("100 days", 4), rep("300 days", 4), rep("End of observation", 4),
+                      rep("100 days", 4), rep("300 days", 4), rep("End of observation", 4)),
     variable_level = c(rep(c("restart", "switch", "restart and switch", "not treated"), 3),
                        rep(c("restart", "switch", "restart and switch", "not treated"), 3))
   )
@@ -67,7 +67,7 @@ test_that("summarise drug restart", {
   expect_equal(uniqueVars$strata_level, uniqueVarsRes$strata_level)
   expect_equal(uniqueVars$variable_name, uniqueVarsRes$variable_name)
   expect_equal(uniqueVars$variable_level, uniqueVarsRes$variable_level)
-  expect_true(settings(resultsCohort)$result_type == "drug_restart")
+  expect_true(settings(resultsCohort)$result_type == "summarise_drug_restart")
   expect_true(is.na(settings(resultsCohort)$censor_date))
   expect_equal(
     resultsCohort |> dplyr::filter(estimate_name == "count") |> dplyr::pull("estimate_value"),
