@@ -62,7 +62,7 @@ summariseIndication <- function(cohort,
               strata = strata)
 
   cohort <-
-    cohort |> DrugUtilisation::addIndication(
+    cohort |> addIndication(
       indicationCohortName = indicationCohortName,
       indicationCohortId = indicationCohortId,
       indicationWindow = indicationWindow,
