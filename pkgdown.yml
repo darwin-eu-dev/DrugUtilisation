@@ -2,18 +2,16 @@ pandoc: 3.1.11
 pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
-  a02_scalingOfInstantiateCohorts: a02_scalingOfInstantiateCohorts.html
-  a03_addIndications-example: a03_addIndications-example.html
-  a04_addDrugInfo: a04_addDrugInfo.html
-  a05_treatmentDiscontinuation: a05_treatmentDiscontinuation.html
-  a06_treatmentSummary: a06_treatmentSummary.html
-  a07_characteriseACohort: a07_characteriseACohort.html
-  a08_addDailyDose: a08_addDailyDose.html
   create_cohorts: create_cohorts.html
-  drugUtilisation: drugUtilisation.html
+  daily_dose_calculation: daily_dose_calculation.html
+  drug_utilisation: drug_utilisation.html
+  indication: indication.html
   mock_data: mock_data.html
-  routePatternDose: routePatternDose.html
-last_built: 2024-07-17T08:07Z
+  summarise_treatments: summarise_treatments.html
+  TBR_add_drug_use: TBR_add_drug_use.html
+  TBR_route_pattern_dose: TBR_route_pattern_dose.html
+  treatment_discontinuation: treatment_discontinuation.html
+last_built: 2024-07-17T11:26Z
 urls:
   reference: https://darwin-eu-dev.github.io/DrugUtilisation/reference
   article: https://darwin-eu-dev.github.io/DrugUtilisation/articles

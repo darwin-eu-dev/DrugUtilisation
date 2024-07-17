@@ -22,17 +22,15 @@ addDrugUtilisation() for efficiency."><meta property="og:image" content="https:/
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Package functionalities</h6></li>
-    <li><a class="dropdown-item" href="../articles/mock_data.html">DrugUtilisation mock data</a></li>
+    <li><a class="dropdown-item" href="../articles/mock_data.html">Create mock data to test DrugUtilisation package</a></li>
     <li><a class="dropdown-item" href="../articles/create_cohorts.html">Use DrugUtilisation to create a cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/a02_scalingOfInstantiateCohorts.html">Scaling of instantiate cohorts</a></li>
-    <li><a class="dropdown-item" href="../articles/a03_addIndications-example.html">Add indications to Drug Utilisation Cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/a04_addDrugInfo.html">Add drug related information to a Drug Utilisation cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/a05_treatmentDiscontinuation.html">Add treatment discontinuation to a Drug Utilisation cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/a06_treatmentSummary.html">Add treatment summary to a Drug Utilisation cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/a07_characteriseACohort.html">Characterise a cohort using Drug Utilisation</a></li>
-    <li><a class="dropdown-item" href="../articles/drugUtilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/routePatternDose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
-    <li><a class="dropdown-item" href="../articles/a08_addDailyDose.html">Characterise a cohort using Drug Utilisation</a></li>
+    <li><a class="dropdown-item" href="../articles/indication.html">Add indications to Drug Utilisation Cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Characterise a cohort using Drug Utilisation</a></li>
+    <li><a class="dropdown-item" href="../articles/drug_utilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Add treatment summary to a Drug Utilisation cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/treatment_discontinuation.html">Add treatment discontinuation to a Drug Utilisation cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/TBR_add_drug_use.html">Add drug related information to a Drug Utilisation cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/TBR_route_pattern_dose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -125,7 +123,7 @@ created.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span><span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">addInitialDailyDose</span><span class="op">(</span>ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_074_1721203752&gt; [10 x 5]</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_074_1721215691&gt; [10 x 5]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1023-azure:R 4.4.1/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    cohort_definition_id subject_id cohort_start_date cohort_end_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span>
@@ -150,7 +148,7 @@ created.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Nuria Mercade-Besora, Xihang Chen.</p>
+  <p>Developed by Martí Català, Mike Du, Yuchen Guo, Kim Lopez-Guell, Nuria Mercade-Besora, Xihang Chen.</p>
 </div>
 
 <div class="pkgdown-footer-right">
