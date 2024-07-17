@@ -2,6 +2,20 @@ url: https://darwin-eu-dev.github.io/DrugUtilisation/
 template:
   bootstrap: 5
 
+articles:
+- title: Package functionalities
+  navbar: Package functionalities
+  contents:
+  - mock_data
+  - create_cohorts
+  - indication
+  - daily_dose_calculation
+  - drug_utilisation
+  - summarise_treatments
+  - treatment_discontinuation
+  - TBR_add_drug_use
+  - TBR_route_pattern_dose
+
 reference:
 - subtitle: Generate a drug utilisation cohort set
   desc: Generate a cohort of drug use

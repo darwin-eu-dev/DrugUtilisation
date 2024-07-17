@@ -1,6 +1,6 @@
 ---
 title: "Add indications to Drug Utilisation Cohort"
-author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
+author: "Mike Du, Martí Català"
 date: "`r Sys.Date()`"
 output: 
   html_document:

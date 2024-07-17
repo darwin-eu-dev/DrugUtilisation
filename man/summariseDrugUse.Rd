@@ -8,7 +8,7 @@ summariseDrugUse(
   cohort,
   cdm = lifecycle::deprecated(),
   strata = list(),
-  drugUseEstimates = c("min", "q05", "q25", "median", "q75", "q95", "max", "mean", "sd",
+  estimates = c("min", "q05", "q25", "median", "q75", "q95", "max", "mean", "sd",
     "count_missing", "percentage_missing"),
   minCellCount = lifecycle::deprecated()
 )
@@ -20,7 +20,7 @@ summariseDrugUse(
 
 \item{strata}{Stratification list.}
 
-\item{drugUseEstimates}{Estimates that we want for the columns.}
+\item{estimates}{Estimates that we want for the columns.}
 
 \item{minCellCount}{Deprecated.}
 }

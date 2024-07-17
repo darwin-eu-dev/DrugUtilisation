@@ -118,8 +118,20 @@ generateDrugUtilisationCohortSet <- function(cdm,
 
   conceptSet <- conceptSetFromConceptSetList(conceptSet, cohortSet)
 
+  cohortCodelistAttr <- cohortSet |>
+    dplyr::select("cohort_definition_id", "codelist_name" = "cohort_name") |>
+    dplyr::inner_join(
+      conceptSet |>
+        dplyr::rename("concept_id" = "drug_concept_id"),
+      by = "cohort_definition_id",
+      relationship = "one-to-many"
+    ) |>
+    dplyr::mutate("type" = "index event")
+
   cdm[[name]] <- subsetTables(cdm, conceptSet, name) |>
-    omopgenerics::newCohortTable(cohortSetRef = cohortSet) |>
+    omopgenerics::newCohortTable(
+      cohortSetRef = cohortSet, cohortCodelistRef = cohortCodelistAttr
+    ) |>
     erafyCohort(gapEra)
 
   dropTmpTables(cdm)

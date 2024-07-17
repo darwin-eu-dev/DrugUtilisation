@@ -8,12 +8,12 @@ cohorts.}
 summariseDrugUtilisation(
   cohort,
   strata = list(),
-  drugUseEstimates = c("q25", "median", "q75", "mean", "sd", "count_missing",
+  estimates = c("q25", "median", "q75", "mean", "sd", "count_missing",
     "percentage_missing"),
-  indexDate = "cohort_start_date",
-  censorDate = "cohort_end_date",
   ingredientConceptId = NULL,
   conceptSet = NULL,
+  indexDate = "cohort_start_date",
+  censorDate = "cohort_end_date",
   restrictIncident = TRUE,
   gapEra = 1,
   numberExposures = TRUE,
@@ -31,20 +31,19 @@ summariseDrugUtilisation(
 
 \item{strata}{Stratification list.}
 
-\item{drugUseEstimates}{Estimates that we want for the columns.}
+\item{estimates}{Estimates that we want for the columns.}
+
+\item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
+the study. It is a compulsory input, no default value is provided.}
+
+\item{conceptSet}{List of concepts to be included. If NULL all the
+descendants of ingredient concept id will be used.}
 
 \item{indexDate}{Name of a column that indicates the date to start the
 analysis.}
 
 \item{censorDate}{Name of a column that indicates the date to stop the
 analysis, if NULL end of individuals observation is used.}
-
-\item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
-the study. It is a compulsory input, no default value is provided.}
-
-\item{conceptSet}{List of concepts to be included. If NULL all the
-descendants of ingredient concept id will be used.
-ingredientConceptId = NULL,}
 
 \item{restrictIncident}{Whether to include only incident prescriptions in the
 analysis. If FALSE all prescriptions that overlap with the study period will

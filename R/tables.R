@@ -65,10 +65,10 @@ tableIndication <- function(result,
                             type = "gt",
                             .options = list()) {
   # check input and filter result
-  if (!cohortName & "cohort_name" %in% groupColumn) {
+  if (!cohortName & "cohort_name" %in% unlist(groupColumn)) {
     cli::cli_abort("If `cohortName = FALSE`, `cohort_name` cannot be used in `groupColumn`.")
   }
-  if (!cdmName & "cdm_name" %in% groupColumn) {
+  if (!cdmName & "cdm_name" %in% unlist(groupColumn)) {
     cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
   }
   if (!is.null(header)) {
@@ -76,7 +76,7 @@ tableIndication <- function(result,
       cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`")
     }
     if (!is.null(groupColumn)) {
-      if (grepl(paste0(header, collapse = "|"), groupColumn)) {
+      if (any(grepl(paste0(header, collapse = "|"), unlist(groupColumn)))) {
         cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
       }
     }
@@ -121,10 +121,10 @@ tableIndication <- function(result,
   } else {
     renameColumns <- c("Database name" = "cdm_name")
   }
-  if (!"variable_name" %in% groupColumn) {
+  if (!"variable_name" %in% unlist(groupColumn)) {
     renameColumns <- c(renameColumns, "Indication window" = "variable_name")
   }
-  if (!"variable_level" %in% groupColumn) {
+  if (!"variable_level" %in% unlist(groupColumn)) {
     renameColumns <- c(renameColumns, "Indication" = "variable_level")
   }
 
@@ -202,10 +202,10 @@ tableDoseCoverage <- function(result,
                               ),
                               .options = list()) {
   # check input and filter result
-  if (!ingridientName & "ingredient_name" %in% groupColumn) {
+  if (!ingridientName & "ingredient_name" %in% unlist(groupColumn)) {
     cli::cli_abort("If `ingridientName = FALSE`, `ingredient_name` cannot be used in `groupColumn`.")
   }
-  if (!cdmName & "cdm_name" %in% groupColumn) {
+  if (!cdmName & "cdm_name" %in% unlist(groupColumn)) {
     cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
   }
   if (!is.null(header)) {
@@ -213,7 +213,7 @@ tableDoseCoverage <- function(result,
       cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`, `estimate`")
     }
     if (!is.null(groupColumn)) {
-      if (grepl(paste0(header, collapse = "|"), groupColumn)) {
+      if (any(grepl(paste0(header, collapse = "|"), unlist(groupColumn)))) {
         cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
       }
     }
@@ -257,7 +257,7 @@ tableDoseCoverage <- function(result,
   } else {
     renameColumns <- c("Database name" = "cdm_name")
   }
-  if (!"variable_name" %in% groupColumn) {
+  if (!"variable_name" %in% unlist(groupColumn)) {
     renameColumns <- c(renameColumns, "Variable" = "variable_name")
   }
 
@@ -287,7 +287,7 @@ tableDoseCoverage <- function(result,
 #' @param result A summarised_result object with results from
 #' summariseDrugUtilisation().
 #' @param header A vector containing which elements should go into the header
-#' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`.
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`, `estimate`.
 #' @param splitStrata If TRUE strata columns will be splitted.
 #' @param cohortName If TRUE cohort names will be displayed.
 #' @param cdmName If TRUE database names will be displayed.
@@ -348,24 +348,24 @@ tableDrugUtilisation <- function(result,
   if (nrow(result) == 0) {
     cli::cli_abort("There are no results with `result_type = drug_utilisation`")
   }
-  if (!cohortName & "cohort_name" %in% groupColumn) {
+  if (!cohortName & "cohort_name" %in% unlist(groupColumn)) {
     cli::cli_abort("If `cohortName = FALSE`, `cohort_name` cannot be used in `groupColumn`.")
   }
-  if (!conceptSet & "concept_set" %in% groupColumn) {
+  if (!conceptSet & "concept_set" %in% unlist(groupColumn)) {
     cli::cli_abort("If `conceptSet = FALSE`, `concept_set` cannot be used in `groupColumn`.")
   }
-  if (!ingredient & "ingredient" %in% groupColumn) {
+  if (!ingredient & "ingredient" %in% unlist(groupColumn)) {
     cli::cli_abort("If `ingredient = FALSE`, `ingredient` cannot be used in `groupColumn`.")
   }
-  if (!cdmName & "cdm_name" %in% groupColumn) {
+  if (!cdmName & "cdm_name" %in% unlist(groupColumn)) {
     cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
   }
   if (!is.null(header)) {
-    if (any(! header %in% c("cdm_name", "group", "strata", "variable"))) {
-      cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`")
+    if (any(! header %in% c("cdm_name", "group", "strata", "variable", "estimate"))) {
+      cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`, `estimate`")
     }
     if (!is.null(groupColumn)) {
-      if (grepl(paste0(header, collapse = "|"), groupColumn)) {
+      if (any(grepl(paste0(header, collapse = "|"), unlist(groupColumn)))) {
         cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
       }
     }
@@ -377,7 +377,7 @@ tableDrugUtilisation <- function(result,
     } else {
       options <- c(options, "strata_name", "strata_level")
     }
-    if (any(!groupColumn %in% options)) {
+    if (any(!unlist(groupColumn) %in% options)) {
       cli::cli_abort("`groupColumn` can only be one of: {paste0(options, collapse = ', ')}")
     }
   }
@@ -415,7 +415,7 @@ tableDrugUtilisation <- function(result,
   } else {
     renameColumns <- c("Database name" = "cdm_name")
   }
-  if (!"variable_name" %in% groupColumn) {
+  if (!"variable_name" %in% unlist(groupColumn)) {
     renameColumns <- c(renameColumns, "Variable" = "variable_name")
   }
   if (!all(is.na(result$variable_level))) {
@@ -578,7 +578,7 @@ tableTreatment <- function(result,
   } else {
     renameColumns <- c("Database name" = "cdm_name")
   }
-  if (!"variable_name" %in% groupColumn) {
+  if (!"variable_name" %in% unlist(groupColumn)) {
     renameColumns <- c(renameColumns, "Treatment" = "variable_name")
   }
 
