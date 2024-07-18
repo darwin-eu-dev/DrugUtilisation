@@ -53,6 +53,8 @@ subsetTables <- function(cdm, conceptSet, name) {
         ),
       by = "subject_id"
     ) |>
+    dplyr::filter(.data$cohort_start_date <= .data$observation_period_end_date,
+                  .data$cohort_end_date >= .data$observation_period_start_date) |>
     dplyr::mutate(
       "cohort_start_date" = dplyr::if_else(
         .data$cohort_start_date < .data$observation_period_start_date,
