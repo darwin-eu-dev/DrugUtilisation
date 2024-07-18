@@ -19,13 +19,12 @@
 #' `r lifecycle::badge("experimental")`
 #'
 #' @param cohort A cohort table.
-#' @param strata List with column names or vectors of column names groups to
-#' stratify results by.
 #' @param switchCohortTable A cohort table in the cdm that contains possible
-#' alternative treatments. Either a conceptSet or a cohort table should be
-#' provided, but not both.
+#' alternative treatments.
 #' @param switchCohortId The cohort ids to be used from switchCohortTable. If
 #' NULL all cohort definition ids are used.
+#' @param strata List with column names or vectors of column names groups to
+#' stratify results by.
 #' @param followUpDays A vector of number of days to follow up. It can be
 #' multiple values.
 #' @param restrictToFirstDiscontinuation Whether to consider only the first
@@ -60,9 +59,9 @@
 #' }
 
 summariseDrugRestart <- function(cohort,
-                                 strata = list(),
-                                 switchCohortTable = NULL,
+                                 switchCohortTable,
                                  switchCohortId = NULL,
+                                 strata = list(),
                                  followUpDays = Inf,
                                  censorDate = NULL,
                                  restrictToFirstDiscontinuation = TRUE) {
@@ -102,9 +101,9 @@ summariseDrugRestart <- function(cohort,
   #   cli::cli_abort(c("x" = "One of `switchConceptSet` or `switchCohortTable` arguments must be populated."))
   # }
   # warnings
-  if (is.null(switchCohortTable) & !is.null(switchCohortId)) {
-    cli::cli_warn(c("!" = "cohortId specification only make sense if cohortTable is populated, the argument will be ignored"))
-  }
+  # if (is.null(switchCohortTable) & !is.null(switchCohortId)) {
+  #   cli::cli_warn(c("!" = "cohortId specification only make sense if cohortTable is populated, the argument will be ignored"))
+  # }
 
   # conceptSet <- list("switch" = unique(unlist(switchConceptSet)))
   prefix <- omopgenerics::tmpPrefix()

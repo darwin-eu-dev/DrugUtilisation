@@ -6,9 +6,9 @@
 \usage{
 summariseDrugRestart(
   cohort,
-  strata = list(),
-  switchCohortTable = NULL,
+  switchCohortTable,
   switchCohortId = NULL,
+  strata = list(),
   followUpDays = Inf,
   censorDate = NULL,
   restrictToFirstDiscontinuation = TRUE
@@ -17,15 +17,14 @@ summariseDrugRestart(
 \arguments{
 \item{cohort}{A cohort table.}
 
-\item{strata}{List with column names or vectors of column names groups to
-stratify results by.}
-
 \item{switchCohortTable}{A cohort table in the cdm that contains possible
-alternative treatments. Either a conceptSet or a cohort table should be
-provided, but not both.}
+alternative treatments.}
 
 \item{switchCohortId}{The cohort ids to be used from switchCohortTable. If
 NULL all cohort definition ids are used.}
+
+\item{strata}{List with column names or vectors of column names groups to
+stratify results by.}
 
 \item{followUpDays}{A vector of number of days to follow up. It can be
 multiple values.}
