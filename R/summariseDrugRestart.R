@@ -30,7 +30,6 @@
 #' multiple values.
 #' @param restrictToFirstDiscontinuation Whether to consider only the first
 #' discontinuation episode or all of them.
-#' @param indexDate Date of discontinuation, it has to be a column in cohort.
 #' @param censorDate Date of censoring. Individuals are always censored at the
 #' end of observation.
 #'

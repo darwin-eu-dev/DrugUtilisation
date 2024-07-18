@@ -35,8 +35,6 @@ end of observation.}
 
 \item{restrictToFirstDiscontinuation}{Whether to consider only the first
 discontinuation episode or all of them.}
-
-\item{indexDate}{Date of discontinuation, it has to be a column in cohort.}
 }
 \value{
 A summarised_result object with the percentages of restart, swicth
