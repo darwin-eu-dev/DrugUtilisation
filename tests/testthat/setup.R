@@ -35,3 +35,16 @@ connection <- function(dbToTest) {
   )
 }
 connectionDetails <- connection(Sys.getenv("DB_TO_TEST", "duckdb"))
+
+collectCohort <- function(cohort, id = NULL) {
+  if (is.null(id)) id <- settings(cohort)$cohort_definition_id
+  x <- cohort |>
+    dplyr::filter(.data$cohort_definition_id %in% .env$id) |>
+    dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date") |>
+    dplyr::collect() |>
+    dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date, cohort_end_date)
+  attr(x, "cohort_set") <- NULL
+  attr(x, "cohort_attrition") <- NULL
+  attr(x, "cohort_codelist") <- NULL
+  return(x)
+}
