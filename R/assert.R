@@ -283,7 +283,8 @@ assertNumeric <- function(x,
                           named = FALSE,
                           call = parent.frame(),
                           msg = NULL) {
-  nm <- paste0(substitute(x), collapse = "")
+
+  nm <- substitute(x) |> utils::capture.output()
   if (is.null(msg)) {
     if (integerish) obj <- "an integerish numeric" else obj <- "a numeric"
     msg <- errorMessage(
@@ -304,8 +305,9 @@ assertNumeric <- function(x,
     }
 
     # assert integerish
-    if (integerish & base::length(xNoNa) > 0) {
-      err <- max(abs(xNoNa - round(xNoNa)))
+    if (integerish & base::length(xNoNa) > 0 & !all(is.infinite(xNoNa))) {
+      xInt <- xNoNa[!is.infinite(xNoNa)]
+      err <- max(abs(xInt - round(xInt)))
       if (err > 0.0001) {
         c("!" = "{.strong `{nm}` is not integerish.}", msg) |>
           cli::cli_abort(call = call)
