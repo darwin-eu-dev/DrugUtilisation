@@ -31,7 +31,6 @@ cdm <- mockDrugUtilisation()
 cdm$cohort1 <- cdm$cohort1 |>
   requireIsFirstDrugEntry()
 attrition(cdm$cohort1)
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

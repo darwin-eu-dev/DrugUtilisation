@@ -48,8 +48,6 @@
 #'
 #' # tableIndication(result)
 #'
-#'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A table with a formatted version of summariseIndication() results.
@@ -179,8 +177,6 @@ tableIndication <- function(result,
 #'
 #' tableDoseCoverage(result)
 #'
-#'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A table with a formatted version of summariseDrugCoverage() results.
@@ -519,8 +515,6 @@ tableDrugUtilisation <- function(result,
 #'   )
 #'
 #' tableTreatment(result)
-#'
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 #' @return A table with a formatted version of

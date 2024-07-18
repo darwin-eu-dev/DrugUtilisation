@@ -35,7 +35,6 @@
 #' cdm$cohort1 <- cdm$cohort1 |>
 #'   requirePriorDrugWashout(priorUseWashout = 90, cohortId = c(2,3))
 #' attrition(cdm$cohort1)
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 requirePriorDrugWashout <- function(cohort,
@@ -112,7 +111,6 @@ requirePriorDrugWashout <- function(cohort,
 #' cdm$cohort1 <- cdm$cohort1 |>
 #'   requireIsFirstDrugEntry()
 #' attrition(cdm$cohort1)
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 requireIsFirstDrugEntry <- function(cohort,
@@ -171,7 +169,6 @@ requireIsFirstDrugEntry <- function(cohort,
 #' cdm$cohort1 <- cdm$cohort1 |>
 #'   requireObservationBeforeDrug(priorObservation = 365, cohortId = 1)
 #' attrition(cdm$cohort1)
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 requireObservationBeforeDrug <- function(cohort,
@@ -240,7 +237,6 @@ requireObservationBeforeDrug <- function(cohort,
 #'   requireDrugInDateRange(
 #'     dateRange = as.Date(c("2020-01-01", NA)), cohortId = 1)
 #' attrition(cdm$cohort1)
-#' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
 #'
 requireDrugInDateRange <- function(cohort,

@@ -36,7 +36,6 @@ cdm <- mockDrugUtilisation()
 cdm$cohort1 <- cdm$cohort1 |>
   requirePriorDrugWashout(priorUseWashout = 90, cohortId = c(2,3))
 attrition(cdm$cohort1)
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }
