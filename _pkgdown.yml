@@ -13,6 +13,7 @@ articles:
   - drug_utilisation
   - summarise_treatments
   - treatment_discontinuation
+  - drug_restart
   - TBR_add_drug_use
   - TBR_route_pattern_dose
 
