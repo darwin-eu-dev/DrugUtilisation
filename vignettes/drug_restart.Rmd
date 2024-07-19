@@ -14,15 +14,15 @@ vignette: >
   )
 ```
   
-  # Introduction
+# Introduction
   
-  Obtaining information on drug restart or switching to another drug after discontinuation of the original treatment is often of interest in drug utilization studies. In this vignette, we show how to assess drug switching and restart with this package.
+Obtaining information on drug restart or switching to another drug after discontinuation of the original treatment is often of interest in drug utilization studies. In this vignette, we show how to assess drug switching and restart with this package.
   
-  # Data
+# Data
   
-  ## Connect to mock data
+## Connect to mock data
   
-  For this vignette we will use mock data contained in the DrugUtilisation package. 
+For this vignette we will use mock data contained in the DrugUtilisation package. 
   
 ```{r, message = FALSE, warning = FALSE}
 library(DrugUtilisation)
