@@ -54,7 +54,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">requirePriorDrugWashout</span><span class="op">(</span></span>
 <span>  <span class="va">cohort</span>,</span>
-<span>  <span class="va">priorUseWashout</span>,</span>
+<span>  <span class="va">days</span>,</span>
 <span>  cohortId <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  name <span class="op">=</span> <span class="fu">omopgenerics</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/tableName.html" class="external-link">tableName</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -68,9 +68,9 @@
 <dd><p>A cohort table in a cdm reference.</p></dd>
 
 
-<dt id="arg-priorusewashout">priorUseWashout<a class="anchor" aria-label="anchor" href="#arg-priorusewashout"></a></dt>
-<dd><p>The length of priorUseWashout to be applied. NOTE that
-if priorUseWashout is infinity requireIsFirstDrugEntry will be called
+<dt id="arg-days">days<a class="anchor" aria-label="anchor" href="#arg-days"></a></dt>
+<dd><p>The length of days to be applied. NOTE that
+if days is infinity requireIsFirstDrugEntry will be called
 instead.</p></dd>
 
 
@@ -94,7 +94,7 @@ and the rest will remain unchanged.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">requirePriorDrugWashout</span><span class="op">(</span>priorUseWashout <span class="op">=</span> <span class="fl">90</span>, cohortId <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">requirePriorDrugWashout</span><span class="op">(</span>days <span class="op">=</span> <span class="fl">90</span>, cohortId <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 7</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id number_records number_subjects reason_id reason          </span>
