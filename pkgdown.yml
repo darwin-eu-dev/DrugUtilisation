@@ -4,6 +4,7 @@ pkgdown_sha: ~
 articles:
   create_cohorts: create_cohorts.html
   daily_dose_calculation: daily_dose_calculation.html
+  drug_restart: drug_restart.html
   drug_utilisation: drug_utilisation.html
   indication: indication.html
   mock_data: mock_data.html
@@ -11,7 +12,7 @@ articles:
   TBR_add_drug_use: TBR_add_drug_use.html
   TBR_route_pattern_dose: TBR_route_pattern_dose.html
   treatment_discontinuation: treatment_discontinuation.html
-last_built: 2024-07-18T14:38Z
+last_built: 2024-07-19T02:27Z
 urls:
   reference: https://darwin-eu-dev.github.io/DrugUtilisation/reference
   article: https://darwin-eu-dev.github.io/DrugUtilisation/articles
