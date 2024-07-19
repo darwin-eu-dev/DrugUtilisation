@@ -17,8 +17,8 @@
 #' Require prior days with no exposure.
 #'
 #' @param cohort A cohort table in a cdm reference.
-#' @param priorUseWashout The length of priorUseWashout to be applied. NOTE that
-#' if priorUseWashout is infinity requireIsFirstDrugEntry will be called
+#' @param days The length of days to be applied. NOTE that
+#' if days is infinity requireIsFirstDrugEntry will be called
 #' instead.
 #' @param cohortId IDs of the cohorts to modify. The default is NULL meaning all
 #' cohorts will be used; otherwise, only the specified cohorts will be modified,
@@ -33,37 +33,37 @@
 #' \donttest{
 #' cdm <- mockDrugUtilisation()
 #' cdm$cohort1 <- cdm$cohort1 |>
-#'   requirePriorDrugWashout(priorUseWashout = 90, cohortId = c(2,3))
+#'   requirePriorDrugWashout(days = 90, cohortId = c(2,3))
 #' attrition(cdm$cohort1)
 #' }
 #'
 requirePriorDrugWashout <- function(cohort,
-                                    priorUseWashout,
+                                    days,
                                     cohortId = NULL,
                                     name = omopgenerics::tableName(cohort)) {
   # check inputs
   checkInputs(
-    cohort = cohort, cohortId = cohortId, priorUseWashout = priorUseWashout,
+    cohort = cohort, cohortId = cohortId, priorUseWashout = days,
     name = name
   )
   if (is.null(cohortId)) {
     cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
   }
 
-  if (is.infinite(priorUseWashout)) {
-    c("!" = "priorUseWashout is infinity -> calling requireIsFirstDrugEntry()") |>
+  if (is.infinite(days)) {
+    c("!" = "days is infinity -> calling requireIsFirstDrugEntry()") |>
       cli::cli_inform()
     cohort <- cohort |>
       requireIsFirstDrugEntry(cohortId = cohortId, name = name)
     return(cohort)
   }
-  reason <- "require prior use priorUseWashout of {priorUseWashout} day{?s}"
+  reason <- "require prior use days of {days} day{?s}"
 
   record_counts <- omopgenerics::cohortCount(cohort) |>
     dplyr::filter(.data$cohort_definition_id %in% cohortId) |>
     dplyr::pull("number_records")
 
-  if (any(record_counts > 0) & priorUseWashout > 0) {
+  if (any(record_counts > 0) & days > 0) {
     cohort <- cohort |>
       dplyr::anti_join(
         cohort |>
@@ -74,7 +74,7 @@ requirePriorDrugWashout <- function(cohort,
           dplyr::ungroup() %>%
           dplyr::mutate(prior_time = !!CDMConnector::datediff(
             "prior_end_date", "cohort_start_date")) |>
-          dplyr::filter(.data$prior_time < .env$priorUseWashout) |>
+          dplyr::filter(.data$prior_time < .env$days) |>
           dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date"),
         by = c("cohort_definition_id", "subject_id", "cohort_start_date")
       )
@@ -82,7 +82,7 @@ requirePriorDrugWashout <- function(cohort,
 
   set <- settings(cohort) |>
     newSettings(
-      col = "prior_use_washout", value = priorUseWashout, cohortId = cohortId
+      col = "prior_use_washout", value = days, cohortId = cohortId
     )
 
   cohort <- cohort |>

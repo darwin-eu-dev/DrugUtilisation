@@ -299,11 +299,11 @@ Once we have created our base cohort using a conceptSet and a gapEra we can appl
 
 ## `requirePriorDrugWashout()`
 
-To require that the cohort entries (drug episodes) are incident we would usually define a time (`priorUseWashout`) where the individual is not exposed to the drug. This can be achieved using `requirePriorDrugWashout()` function. In this example we would restrict to individuals with 365 days of no exposure:
+To require that the cohort entries (drug episodes) are incident we would usually define a time (`days`) where the individual is not exposed to the drug. This can be achieved using `requirePriorDrugWashout()` function. In this example we would restrict to individuals with 365 days of no exposure:
 
 ```{r}
 cdm$acetaminophen_cohort <- cdm$acetaminophen_cohort |>
-  requirePriorDrugWashout(priorUseWashout = 365)
+  requirePriorDrugWashout(days = 365)
 ```
 
 The result will be a cohort with the individuals that fulfill the criteria:
@@ -340,7 +340,7 @@ cdm <- generateDrugUtilisationCohortSet(cdm = cdm, name = "my_cohort", conceptSe
 cdm
 settings(cdm$my_cohort)
 cdm$my_new_cohort <- cdm$my_cohort |>
-  requirePriorDrugWashout(priorUseWashout = 365, cohortId = 2, name = "my_new_cohort")
+  requirePriorDrugWashout(days = 365, cohortId = 2, name = "my_new_cohort")
 cdm
 attrition(cdm$my_new_cohort)
 ```
@@ -511,7 +511,7 @@ x |>
 In this case we will see the result of combining in different ways 4 inclusion criteria:
 
 - **first**: `requireIsFirstDrugEntry()`
-- **washout**: `requirePriorDrugWashout(priorUseWashout = 365)`
+- **washout**: `requirePriorDrugWashout(days = 365)`
 - **minObs**: `requireObservationBeforeDrug(priorObservation = 365)`
 - **2011-2012** `requireDrugInDateRange(dateRange = as.Date(c("2011-01-01", "2012-12-31)))`
 
