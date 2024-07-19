@@ -43,7 +43,7 @@ requirePriorDrugWashout <- function(cohort,
                                     name = omopgenerics::tableName(cohort)) {
   # check inputs
   checkInputs(
-    cohort = cohort, priorUseWashout = cohortId, days = days,
+    cohort = cohort, cohortId = cohortId, priorUseWashout = days,
     name = name
   )
   if (is.null(cohortId)) {
