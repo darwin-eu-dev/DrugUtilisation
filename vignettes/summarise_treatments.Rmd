@@ -1,10 +1,10 @@
 ---
-title: "Add treatment summary to a Drug Utilisation cohort"
+title: "Obtain treatment summary to a Drug Utilisation cohort"
 author: "Martí Català"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Add treatment summary to a Drug Utilisation cohort}
+  %\VignetteIndexEntry{Obtain treatment summary to a Drug Utilisation cohort}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -28,6 +28,11 @@ vignette, we will explore the functionalities and usages of this
 function.
 
 ## Create mock table
+
+We will use mock data contained in the package thoughout the vignette. Let's
+modify cohort tables `cohort1` and `cohort2` in our mock dataset, so the frist
+includes 3 subcohorts of health conditions, while the second contains three 
+treatments.
 
 ```{r, message = FALSE, warning=FALSE}
 library(DrugUtilisation)
@@ -53,8 +58,6 @@ cdm$cohort2 <- cdm$cohort2 |>
 
 ```
 
-For the following examples, we will use the cohort `cohort1` and
-`cohort2` already created in the mock table.
 
 Notice that `cohort1` is a cohort with three subcohorts representing
 three different conditions:
@@ -116,10 +119,6 @@ Soon, you will be able to include combinations of different treatments
 by using the `combination` argument. Unfortunately, it has not been
 implemented yet, stay tuned for the next release! 😄
 
-## `minCellCount` parameter
-
-Specify the minimum number of individuals that a strata group must have
-in order to appear in the table. Default is set to 5.
 
 # Summarise treatment with `summariseTreatmentFromConceptSet()` function
 

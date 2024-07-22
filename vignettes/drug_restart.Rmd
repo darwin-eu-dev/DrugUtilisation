@@ -57,19 +57,19 @@ cdm <- generateDrugUtilisationCohortSet(
 cdm$insulin |> cohortCount()
 ```
 
-## Assess drug restart
+# Assess drug restart
 
-The function `summariseDrugRestart()` calculated how many of the following events are given in a treatment cohort:
+The `summariseDrugRestart()` function analyzes the outcomes within a treatment cohort following the first exposure to a specific drug. It categorizes the events into four distinct groups:
 
-- restart the same treatment 
+- Restarting the same treatment.
 
-- switch to other treatments 
+- Switching to a different treatment.
 
-- restart the same treatment but aslo switch to another
+- Restarting the same treatment while also switching to another.
 
-- not treated anymore (neither original treatment or potential switch)
+- Discontinuing treatment altogether (neither the original treatment nor any potential switch).
 
-The figure below illustratiates this analysis where we study what happens after the first exposure to a certain drug (in blue), considering a specific switch drug (orange). In that example, we are interested in know what happens in the firsts 100, 180 and 365 days of treatment discontinuation.
+The figure below illustrates the analysis, focusing on the outcomes after the initial exposure to a particular drug (in blue), with consideration of a specific switch drug (in orange). This study examines what occurs within 100, 180, and 365 days following first treatment discontinuation in the cohort.
 
 ```{r, echo=FALSE, message=FALSE, out.width="80%", warning=FALSE}
 library(here)
@@ -140,11 +140,11 @@ results <- cdm$cohort1 |>
   )
 ```
 
-## Visualise drug restart
+# Visualise drug restart
 
 The package has table and plot functions to help visualizing the results from `summariseDrugRestart()`.
 
-### Table
+## Table
 
 The function `tableDrugRestart()` will create a gt, flextable or tibble table from the summarised_result object created with `summariseDrugRestart()`. This function offers multiple customization options to format the resulting table according to the user preferences.
 
@@ -162,7 +162,7 @@ tableDrugRestart(
 )
 ```
 
-### Plot
+## Plot
 
 The `plotDrugRestart()` function creates a bar plot depicting the percentage of drug restart events for each cohort, stratum, and follow-up time (specified in the variable_name column of the summarised result). This function offers customization options for colours, facetting, and handling of strata.
 
