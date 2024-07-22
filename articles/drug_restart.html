@@ -46,7 +46,7 @@
     <li><a class="dropdown-item" href="../articles/indication.html">Add indications to Drug Utilisation Cohort</a></li>
     <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Characterise a cohort using Drug Utilisation</a></li>
     <li><a class="dropdown-item" href="../articles/drug_utilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Add treatment summary to a Drug Utilisation cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Obtain treatment summary to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/treatment_discontinuation.html">Assessing time to treatment discontinuation</a></li>
     <li><a class="dropdown-item" href="../articles/drug_restart.html">Assessing drug restart and switching after treatment</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_add_drug_use.html">Add drug related information to a Drug Utilisation cohort</a></li>
@@ -137,23 +137,26 @@ metformin and another of patients exposed to insulin.</p>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1            107              92</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="assess-drug-restart">Assess drug restart<a class="anchor" aria-label="anchor" href="#assess-drug-restart"></a>
-</h3>
-<p>The function <code><a href="../reference/summariseDrugRestart.html">summariseDrugRestart()</a></code> calculated how many
-of the following events are given in a treatment cohort:</p>
+</div>
+<div class="section level2">
+<h2 id="assess-drug-restart">Assess drug restart<a class="anchor" aria-label="anchor" href="#assess-drug-restart"></a>
+</h2>
+<p>The <code><a href="../reference/summariseDrugRestart.html">summariseDrugRestart()</a></code> function analyzes the
+outcomes within a treatment cohort following the first exposure to a
+specific drug. It categorizes the events into four distinct groups:</p>
 <ul>
-<li><p>restart the same treatment</p></li>
-<li><p>switch to other treatments</p></li>
-<li><p>restart the same treatment but aslo switch to another</p></li>
-<li><p>not treated anymore (neither original treatment or potential
-switch)</p></li>
+<li><p>Restarting the same treatment.</p></li>
+<li><p>Switching to a different treatment.</p></li>
+<li><p>Restarting the same treatment while also switching to
+another.</p></li>
+<li><p>Discontinuing treatment altogether (neither the original
+treatment nor any potential switch).</p></li>
 </ul>
-<p>The figure below illustratiates this analysis where we study what
-happens after the first exposure to a certain drug (in blue),
-considering a specific switch drug (orange). In that example, we are
-interested in know what happens in the firsts 100, 180 and 365 days of
-treatment discontinuation.</p>
+<p>The figure below illustrates the analysis, focusing on the outcomes
+after the initial exposure to a particular drug (in blue), with
+consideration of a specific switch drug (in orange). This study examines
+what occurs within 100, 180, and 365 days following first treatment
+discontinuation in the cohort.</p>
 <p><img src="figures/drug_restart_A.png" width="80%"></p>
 <p>Now, let’s use the function to assess metformin restart and switch to
 insulin after the first metformin treatment.</p>
@@ -237,14 +240,14 @@ indicating the sex, which later we use in strata.</p>
 <span>    restrictToFirstDiscontinuation <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="visualise-drug-restart">Visualise drug restart<a class="anchor" aria-label="anchor" href="#visualise-drug-restart"></a>
-</h3>
+<div class="section level2">
+<h2 id="visualise-drug-restart">Visualise drug restart<a class="anchor" aria-label="anchor" href="#visualise-drug-restart"></a>
+</h2>
 <p>The package has table and plot functions to help visualizing the
 results from <code><a href="../reference/summariseDrugRestart.html">summariseDrugRestart()</a></code>.</p>
-<div class="section level4">
-<h4 id="table">Table<a class="anchor" aria-label="anchor" href="#table"></a>
-</h4>
+<div class="section level3">
+<h3 id="table">Table<a class="anchor" aria-label="anchor" href="#table"></a>
+</h3>
 <p>The function <code><a href="../reference/tableDrugRestart.html">tableDrugRestart()</a></code> will create a gt,
 flextable or tibble table from the summarised_result object created with
 <code><a href="../reference/summariseDrugRestart.html">summariseDrugRestart()</a></code>. This function offers multiple
@@ -1138,9 +1141,9 @@ user preferences.</p>
 </table>
 </div>
 </div>
-<div class="section level4">
-<h4 id="plot">Plot<a class="anchor" aria-label="anchor" href="#plot"></a>
-</h4>
+<div class="section level3">
+<h3 id="plot">Plot<a class="anchor" aria-label="anchor" href="#plot"></a>
+</h3>
 <p>The <code><a href="../reference/plotDrugRestart.html">plotDrugRestart()</a></code> function creates a bar plot
 depicting the percentage of drug restart events for each cohort,
 stratum, and follow-up time (specified in the variable_name column of
@@ -1155,7 +1158,6 @@ colours, facetting, and handling of strata.</p>
 <span>  splitStrata <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="drug_restart_files/figure-html/unnamed-chunk-10-1.png" width="768"></p>
-</div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
