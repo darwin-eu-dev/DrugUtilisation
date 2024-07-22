@@ -14,10 +14,169 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, warning = FALSE}
 library(DrugUtilisation)
 ```
 
 # Introduction
 
-In this vignette we will see
+In this vignette we will see how to use `mockDrugUtilisation()` function to create mock data. This function is predominantly used in this package's unit testing.
+
+For example, one could use the default parameters to create a mock cdm reference like so:
+
+```{r, message= FALSE, warning=FALSE}
+cdm <- mockDrugUtilisation()
+```
+
+This will then populate several omop tables (for example, `person`, `concept` and `visit_occurrence`) and two cohorts in the cdm reference.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$person |> 
+  dplyr::glimpse()
+
+cdm$person |>
+  dplyr::tally()
+```
+
+```{r, message= FALSE, warning=FALSE}
+cdm$concept |> 
+  dplyr::glimpse()
+
+cdm$concept |>
+  dplyr::tally()
+```
+
+```{r, message= FALSE, warning=FALSE}
+cdm$visit_occurrence |> 
+  dplyr::glimpse()
+
+cdm$visit_occurrence |>
+  dplyr::tally()
+```
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 |> 
+  dplyr::glimpse()
+
+cdm$cohort1 |>
+  dplyr::tally()
+```
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort2 |> 
+  dplyr::glimpse()
+
+cdm$cohort2 |>
+  dplyr::tally()
+```
+
+## Setting seeds
+
+The user can also set the seed to control the randomness within the data.
+
+```{r, message= FALSE, warning=FALSE}
+cdm <- mockDrugUtilisation(
+  seed = 789
+)
+```
+
+We now observe that `cohort1` has been changed as a result of this seed:
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 |> 
+  dplyr::glimpse()
+```
+
+The users can then create mock data in two ways, one is to set the `numberIndividual` parameter and the other is to cusutomise the tables.
+
+## Creat mock data using numberIndividual parameter
+
+An example of use is as follows:
+
+```{r, message= FALSE, warning=FALSE}
+cdm <- mockDrugUtilisation(numberIndividual = 100)
+```
+
+This will ensure that each of `person`, `observation_period`, `cohort1` and `cohort2` will have 100 rows. 
+
+```{r, message= FALSE, warning=FALSE}
+cdm$person |>
+  dplyr::glimpse()
+```
+
+```{r, message= FALSE, warning=FALSE}
+cdm$person |>
+  dplyr::tally()
+```
+
+As a consequence of this, the number of rows for other tables such as `visit_occurrence`, `condition_occurrence` and `drug_strength` will have more rows compared to the mock data produced using default settings.
+
+```{r, message= FALSE, warning=FALSE}
+cdm$visit_occurrence |>
+  dplyr::glimpse()
+```
+
+```{r, message= FALSE, warning=FALSE}
+cdm$visit_occurrence |>
+  dplyr::tally()
+```
+
+## Creat mock data by customising tables
+
+### Customise omop tables
+
+As we saw previously, the omop tables are automatically populated in `mockDrugUtilisation()`. However, the user can customise these tables. For example, to customise `drug_exposure` table, one could do the following:
+
+```{r, message= FALSE, warning=FALSE}
+cdm <- mockDrugUtilisation(
+    drug_exposure = dplyr::tibble(
+      drug_exposure_id = 1:3,
+      person_id = c(1, 1, 1),
+      drug_concept_id = c(2, 3, 4),
+      drug_exposure_start_date = as.Date(c(
+        "2000-01-01", "2000-01-10", "2000-02-20"
+      )),
+      drug_exposure_end_date = as.Date(c(
+        "2000-02-10", "2000-03-01", "2000-02-20"
+      )),
+      quantity = c(41, 52, 1),
+      drug_type_concept_id = 0
+    )
+  )
+```
+
+```{r, message= FALSE, warning=FALSE}
+cdm$drug_exposure |>
+  dplyr::glimpse()
+```
+
+However, one needs to be vigilant that the customised omop table is implicitly dependent on other omop tables. For example, the `drug_exposure_start_date` of someone in the `drug_exposure` table should lie within that person's `observation_period_start_date` and `observation_period_end_date`.
+
+One could also modify other omop tables including `person`, `concept`, `concept_ancestor`, `drug_strength`, `observation_period`, `condition_occurrence`, `observation`, and `concept_relationship` in a similar fashion.
+
+### Customise cohorts
+
+Similarly, cohort tables can also be customised.
+
+```{r, message= FALSE, warning=FALSE}
+cdm <- mockDrugUtilisation(
+  observation_period = dplyr::tibble(
+      observation_period_id = 1,
+      person_id = 1:2,
+      observation_period_start_date = as.Date("1900-01-01"),
+      observation_period_end_date = as.Date("2100-01-01"),
+      period_type_concept_id = 0
+    ),
+    cohort1 = dplyr::tibble(
+      cohort_definition_id = 1,
+      subject_id = c(1, 1, 2),
+      cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
+      cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
+    )
+  )
+```
+
+```{r, message= FALSE, warning=FALSE}
+cdm$cohort1 |> 
+  dplyr::glimpse()
+```

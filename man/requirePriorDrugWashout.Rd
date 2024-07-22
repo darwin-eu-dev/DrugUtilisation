@@ -6,7 +6,7 @@
 \usage{
 requirePriorDrugWashout(
   cohort,
-  priorUseWashout,
+  days,
   cohortId = NULL,
   name = omopgenerics::tableName(cohort)
 )
@@ -14,8 +14,8 @@ requirePriorDrugWashout(
 \arguments{
 \item{cohort}{A cohort table in a cdm reference.}
 
-\item{priorUseWashout}{The length of priorUseWashout to be applied. NOTE that
-if priorUseWashout is infinity requireIsFirstDrugEntry will be called
+\item{days}{The length of days to be applied. NOTE that
+if days is infinity requireIsFirstDrugEntry will be called
 instead.}
 
 \item{cohortId}{IDs of the cohorts to modify. The default is NULL meaning all
@@ -34,9 +34,8 @@ Require prior days with no exposure.
 \donttest{
 cdm <- mockDrugUtilisation()
 cdm$cohort1 <- cdm$cohort1 |>
-  requirePriorDrugWashout(priorUseWashout = 90, cohortId = c(2,3))
+  requirePriorDrugWashout(days = 90, cohortId = c(2,3))
 attrition(cdm$cohort1)
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

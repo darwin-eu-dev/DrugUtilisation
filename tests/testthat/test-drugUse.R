@@ -661,10 +661,10 @@ test_that("test splitSubexposures", {
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy |> dplyr::filter(.data$subexposure_id == k)
     expect_true(
-      lubridate::day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
+      clock::get_day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
     )
     expect_true(
-      lubridate::day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
+      clock::get_day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
     )
     if (countsPerSubexposure[k] == 0) {
       expect_true(nrow(yyy) == 1)
@@ -689,10 +689,10 @@ test_that("test splitSubexposures", {
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy |> dplyr::filter(.data$subexposure_id == k)
     expect_true(
-      lubridate::day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
+      clock::get_day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
     )
     expect_true(
-      lubridate::day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
+      clock::get_day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
     )
     if (countsPerSubexposure[k] == 0) {
       expect_true(nrow(yyy) == 1)
@@ -717,10 +717,10 @@ test_that("test splitSubexposures", {
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy |> dplyr::filter(.data$subexposure_id == k)
     expect_true(
-      lubridate::day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
+      clock::get_day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
     )
     expect_true(
-      lubridate::day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
+      clock::get_day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
     )
     if (countsPerSubexposure[k] == 0) {
       expect_true(nrow(yyy) == 1)
@@ -745,10 +745,10 @@ test_that("test splitSubexposures", {
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy |> dplyr::filter(.data$subexposure_id == k)
     expect_true(
-      lubridate::day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
+      clock::get_day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
     )
     expect_true(
-      lubridate::day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
+      clock::get_day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
     )
     if (countsPerSubexposure[k] == 0) {
       expect_true(nrow(yyy) == 1)
@@ -773,10 +773,10 @@ test_that("test splitSubexposures", {
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy |> dplyr::filter(.data$subexposure_id == k)
     expect_true(
-      lubridate::day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
+      clock::get_day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
     )
     expect_true(
-      lubridate::day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
+      clock::get_day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
     )
     if (countsPerSubexposure[k] == 0) {
       expect_true(nrow(yyy) == 1)
@@ -801,10 +801,10 @@ test_that("test splitSubexposures", {
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy |> dplyr::filter(.data$subexposure_id == k)
     expect_true(
-      lubridate::day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
+      clock::get_day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
     )
     expect_true(
-      lubridate::day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
+      clock::get_day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
     )
     if (countsPerSubexposure[k] == 0) {
       expect_true(nrow(yyy) == 1)
@@ -829,10 +829,10 @@ test_that("test splitSubexposures", {
   for (k in 1:length(countsPerSubexposure)) {
     yyy <- yy |> dplyr::filter(.data$subexposure_id == k)
     expect_true(
-      lubridate::day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
+      clock::get_day(yyy$subexposure_start_date[1]) == dayStartSubexposure[k]
     )
     expect_true(
-      lubridate::day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
+      clock::get_day(yyy$subexposure_end_date[1]) == dayEndSubexposure[k]
     )
     if (countsPerSubexposure[k] == 0) {
       expect_true(nrow(yyy) == 1)

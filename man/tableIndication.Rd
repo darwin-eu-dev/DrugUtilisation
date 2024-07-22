@@ -59,8 +59,6 @@ cdm <- mockDrugUtilisation()
 
 # tableIndication(result)
 
-
-CDMConnector::cdmDisconnect(cdm = cdm)
 }
 
 }

@@ -257,15 +257,14 @@ createPersonTable <- function(numberIndividuals) {
     care_site_id = as.numeric(NA)
   ) |>
     dplyr::mutate(
-      birth_datetime = as.Date(
-        paste0(.data$year_of_birth, "-01-01"), "%Y-%m-%d"
-      ) +
-        lubridate::days(.data$day_of_birth - 1)
+      birth_datetime = clock::add_days(
+        as.Date(paste0(.data$year_of_birth, "-01-01"), "%Y-%m-%d"),
+        .data$day_of_birth - 1)
     ) |>
     dplyr::mutate(
-      year_of_birth = lubridate::year(.data$birth_datetime),
-      month_of_birth = lubridate::month(.data$birth_datetime),
-      day_of_birth = lubridate::day(.data$birth_datetime)
+      year_of_birth = clock::get_year(.data$birth_datetime),
+      month_of_birth = clock::get_month(.data$birth_datetime),
+      day_of_birth = clock::get_day(.data$birth_datetime)
     )
   return(person)
 }
