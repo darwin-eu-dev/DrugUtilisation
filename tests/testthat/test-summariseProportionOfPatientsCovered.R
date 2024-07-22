@@ -216,8 +216,169 @@ test_that("multiple cohorts", {
 })
 
 test_that("stratification", {
+  # basic example one cohort entry
+  # id 1 - in cohort for 5 days, break, 5 more days, exits the database after 25
+  # id 2 - in cohort for 15 days, exits the database after 15
+  # id 3 - in cohort for 20 days, exits the database after 25
+  # id 4 - in cohort for 20 days, exits the database after 25
+
+  cdm <- mockDrugUtilisation(
+    connectionDetails = connectionDetails,
+    dus_cohort = dplyr::tibble(
+      cohort_definition_id = 1,
+      subject_id = c(1, 1, 2, 3, 4),
+      cohort_start_date = as.Date(c("2000-01-01","2000-01-10", "2002-01-01", "2010-01-01", "2011-01-01")),
+      cohort_end_date = as.Date(c("2000-01-05","2000-01-15", "2002-01-15", "2010-01-20", "2011-01-20"))
+    ),
+    observation_period = dplyr::tibble(
+      observation_period_id = 1:4,
+      person_id = 1:4,
+      observation_period_start_date = as.Date(c("2000-01-01", "2002-01-01", "2010-01-01", "2011-01-01")),
+      observation_period_end_date = as.Date(c("2000-01-25", "2002-01-15", "2010-01-25", "2011-01-25")),
+      period_type_concept_id = 0
+    )
+  )
+  cdm$dus_cohort <- cdm$dus_cohort |>
+    dplyr::mutate(var0 = "group",
+                  var1 = dplyr::if_else(subject_id == 1,
+                                     "group_1", "group_2"),
+                  var2 = dplyr::if_else(subject_id %in% c(1,2),
+                                     "group_a", "group_b"))
+
+  ppc_no_strata <- cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered(followUpDays = 30)
+  ppc_no_strata_2 <- cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered(followUpDays = 30,
+                                         strata = c("var0"))
+  expect_identical(ppc_no_strata |>
+                     dplyr::select(!c("strata_name","strata_level")),
+                   ppc_no_strata_2 |>
+                     dplyr::filter(strata_level == "group") |>
+                     dplyr::select(!c("strata_name","strata_level")))
+
+  ppc <- cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered(followUpDays = 30,
+                                         strata = c("var1"))
+  expect_identical(ppc_no_strata,
+                   ppc |> dplyr::filter(strata_level == "overall"))
+
+  ppc <- cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered(followUpDays = 30,
+                                         strata = c("var1"))
+  # var 1 - group_1 - only person one
+  # day 0
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 0,
+                              strata_level == "group_1",
+                              estimate_name == "denominator_count") |>
+                dplyr::pull("estimate_value") == "1")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 0,
+                              strata_level == "group_1",
+                              estimate_name == "numerator_count") |>
+                dplyr::pull("estimate_value") == "1")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 0,
+                              strata_level == "group_2",
+                              estimate_name == "denominator_count") |>
+                dplyr::pull("estimate_value") == "3")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 0,
+                              strata_level == "group_2",
+                              estimate_name == "numerator_count") |>
+                dplyr::pull("estimate_value") == "3")
+
+  # day 1
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 1,
+                              strata_level == "group_1",
+                              estimate_name == "denominator_count") |>
+                dplyr::pull("estimate_value") == "1")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 1,
+                              strata_level == "group_1",
+                              estimate_name == "numerator_count") |>
+                dplyr::pull("estimate_value") == "1")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 1,
+                              strata_level == "group_2",
+                              estimate_name == "denominator_count") |>
+                dplyr::pull("estimate_value") == "3")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 1,
+                              strata_level == "group_2",
+                              estimate_name == "numerator_count") |>
+                dplyr::pull("estimate_value") == "3")
 
 
+  # day 8
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 8,
+                              strata_level == "group_1",
+                              estimate_name == "denominator_count") |>
+                dplyr::pull("estimate_value") == "1")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 8,
+                              strata_level == "group_1",
+                              estimate_name == "numerator_count") |>
+                dplyr::pull("estimate_value") == "0")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 8,
+                              strata_level == "group_2",
+                              estimate_name == "denominator_count") |>
+                dplyr::pull("estimate_value") == "3")
+  expect_true(ppc |>
+                dplyr::filter(additional_level == 8,
+                              strata_level == "group_2",
+                              estimate_name == "numerator_count") |>
+                dplyr::pull("estimate_value") == "3")
+
+
+
+  # multiple strata
+  # person 1 is in var1 - group_1 and var2 group_a
+  # person 2 is in var1 - group_2 and var2 group_a
+  # person 3 and 4 is in var1 - group_2 and var2 group_b
+
+
+  ppc <- cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered(strata = list(c("var1"),
+                                                  c("var2"),
+                                                  c("var1", "var2")))
+
+  # g1 and ga
+  ppc_g1_ga <- ppc |> dplyr::filter(strata_level == "group_1 &&& group_a")
+  ppc_g1 <- ppc |> dplyr::filter(strata_level == "group_1")
+  # only person 1
+  expect_identical(ppc_g1_ga |>
+                     dplyr::select(!c("strata_name","strata_level")),
+                   ppc_g1_ga |>
+                     dplyr::select(!c("strata_name","strata_level")))
+
+  # g2 and gb  - person 3 and 4
+  ppc_g2_gb <- ppc |> dplyr::filter(strata_level == "group_2 &&& group_b")
+  expect_true(ppc_g2_gb |>
+                dplyr::filter(additional_level == 0,
+                              estimate_name == "denominator_count") |>
+                dplyr::pull("estimate_value") == "2")
+  expect_true(ppc_g2_gb |>
+                dplyr::filter(additional_level == 0,
+                              estimate_name == "numerator_count") |>
+                dplyr::pull("estimate_value") == "2")
+  expect_true(ppc_g2_gb |>
+                dplyr::filter(additional_level == 1,
+                              estimate_name == "denominator_count") |>
+                dplyr::pull("estimate_value") == "2")
+  expect_true(ppc_g2_gb |>
+                dplyr::filter(additional_level == 1,
+                              estimate_name == "numerator_count") |>
+                dplyr::pull("estimate_value") == "2")
+
+
+
+  #nobody in g1 and gb
+  ppc_g1_gb <- ppc |> dplyr::filter(strata_level == "group_1 &&& group_b")
+  expect_true(nrow(ppc_g1_gb) == 0)
 
 })
 
