@@ -324,17 +324,22 @@ table, one could do the following:</p>
 <span><span class="co">#&gt; $ quantity                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 41, 52, 1</span></span>
 <span><span class="co">#&gt; $ drug_type_concept_id     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 0, 0</span></span></code></pre></div>
 <p>However, one needs to be vigilant that the customised omop table is
-implicitly dependent on other omop tables.</p>
+implicitly dependent on other omop tables. For example, the
+<code>drug_exposure_start_date</code> of someone in the
+<code>drug_exposure</code> table should lie within that person’s
+<code>observation_period_start_date</code> and
+<code>observation_period_end_date</code>.</p>
 <p>One could also modify other omop tables including
 <code>person</code>, <code>concept</code>,
 <code>concept_ancestor</code>, <code>drug_strength</code>,
 <code>observation_period</code>, <code>condition_occurrence</code>,
-<code>observation</code>, and <code>concept_relationship</code>.</p>
+<code>observation</code>, and <code>concept_relationship</code> in a
+similar fashion.</p>
 </div>
 <div class="section level4">
 <h4 id="customise-cohorts">Customise cohorts<a class="anchor" aria-label="anchor" href="#customise-cohorts"></a>
 </h4>
-<p>In a similar fashion, cohort tables can also be customised.</p>
+<p>Similarly, cohort tables can also be customised.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span></span>
 <span>  observation_period <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>

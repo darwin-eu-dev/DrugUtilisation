@@ -75,7 +75,7 @@
                         <h4 data-toc-skip class="author">Martí Català,
 Xihang Chen, Theresa Burkard</h4>
             
-            <h4 data-toc-skip class="date">2024-07-19</h4>
+            <h4 data-toc-skip class="date">2024-07-22</h4>
       
 
       <div class="d-none name"><code>daily_dose_calculation.Rmd</code></div>
@@ -123,19 +123,19 @@ examples.</p>
 <span><span class="co">#&gt; $ quantity                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 90, 50, 15, 100, 100, 60, 15, 40, 50, 20, 30,…</span></span>
 <span><span class="co">#&gt; $ daily_dose               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 9.707865e+03, 3.243243e+03, 1.384615e+03, 1.3…</span></span>
 <span><span class="co">#&gt; $ unit                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "milligram", "milligram", "milligram", "milli…</span></span></code></pre></div>
-<p>The <code>drug_exposure</code> table was first according to
-<code>drug_concept_id</code> equaling
+<p>The <code>drug_exposure</code> table is first subsetted according to
+whether <code>drug_concept_id</code> in the <code>drug_exposure</code>
+table equals
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2905077</mn><annotation encoding="application/x-tex">2905077</annotation></semantics></math>
-or not. This is to subset the <code>drug_exposure</code> table to the
-use of acetaminophen in the marketed product form. Later the ID
+or not; this is to subset the <code>drug_exposure</code> table to the
+use of <em>acetaminophen</em> in the marketed product form. Later the ID
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1125315</mn><annotation encoding="application/x-tex">1125315</annotation></semantics></math>
 is supplied in <code><a href="../reference/addDailyDose.html">addDailyDose()</a></code> function, which corresponds
-to the ingredient form of acetaminophen.</p>
+to the ingredient form of <em>acetaminophen</em>.</p>
 <p>We see that there are two extra columns at the end detailing the
-daily dose of acetaminophen of each drug exposure of interest -
-<code>daily_dose</code> and <code>unit</code>. Take first entry for
-example, we see that in that drug exposure of acetaminophen, the daily
-dose on average was
+daily dose of <em>acetaminophen</em> - <code>daily_dose</code> and
+<code>unit</code>. Take first entry for example, we see that in that
+drug exposure of <em>acetaminophen</em>, the daily dose on average is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>48</mn><mo>,</mo><mn>000</mn></mrow><annotation encoding="application/x-tex">48,000</annotation></semantics></math>
 milligram. The way daily dose is being calculated is to take into
 consideration both the strength of the drug and the duration of the
@@ -163,7 +163,7 @@ drug used in the <code>drug_exposure</code> table.</p>
 <span><span class="co">#&gt; $ route                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "topical", "topical", "topical", "topical", "…</span></span></code></pre></div>
 <p>Similarly, this adds one extra column named <code>route</code>. For
 example, the drug used in the first entry of the
-<code>drug_exposure</code> table was an oral drug.</p>
+<code>drug_exposure</code> table is an oral drug.</p>
 </div>
 <div class="section level3">
 <h3 id="finding-out-the-pattern-information-using-patterntable-function">Finding out the pattern information using patternTable()
@@ -199,10 +199,10 @@ overall count of records in the patterns respectively.</p>
 <p>We also see that there is a column named <code>pattern_id</code>
 together with information such as <code>number_concepts</code> and
 <code>number_ingredients</code>. The idea is to use this output in
-conjunction with the data named <code>patternWithFormula</code> via
-<code>pattern_id</code>. Please see the data
-<code>patternWithFormula</code> for different patterns, their associated
-formula and combinations of <code>amount_unit</code>,
+conjunction with the data named <code>patternWithFormula</code> that the
+user can find in this package via <code>pattern_id</code>. Please see
+the data <code>patternWithFormula</code> for different patterns, their
+associated formula and combinations of <code>amount_unit</code>,
 <code>numerator_unit</code> and <code>denominator_unit</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">patternsWithFormula</span> <span class="op">|&gt;</span></span>
@@ -225,7 +225,7 @@ function<a class="anchor" aria-label="anchor" href="#finding-out-the-dose-covera
 </h3>
 <p>This package also provides a function to check the coverage of daily
 dose computation for chosen concept sets and ingredients. Again let’s
-take acetaminophen as an example.</p>
+take <em>acetaminophen</em> as an example.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/summariseDoseCoverage.html">summariseDoseCoverage</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -244,16 +244,16 @@ take acetaminophen as an example.</p>
 <span><span class="co">#&gt; $ estimate_value   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "174", "0", "0", "4986.89847658171", "22201.148944306…</span></span>
 <span><span class="co">#&gt; $ additional_name  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span></span>
 <span><span class="co">#&gt; $ additional_level <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span></span></code></pre></div>
-<p>The output will summarise the usage of acetaminophen in the database.
-For example, overall there were
+<p>The output will summarise the usage of <em>acetaminophen</em> in the
+database. For example, overall there are
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>13</mn><annotation encoding="application/x-tex">13</annotation></semantics></math>
-records of acetaminophen use and none missing in terms of the duration
-and strength. By default the output will also include the mean, median,
-lower and upper quartiles and standard deviation of the daily dose of
-acetaminophen (calculated using <code><a href="../reference/addDailyDose.html">addDailyDose()</a></code>). The
-results will also be stratified by unit, route (which we saw in
-<code><a href="../reference/addRoute.html">addRoute()</a></code> function) and pattern (which we saw in
-<code><a href="../reference/patternTable.html">patternTable()</a></code> function).</p>
+records of <em>acetaminophen</em> use and none missing in terms of the
+duration and strength. By default the output will also include the mean,
+median, lower and upper quartiles and standard deviation of the daily
+dose of <em>acetaminophen</em> (calculated using
+<code><a href="../reference/addDailyDose.html">addDailyDose()</a></code>). The results will also be stratified by
+unit, route (which we saw in <code><a href="../reference/addRoute.html">addRoute()</a></code> function) and
+pattern (which we saw in <code><a href="../reference/patternTable.html">patternTable()</a></code> function).</p>
 <p>One may wish to display the output of
 <code><a href="../reference/summariseDoseCoverage.html">summariseDoseCoverage()</a></code> in a gt table form like so:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
