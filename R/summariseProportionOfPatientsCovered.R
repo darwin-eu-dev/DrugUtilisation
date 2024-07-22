@@ -19,6 +19,7 @@
 #' @param cohort A cohort table
 #' @param cohortId Cohort definition id of interest. If NUll all cohorts will
 #' be considered.
+#' @param strata List of variables to stratify by.
 #' @param followUpDays Number of days to follow up individuals for. If NULL the
 #' maximum amount of days from an individuals first cohort start date to their
 #' last cohort end date will be used
@@ -30,8 +31,6 @@ summariseProportionOfPatientsCovered <- function(cohort,
                                                  cohortId = NULL,
                                                  strata = list(),
                                                  followUpDays = NULL){
-
-
 
  cohortIds <- omopgenerics::settings(cohort) |>
     dplyr::pull("cohort_definition_id")
@@ -63,7 +62,7 @@ summariseProportionOfPatientsCovered <- function(cohort,
     dplyr::mutate(days_in_cohort = as.integer(!!CDMConnector::datediff(
       start = "cohort_start_date", end = "cohort_end_date", interval = "day"
     ))) %>%
-   dplyr::group_by(.data$cohort_definition_id, subject_id) |>
+   dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
    dplyr::summarise(days = sum(.data$days_in_cohort, na.rm = TRUE)) |>
    dplyr::group_by(.data$cohort_definition_id)  |>
    dplyr::summarise(max_days = max(.data$days, na.rm = TRUE)) |>

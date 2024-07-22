@@ -17,6 +17,8 @@ summariseProportionOfPatientsCovered(
 \item{cohortId}{Cohort definition id of interest. If NUll all cohorts will
 be considered.}
 
+\item{strata}{List of variables to stratify by.}
+
 \item{followUpDays}{Number of days to follow up individuals for. If NULL the
 maximum amount of days from an individuals first cohort start date to their
 last cohort end date will be used}
