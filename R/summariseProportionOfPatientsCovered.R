@@ -32,6 +32,14 @@ summariseProportionOfPatientsCovered <- function(cohort,
                                                  strata = list(),
                                                  followUpDays = NULL){
 
+
+  checkmate::assert_integerish(followUpDays, lower = 1, len = 1, null.ok = TRUE)
+
+  checkmate::checkList(strata, types = "character")
+  if(isFALSE(all(unlist(strata) %in% colnames(cohort)))){
+    cli::cli_abort("strata not found in cohort table")
+  }
+
  cohortIds <- omopgenerics::settings(cohort) |>
     dplyr::pull("cohort_definition_id")
  if(!is.null(cohortId)){
@@ -39,6 +47,10 @@ summariseProportionOfPatientsCovered <- function(cohort,
  }
  if(length(cohortIds) == 0){
    cli::cli_abort("Cohort ID not found")
+ }
+
+ if(length(strata) > 0){
+   cli::cli_abort("strata not yet supported")
  }
 
  cdm <- omopgenerics::cdmReference(cohort)
@@ -129,7 +141,11 @@ getPPC <- function(cohort, cohortId, days){
     dplyr::filter(.data$cohort_definition_id == .env$cohortId) |>
     PatientProfiles::addFutureObservationQuery(futureObservationName = "observation_end_date",
                                                futureObservationType = "date") |>
-    dplyr::collect()
+    dplyr::collect() |>
+    dplyr::group_by(.data$subject_id) |>
+    dplyr::mutate(min_cohort_start_date = min(.data$cohort_start_date,
+                                              na.rm = TRUE)) |>
+    dplyr::ungroup()
 
   workingCohortName <- omopgenerics::settings(cohort) |>
     dplyr::filter(.data$cohort_definition_id == .env$cohortId) |>
@@ -148,7 +164,7 @@ getPPC <- function(cohort, cohortId, days){
                                     denominator_count = .env$startN)
   for(i in seq_along(1:days)){
    c <- workingCohort |>
-      dplyr::mutate(working_date = clock::add_days(.data$cohort_start_date, i)) |>
+      dplyr::mutate(working_date = clock::add_days(.data$min_cohort_start_date, i)) |>
       dplyr::mutate(in_cohort = dplyr::if_else(
         .data$cohort_start_date <= .data$working_date &
           .data$cohort_end_date >= .data$working_date, 1, 0
