@@ -14,11 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' summarise proportion Of patients covered
+#' Summarise proportion Of patients covered
+#'
+#' @description Gives the proportion of patients still in observation who are
+#' in the cohort on any given day following their first cohort entry. This is
+#' known as the “proportion of patients covered” (PPC) method for assessing
+#' treatment persistence.
 #'
 #' @param cohort A cohort table
-#' @param cohortId Cohort definition id of interest. If NUll all cohorts will
-#' be considered.
+#' @param cohortId Cohort definition ID of interest. If NUll, results for all
+#' cohorts will be returned.
 #' @param strata List of variables to stratify by.
 #' @param followUpDays Number of days to follow up individuals for. If NULL the
 #' maximum amount of days from an individuals first cohort start date to their
@@ -64,7 +69,7 @@ summariseProportionOfPatientsCovered <- function(cohort,
   }
 
   if (is.null(followUpDays)) {
-    # get maximum days of time in cohort following first entry for each cohort
+    cli::cli_inform("Setting followUpDays to maximum time from first cohort entry to last cohort exit per cohort")
     maxDays <- cohort %>%
       dplyr::mutate(days_in_cohort = as.integer(
         !!CDMConnector::datediff(
@@ -76,7 +81,7 @@ summariseProportionOfPatientsCovered <- function(cohort,
       dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
       dplyr::summarise(days = sum(.data$days_in_cohort, na.rm = TRUE)) |>
       dplyr::group_by(.data$cohort_definition_id)  |>
-      dplyr::summarise(max_days = max(.data$days, na.rm = TRUE)) |>
+      dplyr::summarise(max_days = as.integer(max(.data$days, na.rm = TRUE))) |>
       dplyr::collect()
   } else {
     maxDays <- omopgenerics::settings(cohort) |>
@@ -84,7 +89,6 @@ summariseProportionOfPatientsCovered <- function(cohort,
       dplyr::select("cohort_definition_id", "max_days")
   }
 
-  #
   ppc <- list()
   for (j in seq_along(cohortIds)) {
     workingCohortId <- cohortIds[j]
@@ -98,7 +102,16 @@ summariseProportionOfPatientsCovered <- function(cohort,
                        days = workingMaxDays)
   }
 
-  ppc <- dplyr::bind_rows(ppc) |>
+  ppc <- dplyr::bind_rows(ppc)
+
+  if(nrow(ppc) == 0){
+  cli::cli_inform(c("i" =
+                    "No results found for any cohort, returning an empty summarised result"))
+  return(omopgenerics::newSummarisedResult(omopgenerics::emptySummarisedResult(),
+                                           settings = analysisSettings))
+  }
+
+  ppc <- ppc |>
     dplyr::mutate(ppc = .data$numerator_count / .data$denominator_count) |>
     tidyr::pivot_longer(
       c("numerator_count",
@@ -136,25 +149,33 @@ summariseProportionOfPatientsCovered <- function(cohort,
 }
 
 getPPC <- function(cohort, cohortId, strata, days) {
+
   result <- list()
 
+  workingCohortName <- omopgenerics::settings(cohort) |>
+    dplyr::filter(.data$cohort_definition_id == .env$cohortId) |>
+    dplyr::pull("cohort_name")
+  cli::cli_inform(glue::glue("Getting PPC for cohort {workingCohortName}"))
+
+  cli::cli_inform("Collecting cohort into memory")
   workingCohort <- cohort |>
     dplyr::filter(.data$cohort_definition_id == .env$cohortId) |>
     PatientProfiles::addFutureObservationQuery(futureObservationName = "observation_end_date",
                                                futureObservationType = "date") |>
-    dplyr::collect() |>
+    dplyr::collect()
+
+  if(nrow(workingCohort) == 0){
+    cli::cli_inform(c("i" = "No records found for {workingCohortName}"))
+    return(NULL)
+  }
+
+  workingCohort <- workingCohort |>
     dplyr::group_by(.data$subject_id) |>
     dplyr::mutate(min_cohort_start_date = min(.data$cohort_start_date,
                                               na.rm = TRUE)) |>
     dplyr::ungroup()
 
-  workingCohortName <- omopgenerics::settings(cohort) |>
-    dplyr::filter(.data$cohort_definition_id == .env$cohortId) |>
-    dplyr::pull("cohort_name")
-
-  print(paste0("Getting PPC for cohort ", workingCohortName))
-
-  # add result for day zero
+  cli::cli_inform(glue::glue("Geting PPC over {days} days following first cohort entry"))
   result[["overall_time_0"]] <-
     getOverallStartingCount(workingCohort) |>
     dplyr::mutate(time = 0)
@@ -165,8 +186,12 @@ getPPC <- function(cohort, cohortId, strata, days) {
       dplyr::mutate(time = 0)
   }
 
-
+  cli::cli_progress_bar(.envir = parent.frame(),
+    total = days,
+    format = " -- getting PPC for {cli::pb_bar} {cli::pb_current} of {cli::pb_total} days"
+  )
   for (i in seq_along(1:days)) {
+    cli::cli_progress_update(.envir = parent.frame())
     c <- workingCohort |>
       dplyr::mutate(working_date = clock::add_days(.data$min_cohort_start_date, i)) |>
       dplyr::mutate(
@@ -192,11 +217,13 @@ getPPC <- function(cohort, cohortId, strata, days) {
     }
 
   }
+  cli::cli_progress_done(.envir = parent.frame())
 
-
-  result <- dplyr::bind_rows(result)
-
-  result <- result |>
+  result <- dplyr::bind_rows(result)  %>%
+    dplyr::mutate(denominator_count = dplyr::if_else(is.na(.data$denominator_count),
+                                                     0, .data$denominator_count)) |>
+    dplyr::mutate(numerator_count = dplyr::if_else(is.na(.data$numerator_count),
+                                                   0, .data$numerator_count))|>
     dplyr::mutate(cohort_name = .env$workingCohortName)
 
   result
@@ -218,29 +245,22 @@ getOverallStartingCount <- function(workingCohort) {
 }
 
 getOverallCounts <- function(workingCohort) {
-  # overall result
-  # people still in observation
-  denominator <- workingCohort |>
-    dplyr::filter(.data$in_observation == 1) |>
-    dplyr::select("subject_id") |>
-    dplyr::distinct() |>
-    dplyr::tally() |>
-    dplyr::pull("n")
 
-  # people in cohort on date
-  numerator <- workingCohort |>
-    dplyr::filter(.data$in_cohort == 1) |>
-    dplyr::select("subject_id") |>
-    dplyr::distinct() |>
-    dplyr::tally() |>
-    dplyr::pull("n")
-
-  dplyr::tibble(
-    denominator_count = .env$denominator,
-    numerator_count = .env$numerator,
+    dplyr::tibble(
+    # people still in observation
+    denominator_count = workingCohort |>
+      dplyr::filter(.data$in_observation == 1) |>
+      dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) |>
+      dplyr::pull("n"),
+    # people in cohort on date
+    numerator_count = workingCohort |>
+      dplyr::filter(.data$in_cohort == 1) |>
+      dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) |>
+      dplyr::pull("n"),
     strata_name = "overall",
     strata_level = "overall"
   )
+
 }
 
 getStratifiedStartingCount <- function(workingCohort, workingStrata) {
@@ -280,11 +300,7 @@ getStratifiedCounts <- function(workingCohort, workingStrata) {
         dplyr::summarise(numerator_count = dplyr::n_distinct(.data$subject_id)),
       by = workingStrata
     ) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(denominator_count = dplyr::if_else(is.na(.data$denominator_count),
-                                                     0, .data$denominator_count)) |>
-    dplyr::mutate(numerator_count = dplyr::if_else(is.na(.data$numerator_count),
-                                                   0, .data$numerator_count)) |>
+    dplyr::ungroup()|>
     tidyr::unite("strata_level",
                  c(dplyr::all_of(.env$workingStrata)),
                  remove = FALSE,

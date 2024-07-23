@@ -136,6 +136,8 @@ test_that("multiple cohort entries", {
                 dplyr::filter(additional_level == 21,
                               estimate_name == "ppc") |>
                 dplyr::pull("estimate_value") == "0")
+
+
 })
 
 test_that("multiple cohorts", {
@@ -212,6 +214,18 @@ test_that("multiple cohorts", {
                 dplyr::filter(additional_level == 12,
                               estimate_name == "ppc") |>
                 dplyr::pull("estimate_value") == "1")
+
+
+  # if one cohort is empty it should still work
+  cdm$dus_cohort <- cdm$dus_cohort |>
+    dplyr::filter(cohort_definition_id == 2)
+  expect_no_error(cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered(followUpDays = 25))
+  expect_no_error(cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered())
+  expect_no_error(cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered(cohortId = 1))
+
 
 })
 
