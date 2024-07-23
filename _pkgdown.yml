@@ -42,7 +42,7 @@ reference:
 - subtitle: Summarise treatment persistence using proportion of patients covered (PPC)
   desc: Summarise the proportion of patients in the drug cohort over time.
 - contents:
-  - matches("*summariseProportionOfPatientsCovered")
+  - matches("*summariseProportionOfPatientsCovered|plotProportionOfPatientsCovered")
 - subtitle: Summarise treatments during certain windows
   desc: Summarise the use of different treatments during certain windows
 - contents:
