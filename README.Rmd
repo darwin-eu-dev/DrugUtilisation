@@ -42,6 +42,7 @@ First, we need to create a cdm reference for the data we´ll be using. Here we g
 ```{r, message=FALSE, warning=FALSE}
 library(DrugUtilisation)
 library(CDMConnector)
+library(omopgenerics)
 library(dplyr)
 
 cdm <- mockDrugUtilisation(numberIndividual = 100)
@@ -85,15 +86,27 @@ indication_summary |> glimpse()
 ```
 
 ### Drug use
+We can quickly obtain a summary of drug utilisation among our cohort, with various measures calculated for a provided ingredient concept (in this case the concept for acetaminophen).
 
 ```{r}
 drug_utilisation_summary <- cdm$dus_cohort |> 
   summariseDrugUtilisation(ingredientConceptId = 1125315)
 drug_utilisation_summary |> glimpse()
+table(drug_utilisation_summary$variable_name)
 ```
 
+### Combine and share results
+Now we can combine our results and suppress any counts less than 5 so that they are ready to be shared.
+```{r}
+results <- bind(indication_summary,
+                   drug_utilisation_summary) |> 
+  suppress(minCellCount = 5)
+results |> glimpse()
+```
+
+
 ## Further analyses
-There are many more drug-related analyses that we could do with this acetaminophen cohort or others. Please see the package vignettes for more details.
+There are many more drug-related analyses that we could have done with this acetaminophen cohort using the DrugUtilisation package. Please see the package website for more details.
 
 
 
