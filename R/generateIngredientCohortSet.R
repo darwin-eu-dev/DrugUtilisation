@@ -14,10 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Generates a cohort of the drug use of ingredient name(s) of interest.
+#' Generate a set of drug cohorts based on drug ingredients
 #'
-#' @param cdm A cdm_reference object.
-#' @param name Name of the GeneratedCohortSet
+#' @description
+#' Adds a new cohort table to the cdm reference with individuals who have drug
+#' exposure records with the specified drug ingredient. Cohort start and end
+#' dates will be based on drug record start and end dates, respectively. Records
+#' that overlap or have fewer days between them than the specified gap era will
+#' be concatenated into a single cohort entry.
+#'
+#' @param cdm A cdm reference.
+#' @param name The name of the new cohort table to add to the cdm reference.
 #' @param ingredient Accepts both vectors and named lists of ingredient names.
 #' For a vector input, e.g., c("acetaminophen", "codeine"), it generates a
 #' cohort table with descendant concept codes for each ingredient, assigning
@@ -36,7 +43,8 @@
 #' the second the maximum. A value of c(2, 2) would restrict to only concepts
 #' associated with two ingredients.
 #' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era.
+#' considered in the same era. Records that have fewer days between them than
+#' this gap will be concatenated into the same cohort record.
 #' @param durationRange Deprecated.
 #' @param imputeDuration Deprecated.
 #' @param priorUseWashout Deprecated
@@ -44,21 +52,26 @@
 #' @param cohortDateRange Deprecated.
 #' @param limit Deprecated.
 #'
-#' @return The function returns the 'cdm' object with the created cohorts as
-#' references of the object.
+#' @return The function returns the cdm reference provided with the addition of
+#' the new cohort table.
 #'
 #' @export
 #'
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
+#' library(dplyr)
+#'
 #' cdm <- mockDrugUtilisation()
+#'
 #' cdm <- generateIngredientCohortSet(
 #'   cdm = cdm,
 #'   ingredient = "acetaminophen",
-#'   name = "test"
+#'   name = "acetaminophen"
 #' )
-#' cdm
+#'
+#' cdm$acetaminophen |>
+#' glimpse()
 #' }
 #'
 generateIngredientCohortSet <- function(cdm,
@@ -128,7 +141,7 @@ generateIngredientCohortSet <- function(cdm,
           cdm = cdm,
           name = value,
           doseForm = doseForm,
-          ingredientRange = ingredientRange
+          ingredientRange = ingredientRange,
         )
       }) |>
         unname() |>

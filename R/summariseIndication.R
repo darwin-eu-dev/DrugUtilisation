@@ -14,18 +14,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' This function is used to summarise the indication table over multiple
-#' cohorts.
+#' Summarise the indications of individuals in a drug cohort
 #'
-#' @param cohort Cohort with indications and strata.
-#' @param strata Stratification list.
-#' @param indicationCohortName Name of indication cohort table
-#' @param indicationCohortId target cohort Id to add indication
-#' @param indicationWindow time window of interests
-#' @param unknownIndicationTable Tables to search unknown indications
-#' @param indexDate Date of the indication
+#' @description
+#' Summarise the observed indications of patients in a drug cohort based on
+#' their presence in an indication cohort in a specified time window. If an
+#' individual is not in one of the indication cohorts, they will be considered
+#' to have an unknown indication if they are present in one of the specified
+#' OMOP CDM clinical tables. Otherwise, if they  are neither in an indication
+#' cohort or a clinical table they will be considered as having no observed
+#' indication.
 #'
-#' @return A summarise result object
+#' @param cohort A cohort table in a cdm reference.
+#' @param strata List of variables to stratify results by. These variables
+#' must be present in the cohort table.
+#' @param indicationCohortName Name of the cohort table with potential
+#' indications.
+#' @param indicationCohortId The target cohort ID to add indication. If NULL all
+#' cohorts will be considered.
+#' @param indicationWindow The time window over which to identify indications.
+#' @param unknownIndicationTable Tables in the OMOP CDM to search for unknown
+#' indications.
+#' @param indexDate A date variable in the cohort table for which indications
+#' will be found relative to.
+#'
+#' @return A summarised result
 #'
 #' @export
 #'
@@ -34,17 +47,21 @@
 #' library(DrugUtilisation)
 #' library(PatientProfiles)
 #' library(CDMConnector)
+#' library(dplyr)
 #'
 #' cdm <- mockDrugUtilisation()
+#'
 #' indications <- list("headache" = 378253, "asthma" = 317009)
 #' cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
-#' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
-#' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
-#' cdm[["drug_cohort"]] <- cdm[["drug_cohort"]] |>
-#'   addIndication(
-#'     indicationCohortName = "indication_cohorts",
-#'     indicationWindow = list(c(0,0),c(-30,0),c(-365,0))
-#'   )
+#'
+#' cdm <- generateIngredientCohortSet(cdm = cdm, name = "drug_cohort",
+#'                                    ingredient = "acetaminophen")
+#'
+#' cdm$drug_cohort |>
+#' summariseIndication(indicationCohortName = "indication_cohorts",
+#'                     unknownIndicationTable = "condition_occurrence",
+#'                     indicationWindow = list(c(-Inf, 0))) |>
+#'  glimpse()
 #'
 #' }
 #'
