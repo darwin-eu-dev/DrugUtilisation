@@ -290,13 +290,13 @@ The estimates obtained in this last part correspond to the mean (`mean`) and sta
 
 ## tableDrugUtilisation()
 
-Results from `summariseDrugUtilisation()` can be nicely visualised in a tabluar format using the function `tableDrugUtilisation()`.
+Results from `summariseDrugUtilisation()` can be nicely visualised in a tabular format using the function `tableDrugUtilisation()`.
 
 ```{r, eval = TRUE}
 tableDrugUtilisation(du_results)
 ```
 
-By default, it returns a gt table object, in which strata is splitted and both cohort name (group columns in the summarised result) and strata are in the table's header. However, this dispositions can be customised, for instance:
+By default, it returns a gt table object, in which strata is split and both cohort name (group columns in the summarised result) and strata are in the table's header. However, this dispositions can be customised, for instance:
 
 ```{r, eval = TRUE}
 tableDrugUtilisation(

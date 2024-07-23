@@ -22,9 +22,9 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this vignette we will introduce how to create a drug users cohorts. A cohort is a set of people that satisfy a certain inclusion criteria durng a certain time frame. The cohort object is defined in : `vignette("a03_cohort_table", package = "omopgenerics")`.
+In this vignette we will introduce how to create a drug users cohorts. A cohort is a set of people that satisfy a certain inclusion criteria during a certain time frame. The cohort object is defined in : `vignette("cdm_reference", package = "omopgenerics")`.
 
-The function `generateDrugUtilisationCohortSet` is used to generate cohorts of drug users based on the drug_exposure table and a conceptSet.
+The function `generateDrugUtilisationCohortSet` is used to generate cohorts of drug users based on the `drug_exposure` table and a conceptSet.
 
 These cohorts can be subsetted to the exposures of interest applying the different inclusion criteria:
 
@@ -38,7 +38,7 @@ These cohorts can be subsetted to the exposures of interest applying the differe
 
 # Creating a `cdm_reference` object
 
-The first thing that we need is a cdm reference object to our OMOP CDM instance. You can learn how to create cdm references using CDMConnector here: CDMConnector::a04_DBI_connection_examples
+The first thing that we need is a `cdm_reference` object to our OMOP CDM instance. You can learn how to create cdm references using CDMConnector here: `vignette("a04_DBI_connection_examples", package = "CDMConnector")`.
 
 The DrugUtilisation packages contains some mock data that can be useful to test the package:
 
@@ -59,7 +59,7 @@ To create a basic drug users cohort we need two things:
 
 ## Creating a conceptSet
 
-There are four possible outputs for a conceptSet:
+There are four possible forms of a conceptSet:
 
 - A named list of concept ids
 ```{r}
@@ -67,14 +67,14 @@ conceptSet <- list(acetaminophen = c(1, 2, 3))
 conceptSet
 ```
 
-- A `codelist` object, see omopgenerics "a02_concept_set"
+- A `codelist` object, see `vignette("codelists", package = "omopgenerics")`
 ```{r}
 conceptSet <- list(acetaminophen = c(1, 2, 3)) |> omopgenerics::newCodelist()
 conceptSet
 conceptSet$acetaminophen
 ```
 
-- A `codelist_with_details` object, see omopgenerics "a02_concept_set"
+- A `codelist_with_details` object, see `vignette("codelists", package = "omopgenerics")`
 ```{r}
 conceptSet <- list(acetaminophen = dplyr::tibble(
   concept_id = c(1125315, 1125360),
@@ -88,7 +88,7 @@ conceptSet
 conceptSet$acetaminophen
 ```
 
-- A `conceptSetExpression` object, see omopgenerics "a02_concept_set"
+- A `conceptSetExpression` object, see `vignette("codelists", package = "omopgenerics")`
 
 ```{r}
 conceptSet <- list(acetaminophen = dplyr::tibble(
@@ -123,7 +123,7 @@ codes
 
 ## The gapEra parameter
 
-The `gapEra` parameter is used to join exposures into episodes, let's say for example we have an individual with 4 drug exposures that we are interedted in. The first two overlap each other, then there is a gap of 29 days and two consecutive exposures:
+The `gapEra` parameter is used to join exposures into episodes, let's say for example we have an individual with 4 drug exposures that we are interested in. The first two overlap each other, then there is a gap of 29 days and two consecutive exposures:
 
 ```{r, echo = FALSE, fig.width = 7, fig.height = 4}
 dplyr::tibble(
@@ -211,7 +211,7 @@ x |>
   ggplot2::theme(legend.position = "none", axis.ticks.y = ggplot2::element_blank())
 ```
 
-The result would be the same for any value between 1 and 28 (**gapEra ∈ [1, 28]**).
+The result would be the same for any value between 1 and 28 (**gapEra $\in$ [1, 28]**).
 
 Whereas, if we would use a **gapEra = 29** all the records would be collapsed into a single episode:
 
@@ -248,7 +248,7 @@ cdm
 
 NOTE that the `name` argument is used to create the new table in the cdm object. For database backends this is the name of the table that will be created.
 
-We can compare what we see with what we would expect if we look at the individual with more records we can see how all of them are joined into a single exposure as the records overlap each other:
+We can compare what we see with what we would expect; if we look at the individual with more records we can see how all of them are joined into a single exposure as the records overlap each other:
 
 ```{r}
 cdm$drug_exposure |>
@@ -655,10 +655,10 @@ Although this is the recommended order, your study design may have a different r
 
 # Alternatives to create cohorts
 
-`generateDrugUtilisationCohortSet()` is a very specif function to create drug users cohorts. Most of the functions in this package need a cohort as input, this cohort will usually be a cohort generated using `generateDrugUtilisationCohortSet()`, but there exist some alternative to create cohorts
+`generateDrugUtilisationCohortSet()` is a very specific function to create drug users cohorts. Most of the functions in this package need a cohort as input, this cohort will usually be a cohort generated using `generateDrugUtilisationCohortSet()`, but there exists some alternative to create cohorts
 
 - You can create your own custom cohorts with `tidyverse` functions and `omopgenerics::newCohortTable()`. See omopgenerics vignette.
 
-- You can create concept based cohorts using the `OHDSI` package `CohortConstructor`. See CohortConstructor "a01_building_base_cohorts".
+- You can create concept based cohorts using the `OHDSI` package `CohortConstructor`. See `vignette("a01_building_base_cohorts", package = "CohortConstructor")`.
 
-- You can create cohorts based on ATLAS definitions using CDMConnector. "a02_cohorts"
+- You can create cohorts based on ATLAS definitions using CDMConnector. See `vignette("a02_cohorts", package = "CDMConnector.")`.

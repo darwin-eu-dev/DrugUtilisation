@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this vignette, we demonstrate how to use the `addIndications()` function to establish a binary indicator between the drug utilisation cohort and another concept-based cohort. 
+In this vignette, we demonstrate how to use the `addIndications()` function to establish a binary indicator between a drug utilisation cohort and another concept-based cohort. 
 
 The DrugUtilisation package is designed to work with data in the OMOP CDM format, so our first step is to create a reference to the data using the DBI and CDMConnector packages. The connection to a Postgres database would look like:
 
@@ -53,7 +53,7 @@ cdm <- CDMConnector::cdm_from_con(
 
 ## Create a drug utilisation cohort
 
-We will use *Acetaminophen* as our example drug to construct our drug utilisation cohort. To begin, we'll employ the CodelistGenerator package to generate a concept list associated with *Acetaminophen*.
+We will use *acetaminophen* as our example drug to construct our drug utilisation cohort. To begin, we'll employ the CodelistGenerator package to generate a concept list associated with *acetaminophen*.
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 conceptList <- CodelistGenerator::getDrugIngredientCodes(cdm, "acetaminophen")
@@ -100,49 +100,52 @@ cohortCount(cdm[["indications_cohort"]]) |>
 Then to add indication to the drug utilisation cohort we can simple use the `addIndication()` function. To do that, we only need the drug utilisation cohort and the `indicationCohortName`. However, other arguments can be specified using the additional parameters. An example is provided below. 
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
-
 cdm[["acetaminophen_users"]] |>
   addIndication(
     indicationCohortName = "indications_cohort",
     indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
     unknownIndicationTable =  c("condition_occurrence")
   )
-
 ```
 
-Use `indicationGap` to specify the indication gaps, which are defined as the gap between the event and the indication. Additionally, you can use `unknownIndicationTable` to specify the tables to look for unknown indication. 
+Use `indicationWindow` to specify the time window of interests, which are defined as the time window between the event and the indication. Additionally, you can use `unknownIndicationTable` to specify the tables to look for unknown indication. In above example we specified three different time window. So it added three columns to your cohort, one for each time window your specified.
 
 ## Summarise indications with summariseIndication()
-To create a summary table of the indications cohort, you can use the `summariseIndication()` function.
+To create a summary table of the indications cohort, you can use the `summariseIndication()` function. It contain similar arguments to  `addIndication()`, but it return a summary table of the indications.
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
-# cdm[["acetaminophen_users"]] |>
-#   addIndication(
-#     cdm = cdm, 
-#     indicationCohortName = "indications_cohort",
-#     indicationGap =  c(0, 30, 365),
-#     unknownIndicationTable =  c("condition_occurrence")
-#   ) |>
-#   summariseIndication(cdm) |>
-#   select("variable_name", "estimate_name", "estimate_value")
-
+cdm[["acetaminophen_users"]] |>
+  summariseIndication(
+    indicationCohortName = "indications_cohort",
+    indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
+    unknownIndicationTable =  c("condition_occurrence")
+  )
 ```
 
 You can also summarise the indications by using the `strata` argument in the `summariseIndication()` function. In the example below, it is summarized by `ageGroup` and `sex`.
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
+cdm[["acetaminophen_users"]] |>
+  addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
+  summariseIndication(
+    strata = list("age" = "age_group", "sex" = "sex"),
+    indicationCohortName = "indications_cohort",
+    indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
+    unknownIndicationTable =  c("condition_occurrence")
+  )
+```
 
-# cdm[["acetaminophen_users"]] |>
-#   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
-#   addIndication(
-#     cdm = cdm,
-#     indicationCohortName = "indications_cohort",
-#     indicationGap =  c(0),
-#     unknownIndicationTable =  c("condition_occurrence")
-#   ) |>
-#   summariseIndication(
-#     cdm,
-#     strata = list("age" = "age_group", "sex" = "sex")) |>
-#       select("variable_name", "estimate_name", "estimate_value","strata_name")
+Then you can also use the `tableIndication` function to create a `gt` style table from the output of `summariseIndication`.
 
+```{r, eval=TRUE, message= FALSE, warning=FALSE}
+
+cdm[["acetaminophen_users"]] |>
+  addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
+  summariseIndication(
+    strata = list("age" = "age_group", "sex" = "sex"),
+    indicationCohortName = "indications_cohort",
+    indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
+    unknownIndicationTable =  c("condition_occurrence")
+  ) |> 
+  tableIndication()
 ```

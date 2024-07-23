@@ -150,13 +150,13 @@ cdm$drug_exposure |>
   dplyr::glimpse()
 ```
 
-However, one needs to be vigilant that the customised omop table is implicitly dependent on other omop tables. 
+However, one needs to be vigilant that the customised omop table is implicitly dependent on other omop tables. For example, the `drug_exposure_start_date` of someone in the `drug_exposure` table should lie within that person's `observation_period_start_date` and `observation_period_end_date`.
 
-One could also modify other omop tables including `person`, `concept`, `concept_ancestor`, `drug_strength`, `observation_period`, `condition_occurrence`, `observation`, and `concept_relationship`.
+One could also modify other omop tables including `person`, `concept`, `concept_ancestor`, `drug_strength`, `observation_period`, `condition_occurrence`, `observation`, and `concept_relationship` in a similar fashion.
 
 ### Customise cohorts
 
-In a similar fashion, cohort tables can also be customised.
+Similarly, cohort tables can also be customised.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm <- mockDrugUtilisation(
