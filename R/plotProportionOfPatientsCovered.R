@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-#' Plot proportion Of patients covered
+#' Plot proportion of patients covered
 #'
 #' @param result Output of summariseProportionOfPatientsCovered
 #' @param ylim Limits for the Y axis
@@ -37,7 +37,7 @@ plotProportionOfPatientsCovered <- function(result,
   checkmate::assertTRUE(inherits(result, "summarised_result"))
 
   workingResult <- result |>
-    dplyr::filter(estimate_name == "ppc")
+    dplyr::filter(.data$estimate_name == "ppc")
 
   if(nrow(workingResult) == 0){
     cli::cli_warn("No PPC results found")
@@ -50,23 +50,23 @@ plotProportionOfPatientsCovered <- function(result,
     facetVars = facet,
     colourVars = colour
   ) |>
-    dplyr::mutate(ppc = as.numeric(ppc),
-                  time = as.numeric(time))
+    dplyr::mutate(ppc = as.numeric(.data$ppc),
+                  time = as.numeric(.data$time))
 
   if (is.null(colour)) {
     plot <- plot_data %>%
       ggplot2::ggplot(
         ggplot2::aes(
-          x = time,
-          y = ppc
+          x = .data$time,
+          y = .data$ppc
         )
       )
   } else {
     plot <- plot_data %>%
       ggplot2::ggplot(
         ggplot2::aes(
-          x = time,
-          y = ppc,
+          x = .data$time,
+          y = .data$ppc,
           group = .data$colour_vars,
           colour = .data$colour_vars,
           fill = .data$colour_vars
@@ -121,130 +121,6 @@ plotProportionOfPatientsCovered <- function(result,
 
 
 }
-
-
-
-plotEstimates <- function(result,
-                          x,
-                          y,
-                          ylim,
-                          ytype,
-                          ribbon,
-                          facet,
-                          colour,
-                          colour_name,
-                          options) {
-
-  rlang::check_installed("ggplot2", reason = "for plot functions")
-  rlang::check_installed("scales", reason = "for plot functions")
-
-  errorMessage <- checkmate::makeAssertCollection()
-  checkmate::assertTRUE(inherits(result, "IncidencePrevalenceResult"))
-  # checkmate::assertTRUE(all(c(x, y) %in% colnames(result)))
-  checkmate::assertList(options, add = errorMessage)
-  checkmate::reportAssertions(collection = errorMessage)
-
-
-  hideConfidenceInterval <- "hideConfidenceInterval" %in% names(options) &&
-    options[["hideConfidenceInterval"]]
-  yLower <- ifelse(hideConfidenceInterval, y, paste0(y, "_95CI_lower"))
-  yUpper <- ifelse(hideConfidenceInterval, y, paste0(y, "_95CI_upper"))
-
-
-  plot_data <- getPlotData(
-    estimates = result,
-    facetVars = facet,
-    colourVars = colour
-  ) |>
-    dplyr::mutate(!!y := as.numeric(!!rlang::sym(y)),
-                  !!yLower := as.numeric(!!rlang::sym(yLower)),
-                  !!yUpper := as.numeric(!!rlang::sym(yUpper))) %>%
-    dplyr::mutate(dplyr::across(dplyr::contains("date"), as.Date))
-
-  if (is.null(colour)) {
-    plot <- plot_data %>%
-      ggplot2::ggplot(
-        ggplot2::aes(
-          x = !!rlang::sym(x),
-          y = !!rlang::sym(y)
-        )
-      )
-  } else {
-    plot <- plot_data %>%
-      ggplot2::ggplot(
-        ggplot2::aes(
-          x = !!rlang::sym(x),
-          y = !!rlang::sym(y),
-          group = .data$colour_vars,
-          colour = .data$colour_vars,
-          fill = .data$colour_vars
-        )
-      ) +
-      ggplot2::geom_point(size = 2.5) +
-      ggplot2::labs(
-        fill = colour_name,
-        colour = colour_name
-      )
-  }
-
-
-  plot <- plot +
-    ggplot2::geom_point(size = 2.5) +
-    ggplot2::geom_errorbar(
-      ggplot2::aes(
-        ymin = !!rlang::sym(yLower),
-        ymax = !!rlang::sym(yUpper)
-      ),
-      width = 0
-    )
-
-  if (is.null(ylim)) {
-    if (ytype == "count") {
-      plot <- plot +
-        ggplot2::scale_y_continuous(labels = scales::comma)
-    }
-    if (ytype == "percentage") {
-      plot <- plot +
-        ggplot2::scale_y_continuous(
-          labels =
-            scales::percent_format(accuracy = 0.1)
-        )
-    }
-  } else {
-    plot <- addYLimits(plot = plot, ylim = ylim, ytype = ytype)
-  }
-
-  if (!is.null(facet)) {
-    facetNcols <- NULL
-    if ("facetNcols" %in% names(options)) {
-      facetNcols <- options[["facetNcols"]]
-    }
-    facetScales <- "fixed"
-    if ("facetScales" %in% names(options)) {
-      facetScales <- options[["facetScales"]]
-    }
-
-    plot <- plot +
-      ggplot2::facet_wrap(ggplot2::vars(.data$facet_var),
-                          ncol = facetNcols,
-                          scales = facetScales) +
-      ggplot2::theme_bw()
-  } else {
-    plot <- plot +
-      ggplot2::theme_minimal()
-  }
-
-  if (isTRUE(ribbon)) {
-    plot <- addRibbon(plot = plot, yLower = yLower, yUpper = yUpper)
-  }
-
-
-
-  plot <- plot
-
-  return(plot)
-}
-
 
 getPlotData <- function(estimates, facetVars, colourVars) {
   plotData <- estimates

@@ -36,9 +36,10 @@ test_that("basic plot", {
 
 
   # expected warnings - empty result or result with no ppc
-  plotProportionOfPatientsCovered(omopgenerics::emptySummarisedResult())
-  plotProportionOfPatientsCovered(ppc |>
-                                    dplyr::filter(estimate_name!="ppc"))
+  expect_warning(plotProportionOfPatientsCovered(
+    omopgenerics::emptySummarisedResult()))
+  expect_warning(plotProportionOfPatientsCovered(ppc |>
+                                    dplyr::filter(estimate_name!="ppc")))
   # expected errors
   expect_error(plotProportionOfPatientsCovered(cars))
   expect_error(plotProportionOfPatientsCovered(ppc,
