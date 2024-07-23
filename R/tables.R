@@ -191,7 +191,7 @@ tableDoseCoverage <- function(result,
                               groupColumn = NULL,
                               type = "gt",
                               formatEstimateName = c(
-                                "N (%)" = "<count_missing> (<percentage_missing> %)",
+                                "Missing, N (%)" = "<count_missing> (<percentage_missing> %)",
                                 "N" = "<count>",
                                 "Mean (SD)" = "<mean> (<sd>)",
                                 "Median (Q25 - Q75)" = "<median> (<q25> - <q75>)"

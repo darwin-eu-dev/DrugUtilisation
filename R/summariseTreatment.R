@@ -27,7 +27,6 @@
 #' intersection.
 #' @param censorDate Whether to censor overlap events at a specific date or a
 #' column date of x. If NULL, end of observation will be used.
-#' @param combination Whether to include combination treatments.
 #' @param minCellCount ```r lifecycle::badge("deprecated")```
 #'
 #' @return A summary of the drug use stratified by cohort_name and strata_name
@@ -40,88 +39,38 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #' cdm$cohort1 |>
-#'   summariseTreatmentFromCohort(
+#'   summariseTreatment(
 #'     treatmentCohortName = "cohort2",
 #'     window = list(c(0, 30), c(31, 365))
 #'   )
 #' }
 #'
-summariseTreatmentFromCohort <- function(cohort,
-                                         window,
-                                         treatmentCohortName,
-                                         treatmentCohortId = NULL,
-                                         strata = list(),
-                                         indexDate = "cohort_start_date",
-                                         censorDate = NULL,
-                                         combination = FALSE,
-                                         minCellCount = lifecycle::deprecated()){
-
-  if (lifecycle::is_present(minCellCount)) {
-    lifecycle::deprecate_warn("0.7.0", "summariseCodeUse(minCellCount)", with = "omopgenerics::suppress()")
-  }
-
-  return(summariseTreatment(cohort = cohort,
-                            strata = strata,
-                            window = window,
-                            indexDate = indexDate,
-                            censorDate = censorDate,
-                            treatmentCohortName = treatmentCohortName,
-                            treatmentCohortId   = treatmentCohortId,
-                            combination  = combination))
-
-}
-
-#'This function is used to summarise the dose table over multiple cohorts.
-#'
-#' @param cohort Cohort with drug use variables and strata.
-#' @param window Window where to summarise the treatments.
-#' @param treatmentConceptSet Concept set list to summarise.
-#' @param strata Stratification list.
-#' @param indexDate Variable in x that contains the date to compute the
-#' intersection.
-#' @param censorDate Whether to censor overlap events at a specific date or a
-#' column date of x. If NULL, end of observation will be used.
-#' @param combination Whether to include combination treatments.
-#' @param minCellCount ```r lifecycle::badge("deprecated")```
-#'
-#' @return A summary of the drug use stratified by cohort_name and strata_name
-#'
-#' @export
-#' @examples
-#' \donttest{
-#' library(DrugUtilisation)
-#'
-#' cdm <- mockDrugUtilisation()
-#' cdm$cohort1 |>
-#'   summariseTreatmentFromConceptSet(
-#'     treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
-#'     window = list(c(0, Inf))
-#'   )
-#' }
-#'
-summariseTreatmentFromConceptSet <- function(cohort,
-                                             window,
-                                             treatmentConceptSet,
-                                             strata = list(),
-                                             indexDate = "cohort_start_date",
-                                             censorDate = NULL,
-                                             combination = FALSE,
-                                             minCellCount = lifecycle::deprecated()){
-  if (lifecycle::is_present(minCellCount)) {
-    lifecycle::deprecate_warn("0.7.0", "summariseCodeUse(minCellCount)", with = "omopgenerics::suppress()")
-  }
-
-  return(summariseTreatment(cohort = cohort,
-                            strata = strata,
-                            window = window,
-                            indexDate = indexDate,
-                            censorDate = censorDate,
-                            treatmentConceptSet = treatmentConceptSet,
-                            combination  = combination))
-}
-
-
 summariseTreatment <- function(cohort,
+                               window,
+                               treatmentCohortName,
+                               treatmentCohortId = NULL,
+                               strata = list(),
+                               indexDate = "cohort_start_date",
+                               censorDate = NULL,
+                               minCellCount = lifecycle::deprecated()){
+
+  if (lifecycle::is_present(minCellCount)) {
+    lifecycle::deprecate_warn("0.7.0", "summariseCodeUse(minCellCount)", with = "omopgenerics::suppress()")
+  }
+
+  return(summariseTreatmentInternal(cohort = cohort,
+                                    strata = strata,
+                                    window = window,
+                                    indexDate = indexDate,
+                                    censorDate = censorDate,
+                                    treatmentCohortName = treatmentCohortName,
+                                    treatmentCohortId   = treatmentCohortId,
+                                    combination  = FALSE))
+
+}
+
+
+summariseTreatmentInternal <- function(cohort,
                                strata = list(),
                                window,
                                indexDate,
@@ -141,11 +90,6 @@ summariseTreatment <- function(cohort,
   checkmate::checkCharacter(treatmentCohortName, null.ok = TRUE)
   checkmate::checkCharacter(censorDate, null.ok = TRUE)
   checkmate::checkCharacter(indexDate)
-
-  # combination
-  if (combination) {
-    cli::cli_warn("Combination is not implemented yet")
-  }
 
   # correct window names
   if (!is.null(names(window))) {
@@ -187,17 +131,17 @@ summariseTreatment <- function(cohort,
   }
 
   # add concept intersect
-  if (!is.null(treatmentConceptSet)) {
-    cohort <- cohort |>
-      PatientProfiles::addConceptIntersectFlag(
-        conceptSet = treatmentConceptSet,
-        indexDate = indexDate,
-        censorDate = censorDate,
-        window = window,
-        nameStyle = "{window_name}_{concept_name}"
-      )
-    variableLevel <- c(names(treatmentConceptSet), "untreated")
-  }
+  # if (!is.null(treatmentConceptSet)) {
+  #   cohort <- cohort |>
+  #     PatientProfiles::addConceptIntersectFlag(
+  #       conceptSet = treatmentConceptSet,
+  #       indexDate = indexDate,
+  #       censorDate = censorDate,
+  #       window = window,
+  #       nameStyle = "{window_name}_{concept_name}"
+  #     )
+  #   variableLevel <- c(names(treatmentConceptSet), "untreated")
+  # }
 
   # create untreated
   for (win in names(window)) {
