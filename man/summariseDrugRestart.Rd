@@ -36,7 +36,7 @@ end of observation.}
 discontinuation episode or all of them.}
 }
 \value{
-A summarised_result object with the percentages of restart, swicth
+A summarised_result object with the percentages of restart, switch
 and not exposed per window.
 }
 \description{

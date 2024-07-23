@@ -123,9 +123,9 @@ This argument allows to stop considering restart and switch events after a certa
 
 - **strata**
 
-This argumnet must be a list pointing to columns or combinations of columns in the cohort to use as strata. It will produce stratified estimates as well as for the overall cohort.
+This argument must be a list pointing to columns or combinations of columns in the cohort to use as strata. It will produce stratified estimates as well as for the overall cohort.
 
-For instance, we reporduce the last calculation but this time straifying by sex. We first use PatientProfiles to add a column indicating the sex, which later we use in strata.
+For instance, we reproduce the last calculation but this time straifying by sex. We first use PatientProfiles to add a column indicating the sex, which later we use in strata.
 
 ```{r}
 results <- cdm$cohort1 |>

@@ -22,7 +22,7 @@
 #' summariseIndication().
 #' @param header A vector containing which elements should go into the header
 #' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`.
-#' @param splitStrata If TRUE strata columns will be splitted.
+#' @param splitStrata If TRUE strata columns will be split.
 #' @param cohortName If TRUE cohort names will be displayed.
 #' @param cdmName If TRUE database names will be displayed.
 #' @param groupColumn Column to use as group labels.
@@ -155,7 +155,7 @@ tableIndication <- function(result,
 #' @param header A vector containing which elements should go into the header
 #' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`, and
 #' `estimate`.
-#' @param splitStrata If TRUE strata columns will be splitted.
+#' @param splitStrata If TRUE strata columns will be split.
 #' @param ingridientName If TRUE cohort names will be displayed.
 #' @param cdmName If TRUE database names will be displayed.
 #' @param groupColumn Column to use as group labels.
@@ -284,7 +284,7 @@ tableDoseCoverage <- function(result,
 #' summariseDrugUtilisation().
 #' @param header A vector containing which elements should go into the header
 #' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`, `estimate`.
-#' @param splitStrata If TRUE strata columns will be splitted.
+#' @param splitStrata If TRUE strata columns will be split.
 #' @param cohortName If TRUE cohort names will be displayed.
 #' @param cdmName If TRUE database names will be displayed.
 #' @param conceptSet If TRUE concept sets name will be displayed.
@@ -491,7 +491,7 @@ tableDrugUtilisation <- function(result,
 #' @param header A vector containing which elements should go into the header
 #' in order. Allowed values: `cdm_name`, `cohort_name`, `strata`, `variable`,
 #' `estimate` and `window_name`.
-#' @param splitStrata If TRUE strata columns will be splitted.
+#' @param splitStrata If TRUE strata columns will be split.
 #' @param cdmName If TRUE database names will be displayed.
 #' @param groupColumn Column to use as group labels. Allowed values: `cdm_name`,
 #' `cohort_name`, `strata`, `variable`, `estimate` and `window_name`.
@@ -608,7 +608,7 @@ tableTreatment <- function(result,
 #' @param header A vector containing which elements should go into the header
 #' in order. Allowed values: `cdm_name`, `cohort_name`, `strata`, `variable`,
 #' `estimate`.
-#' @param splitStrata If TRUE strata columns will be splitted.
+#' @param splitStrata If TRUE strata columns will be split.
 #' @param cohortName If TRUE cohort names will be displayed.
 #' @param cdmName If TRUE database names will be displayed.
 #' @param groupColumn Column to use as group labels. Allowed values: `cdm_name`,

@@ -22,7 +22,7 @@
 #' @param indicationWindow time window of interests
 #' @param unknownIndicationTable Tables to search unknown indications
 #' @param indexDate Date of the indication
-#' @param name name of permenant table
+#' @param name name of permanant table
 #'
 #' @return Same cohort adding the indications
 #'

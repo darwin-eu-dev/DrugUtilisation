@@ -22,7 +22,7 @@ summariseIndication().}
 \item{header}{A vector containing which elements should go into the header
 in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{variable}.}
 
-\item{splitStrata}{If TRUE strata columns will be splitted.}
+\item{splitStrata}{If TRUE strata columns will be split.}
 
 \item{cohortName}{If TRUE cohort names will be displayed.}
 

@@ -27,7 +27,7 @@ addIndication(
 
 \item{indexDate}{Date of the indication}
 
-\item{name}{name of permenant table}
+\item{name}{name of permanant table}
 }
 \value{
 Same cohort adding the indications

@@ -24,7 +24,7 @@ summariseDrugRestart().}
 in order. Allowed values: \code{cdm_name}, \code{cohort_name}, \code{strata}, \code{variable},
 \code{estimate}.}
 
-\item{splitStrata}{If TRUE strata columns will be splitted.}
+\item{splitStrata}{If TRUE strata columns will be split.}
 
 \item{cohortName}{If TRUE cohort names will be displayed.}
 

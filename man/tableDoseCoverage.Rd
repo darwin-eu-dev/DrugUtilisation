@@ -26,7 +26,7 @@ summariseDoseCoverage().}
 in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{variable}, and
 \code{estimate}.}
 
-\item{splitStrata}{If TRUE strata columns will be splitted.}
+\item{splitStrata}{If TRUE strata columns will be split.}
 
 \item{ingridientName}{If TRUE cohort names will be displayed.}
 
