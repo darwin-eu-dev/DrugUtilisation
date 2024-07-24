@@ -2,7 +2,7 @@
 % Please edit documentation in R/generateIngredientCohortSet.R
 \name{generateIngredientCohortSet}
 \alias{generateIngredientCohortSet}
-\title{Generates a cohort of the drug use of ingredient name(s) of interest.}
+\title{Generate a set of drug cohorts based on drug ingredients}
 \usage{
 generateIngredientCohortSet(
   cdm,
@@ -20,9 +20,9 @@ generateIngredientCohortSet(
 )
 }
 \arguments{
-\item{cdm}{A cdm_reference object.}
+\item{cdm}{A cdm reference.}
 
-\item{name}{Name of the GeneratedCohortSet}
+\item{name}{The name of the new cohort table to add to the cdm reference.}
 
 \item{ingredient}{Accepts both vectors and named lists of ingredient names.
 For a vector input, e.g., c("acetaminophen", "codeine"), it generates a
@@ -45,7 +45,8 @@ the second the maximum. A value of c(2, 2) would restrict to only concepts
 associated with two ingredients.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
+considered in the same era. Records that have fewer days between them than
+this gap will be concatenated into the same cohort record.}
 
 \item{durationRange}{Deprecated.}
 
@@ -60,22 +61,31 @@ considered in the same era.}
 \item{limit}{Deprecated.}
 }
 \value{
-The function returns the 'cdm' object with the created cohorts as
-references of the object.
+The function returns the cdm reference provided with the addition of
+the new cohort table.
 }
 \description{
-Generates a cohort of the drug use of ingredient name(s) of interest.
+Adds a new cohort table to the cdm reference with individuals who have drug
+exposure records with the specified drug ingredient. Cohort start and end
+dates will be based on drug record start and end dates, respectively. Records
+that overlap or have fewer days between them than the specified gap era will
+be concatenated into a single cohort entry.
 }
 \examples{
 \donttest{
 library(DrugUtilisation)
+library(dplyr)
+
 cdm <- mockDrugUtilisation()
+
 cdm <- generateIngredientCohortSet(
   cdm = cdm,
   ingredient = "acetaminophen",
-  name = "test"
+  name = "acetaminophen"
 )
-cdm
+
+cdm$acetaminophen |>
+glimpse()
 }
 
 }

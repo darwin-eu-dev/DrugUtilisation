@@ -2,7 +2,7 @@
 % Please edit documentation in R/generateDrugUtilisationCohortSet.R
 \name{generateDrugUtilisationCohortSet}
 \alias{generateDrugUtilisationCohortSet}
-\title{Generates a cohort of the drug use of a certain list of concepts.}
+\title{Generate a set of drug cohorts based on given concepts}
 \usage{
 generateDrugUtilisationCohortSet(
   cdm,
@@ -18,14 +18,16 @@ generateDrugUtilisationCohortSet(
 )
 }
 \arguments{
-\item{cdm}{A cdm_reference object.}
+\item{cdm}{A cdm reference.}
 
-\item{name}{Name of the GeneratedCohortSet}
+\item{name}{The name of the new cohort table to add to the cdm reference.}
 
-\item{conceptSet}{Named list of concept sets.}
+\item{conceptSet}{The concepts used to create the cohort, provide as a
+codelist or concept set expression.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
+considered in the same era. Records that have fewer days between them than
+this gap will be concatenated into the same cohort record.}
 
 \item{durationRange}{Deprecated.}
 
@@ -40,16 +42,21 @@ considered in the same era.}
 \item{limit}{Deprecated.}
 }
 \value{
-The function returns the 'cdm' object with the created tables as
-references of the object.
+The function returns the cdm reference provided with the addition of
+the new cohort table.
 }
 \description{
-Generates a cohort of the drug use of a certain list of concepts.
+Adds a new cohort table to the cdm reference with individuals who have drug
+exposure records with the specified concepts. Cohort start and end dates will
+be based on drug record start and end dates, respectively. Records that
+overlap or have fewer days between them than the specified gap era will be
+concatenated into a single cohort entry.
 }
 \examples{
 \donttest{
 library(CDMConnector)
 library(DrugUtilisation)
+library(dplyr)
 
 cdm <- mockDrugUtilisation()
 
@@ -61,13 +68,8 @@ cdm <- generateDrugUtilisationCohortSet(
   conceptSet = druglist
 )
 
-cdm[["drug_cohorts"]]
-
-settings(cdm[["drug_cohorts"]])
-
-cohortCount(cdm[["drug_cohorts"]])
-
-attrition(cdm[["drug_cohorts"]])
+cdm$drug_cohorts |>
+glimpse()
 }
 
 }
