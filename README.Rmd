@@ -20,207 +20,93 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/darwin-eu/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/DrugUtilisation/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://lifecycle.r-lib.org/articles/stages.html)
 
-
-
-* **addDailyDose** function works for the following patterns in the drug_strength table:
-
-```{r, echo = FALSE}
-DrugUtilisation::patternsWithFormula |>
-  dplyr::mutate("formula" = paste0(.data$formula_name, ": ", .data$formula)) |>
-  dplyr::select(-"formula_name", -"pattern_id") |>
-  visOmopResults::gtTable(groupColumn = "formula")
-```
-
 ## Package overview
 
-DrugUtilisation contains functions to instantiate and characterize the cohorts used in a Drug Utilisation Study in the OMOP common data model. Main functionalities are:
+DrugUtilisation contains functions to instantiate and characterise drug cohorts in data mapped to the OMOP Common Data Model. The package supports:
 
-- Create DrugUtilisation cohorts
+- Creation of drug cohorts
 
-- Add indications to this cohort
+- Identification of indications for those in a drug cohort
 
-- Add the dosage of a certain ingredient (subseted for a list of drugs)
+- Summarising drug utilisation among a cohort in terms of duration, quantity, and dose 
 
-- Calculate the daily dose
+- Description of treatment adherence based on proportion of patients covered
 
-- Create Concept based cohorts 
+- Detailing treatment restart and switching after an initial treatment discontinuation
 
-- Read concepts from json files
 
-- Summarise the drug use in a certain cohort
+## Example usage
 
-- Summarise the indications in a certain cohort
+First, we need to create a cdm reference for the data we´ll be using. Here we generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package [connection examples](https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html).
 
-- Summarise the patients characteristics in a certain cohort
-
-- Summarise the patients large scale characterics in a certain cohort
-
-## Example
-
-First, we need to create a cdm reference for the data we´ll be using. Here we´ll generate an example with simulated data, but to see how you would set this up for your database please consult the CDMConnector package [connection examples](https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html).
-
-The package also provides a functionality to generate a mockDrugUtilisation cdm reference:
-
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(DrugUtilisation)
+library(CDMConnector)
+library(omopgenerics)
+library(dplyr)
+
 cdm <- mockDrugUtilisation(numberIndividual = 100)
 ```
 
-### Create a cohort of drug use
+### Create a cohort of acetaminophen users
 
-To create a cohort we will need a conceptList, this can be read from json files:
-
-```{r, eval = FALSE}
-conceptList <- readConceptList(here::here("Concepts"), cdm)
-```
-
-Or we can build our own list using other packages (e.g. CodelistGenerator)
-
-```{r}
-conceptList <- getDrugIngredientCodes(cdm, "acetaminophen")
-conceptList
-```
-
-To generate the cohort of drug use we will use `generateDrugUtilisationCohortSet`:
+To generate the cohort of acetaminophen users we will use `generateIngredientCohortSet`, concatenating any records with fewer than 7 days between them. We then filter our cohort records to only include the first record per person and require that they have at least 30 days observation in the database prior to their drug start date. 
 
 ```{r, message=FALSE}
-cdm <- generateDrugUtilisationCohortSet(
+cdm <- generateIngredientCohortSet(
   cdm = cdm,
   name = "dus_cohort",
-  conceptSet = conceptList,
-  limit = "first",
-  priorObservation = 365,
-  gapEra = 30,
-  priorUseWashout = 0,
-  imputeDuration = "none", 
-  durationRange = c(0, Inf)
+  ingredient = "acetaminophen", 
+  gapEra = 7
 )
+cdm$dus_cohort |> 
+  requireIsFirstDrugEntry() |> 
+  requireObservationBeforeDrug(priorObservation = 30)
 ```
 
-#### Cohort attributes
+### Indications of acetaminophen users
 
-The generated cohort will have the `GeneratedCohortSet` as seen in CDMConnector
-
-```{r}
-class(cdm[["dus_cohort"]])
-```
-
-Cohort set:
+Now we´ve created our cohort we could first summarise the indications of the cohort. These indications will always be cohorts, so we first need to create them. Here we create two indication cohorts, one for headache and the other for influenza.
 
 ```{r}
-library(CDMConnector)
-library(dplyr)
-settings(cdm[["dus_cohort"]]) %>% glimpse()
-```
-
-Cohort count:
-
-```{r}
-cohortCount(cdm[["dus_cohort"]])
-```
-
-Cohort attrition:
-
-```{r}
-attrition(cdm[["dus_cohort"]]) %>% glimpse()
-```
-
-### Indication
-
-Indications will always be cohorts. An option that the package has is to create concept based cohorts using `CDMConnector::generateConceptCohortSet()`.
-
-```{r}
-library(CDMConnector)
 indications <- list(headache = 378253, influenza = 4266367)
-cdm <- generateConceptCohortSet(cdm, indications, "indications_cohort")
-cohortCount(cdm[["indications_cohort"]])
+cdm <- generateConceptCohortSet(cdm, 
+                                conceptSet = indications, 
+                                name = "indications_cohort")
 ```
-
-Then we can add the indication using the function `addIndication`. That will add a new column for each indication gap and indication. 
-
-```{r}
-x <- cdm[["dus_cohort"]] %>%
-  addIndication(
-    indicationCohortName = "indications_cohort", indicationGap = c(0, 30, 365), 
-    unknownIndicationTable = c("condition_occurrence")
-  )
-glimpse(x)
-```
-
-We can combine the indications in a single column using the `indicationToStrata()` function. This column can be used as stratification of the results if needed:
-
-```{r}
-x <- x %>% indicationToStrata(keep = TRUE)
-glimpse(x)
-```
-
-```{r}
-table(x %>% pull("indication_gap_365"))
-```
-
-### Summarise the indication
 
 We can summarise the indication results using the `summariseIndication` function:
 
 ```{r}
-summariseIndication(x, cdm)
+indication_summary <- cdm$dus_cohort |> 
+  summariseIndication(indicationCohortName = "indications_cohort", 
+                      unknownIndicationTable = "condition_occurrence",
+                      indicationWindow = list(c(-30, 0)))
+indication_summary |> glimpse()
 ```
+
+### Drug use
+We can quickly obtain a summary of drug utilisation among our cohort, with various measures calculated for a provided ingredient concept (in this case the concept for acetaminophen).
 
 ```{r}
-summariseIndication(x, cdm) %>% glimpse()
+drug_utilisation_summary <- cdm$dus_cohort |> 
+  summariseDrugUtilisation(ingredientConceptId = 1125315)
+drug_utilisation_summary |> glimpse()
+table(drug_utilisation_summary$variable_name)
 ```
 
-### Add strata
-
-All summarise functions have the option to add strata. Strata will always point to preexisting columns. Here we can see an example where we create a `age_group` and `sex` columns using PatientProfiles and then we use it as strata
-
+### Combine and share results
+Now we can combine our results and suppress any counts less than 5 so that they are ready to be shared.
 ```{r}
-x <- x %>%
-  PatientProfiles::addAge(ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150))) %>%
-  PatientProfiles::addSex()
-summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex")))
+results <- bind(indication_summary,
+                   drug_utilisation_summary) |> 
+  suppress(minCellCount = 5)
+results |> glimpse()
 ```
 
-```{r}
-summariseIndication(x, cdm, strata = list("age_group", "sex", c("age_group", "sex"))) %>% glimpse()
-```
 
-### Daily dose
+## Further analyses
+There are many more drug-related analyses that we could have done with this acetaminophen cohort using the DrugUtilisation package. Please see the package website for more details.
 
-We can compute daily dose for a certain ingredient from a subset of drug_exposure or the whole drug exposure (can be very computationally expensive).
 
-```{r}
-cdm[["drug_exposure"]] %>%
- addDailyDose(ingredientConceptId = 1125315) %>%
- glimpse()
-```
 
-#### Coverage
-
-Currently you can evaluate the coverage of daily dose for a conceptList or overall using `summariseDoseCoverage`. You should restrict to a certain ingredient.
-
-```{r}
-summariseDoseCoverage(cdm = cdm, ingredient = 1125315) 
-```
-
-### DrugUse
-
-You can add columns related to the drug use using `addDrugUse`. You always have to provide a reference ingredient.
-
-```{r}
-x <- x %>%
- addDrugUse(
-   ingredientConceptId = 1125315,
-   dose = TRUE,
-   quantity = TRUE,
-   duration = TRUE
- )
-```
-
-### Summarise the drug use
-
-You can summarise the drug use using `summariseDrugUse` function
-
-```{r}
-summariseDrugUse(x)
-```
