@@ -1,10 +1,10 @@
 ---
-title: "Obtain treatment summary to a Drug Utilisation cohort"
+title: "Obtain treatment summary of a cohort"
 author: "Martí Català"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Obtain treatment summary to a Drug Utilisation cohort}
+  %\VignetteIndexEntry{Obtain treatment summary of a cohort}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -72,9 +72,9 @@ And `cohort2` is a cohort with three different treatments:
 settings(cdm$cohort2)
 ```
 
-# Summarise treatment with summariseTreatmentFromCohort() function
+# Summarise treatment 
 
-`summariseTreatmentFromCohort()` function creates a standarised tibble
+`summariseTreatment()` function creates a standarised tibble
 summarising the treatment information (already specified in an existing cohort) over multiple cohorts. There are three mandatory arguments:
 
 1.  `cohort`: cohort from the cdm object.
@@ -82,11 +82,11 @@ summarising the treatment information (already specified in an existing cohort) 
 3.  `window`: list of the windows where to summarise the treatments.
 
 See an example of its usage below, where we use
-`summariseTreatmentFromCohort()` to summarise treatments defined in
+`summariseTreatment()` to summarise treatments defined in
 `cohort2` in the cohorts defined in `cohort1`.
 
 ```{r, message = FALSE, warning=FALSE}
-summariseTreatmentFromCohort(cohort = cdm$cohort1,
+summariseTreatment(cohort = cdm$cohort1,
                    treatmentCohortName = c("cohort2"),
                    window = list(c(0,0), c(1,30)))
 ```
@@ -99,37 +99,53 @@ strata group by using the `strata` parameter.
 ```{r, message = FALSE, warning=FALSE}
 cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
   addSex() %>%
-  addAge(ageGroup = list("<40" = c(0, 39), ">40" = c(40, 150)))
+  addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
 
-summariseTreatmentFromCohort(cohort = cdm$cohort1,
-                   treatmentCohortName = c("cohort2"),
-                   window = list(c(0,0)),
-                   treatmentCohortId = 1,
-                   strata = list("sex" = "sex", "age" = "age_group")
-                   )
+results <- summariseTreatment(
+  cohort = cdm$cohort1,
+  treatmentCohortName = c("cohort2"),
+  window = list(c(0,0)),
+  treatmentCohortId = 1,
+  strata = list("sex", "age_group")
+)
 ```
 
 Notice that we have also used the `treatmentCohortId` parameter to
 specify that we only want to explore `albuterol` across the cohorts defined in
 `cohort1`.
 
-## combination parameter
 
-Soon, you will be able to include combinations of different treatments
-by using the `combination` argument. Unfortunately, it has not been
-implemented yet, stay tuned for the next release! 😄
+# Visualise results
 
+The package includes `table` and `plot` functions to help visualise the results from `summariseTreatment()`.
 
-# Summarise treatment with `summariseTreatmentFromConceptSet()` function
+## Tables
 
-`summariseTreatmentFromCohort()` can be used when we have already
-created our treatment cohort. However, if that is not the case, we can
-use `summariseTreatmentFromConceptSet()` to avoid creating a new cohort
-before using this function. The following arguments have to be provided:
+The `tableTreatment()` function generates a table in gt, flextable, or tibble format from the summarised_result produced by `summariseTreatment()`. This function has customisation options to format the table according to user preferences.
 
-1.  `cohort`: cohort from the cdm object.
-2.  `treatmentConceptSet`: list with the treatments' concepts sets.
-3.  `window`: list of the windows where to summarise the treatments.
+```{r}
+tableTreatment(
+  result = results,
+  header = c("strata"),
+  splitStrata = FALSE,
+  cdmName = FALSE,
+  groupColumn = c("cohort_name"),
+  type = "gt",
+  formatEstimateName = c("N (%)" = "<count> (<percentage> %)"),
+  .options = list()
+)
+```
 
-Unfortunately, is not implemented yet. Stay in the loop for the next
-release!😉
+## Plots
+
+The `plotTreatment()` function creates a bar plot showing the percentage of treated and untreated in each cohort, stratum, and time-window. This function offers customization options for colors, faceting, and handling of strata.
+
+```{r, fig.height=8, fig.width=8}
+plotTreatment(
+  result = results,
+  facetX = c("cohort_name", "window_name"),
+  facetY = c("strata"),
+  splitStrata = TRUE,
+  colour = "treatment"
+)
+```

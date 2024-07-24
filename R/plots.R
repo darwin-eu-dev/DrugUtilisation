@@ -29,28 +29,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' library(duckdb)
-#' library(CDMConnector)
-#' library(PatientProfiles)
 #' library(DrugUtilisation)
 #'
-#' con <- dbConnect(duckdb(), eunomiaDir("GiBleed"))
-#' cdm <- cdmFromCon(con = con, cdmSchema = "main", writeSchema = "main")
-#'
-#' codes <- getDrugIngredientCodes(cdm = cdm, name = "acetaminophen")
-#' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm = cdm, conceptSet = codes, name = "study_cohort")
-#'
-#' alternative <- getDrugIngredientCodes(cdm = cdm, name = c(
-#'   "acetaminophen", "dextromethorphan", "doxylamine", "hydrocodone"))
-#'
-#' result <- cdm$study_cohort |>
-#'   addSex() |>
-#'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))) |>
-#'   summariseTreatmentFromConceptSet(
-#'     treatmentConceptSet = alternative,
-#'     window = list(c(0, 199), c(200, 399), c(400, 599), c(600, 799)),
-#'     strata = list(c("age_group", "sex"))
+#' cdm <- mockDrugUtilisation()
+#' result <- cdm$cohort1 |>
+#'   summariseTreatment(
+#'     treatmentCohortName = "cohort2",
+#'     window = list(c(0, 30), c(31, 365))
 #'   )
 #'
 #' plotTreatment(result)
