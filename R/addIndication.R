@@ -107,6 +107,7 @@ addIndication <- function(x,
 
   # add the indication columns to the original table
   result <- x |>
+    dplyr::select(c("subject_id", indexDate)) |>
     dplyr::left_join(
       ind |> dplyr::rename(!!indexDate := "cohort_start_date"),
       by = c("subject_id", indexDate)
@@ -119,7 +120,19 @@ addIndication <- function(x,
     )
 
 
-  result <- result |> dplyr::compute(name = comp$name, temporary = comp$temporary)
+  newCols <- colnames(result)
+  newCols <- newCols[!newCols %in% c("subject_id", indexDate)]
+  toDrop <- intersect(newCols, colnames(x))
+  if(length(toDrop) > 0){
+    cli::cli_warn("Overwriting existing variables: {toDrop}")
+    x <- x |>
+      dplyr::select(!toDrop)
+  }
+
+  result <- x |>
+    dplyr::left_join(result,
+                     by = c("subject_id", indexDate)) |>
+    dplyr::compute(name = comp$name, temporary = comp$temporary)
 
   omopgenerics::dropTable(
     cdm = cdm, name = dplyr::starts_with(tablePrefix)
