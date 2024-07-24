@@ -189,7 +189,7 @@ x |>
   ggplot2::theme(legend.position = "none", axis.ticks.y = ggplot2::element_blank())
 ```
 
-If, instead we would use a **gapEra = 1**, we would have 2 resultant episodes, the first two that overlap would be joined in a single episode (as before), now the two consecutives exposures would be joined in a single episode:
+If, instead we would use a **gapEra = 1**, we would have 2 resultant episodes, the first two that overlap would be joined in a single episode (as before), now the two consecutive exposures would be joined in a single episode:
 
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x <- dplyr::tibble(
@@ -273,7 +273,7 @@ cdm$drug_exposure |>
   dplyr::filter(drug_concept_id %in% !!codes$acetaminophen & person_id == 50)
 ```
 
-In this case we have 3 exposures separated by 3 days, so if we use the 30 days gap both exposures are joined into a single episode, wheras if we would use a gapEra smaller than 3 we would consider them as different episodes.
+In this case we have 3 exposures separated by 3 days, so if we use the 30 days gap both exposures are joined into a single episode, whereas if we would use a gapEra smaller than 3 we would consider them as different episodes.
 
 ```{r}
 cdm$acetaminophen_cohort |>
@@ -292,7 +292,7 @@ cohortCodelist(cdm$acetaminophen_cohort, cohortId = 1)
 
 Once we have created our base cohort using a conceptSet and a gapEra we can apply different restrictions:
 
-- require a prior un exposed time: `requirePriorDrugWashout()`
+- require a prior unexposed time: `requirePriorDrugWashout()`
 - require that it is the first entry: `requireIsFirstDrugEntry()`
 - require a prior observation in the cdm: `requireObservationBeforeDrug()`
 - require that date are within a certain interval: `requireDrugInDateRange()`

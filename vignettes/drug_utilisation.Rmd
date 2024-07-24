@@ -140,7 +140,7 @@ In what follows we will explore each of its functionalities, and demonstrate how
 
 ### - exposedTime 
 
-This argument set to TRUE will add a column specifying the time in days a person has been exposed to the drug of interest. Take note that `gapEra` and `restrictIncident` will be taken into accoun for this calculation: 
+This argument set to TRUE will add a column specifying the time in days a person has been exposed to the drug of interest. Take note that `gapEra` and `restrictIncident` will be taken into account for this calculation: 
 
 1) **Drug eras:** exposed time will be based on drug eras according to `gapEra`.
 

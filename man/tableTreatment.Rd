@@ -23,7 +23,7 @@ summariseTreatmentFromCohort() or summariseTreatmentFromConceptSet().}
 in order. Allowed values: \code{cdm_name}, \code{cohort_name}, \code{strata}, \code{variable},
 \code{estimate} and \code{window_name}.}
 
-\item{splitStrata}{If TRUE strata columns will be splitted.}
+\item{splitStrata}{If TRUE strata columns will be split.}
 
 \item{cdmName}{If TRUE database names will be displayed.}
 

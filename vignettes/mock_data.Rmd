@@ -89,7 +89,7 @@ cdm$cohort1 |>
 
 The users can then create mock data in two ways, one is to set the `numberIndividual` parameter and the other is to cusutomise the tables.
 
-## Creat mock data using numberIndividual parameter
+## Create mock data using numberIndividual parameter
 
 An example of use is as follows:
 
