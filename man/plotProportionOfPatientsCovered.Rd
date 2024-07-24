@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotProportionOfPatientsCovered.R
 \name{plotProportionOfPatientsCovered}
 \alias{plotProportionOfPatientsCovered}
-\title{Plot proportion Of patients covered}
+\title{Plot proportion of patients covered}
 \usage{
 plotProportionOfPatientsCovered(
   result,
@@ -27,5 +27,5 @@ plotProportionOfPatientsCovered(
 Plot of proportion Of patients covered over time
 }
 \description{
-Plot proportion Of patients covered
+Plot proportion of patients covered
 }

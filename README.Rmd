@@ -90,7 +90,8 @@ We can quickly obtain a summary of drug utilisation among our cohort, with vario
 
 ```{r}
 drug_utilisation_summary <- cdm$dus_cohort |> 
-  summariseDrugUtilisation(ingredientConceptId = 1125315)
+  summariseDrugUtilisation(ingredientConceptId = 1125315, 
+                           gapEra = 7)
 drug_utilisation_summary |> glimpse()
 table(drug_utilisation_summary$variable_name)
 ```

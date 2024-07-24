@@ -6,7 +6,6 @@ articles:
 - title: Package functionalities
   navbar: Package functionalities
   contents:
-  - mock_data
   - create_cohorts
   - indication
   - daily_dose_calculation
@@ -16,6 +15,7 @@ articles:
   - drug_restart
   - TBR_add_drug_use
   - TBR_route_pattern_dose
+  - mock_data
 
 reference:
 - subtitle: Generate a set of drug cohorts
@@ -29,7 +29,7 @@ reference:
 - contents:
   - matches("require*")
 - subtitle: Identify and summarise indications for patients in drug cohorts
-  desc: Indications idendtified based on their presence in indication cohorts or OMOP CDM clinical tabes.
+  desc: Indications identified based on their presence in indication cohorts or OMOP CDM clinical tabes.
 - contents:
   - matches("*Indication")
 - subtitle: Add daily dose

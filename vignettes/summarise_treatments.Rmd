@@ -1,6 +1,5 @@
 ---
 title: "Obtain treatment summary of a cohort"
-author: "Martí Català"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >

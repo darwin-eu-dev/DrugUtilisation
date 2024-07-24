@@ -1,7 +1,5 @@
 ---
 title: "Add drug related information to a Drug Utilisation cohort"
-author: "Martí Català, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Add drug related information to a Drug Utilisation cohort}

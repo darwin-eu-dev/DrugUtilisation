@@ -2,7 +2,7 @@
 % Please edit documentation in R/addIndication.R
 \name{addIndication}
 \alias{addIndication}
-\title{Add a variable indicating individuals´ indication}
+\title{Add a variable indicating individuals indications}
 \usage{
 addIndication(
   x,

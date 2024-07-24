@@ -14,12 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Format a summarised_indication object into a visual table.
+#' Create a table showing indication results
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A summarised_result object with results from
-#' summariseIndication().
+#' @param result A summarised_result created by summariseIndication().
 #' @param header A vector containing which elements should go into the header
 #' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`.
 #' @param splitStrata If TRUE strata columns will be split.
@@ -39,14 +38,12 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' # result <- cdm$cohort1 |>
-#' #  addIndication(
-#' #    indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
-#' #    unknownIndicationTable = "condition_occurrence"
-#' #  ) |>
-#' #  summariseIndication()
+#' result <- cdm$cohort1 |>
+#'  summariseIndication(indicationCohortName = "cohort2",
+#'                      indicationWindow = list(c(-30, 0)),
+#'                      unknownIndicationTable = "condition_occurrence")
 #'
-#' # tableIndication(result)
+#' tableIndication(result, type = "tibble")
 #'
 #' }
 #'
