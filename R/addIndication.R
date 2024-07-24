@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Add a variable indicating individuals´ indication
+#' Add a variable indicating individuals indications
 #'
 #' @description
 #' Add a variable to a drug cohort indicating their presence in an indication

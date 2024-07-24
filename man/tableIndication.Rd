@@ -2,7 +2,7 @@
 % Please edit documentation in R/tables.R
 \name{tableIndication}
 \alias{tableIndication}
-\title{Format a summarised_indication object into a visual table.}
+\title{Create a table showing indication results}
 \usage{
 tableIndication(
   result,
@@ -16,8 +16,7 @@ tableIndication(
 )
 }
 \arguments{
-\item{result}{A summarised_result object with results from
-summariseIndication().}
+\item{result}{A summarised_result created by summariseIndication().}
 
 \item{header}{A vector containing which elements should go into the header
 in order. Allowed are: \code{cdm_name}, \code{group}, \code{strata}, \code{variable}.}
@@ -50,14 +49,12 @@ library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 
-# result <- cdm$cohort1 |>
-#  addIndication(
-#    indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
-#    unknownIndicationTable = "condition_occurrence"
-#  ) |>
-#  summariseIndication()
+result <- cdm$cohort1 |>
+ summariseIndication(indicationCohortName = "cohort2",
+                     indicationWindow = list(c(-30, 0)),
+                     unknownIndicationTable = "condition_occurrence")
 
-# tableIndication(result)
+tableIndication(result, type = "tibble")
 
 }
 
