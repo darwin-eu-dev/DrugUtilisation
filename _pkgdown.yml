@@ -39,7 +39,7 @@ reference:
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
-  - matches("*DrugUtilisation|addNumberExposures|addNumberEras|addExposedTime|addTimeToExposure|addInitialQuantity|addCumulativeQuantity|addCumulativeDose|addInitialDailyDose")
+  - matches("addDrugUtilisation|summariseDrugUtilisation|tableDrugUtilisation|addNumberExposures|addNumberEras|addExposedTime|addTimeToExposure|addInitialQuantity|addCumulativeQuantity|addCumulativeDose|addInitialDailyDose")
 - subtitle: Summarise treatment persistence using proportion of patients covered (PPC)
   desc: Summarise the proportion of patients in the drug cohort over time.
 - contents:
