@@ -44,12 +44,8 @@
 #'   addSex() |>
 #'   addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
 #'
-#' summariseDrugUse(
-#'   cdm[["dus_cohort"]], strata = list(
-#'    "age_group" = "age_group", "sex" = "sex",
-#'    "age_group and sex" = c("age_group", "sex")
-#'   )
-#' )
+#' cdm[["dus_cohort"]] |>
+#'   summariseDrugUse(strata = list("age_group", "sex", c("age_group", "sex")))
 #' }
 #'
 summariseDrugUse<- function(cohort,

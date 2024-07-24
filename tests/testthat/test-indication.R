@@ -56,12 +56,13 @@ test_that("test case single indication", {
   )
 
   cdm <- mockDrugUtilisation(
-      connectionDetails,
-      cohort1 = targetCohortName,
-      cohort2 = indicationCohortName,
-      condition_occurrence = condition_occurrence,
-      observation_period = observationPeriod
-    )
+    con = connection(),
+    writeSchema = schema(),
+    cohort1 = targetCohortName,
+    cohort2 = indicationCohortName,
+    condition_occurrence = condition_occurrence,
+    observation_period = observationPeriod
+  )
   #check it works without cdm object specified
 
   expect_no_error(cdm[["cohort1"]] |>
@@ -187,6 +188,7 @@ test_that("test case single indication", {
   )
   ))
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test case single indication with unknown indication table", {
@@ -235,7 +237,8 @@ test_that("test case single indication with unknown indication table", {
     period_type_concept_id = 44814724
   )
   cdm <-mockDrugUtilisation(
-    connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     cohort1 = targetCohortName,
     cohort2 = indicationCohortName, condition_occurrence = condition_occurrence,
     observation_period = observationPeriod
@@ -335,6 +338,8 @@ test_that("test case single indication with unknown indication table", {
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m6_to_0")
   ))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test indicationDate", {
@@ -385,7 +390,8 @@ test_that("test indicationDate", {
 
   cdm <-
     mockDrugUtilisation(
-      connectionDetails,
+      con = connection(),
+      writeSchema = schema(),
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
@@ -450,6 +456,7 @@ test_that("test indicationDate", {
       dplyr::pull("indication_m2_to_0")
   ))
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test attributes", {
@@ -499,7 +506,8 @@ test_that("test attributes", {
   )
   cdm <-
     mockDrugUtilisation(
-      connectionDetails,
+      con = connection(),
+      writeSchema = schema(),
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
@@ -522,6 +530,7 @@ test_that("test attributes", {
     class(cdm[["cohort1new"]])[class(cdm[["cohort1new"]]) != "GeneratedCohortSet"]
   )
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("summariseIndication", {
@@ -570,7 +579,8 @@ test_that("summariseIndication", {
   )
   cdm <-
     mockDrugUtilisation(
-      connectionDetails,
+      con = connection(),
+      writeSchema = schema(),
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
@@ -643,4 +653,5 @@ test_that("summariseIndication", {
   expect_identical(
     "summarised_indication", unique(settings(result)$result_type))
 
+  mockDisconnect(cdm = cdm)
 })

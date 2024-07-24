@@ -163,8 +163,7 @@ indication_summary_stratified <- cdm[["acetaminophen_users"]] |>
   select(!"indication_m365_to_0") |> 
   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
   summariseIndication(
-    strata = list(c("age_group"),
-                  c("sex")),
+    strata = list("age_group", "sex"),
     indicationCohortName = "indications_cohort",
     indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
     unknownIndicationTable =  c("condition_occurrence")

@@ -1,6 +1,6 @@
 test_that("input validation", {
   skip_on_cran()
-  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
   expect_no_error(
     requirePriorDrugWashout(
       cohort = cdm$cohort1,
@@ -134,6 +134,8 @@ test_that("input validation", {
                            days = 90,
                            name = "cohort2")
   )
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("requirePrioUseWashout example", {
@@ -163,6 +165,8 @@ test_that("requirePrioUseWashout example", {
 
   cdm <-
     mockDrugUtilisation(
+      con = connection(),
+      writeSchema = schema(),
       cohort1 = cohort1,
       observation_period = observationPeriod
     )
@@ -297,6 +301,8 @@ test_that("requirePrioUseWashout example", {
        as.numeric()),
     2
   )
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test cohortId, example 2", {
@@ -326,6 +332,8 @@ test_that("test cohortId, example 2", {
 
   cdm <-
     mockDrugUtilisation(
+      con = connection(),
+      writeSchema = schema(),
       cohort1 = cohort1,
       observation_period = observationPeriod
     )
@@ -391,11 +399,13 @@ test_that("test cohortId, example 2", {
        as.numeric()),
     4
   )
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("requireDrugInDateRange", {
   skip_on_cran()
-  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   cdm$cohort3 <- requireDrugInDateRange(
     cohort = cdm$cohort1,
@@ -468,11 +478,13 @@ test_that("requireDrugInDateRange", {
     'Qualifying initial records', 'No date restrictions to cohort_end_date'
   )))
   expect_equal(cohort1, cdm$cohort1 |> collectCohort())
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("requireObservationBeforeDrug", {
   skip_on_cran()
-  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   cdm$cohort3 <- requireObservationBeforeDrug(
     cohort = cdm$cohort1,
@@ -509,12 +521,15 @@ test_that("requireObservationBeforeDrug", {
   expect_true(all(cohort |> dplyr::pull("cohort_definition_id") |> sort() == c(1, 1, 2, 3, 3)))
   expect_true(all(cohort |> dplyr::pull("subject_id") |> sort() == c(3, 4, 5, 6, 10)))
   expect_true(all(cohort |> dplyr::pull("cohort_start_date") |> sort() == c("1991-05-25", "1997-11-07", "2010-02-10", "2019-07-17", "2022-01-26")))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("requireIsFirstDrugEntry", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(
-    connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     cohort = dplyr::tibble(
       cohort_definition_id = c(1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2),
       subject_id = c(1, 1, 1, 2, 3, 3, 3, 3, 1, 1, 2, 3),
@@ -566,4 +581,5 @@ test_that("requireIsFirstDrugEntry", {
     1, 1, 1, 2, 2, 3, 3, 3, 3
   )))
 
+  mockDisconnect(cdm = cdm)
 })

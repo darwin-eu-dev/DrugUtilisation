@@ -11,7 +11,8 @@ summariseIndication(
   indicationCohortId = NULL,
   indicationWindow = list(c(0, 0)),
   unknownIndicationTable = NULL,
-  indexDate = "cohort_start_date"
+  indexDate = "cohort_start_date",
+  censorDate = NULL
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ indications.}
 
 \item{indexDate}{A date variable in the cohort table for which indications
 will be found relative to.}
+
+\item{censorDate}{After that day no indication will be considered.}
 }
 \value{
 A summarised result
@@ -49,7 +52,6 @@ indication.
 \examples{
 \donttest{
 library(DrugUtilisation)
-library(PatientProfiles)
 library(CDMConnector)
 library(dplyr)
 
@@ -62,9 +64,10 @@ cdm <- generateIngredientCohortSet(cdm = cdm, name = "drug_cohort",
                                    ingredient = "acetaminophen")
 
 cdm$drug_cohort |>
-summariseIndication(indicationCohortName = "indication_cohorts",
-                    unknownIndicationTable = "condition_occurrence",
-                    indicationWindow = list(c(-Inf, 0))) |>
+  summariseIndication(
+    indicationCohortName = "indication_cohorts",
+    unknownIndicationTable = "condition_occurrence",
+    indicationWindow = list(c(-Inf, 0))) |>
  glimpse()
 
 }

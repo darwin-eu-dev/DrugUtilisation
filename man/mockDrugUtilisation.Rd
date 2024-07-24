@@ -2,66 +2,35 @@
 % Please edit documentation in R/mockDrugUtilisation.R
 \name{mockDrugUtilisation}
 \alias{mockDrugUtilisation}
-\title{It creates a mock database for testing drugutilisation package}
+\title{It creates a mock database for testing DrugUtilisation package}
 \usage{
 mockDrugUtilisation(
-  connectionDetails = list(con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-    writeSchema = "main"),
+  con = NULL,
+  writeSchema = NULL,
   numberIndividuals = 10,
-  seed = 1,
-  concept = NULL,
-  concept_ancestor = NULL,
-  drug_strength = NULL,
-  person = NULL,
-  observation_period = NULL,
-  drug_exposure = NULL,
-  condition_occurrence = NULL,
-  observation = NULL,
-  concept_relationship = NULL,
-  extraTables = list(),
+  seed = NULL,
   ...
 )
 }
 \arguments{
-\item{connectionDetails}{Details of the connection}
+\item{con}{A DBIConnection object to a database. If NULL a new duckdb
+connection will be used.}
 
-\item{numberIndividuals}{Number of individuals in the mock cdm}
+\item{writeSchema}{A schema with writing permissions to copy there the cdm
+tables.}
 
-\item{seed}{Seed for the random numbers}
+\item{numberIndividuals}{Number of individuals in the mock cdm.}
 
-\item{concept}{A concept tibble, if NULL a mock one is created}
+\item{seed}{Seed for the random numbers. If NULL no seed is used.}
 
-\item{concept_ancestor}{A concept_ancestor tibble, if NULL a mock one is
-created}
-
-\item{drug_strength}{A drug_strength tibble, if NULL a mock one is created}
-
-\item{person}{A person tibble, if NULL a mock one is created}
-
-\item{observation_period}{A observation_period tibble, if NULL a mock one is
-created}
-
-\item{drug_exposure}{A drug_exposure tibble, if NULL a mock one is created}
-
-\item{condition_occurrence}{A condition_occurrence tibble, if NULL a mock one
-is created}
-
-\item{observation}{A observation tibble, if NULL a mock one is created}
-
-\item{concept_relationship}{A concept_relationship tibble, if NULL a mock one
-is created.}
-
-\item{extraTables}{Extra tibbles to be instantiated that are not cohorts or
-cdm tables}
-
-\item{...}{Cohorts can be added to the cdm reference, cohort1 and cohort2
-will be created if not provided}
+\item{...}{Tables to use as basis to create the mock. If some tables are
+provided they will be used to construct the cdm object.}
 }
 \value{
 A cdm reference with the mock tables
 }
 \description{
-It creates a mock database for testing drugutilisation package
+It creates a mock database for testing DrugUtilisation package
 }
 \examples{
 \donttest{

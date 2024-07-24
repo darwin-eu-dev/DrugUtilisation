@@ -2,7 +2,8 @@
 test_that("Basic functionality", {
   # basic functionality
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 3, 3, 1, 2, 4, 4, 1),
@@ -146,11 +147,14 @@ test_that("Basic functionality", {
   # multiple igredients
 
   # nameStyle
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("gapEra consecutive prescriptions", {
   cdm <- mockDrugUtilisation(
-    #connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:2,
       person_id = c(1, 1),
@@ -182,12 +186,15 @@ test_that("gapEra consecutive prescriptions", {
   )
   expect_identical(x$number_exposures_ingredient_1125315_descendants, 2L)
   expect_identical(x$number_eras_ingredient_1125315_descendants, 1L)
+
+  mockDisconnect(cdm = cdm)
 })
 
 
 test_that("test subfunctions", {
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 3, 3, 1, 2, 4, 4, 1),
@@ -331,4 +338,6 @@ test_that("test subfunctions", {
   expect_snapshot(addCumulativeDose(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addInitialDailyDose(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addDrugUtilisation(cdm$dus_cohort), error = TRUE)
+
+  mockDisconnect(cdm = cdm)
 })

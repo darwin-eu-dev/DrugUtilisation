@@ -1,5 +1,5 @@
 test_that("test same results for ingredient cohorts", {
-  cdm <- DrugUtilisation::mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   cdm <- generateIngredientCohortSet(
     cdm = cdm,
@@ -8,7 +8,7 @@ test_that("test same results for ingredient cohorts", {
   )
 
 
-  cdm <- DrugUtilisation::generateDrugUtilisationCohortSet(
+  cdm <- generateDrugUtilisationCohortSet(
     cdm = cdm,
     conceptSet = CodelistGenerator::getDrugIngredientCodes(
       cdm = cdm,
@@ -32,10 +32,11 @@ test_that("test same results for ingredient cohorts", {
 
   expect_equal(cohort_1_df, cohort_2_df)
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("handle empty ingredient name gracefully", {
-  cdm <- DrugUtilisation::mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   expect_error(generateIngredientCohortSet(
     cdm = cdm, ingredient = "", name = "empty_ingredient_test"
@@ -45,11 +46,12 @@ test_that("handle empty ingredient name gracefully", {
     cdm = cdm, ingredient = "nonexistent", name = "nonexistent_ingredient_test"
   ))
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("date works", {
 
-  cdm <- DrugUtilisation::mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   cdm <- generateIngredientCohortSet(
     cdm = cdm,
@@ -72,12 +74,12 @@ test_that("date works", {
       cohort_df$cohort_end_date <= as.Date("2020-12-31")
   ))
 
+  mockDisconnect(cdm = cdm)
 })
 
 
 test_that("ingredient list and vector both work", {
-
-  cdm <- DrugUtilisation::mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   ingredient1 = c("simvastatin", "acetaminophen", "metformin")
 
@@ -107,5 +109,5 @@ test_that("ingredient list and vector both work", {
   expect_true(all(settings(cdm$test_list) |> dplyr::pull("cohort_name")|>
                     sort() == c("test_1","test_2")))
 
-
+  mockDisconnect(cdm = cdm)
 })

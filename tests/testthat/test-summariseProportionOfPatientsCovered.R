@@ -7,7 +7,8 @@ test_that("simple working example", {
   # id 4 - in cohort for 20 days, exits the database after 25
 
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:4,
       person_id = c(1, 2, 3, 4),
@@ -74,6 +75,8 @@ test_that("simple working example", {
                 dplyr::filter(additional_level == 21,
                               estimate_name == "ppc") |>
                 dplyr::pull("estimate_value") == "0")
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("multiple cohort entries", {
@@ -81,7 +84,8 @@ test_that("multiple cohort entries", {
   # id 2 - in cohort for 15 days, exits the database after 25
 
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:3,
       person_id = c(1, 1, 2),
@@ -137,7 +141,7 @@ test_that("multiple cohort entries", {
                               estimate_name == "ppc") |>
                 dplyr::pull("estimate_value") == "0")
 
-
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("multiple cohorts", {
@@ -147,7 +151,8 @@ test_that("multiple cohorts", {
   # id 3 - in cohort 1 for 20 days, exits the database after 25
   # id 4 - in cohort 2 for 25 days, exits the database after 30
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:4,
       person_id = c(1, 2, 3, 4),
@@ -226,7 +231,7 @@ test_that("multiple cohorts", {
   expect_no_error(cdm$dus_cohort |>
     summariseProportionOfPatientsCovered(cohortId = 1))
 
-
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("stratification", {
@@ -237,7 +242,8 @@ test_that("stratification", {
   # id 4 - in cohort for 20 days, exits the database after 25
 
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     dus_cohort = dplyr::tibble(
       cohort_definition_id = 1,
       subject_id = c(1, 1, 2, 3, 4),
@@ -394,12 +400,14 @@ test_that("stratification", {
   ppc_g1_gb <- ppc |> dplyr::filter(strata_level == "group_1 &&& group_b")
   expect_true(nrow(ppc_g1_gb) == 0)
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("expected errors", {
 
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     dus_cohort = dplyr::tibble(
       cohort_definition_id = c(1,1,1,2),
       subject_id = c(1, 2, 3, 4),
@@ -444,11 +452,13 @@ test_that("expected errors", {
   expect_error(ppc <- cdm$dus_cohort |>
     summariseProportionOfPatientsCovered(strata = list("not_a_column")))
 
-  })
+  mockDisconnect(cdm = cdm)
+})
 
 test_that("suppression", {
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:4,
       person_id = c(1, 2, 3, 4),
@@ -487,5 +497,5 @@ test_that("suppression", {
                               estimate_name == "denominator_count") |>
                 dplyr::pull("estimate_value")))
 
-
+  mockDisconnect(cdm = cdm)
 })

@@ -1,6 +1,7 @@
 test_that("summarise drug restart", {
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 2, 1, 1, 2, 4, 4, 1),
@@ -126,4 +127,6 @@ test_that("summarise drug restart", {
   # expected errors
   expect_error(summariseDrugRestart(cdm$dus_cohort))
   expect_error(summariseDrugRestart(cdm$dus_cohort, switchCohortTable = "switch_cohort", switchCohortId = 5))
+
+  mockDisconnect(cdm = cdm)
 })

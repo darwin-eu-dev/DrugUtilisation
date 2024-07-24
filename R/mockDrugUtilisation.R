@@ -14,28 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' It creates a mock database for testing drugutilisation package
+#' It creates a mock database for testing DrugUtilisation package
 #'
-#' @param connectionDetails Details of the connection
-#' @param numberIndividuals Number of individuals in the mock cdm
-#' @param seed Seed for the random numbers
-#' @param concept A concept tibble, if NULL a mock one is created
-#' @param concept_ancestor A concept_ancestor tibble, if NULL a mock one is
-#' created
-#' @param drug_strength A drug_strength tibble, if NULL a mock one is created
-#' @param person A person tibble, if NULL a mock one is created
-#' @param observation_period A observation_period tibble, if NULL a mock one is
-#' created
-#' @param drug_exposure A drug_exposure tibble, if NULL a mock one is created
-#' @param condition_occurrence A condition_occurrence tibble, if NULL a mock one
-#' is created
-#' @param observation A observation tibble, if NULL a mock one is created
-#' @param concept_relationship A concept_relationship tibble, if NULL a mock one
-#' is created.
-#' @param extraTables Extra tibbles to be instantiated that are not cohorts or
-#' cdm tables
-#' @param ... Cohorts can be added to the cdm reference, cohort1 and cohort2
-#' will be created if not provided
+#' @param con A DBIConnection object to a database. If NULL a new duckdb
+#' connection will be used.
+#' @param writeSchema A schema with writing permissions to copy there the cdm
+#' tables.
+#' @param numberIndividuals Number of individuals in the mock cdm.
+#' @param seed Seed for the random numbers. If NULL no seed is used.
+#' @param ... Tables to use as basis to create the mock. If some tables are
+#' provided they will be used to construct the cdm object.
 #'
 #' @return A cdm reference with the mock tables
 #'
@@ -50,40 +38,37 @@
 #' cdm
 #' }
 #'
-mockDrugUtilisation <- function(connectionDetails = list(
-                                  con = DBI::dbConnect(duckdb::duckdb(), ":memory:"),
-                                  writeSchema = "main"
-                                ),
+mockDrugUtilisation <- function(con = NULL,
+                                writeSchema = NULL,
                                 numberIndividuals = 10,
-                                seed = 1,
-                                concept = NULL,
-                                concept_ancestor = NULL,
-                                drug_strength = NULL,
-                                person = NULL,
-                                observation_period = NULL,
-                                drug_exposure = NULL,
-                                condition_occurrence = NULL,
-                                observation = NULL,
-                                concept_relationship = NULL,
-                                extraTables = list(),
+                                seed = NULL,
                                 ...) {
+  tables <- list(...)
+  assertNumeric(seed, length = 1, null = TRUE)
+  assertNumeric(numberIndividuals, length = 1, integerish = TRUE, min = 1)
+  assertList(tables, named = TRUE, class = "data.frame")
+
+  if (is.null(con)) con <- duckdb::dbConnect(duckdb::duckdb(), ":memory:")
+  if (is.null(writeSchema)) writeSchema <- c(schema = "main", prefix = "mock_")
+
   # get vocabulary
   vocab <- vocabularyTables(
-    concept, concept_ancestor, drug_strength, concept_relationship
+    tables$concept, tables$concept_ancestor, tables$drug_strength,
+    tables$concept_relationship
   )
-  concept <- vocab$concept
-  concept_ancestor <- vocab$concept_ancestor
-  drug_strength <- vocab$drug_strength
-  concept_relationship <- vocab$concept_relationship
+  tables$concept <- vocab$concept
+  tables$concept_ancestor <- vocab$concept_ancestor
+  tables$drug_strength <- vocab$drug_strength
+  tables$concept_relationship <- vocab$concept_relationship
 
   # set seed
-  set.seed(seed)
+  if (!is.null(seed)) set.seed(seed)
 
   # create person if NULL
-  if (is.null(person)) {
-    person <- createPersonTable(numberIndividuals)
+  if (!"person" %in% names(tables)) {
+    tables$person <- createPersonTable(numberIndividuals)
   } else {
-    person <- person |>
+    tables$person <- tables$person |>
       dplyr::mutate(birth_datetime = as.Date(
         paste(
           .data$year_of_birth,
@@ -96,49 +81,38 @@ mockDrugUtilisation <- function(connectionDetails = list(
   }
 
   # create observation_period if NULL
-  if (is.null(observation_period)) {
-    observation_period <- createObservationPeriod(person)
+  if (!"observation_period" %in% names(tables)) {
+    tables$observation_period <- createObservationPeriod(tables$person)
   }
 
   # create drug_exposure if NULL
-  if (is.null(drug_exposure)) {
-    drug_exposure <- createDrugExposure(observation_period, concept)
+  if (!"drug_exposure" %in% names(tables)) {
+    tables$drug_exposure <- createDrugExposure(tables$observation_period, tables$concept)
   }
 
   # create condition_occurrence if NULL
-  if (is.null(condition_occurrence)) {
-    condition_occurrence <- createConditionOccurrence(
-      observation_period, concept
-    )
+  if (!"condition_occurrence" %in% names(tables)) {
+    tables$condition_occurrence <- createConditionOccurrence(
+      tables$observation_period, tables$concept)
   }
 
   # create observation if NULL
-  if (is.null(observation)) {
-    observation <- createObservation(observation_period, concept)
+  if (!"observation" %in% names(tables)) {
+    tables$observation <- createObservation(
+      tables$observation_period, tables$concept)
   }
 
-  visit_occurrence <- createVisitOccurrence(condition_occurrence, drug_exposure)
+  tables$visit_occurrence <- createVisitOccurrence(
+    tables$condition_occurrence, tables$drug_exposure)
 
-  cohorts <- list(...)
-  cohorts <- createCohorts(cohorts, observation_period)
-
-  listTables <- list(
-    concept = concept, concept_ancestor = concept_ancestor,
-    drug_strength = drug_strength, person = person,
-    observation_period = observation_period, drug_exposure = drug_exposure,
-    condition_occurrence = condition_occurrence,
-    visit_occurrence = visit_occurrence, observation = observation,
-    concept_relationship = concept_relationship
-  )
+  cohortPos <- lapply(tables, isCohort) |> unlist()
+  cohorts <- tables[cohortPos] |> createCohorts(tables$observation_period)
+  tables <- tables[!cohortPos]
 
   cdm <- omopgenerics::cdmFromTables(
-    tables = c(listTables, extraTables),
-    cdmName = "DUS MOCK",
-    cohortTables = cohorts
-  )
+    tables = tables, cdmName = "DUS MOCK", cohortTables = cohorts)
 
-  con <- connectionDetails$con
-  writeSchema <- strsplit(connectionDetails[["writeSchema"]], "\\.")[[1]]
+  writeSchema <- strsplit(writeSchema, "\\.")[[1]]
   suppressMessages(
     cdm <- CDMConnector::copyCdmTo(
       con = con, cdm = cdm, schema = writeSchema, overwrite = TRUE
@@ -148,15 +122,7 @@ mockDrugUtilisation <- function(connectionDetails = list(
   return(cdm)
 }
 
-#' To write a table in the mock database
-#' @noRd
-writeTable <- function(con, writeSchema, name, x) {
-  name <- CDMConnector::inSchema(writeSchema, name)
-  DBI::dbWriteTable(conn = con, name = name, as.data.frame(x), overwrite = TRUE)
-}
-
-#' To create the vocabulary tables
-#' @noRd
+# To create the vocabulary tables
 vocabularyTables <- function(concept, concept_ancestor, drug_strength, concept_relationship) {
   if (is.null(concept)) {
     concept <- mockConcept
@@ -198,51 +164,7 @@ vocabularyTables <- function(concept, concept_ancestor, drug_strength, concept_r
   )
 }
 
-#' To add the cohort set if NULL
-#' @noRd
-addCohortSet <- function(cohort) {
-  attr(cohort, "cohort_set") <- cohort |>
-    dplyr::select("cohort_definition_id") |>
-    dplyr::distinct() |>
-    dplyr::mutate("cohort_name" = paste0(
-      "cohort_",
-      as.character(.data$cohort_definition_id)
-    ))
-  return(cohort)
-}
-
-#' To add the cohort count if NULL
-#' @noRd
-addCohortCount <- function(cohort) {
-  attr(cohort, "cohort_count") <- cohort |>
-    dplyr::group_by(.data$cohort_definition_id) |>
-    dplyr::summarise(
-      number_records = dplyr::n(),
-      number_subjects = dplyr::n_distinct(.data$subject_id),
-      .groups = "drop"
-    )
-  return(cohort)
-}
-
-#' To add the cohort attrition if NULL
-#' @noRd
-addCohortAttrition <- function(cohort) {
-  attr(cohort, "cohort_attrition") <- cohort |>
-    dplyr::group_by(.data$cohort_definition_id) |>
-    dplyr::summarise(
-      number_records = dplyr::n(),
-      number_subjects = dplyr::n_distinct(.data$subject_id),
-      .groups = "drop"
-    ) |>
-    dplyr::mutate(
-      reason_id = 1, reason = "Qualifying initial records",
-      excluded_records = 0, excluded_subjects = 0
-    )
-  return(cohort)
-}
-
-#' To create the person tables
-#' @noRd
+# To create the person tables
 createPersonTable <- function(numberIndividuals) {
   person <- dplyr::tibble(
     person_id = 1:numberIndividuals,
@@ -269,8 +191,7 @@ createPersonTable <- function(numberIndividuals) {
   return(person)
 }
 
-#' To create the observation period tables
-#' @noRd
+# To create the observation period tables
 createObservationPeriod <- function(person) {
   person |>
     dplyr::select("person_id", "birth_datetime") |>
@@ -292,23 +213,7 @@ createObservationPeriod <- function(person) {
     )
 }
 
-#' To add the attributes to the cohorts
-#' @noRd
-addCohortAttributes <- function(cohort) {
-  if (is.null(attr(cohort, "cohort_set"))) {
-    cohort <- addCohortSet(cohort)
-  }
-  if (is.null(attr(cohort, "cohort_count"))) {
-    cohort <- addCohortCount(cohort)
-  }
-  if (is.null(attr(cohort, "cohort_attrition"))) {
-    cohort <- addCohortAttrition(cohort)
-  }
-  return(cohort)
-}
-
-#' To create the cohorts or add the attributes to the existing ones
-#' @noRd
+# To create the cohorts or add the attributes to the existing ones
 createCohorts <- function(cohorts, observation_period) {
   if (!("cohort1" %in% names(cohorts))) {
     cohorts[["cohort1"]] <- createCohort(observation_period)
@@ -316,14 +221,10 @@ createCohorts <- function(cohorts, observation_period) {
   if (!("cohort2" %in% names(cohorts))) {
     cohorts[["cohort2"]] <- createCohort(observation_period)
   }
-  for (name in names(cohorts)) {
-    cohorts[[name]] <- addCohortAttributes(cohorts[[name]])
-  }
   return(cohorts)
 }
 
-#' To create a random cohort from observation period
-#' @noRd
+# To create a random cohort from observation period
 createCohort <- function(observation_period) {
   cohort <- observation_period |>
     dplyr::group_by(.data$person_id) |>
@@ -346,8 +247,7 @@ createCohort <- function(observation_period) {
     )
 }
 
-#' To create a random date between two dates
-#' @noRd
+# To create a random date between two dates
 createDate <- function(x, newColumn, lowerLimit, upperLimit) {
   x |>
     dplyr::rowwise() |>
@@ -359,8 +259,7 @@ createDate <- function(x, newColumn, lowerLimit, upperLimit) {
     dplyr::ungroup()
 }
 
-#' To create a mock drug_exposure table
-#' @noRd
+# To create a mock drug_exposure table
 createDrugExposure <- function(observation_period, concept) {
   concepts <- concept |>
     dplyr::filter(.data$domain_id == "Drug") |>
@@ -407,8 +306,7 @@ createDrugExposure <- function(observation_period, concept) {
   return(drug_exposure)
 }
 
-#' To create a condition_occurrence table based on observation_period
-#' @noRd
+# To create a condition_occurrence table based on observation_period
 createConditionOccurrence <- function(observation_period, concept) {
   concepts <- concept |>
     dplyr::filter(.data$domain_id == "Condition") |>
@@ -463,8 +361,7 @@ createConditionOccurrence <- function(observation_period, concept) {
   return(condition_occurrence)
 }
 
-#' To create visit occurrence from condition_occurrence and drug_exposure
-#' @noRd
+# To create visit occurrence from condition_occurrence and drug_exposure
 createVisitOccurrence <- function(condition_occurrence, drug_exposure) {
   condition_occurrence |>
     dplyr::select(
@@ -489,8 +386,7 @@ createVisitOccurrence <- function(condition_occurrence, drug_exposure) {
     )
 }
 
-#' To create observation table based on observation_period
-#' @noRd
+# To create observation table based on observation_period
 createObservation <- function(observation_period, concept) {
   concepts <- concept |>
     dplyr::filter(.data$domain_id == "Observation") |>
@@ -524,4 +420,8 @@ createObservation <- function(observation_period, concept) {
     )
   }
   return(observation)
+}
+
+isCohort <- function(x) {
+  all(c("cohort_definition_id", "subject_id", "cohort_start_date", "cohort_end_date") %in% names(x))
 }
