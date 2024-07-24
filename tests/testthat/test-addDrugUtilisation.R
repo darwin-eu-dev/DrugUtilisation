@@ -2,7 +2,8 @@
 test_that("Basic functionality", {
   # basic functionality
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 3, 3, 1, 2, 4, 4, 1),
@@ -150,7 +151,8 @@ test_that("Basic functionality", {
 
 test_that("gapEra consecutive prescriptions", {
   cdm <- mockDrugUtilisation(
-    #connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:2,
       person_id = c(1, 1),
@@ -187,7 +189,8 @@ test_that("gapEra consecutive prescriptions", {
 
 test_that("test subfunctions", {
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 3, 3, 1, 2, 4, 4, 1),

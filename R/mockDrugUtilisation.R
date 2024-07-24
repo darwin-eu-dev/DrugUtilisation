@@ -122,15 +122,7 @@ mockDrugUtilisation <- function(con = NULL,
   return(cdm)
 }
 
-#' To write a table in the mock database
-#' @noRd
-writeTable <- function(con, writeSchema, name, x) {
-  name <- CDMConnector::inSchema(writeSchema, name)
-  DBI::dbWriteTable(conn = con, name = name, as.data.frame(x), overwrite = TRUE)
-}
-
-#' To create the vocabulary tables
-#' @noRd
+# To create the vocabulary tables
 vocabularyTables <- function(concept, concept_ancestor, drug_strength, concept_relationship) {
   if (is.null(concept)) {
     concept <- mockConcept
@@ -172,8 +164,7 @@ vocabularyTables <- function(concept, concept_ancestor, drug_strength, concept_r
   )
 }
 
-#' To create the person tables
-#' @noRd
+# To create the person tables
 createPersonTable <- function(numberIndividuals) {
   person <- dplyr::tibble(
     person_id = 1:numberIndividuals,
@@ -200,8 +191,7 @@ createPersonTable <- function(numberIndividuals) {
   return(person)
 }
 
-#' To create the observation period tables
-#' @noRd
+# To create the observation period tables
 createObservationPeriod <- function(person) {
   person |>
     dplyr::select("person_id", "birth_datetime") |>
@@ -223,8 +213,7 @@ createObservationPeriod <- function(person) {
     )
 }
 
-#' To create the cohorts or add the attributes to the existing ones
-#' @noRd
+# To create the cohorts or add the attributes to the existing ones
 createCohorts <- function(cohorts, observation_period) {
   if (!("cohort1" %in% names(cohorts))) {
     cohorts[["cohort1"]] <- createCohort(observation_period)
@@ -235,8 +224,7 @@ createCohorts <- function(cohorts, observation_period) {
   return(cohorts)
 }
 
-#' To create a random cohort from observation period
-#' @noRd
+# To create a random cohort from observation period
 createCohort <- function(observation_period) {
   cohort <- observation_period |>
     dplyr::group_by(.data$person_id) |>
@@ -259,8 +247,7 @@ createCohort <- function(observation_period) {
     )
 }
 
-#' To create a random date between two dates
-#' @noRd
+# To create a random date between two dates
 createDate <- function(x, newColumn, lowerLimit, upperLimit) {
   x |>
     dplyr::rowwise() |>
@@ -272,8 +259,7 @@ createDate <- function(x, newColumn, lowerLimit, upperLimit) {
     dplyr::ungroup()
 }
 
-#' To create a mock drug_exposure table
-#' @noRd
+# To create a mock drug_exposure table
 createDrugExposure <- function(observation_period, concept) {
   concepts <- concept |>
     dplyr::filter(.data$domain_id == "Drug") |>
@@ -320,8 +306,7 @@ createDrugExposure <- function(observation_period, concept) {
   return(drug_exposure)
 }
 
-#' To create a condition_occurrence table based on observation_period
-#' @noRd
+# To create a condition_occurrence table based on observation_period
 createConditionOccurrence <- function(observation_period, concept) {
   concepts <- concept |>
     dplyr::filter(.data$domain_id == "Condition") |>
@@ -376,8 +361,7 @@ createConditionOccurrence <- function(observation_period, concept) {
   return(condition_occurrence)
 }
 
-#' To create visit occurrence from condition_occurrence and drug_exposure
-#' @noRd
+# To create visit occurrence from condition_occurrence and drug_exposure
 createVisitOccurrence <- function(condition_occurrence, drug_exposure) {
   condition_occurrence |>
     dplyr::select(
@@ -402,8 +386,7 @@ createVisitOccurrence <- function(condition_occurrence, drug_exposure) {
     )
 }
 
-#' To create observation table based on observation_period
-#' @noRd
+# To create observation table based on observation_period
 createObservation <- function(observation_period, concept) {
   concepts <- concept |>
     dplyr::filter(.data$domain_id == "Observation") |>
