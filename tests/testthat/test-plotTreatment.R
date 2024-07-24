@@ -1,7 +1,8 @@
 test_that("plot treatment (from cohort) works", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 3, 3, 1, 2, 4, 4, 1),
@@ -75,7 +76,7 @@ test_that("plot treatment (from cohort) works", {
     summariseTreatment(treatmentCohortName = "cohort2",
                                  window = list(c(0, 30), c(31, 365)),
                                  treatmentCohortId = 1,
-                                 strata = list("sex" = "sex", "age" = "age_group")
+                                 strata = list("sex", "age_group")
     )
 
   expect_no_error(
@@ -83,5 +84,7 @@ test_that("plot treatment (from cohort) works", {
   )
 
   expect_true(ggplot2::is.ggplot(plot3))
+
+  mockDisconnect(cdm = cdm)
 })
 

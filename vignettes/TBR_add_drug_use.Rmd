@@ -294,7 +294,7 @@ cdm[["acetaminophen_example1"]] <- cdm[["acetaminophen_example1"]] |>
   addSex() # Function from PatientProfiles
 
 summariseDrugUse(cdm[["acetaminophen_example1"]],
-                 strata = list("sex" = "sex")) 
+                 strata = list("sex")) 
 ```
 
 ## drugEstimates parameter

@@ -45,7 +45,6 @@
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(PatientProfiles)
 #' library(CDMConnector)
 #' library(dplyr)
 #'
@@ -58,9 +57,10 @@
 #'                                    ingredient = "acetaminophen")
 #'
 #' cdm$drug_cohort |>
-#' summariseIndication(indicationCohortName = "indication_cohorts",
-#'                     unknownIndicationTable = "condition_occurrence",
-#'                     indicationWindow = list(c(-Inf, 0))) |>
+#'   summariseIndication(
+#'     indicationCohortName = "indication_cohorts",
+#'     unknownIndicationTable = "condition_occurrence",
+#'     indicationWindow = list(c(-Inf, 0))) |>
 #'  glimpse()
 #'
 #' }
@@ -74,18 +74,33 @@ summariseIndication <- function(cohort,
                                 indexDate = "cohort_start_date") {
   # initialChecks
   cdm <- omopgenerics::cdmReference(cohort)
-  checkInputs(cohort = cohort,
-              cdm = cdm,
-              strata = strata)
+  checkInputs(cohort = cohort, cdm = cdm, strata = strata)
 
-  cohort <-
-    cohort |> addIndication(
+  tablePrefix <- omopgenerics::tmpPrefix()
+
+  if (!is.list(indicationWindow)) indicationWindow <- list(indicationWindow)
+  if (is.null(names(indicationWindow))) {
+    names(indicationWindow) <- rep("", length(indicationWindow))
+  }
+  windowNames <- names(indicationWindow)
+  for (k in seq_along(windowNames)) {
+    if (windowNames[k] == "") {
+      windowNames[k] <- windowName(indicationWindow[[k]])
+    }
+  }
+  names(indicationWindow) <- paste0("win", seq_along(indicationWindow))
+
+  cohort <- cohort |>
+    PatientProfiles::addCohortName() |>
+    dplyr::select(dplyr::any_of(c("subject_id", "person_id", indexDate, "cohort_name"))) |>
+    addIndication(
       indicationCohortName = indicationCohortName,
       indicationCohortId = indicationCohortId,
       indicationWindow = indicationWindow,
       unknownIndicationTable = unknownIndicationTable,
       indexDate = indexDate,
-      name = NULL
+      name = omopgenerics::uniqueTableName(tablePrefix),
+      nameStyle = "ind_{window_name}_{cohort_name}"
     )
   indicationVariables <- indicationColumns(cohort)
 
@@ -129,28 +144,41 @@ summariseIndication <- function(cohort,
   return(result)
 }
 
-#' Obtain automatically the indication columns
-#'
-#' @param x Tibble
-#'
-#' @return Name of the indication columns
-#'
-#' @noRd
-#'
-indicationColumns <- function(x) {
-  names <- colnames(x)[substr(colnames(x), 1, 11) == "indication_"]
-  return(names)
+temporalWord <- function(x) {
+  if (x < 0) {
+    return("before")
+  } else {
+    return("after")
+  }
 }
-
-indicationColumnName <- function(x) {
-  x[x == "indication_0_to_0"] <- "Indication on index date"
-  x[x == "indication_minf_to_0"] <- "Indication any time prior"
-  x[x == "indication_0_to_inf"] <- "Indication any time after"
-  id <- substr(x, 1, 11) == "indication_"
-  y <- x[id]
-  x[id] <- gsub("_"," ",paste(
-    "Indication time window", substr(x[id], 12, nchar(x[id])), "days")
-  )
-  return(x)
+daysWord <- function(d) {
+  if (is.infinite(d)) {
+    return("any time")
+  } else {
+    nm <- cli::cli_text("{abs(d)} day{?s}") |>
+      cli::cli_fmt() |>
+      paste0(collapse = " ")
+    return(nm)
+  }
+}
+windowName <- function(win) {
+  min <- win[1]
+  max <- win[2]
+  if (min == 0 & max == 0) {
+    nm <- "on index date"
+  } else if (is.infinite(min) & max == 0) {
+    nm <- "any time before or on index date"
+  } else if (min == 0 & is.infinite(max)) {
+    nm <- "any time after or on index date"
+  } else if (is.infinite(min) & is.infinite(max)) {
+    nm <- "any time"
+  } else if (min == 0) {
+    nm <- glue::glue("from index date to {daysWord(max)} after")
+  } else if (max == 0) {
+    nm <- glue::glue("from {daysWord(min)} before to the index date")
+  } else {
+    nm <- glue::glue("from {daysWord(min)} {temporalWord(min)} to {daysWord(max)} {temporalWord(max)} the index date")
+  }
+  return(nm)
 }
 

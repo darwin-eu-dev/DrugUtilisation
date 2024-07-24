@@ -1,6 +1,7 @@
 test_that("plotDrugRestart works", {
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 2, 1, 1, 2, 4, 4, 1),
@@ -97,4 +98,6 @@ test_that("plotDrugRestart works", {
                     c("0 to 50_overall", "51 to 100_overall", "0 to 50_Female",
                       "0 to 50_Male", "51 to 100_Male", "overall_overall",
                       "overall_Female","overall_Male")))
+
+  mockDisconnect(cdm = cdm)
 })

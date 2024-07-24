@@ -36,8 +36,8 @@ test_that("create patterns, correct output", {
  )
 
  cdm <- mockDrugUtilisation(
-   connectionDetails, drug_strength = drug_strength, concept = concept,
-   concept_relationship = concept_relationship
+   con = connection(),  writeSchema = schema(), drug_strength = drug_strength,
+   concept = concept, concept_relationship = concept_relationship
  )
 
  expect_no_error(patternTab <- patternTable(cdm))
@@ -58,4 +58,6 @@ test_that("create patterns, correct output", {
    dplyr::filter(.data$validity != "pattern with formula") |>
    nrow() |>
    expect_equal(1)
+
+ mockDisconnect(cdm = cdm)
 })

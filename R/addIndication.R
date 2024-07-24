@@ -29,7 +29,8 @@
 #' @param indicationCohortId target cohort Id to add indication
 #' @param indicationWindow time window of interests
 #' @param unknownIndicationTable Tables to search unknown indications
-#' @param indexDate Date of the indication
+#' @param indexDate Date respect to indication will be calculated.
+#' @param censorDate After that day no indication will be considered.
 #' @param name name of permanant table
 #'
 #' @return The original table with a variable added that summarises the
@@ -63,6 +64,7 @@ addIndication <- function(x,
                           indicationWindow = list(c(0,0)),
                           unknownIndicationTable = NULL,
                           indexDate = "cohort_start_date",
+                          censorDate = NULL,
                           name = NULL) {
 
   cdm <- omopgenerics::cdmReference(x)
@@ -71,9 +73,12 @@ addIndication <- function(x,
 
   # check inputs
   checkInputs(
-    x = x, cdm = cdm, indicationCohortName = indicationCohortName, indicationDate = indexDate,
-    window = indicationWindow,unknownIndicationTable = unknownIndicationTable, name = name
+    x = x, cdm = cdm, indicationCohortName = indicationCohortName,
+    indicationDate = indexDate, window = indicationWindow,
+    unknownIndicationTable = unknownIndicationTable, name = name
   )
+
+  assertCharacter(nameStyle, length = 1)
 
   if (!(indicationCohortName %in% names(cdm))) {
     cli::cli_abort("indicationCohortName is not in the cdm reference")
@@ -83,7 +88,7 @@ addIndication <- function(x,
     cli::cli_abort("unknownIndicationTable is not in the cdm reference")
   }
 
-  assertNumeric(indicationCohortId,null = TRUE)
+  assertNumeric(indicationCohortId, null = TRUE)
 
   # indicationWindow as list
   if (!inherits(indicationWindow,"list")){
@@ -92,53 +97,40 @@ addIndication <- function(x,
 
   tablePrefix <- omopgenerics::tmpPrefix()
 
-  # nameStyle
-  nameformat = "indication_{window_name}_{cohort_name}"
+  windoNames <- getWindowNames(indicationWindow)
+  names(indicationWindow) <- paste0("win", seq_along(indicationWindow))
 
   # select to interest individuals
   ind <- x |>
-    dplyr::select(
-      "subject_id", "cohort_start_date" = dplyr::all_of(indexDate)
+    dplyr::select(dplyr::all_of(c("subject_id", censorDate, indexDate))) |>
+    dplyr::distinct() |>
+    PatientProfiles::addCohortIntersectFlag(
+      targetCohortTable = indicationCohortName,
+      indexDate = indexDate,
+      censorDate = censorDate,
+      targetStartDate = "cohort_start_date",
+      targetEndDate = NULL,
+      window = indicationWindow,
+      targetCohortId = indicationCohortId,
+      nameStyle = "indication_{window_name}_{cohort_name}",
+      name = omopgenerics::uniqueTableName(tablePrefix)
     ) |>
-    dplyr::distinct()
+    indicationToStrata(prefix = tablePrefix)
 
-  # add indications that are cohorts
-  ind <- addCohortIndication(ind, indicationCohortName, indicationWindow,nameformat,unknownIndicationTable,indicationCohortId, prefix = tablePrefix)
 
   # add the indication columns to the original table
   result <- x |>
     dplyr::left_join(
-      ind |> dplyr::rename(!!indexDate := "cohort_start_date"),
+      ind,
       by = c("subject_id", indexDate)
     ) |>
-    indicationToStrata(prefix = tablePrefix) |>
-    dplyr::compute(
-      name = omopgenerics::uniqueTableName(tablePrefix),
-      temporary = FALSE,
-      overwrite = TRUE
-    )
-
-
-  result <- result |> dplyr::compute(name = comp$name, temporary = comp$temporary)
+    dplyr::compute(name = comp$name, temporary = comp$temporary)
 
   omopgenerics::dropTable(
     cdm = cdm, name = dplyr::starts_with(tablePrefix)
   )
 
   return(result)
-}
-
-#' get cohort names
-#' @noRd
-getCohortName <- function (name) {
-  name <- substr(name, 1, utils::tail(unlist(gregexpr('_', name)), n = 3) - 1)
-}
-
-#' get indication name from gap and termination
-#' @noRd
-indicationName <- function(window, termination = "") {
-  paste0("indication_", tolower(as.character(window[1])),"_to_",
-         tolower(as.character(window[2])), termination)
 }
 
 #' Add cohort indications
@@ -225,10 +217,6 @@ addNoneIndication <- function(x, window) {
     dplyr::mutate(!!indicationName(window, "_none") := !!rlang::parse_expr(columns))
 }
 
-#' Create new variables summarising the data of indication that can be used as
-#' stratification columns
-#'
-#' @noRd
 indicationToStrata <- function(cohort,
                                indicationVariables = indicationColumns2(cohort),
                                keep = FALSE,
@@ -342,6 +330,22 @@ addBinaryFromCategorical <- function(x, binaryColumns, newColumn, label = binary
 indicationColumns2 <- function(x) {
   names <- colnames(x)[substr(colnames(x), 1, 11) == "indication_"]
   return(names)
+}
+
+getWindowNames <- function (window) {
+  getname <- function(element) {
+    element <- tolower(as.character(element))
+    element <- gsub("-", "m", element)
+    invisible(paste0(element[1], "_to_", element[2]))
+  }
+  windowNames <- names(window)
+  if (is.null(windowNames)) {
+    windowNames <- lapply(window, getname)
+  } else {
+    id <- windowNames == ""
+    windowNames[id] <- lapply(window[id], getname)
+  }
+  invisible(windowNames)
 }
 
 

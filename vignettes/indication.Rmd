@@ -128,7 +128,7 @@ You can also summarise the indications by using the `strata` argument in the `su
 cdm[["acetaminophen_users"]] |>
   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
   summariseIndication(
-    strata = list("age" = "age_group", "sex" = "sex"),
+    strata = list("age_group", "sex"),
     indicationCohortName = "indications_cohort",
     indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
     unknownIndicationTable =  c("condition_occurrence")
@@ -142,7 +142,7 @@ Then you can also use the `tableIndication` function to create a `gt` style tabl
 cdm[["acetaminophen_users"]] |>
   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
   summariseIndication(
-    strata = list("age" = "age_group", "sex" = "sex"),
+    strata = list("age_group", "sex"),
     indicationCohortName = "indications_cohort",
     indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
     unknownIndicationTable =  c("condition_occurrence")

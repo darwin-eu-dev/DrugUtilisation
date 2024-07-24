@@ -136,7 +136,7 @@ summariseDrugUtilisation <- function(cohort,
   # summarise drug use columns
   result <- suppressMessages(
     PatientProfiles::summariseResult(
-      table = cohort, group = list("cohort_name" = "cohort_name"),
+      table = cohort, group = list("cohort_name"),
       strata = strata, variables = drugUseCols,
       estimates = estimates
     )) %>%

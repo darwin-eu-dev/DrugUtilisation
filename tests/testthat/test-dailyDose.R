@@ -84,7 +84,8 @@ test_that("functionality of addDailyDose function",{
   )
 
   cdm <- mockDrugUtilisation(
-    connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     seed = 11,
     drug_strength = drug_strength,
     concept = concept,
@@ -244,4 +245,6 @@ test_that("functionality of addDailyDose function",{
 
   #check it works without specifying cdm object
   expect_no_error(addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))
+
+  mockDisconnect(cdm = cdm)
 })

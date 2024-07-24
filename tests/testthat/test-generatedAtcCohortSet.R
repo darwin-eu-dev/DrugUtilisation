@@ -1,9 +1,9 @@
 test_that("test same results for ingredient cohorts", {
-  cdm <- DrugUtilisation::mockDrugUtilisation()
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   cdm <- generateAtcCohortSet(cdm = cdm, name = "test_cohort_1")
 
-  cdm <- DrugUtilisation::generateDrugUtilisationCohortSet(
+  cdm <- generateDrugUtilisationCohortSet(
     cdm = cdm,
     conceptSet = CodelistGenerator::getATCCodes(cdm),
     name = "test_cohort_2"
@@ -17,5 +17,6 @@ test_that("test same results for ingredient cohorts", {
 
   expect_equal(cohort_1_df, cohort_2_df)
 
+  mockDisconnect(cdm = cdm)
 })
 

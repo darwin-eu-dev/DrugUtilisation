@@ -1,7 +1,5 @@
 test_that("test summariseTreatment", {
-  cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails
-  )
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
   expect_no_error(
     x <- cdm$cohort1 |>
       summariseTreatment(
@@ -49,4 +47,6 @@ test_that("test summariseTreatment", {
   # test suppress
   x_sup <- omopgenerics::suppress(x)
   expect_true(all(is.na(x_sup |> dplyr::filter(estimate_value != "0") |> dplyr::pull("estimate_name"))))
+
+  mockDisconnect(cdm = cdm)
 })

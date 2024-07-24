@@ -147,6 +147,8 @@ test_that("Basic functionality", {
   # multiple igredients
 
   # nameStyle
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("gapEra consecutive prescriptions", {
@@ -184,6 +186,8 @@ test_that("gapEra consecutive prescriptions", {
   )
   expect_identical(x$number_exposures_ingredient_1125315_descendants, 2L)
   expect_identical(x$number_eras_ingredient_1125315_descendants, 1L)
+
+  mockDisconnect(cdm = cdm)
 })
 
 
@@ -334,4 +338,6 @@ test_that("test subfunctions", {
   expect_snapshot(addCumulativeDose(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addInitialDailyDose(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addDrugUtilisation(cdm$dus_cohort), error = TRUE)
+
+  mockDisconnect(cdm = cdm)
 })
