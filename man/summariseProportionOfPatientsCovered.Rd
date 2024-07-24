@@ -2,7 +2,7 @@
 % Please edit documentation in R/summariseProportionOfPatientsCovered.R
 \name{summariseProportionOfPatientsCovered}
 \alias{summariseProportionOfPatientsCovered}
-\title{summarise proportion Of patients covered}
+\title{Summarise proportion Of patients covered}
 \usage{
 summariseProportionOfPatientsCovered(
   cohort,
@@ -14,8 +14,8 @@ summariseProportionOfPatientsCovered(
 \arguments{
 \item{cohort}{A cohort table}
 
-\item{cohortId}{Cohort definition id of interest. If NUll all cohorts will
-be considered.}
+\item{cohortId}{Cohort definition ID of interest. If NUll, results for all
+cohorts will be returned.}
 
 \item{strata}{List of variables to stratify by.}
 
@@ -27,5 +27,8 @@ last cohort end date will be used}
 A summarised result
 }
 \description{
-summarise proportion Of patients covered
+Gives the proportion of patients still in observation who are
+in the cohort on any given day following their first cohort entry. This is
+known as the “proportion of patients covered” (PPC) method for assessing
+treatment persistence.
 }
