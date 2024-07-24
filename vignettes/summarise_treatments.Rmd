@@ -29,7 +29,7 @@ function.
 
 ## Create mock table
 
-We will use mock data contained in the package thoughout the vignette. Let's
+We will use mock data contained in the package throughout the vignette. Let's
 modify cohort tables `cohort1` and `cohort2` in our mock dataset, so the frist
 includes 3 subcohorts of health conditions, while the second contains three 
 treatments.

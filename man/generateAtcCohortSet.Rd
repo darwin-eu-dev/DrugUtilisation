@@ -2,7 +2,7 @@
 % Please edit documentation in R/generateAtcCohortSet.R
 \name{generateAtcCohortSet}
 \alias{generateAtcCohortSet}
-\title{Generates a cohort of the drug use of ATC name(s) of interest.}
+\title{Generate a set of drug cohorts based on ATC classification}
 \usage{
 generateAtcCohortSet(
   cdm,
@@ -20,11 +20,11 @@ generateAtcCohortSet(
 )
 }
 \arguments{
-\item{cdm}{A cdm_reference object.}
+\item{cdm}{A cdm reference.}
 
-\item{name}{Name of the GeneratedCohortSet}
+\item{name}{The name of the new cohort table to add to the cdm reference.}
 
-\item{atcName}{Names of ATC of interest.}
+\item{atcName}{Names of ATC classification of interest.}
 
 \item{level}{ATC level. Can be one or more of "ATC 1st", "ATC 2nd",
 "ATC 3rd", "ATC 4th", and "ATC 5th"}
@@ -34,7 +34,8 @@ will be returned. If NULL, descendant codes will be returned regardless
 of dose form.}
 
 \item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
+considered in the same era. Records that have fewer days between them than
+this gap will be concatenated into the same cohort record.}
 
 \item{durationRange}{Deprecated.}
 
@@ -49,19 +50,31 @@ considered in the same era.}
 \item{limit}{Deprecated.}
 }
 \value{
-The function returns the 'cdm' object with the created cohorts as
-references of the object.
+The function returns the cdm reference provided with the addition of
+the new cohort table.
 }
 \description{
-Generates a cohort of the drug use of ATC name(s) of interest.
+Adds a new cohort table to the cdm reference with individuals who have drug
+exposure records that belong to the specified Anatomical Therapeutic Chemical
+(ATC) classification. Cohort start and end dates will be based on drug record
+start and end dates, respectively. Records that overlap or have fewer days
+between them than the specified gap era will be concatenated into a single
+cohort entry.
 }
 \examples{
 \donttest{
 library(DrugUtilisation)
+library(dplyr)
+
 cdm <- mockDrugUtilisation()
-cdm <- generateAtcCohortSet(cdm, name =  "test", priorObservation = 365)
-cdm
-cdm$test
-settings(cdm$test)
+
+cdm <- generateAtcCohortSet(
+cdm = cdm,
+atcName = "alimentary tract and metabolism",
+name = "drugs"
+)
+
+cdm$drugs |>
+glimpse()
 }
 }

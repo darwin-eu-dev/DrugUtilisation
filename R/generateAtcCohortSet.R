@@ -14,18 +14,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Generates a cohort of the drug use of ATC name(s) of interest.
+#' Generate a set of drug cohorts based on ATC classification
 #'
-#' @param cdm A cdm_reference object.
-#' @param name Name of the GeneratedCohortSet
-#' @param atcName Names of ATC of interest.
+#' @description
+#' Adds a new cohort table to the cdm reference with individuals who have drug
+#' exposure records that belong to the specified Anatomical Therapeutic Chemical
+#' (ATC) classification. Cohort start and end dates will be based on drug record
+#' start and end dates, respectively. Records that overlap or have fewer days
+#' between them than the specified gap era will be concatenated into a single
+#' cohort entry.
+#'
+#' @param cdm A cdm reference.
+#' @param name The name of the new cohort table to add to the cdm reference.
+#' @param atcName Names of ATC classification of interest.
 #' @param level ATC level. Can be one or more of "ATC 1st", "ATC 2nd",
 #' "ATC 3rd", "ATC 4th", and "ATC 5th"
 #' @param doseForm Only descendants codes with the specified dose form
 #' will be returned. If NULL, descendant codes will be returned regardless
 #' of dose form.
 #' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era.
+#' considered in the same era. Records that have fewer days between them than
+#' this gap will be concatenated into the same cohort record.
 #' @param durationRange Deprecated.
 #' @param imputeDuration Deprecated.
 #' @param priorUseWashout Deprecated
@@ -33,19 +42,26 @@
 #' @param cohortDateRange Deprecated.
 #' @param limit Deprecated.
 #'
-#' @return The function returns the 'cdm' object with the created cohorts as
-#' references of the object.
+#' @return The function returns the cdm reference provided with the addition of
+#' the new cohort table.
 #'
 #' @export
 #'
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
+#' library(dplyr)
+#'
 #' cdm <- mockDrugUtilisation()
-#' cdm <- generateAtcCohortSet(cdm, name =  "test", priorObservation = 365)
-#' cdm
-#' cdm$test
-#' settings(cdm$test)
+#'
+#' cdm <- generateAtcCohortSet(
+#' cdm = cdm,
+#' atcName = "alimentary tract and metabolism",
+#' name = "drugs"
+#' )
+#'
+#' cdm$drugs |>
+#' glimpse()
 #' }
 generateAtcCohortSet <- function(cdm,
                                  name,

@@ -18,17 +18,18 @@ articles:
   - TBR_route_pattern_dose
 
 reference:
-- subtitle: Generate a drug utilisation cohort set
-  desc: Generate a cohort of drug use
+- subtitle: Generate a set of drug cohorts
+  desc: Generate a set of drug cohorts using given concepts or vocabulary hierarchies
 - contents:
   - generateDrugUtilisationCohortSet
   - generateIngredientCohortSet
   - generateAtcCohortSet
-  desc: Apply inclusion criteria to the drug cohorts
+- subtitle: Apply inclusion criteria to drug cohorts
+  desc: Apply inclusion criteria that filter drug cohort entries based on specified rules.
 - contents:
   - matches("require*")
-- subtitle: Indication functions
-  desc: Indication functions are used to summarise and obtain the indication information
+- subtitle: Identify and summarise indications for patients in drug cohorts
+  desc: Indications idendtified based on their presence in indication cohorts or OMOP CDM clinical tabes.
 - contents:
   - matches("*Indication")
 - subtitle: Add daily dose

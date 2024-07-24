@@ -1,5 +1,8 @@
 test_that("test benchmarking function", {
   skip_on_cran()
+
+  skip_if_not_installed("tictoc")
+
   cdm <- mockDrugUtilisation(numberIndividuals = 100)
 
 

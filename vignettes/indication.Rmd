@@ -108,19 +108,18 @@ cdm[["acetaminophen_users"]] |>
   )
 ```
 
-Use `indicationGap` to specify the indication gaps, which are defined as the gap between the event and the indication. Additionally, you can use `unknownIndicationTable` to specify the tables to look for unknown indication. 
+Use `indicationWindow` to specify the time window of interests, which are defined as the time window between the event and the indication. Additionally, you can use `unknownIndicationTable` to specify the tables to look for unknown indication. In above example we specified three different time window. So it added three columns to your cohort, one for each time window your specified.
 
 ## Summarise indications with summariseIndication()
-To create a summary table of the indications cohort, you can use the `summariseIndication()` function.
+To create a summary table of the indications cohort, you can use the `summariseIndication()` function. It contain similar arguments to  `addIndication()`, but it return a summary table of the indications.
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 cdm[["acetaminophen_users"]] |>
   summariseIndication(
     indicationCohortName = "indications_cohort",
-    indicationWindow =  list(c(0, 0), c(0, 30), c(0,365)),
+    indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
     unknownIndicationTable =  c("condition_occurrence")
-  ) |>
-  dplyr::select("variable_name", "estimate_name", "estimate_value")
+  )
 ```
 
 You can also summarise the indications by using the `strata` argument in the `summariseIndication()` function. In the example below, it is summarized by `ageGroup` and `sex`.
@@ -129,9 +128,24 @@ You can also summarise the indications by using the `strata` argument in the `su
 cdm[["acetaminophen_users"]] |>
   addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
   summariseIndication(
+    strata = list("age" = "age_group", "sex" = "sex"),
     indicationCohortName = "indications_cohort",
-    indicationWindow =  list(c(0, 0), c(0, 30), c(0,365)),
+    indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
     unknownIndicationTable =  c("condition_occurrence")
-  ) |>
-  dplyr::select("variable_name", "estimate_name", "estimate_value")
+  )
+```
+
+Then you can also use the `tableIndication` function to create a `gt` style table from the output of `summariseIndication`.
+
+```{r, eval=TRUE, message= FALSE, warning=FALSE}
+
+cdm[["acetaminophen_users"]] |>
+  addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
+  summariseIndication(
+    strata = list("age" = "age_group", "sex" = "sex"),
+    indicationCohortName = "indications_cohort",
+    indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
+    unknownIndicationTable =  c("condition_occurrence")
+  ) |> 
+  tableIndication()
 ```

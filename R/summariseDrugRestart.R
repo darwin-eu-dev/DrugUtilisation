@@ -32,7 +32,7 @@
 #' @param censorDate Date of censoring. Individuals are always censored at the
 #' end of observation.
 #'
-#' @return A summarised_result object with the percentages of restart, swicth
+#' @return A summarised_result object with the percentages of restart, switch
 #' and not exposed per window.
 #'
 #' @export

@@ -2,7 +2,7 @@
 % Please edit documentation in R/require.R
 \name{requireDrugInDateRange}
 \alias{requireDrugInDateRange}
-\title{Restrict to observations that have an indexDate within a certain range.}
+\title{Restrict cohort to only cohort records within a certain date range}
 \usage{
 requireDrugInDateRange(
   cohort,
@@ -15,29 +15,39 @@ requireDrugInDateRange(
 \arguments{
 \item{cohort}{A cohort table in a cdm reference.}
 
-\item{dateRange}{Date interval to consider.}
+\item{dateRange}{Date interval to consider. Any records with the index date
+outside of this range will be dropped.}
 
-\item{indexDate}{Column that points to a date column in cohort.}
+\item{indexDate}{The column containing the date that will be checked against
+the date range.}
 
 \item{cohortId}{IDs of the cohorts to modify. The default is NULL meaning all
 cohorts will be used; otherwise, only the specified cohorts will be modified,
 and the rest will remain unchanged.}
 
-\item{name}{Name of the new cohort. Default name is the original cohort name.}
+\item{name}{Name of the table with the filtered cohort records. The default
+name is the original cohort name, where the original table will be
+overwritten.}
 }
 \value{
-The cohort table object with the requirements applied.
+The cohort table having applied the date requirement.
 }
 \description{
-Restrict to observations that have an indexDate within a certain range.
+Filter the cohort table keeping only the cohort records for which the
+specified index date is within a specified date range.
 }
 \examples{
 \donttest{
+library(DrugUtilisation)
+library(dplyr)
+
 cdm <- mockDrugUtilisation()
+
 cdm$cohort1 <- cdm$cohort1 |>
   requireDrugInDateRange(
-    dateRange = as.Date(c("2020-01-01", NA)), cohortId = 1)
-attrition(cdm$cohort1)
+    dateRange = as.Date(c("2020-01-01", NA)))
+
+attrition(cdm$cohort1) |> glimpse()
 }
 
 }
