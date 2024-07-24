@@ -97,7 +97,7 @@ summariseIndication <- function(cohort,
   cohort <- cohort |>
     dplyr::select(!dplyr::any_of("cohort_name")) |>
     PatientProfiles::addCohortName() |>
-    dplyr::select(dplyr::all_of(c("subject_id", indexDate, "cohort_name"))) |>
+    dplyr::select(dplyr::all_of(c("subject_id", indexDate, "cohort_name", censorDate, unique(unlist(strata))))) |>
     addIndication(
       indicationCohortName = indicationCohortName,
       indicationCohortId = indicationCohortId,
@@ -138,35 +138,12 @@ summariseIndication <- function(cohort,
   result <- result |>
     dplyr::select(-"cdm_name") |>
     PatientProfiles::addCdmName(cdm = cdm) |>
-    dplyr::mutate(!!!q)
-
-  # make sure all indications are reported
-  vars <- result$variable_name |> unique()
-  vars <- vars[!is.na(vars)]
-  indications <- settings(cdm[[indicationCohortName]])
-  if (!is.null(indicationCohortId)) {
-    indications <- indications |>
-      dplyr::filter(.data$cohort_definition_id %in% .env$indicationCohortId)
-  }
-  indications <- c(indications$cohort_name, ifelse(length(unknownIndicationTable) > 0, "unknown", character()), "none")
-  allcombs <- tidyr::expand_grid(
-    "variable_name" = vars, "variable_level" = indications
-  )
-  result |>
-    dplyr::full_join(
-      result |>
-        dplyr::select(
-          "result_id", "cdm_name", "group_name", "group_level", "strata_name",
-          "strata_level", "additional_name", "additional_level", "estimate_name",
-          "estimate_type") |>
-        dplyr::distinct() |>
-        dplyr::cross_join(allcombs),
-      by = colnames(result)[!colnames(result) %in% c("estimate_value", "variable_level")],
-      relationship = "many-to-many"
-    )
+    dplyr::mutate(!!!q) |>
+    # make sure all indications are reported
+    indicationCombinations(
+      settings(cdm[[indicationCohortName]]), indicationCohortId, unknownIndicationTable)
 
   result <- result |>
-    dplyr::arrange(.data$group_level)
     omopgenerics::newSummarisedResult(
       settings = dplyr::tibble(
         result_id = unique(result$result_id),
@@ -215,4 +192,59 @@ windowName <- function(win) {
     nm <- glue::glue("from {daysWord(min)} {temporalWord(min)} to {daysWord(max)} {temporalWord(max)} the index date")
   }
   return(nm)
+}
+indicationCombinations <- function(result, set, indicationCohortId, unknownIndicationTable) {
+  vars <- result$variable_name |> unique()
+  vars <- vars[startsWith(vars, "Indication")]
+  if (!is.null(indicationCohortId)) {
+    set <- set |>
+      dplyr::filter(.data$cohort_definition_id %in% .env$indicationCohortId)
+  }
+  indications <- set$cohort_name |> sort()
+  combs <- rep(list(c(0, 1)), length(indications))
+  names(combs) <- indications
+  combs <- tidyr::expand_grid(!!!combs)
+  indications <- character()
+  for (k in 2:nrow(combs)) {
+    cols <- combs[k,] |> as.list() |> unlist()
+    nms <- names(cols)[cols == 1]
+    indications <- c(indications, paste0(nms, collapse = " and "))
+  }
+  indications <- c(indications, ifelse(length(unknownIndicationTable) > 0, "unknown", character()), "none")
+  allcombs <- dplyr::tibble(
+    "variable_name" = c("number records", "number subjects"),
+    "variable_level" = NA_character_
+  ) |>
+    dplyr::union_all(tidyr::expand_grid(
+      "variable_name" = vars, "variable_level" = indications
+    ))
+  order <- result |>
+    dplyr::select(
+      "result_id", "cdm_name", "group_name", "group_level", "strata_name",
+      "strata_level", "additional_name", "additional_level") |>
+    dplyr::distinct() |>
+    dplyr::cross_join(allcombs) |>
+    dplyr::mutate("order_id" = dplyr::row_number())
+  cols <- colnames(result)
+  cols <- cols[!cols %in% c("estimate_name", "estimate_type", "estimate_value")]
+  toAdd <- order |>
+    dplyr::mutate(
+      "estimate_value" = "0",
+      "estimate_name" = "count",
+      "estimate_type" = "integer") |>
+    dplyr::union_all(
+      order |>
+        dplyr::mutate(
+          "estimate_value" = "0",
+          "estimate_name" = "percentage",
+          "estimate_type" = "percentage")
+    ) |>
+    dplyr::select(-"order_id") |>
+    dplyr::anti_join(result, by = cols)
+  result <- result |>
+    dplyr::union_all(toAdd) |>
+    dplyr::left_join(order, by = cols) |>
+    dplyr::arrange(.data$order_id, .data$estimate_name) |>
+    dplyr::select(-"order_id")
+  return(result)
 }

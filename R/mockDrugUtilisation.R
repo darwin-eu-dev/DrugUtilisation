@@ -64,9 +64,14 @@ mockDrugUtilisation <- function(con = NULL,
   # set seed
   if (!is.null(seed)) set.seed(seed)
 
+  if (!all(c("person", "observation_period") %in% names(tables))) {
+    minDates <- calculateMinDate(tables)
+  }
+
   # create person if NULL
   if (!"person" %in% names(tables)) {
-    tables$person <- createPersonTable(numberIndividuals)
+    tables$person <- createPersonTable(numberIndividuals, tables) |>
+      correctPersonDates(minDates)
   } else {
     tables$person <- tables$person |>
       dplyr::mutate(birth_datetime = as.Date(
@@ -82,7 +87,8 @@ mockDrugUtilisation <- function(con = NULL,
 
   # create observation_period if NULL
   if (!"observation_period" %in% names(tables)) {
-    tables$observation_period <- createObservationPeriod(tables$person)
+    tables$observation_period <- createObservationPeriod(tables$person) |>
+      correctObsDates(minDates)
   }
 
   # create drug_exposure if NULL
@@ -165,9 +171,23 @@ vocabularyTables <- function(concept, concept_ancestor, drug_strength, concept_r
 }
 
 # To create the person tables
-createPersonTable <- function(numberIndividuals) {
+createPersonTable <- function(numberIndividuals, tables) {
+  persons <- integer()
+  for (k in seq_along(tables)) {
+    cols <- colnames(tables[[k]])
+    if ("subject_id" %in% cols) {
+      persons <- c(persons, tables[[k]]$subject_id) |> unique()
+    }
+    if ("person_id" %in% cols) {
+      persons <- c(persons, tables[[k]]$person_id) |> unique()
+    }
+  }
+  if (length(persons) == 0) {
+    persons <- seq_len(numberIndividuals) |> as.integer()
+  }
+  numberIndividuals <- length(persons)
   person <- dplyr::tibble(
-    person_id = 1:numberIndividuals,
+    person_id = persons,
     gender_concept_id = sample(c(8507, 8532), numberIndividuals, T),
     year_of_birth = sample(1950:2020, numberIndividuals, T),
     day_of_birth = sample(1:365, numberIndividuals, T),
@@ -193,7 +213,7 @@ createPersonTable <- function(numberIndividuals) {
 
 # To create the observation period tables
 createObservationPeriod <- function(person) {
-  person |>
+  obs <- person |>
     dplyr::select("person_id", "birth_datetime") |>
     dplyr::mutate(upper_limit = as.Date("2023-01-01")) |>
     createDate(
@@ -211,6 +231,49 @@ createObservationPeriod <- function(person) {
       "observation_period_id", "person_id", "observation_period_start_date",
       "observation_period_end_date", "period_type_concept_id"
     )
+  return(obs)
+}
+
+calculateMinDate <- function(tables) {
+  # correct for current observations
+  minDate <- dplyr::tibble(person_id = integer(), date = as.Date(character()))
+  for (k in seq_along(tables)) {
+    tab <- tables[[k]]
+    cols <- colnames(tab)
+    id <- c("person_id", "subject_id")
+    id <- id[id %in% cols]
+    cdates <- cols[endsWith(cols, "_date")]
+    if (length(id) == 1) {
+      for (col in cdates) {
+        minDate <- minDate |>
+          dplyr::union_all(
+            tab |>
+              dplyr::select(
+                "person_id" = dplyr::all_of(id), "date" = dplyr::all_of(col)
+              ) |>
+              dplyr::mutate(
+                "person_id" = as.integer(.data$person_id),
+                "date" = as.Date(.data$date)
+              ) |>
+              dplyr::distinct()
+          )
+      }
+    }
+  }
+  if (nrow(minDate) > 0) {
+    minDate <- minDate |>
+      dplyr::group_by(.data$person_id) |>
+      dplyr::summarise(
+        "date_min" = min(.data$date, na.rm = TRUE),
+        "date_max" = max(.data$date, na.rm = TRUE)
+      )
+  } else {
+    minDate <- dplyr::tibble(
+      person_id = integer(),
+      date_min = as.Date(character()),
+      date_max = as.Date(character()))
+  }
+  return(minDate)
 }
 
 # To create the cohorts or add the attributes to the existing ones
@@ -249,6 +312,9 @@ createCohort <- function(observation_period) {
 
 # To create a random date between two dates
 createDate <- function(x, newColumn, lowerLimit, upperLimit) {
+  if (nrow(x) == 0) {
+    return(x |> dplyr::mutate(!!newColumn := as.Date(character())))
+  }
   x |>
     dplyr::rowwise() |>
     dplyr::mutate(
@@ -420,6 +486,42 @@ createObservation <- function(observation_period, concept) {
     )
   }
   return(observation)
+}
+
+correctPersonDates <- function(tab, minDates) {
+  if (nrow(minDates) > 0) {
+    tab <- tab |>
+      dplyr::left_join(minDates, by = "person_id") |>
+      dplyr::mutate(
+        id = .data$date_min < as.Date(.data$birth_datetime),
+        year_of_birth = dplyr::if_else(.data$id, format(.data$date_min, "%Y") |> as.integer(), .data$year_of_birth),
+        month_of_birth = dplyr::if_else(.data$id, format(.data$date_min, "%m") |> as.integer(), .data$month_of_birth),
+        day_of_birth = dplyr::if_else(.data$id, format(.data$date_min, "%d") |> as.integer(), .data$day_of_birth)
+      ) |>
+      dplyr::select(-"id", -"date_min", -"date_max")
+  }
+  return(tab)
+}
+
+correctObsDates <- function(tab, datesRange) {
+  if (nrow(datesRange) > 0) {
+    tab <- tab |>
+      dplyr::left_join(datesRange, by = "person_id") |>
+      dplyr::mutate(
+        "observation_period_start_date" = dplyr::if_else(
+          .data$date_min < .data$observation_period_start_date,
+          .data$date_min,
+          .data$observation_period_start_date
+        ),
+        "observation_period_end_date" = dplyr::if_else(
+          .data$date_max > .data$observation_period_end_date,
+          .data$date_max,
+          .data$observation_period_end_date
+        )
+      ) |>
+      dplyr::select(-"date_min", -"date_max")
+  }
+  return(tab)
 }
 
 isCohort <- function(x) {

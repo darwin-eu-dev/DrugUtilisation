@@ -24,7 +24,7 @@
 #' are neither in an indication cohort or a clinical table they will be
 #' considered as having no observed indication.
 #'
-#' @param x Table in the cdm
+#' @param cohort A cohort table in the cdm.
 #' @param indicationCohortName Name of indication cohort table
 #' @param indicationCohortId target cohort Id to add indication
 #' @param indicationWindow time window of interests
@@ -58,7 +58,7 @@
 #'   glimpse()
 #' }
 #'
-addIndication <- function(x,
+addIndication <- function(cohort,
                           indicationCohortName,
                           indicationCohortId = NULL,
                           indicationWindow = list(c(0,0)),
@@ -66,13 +66,13 @@ addIndication <- function(x,
                           indexDate = "cohort_start_date",
                           censorDate = NULL,
                           name = NULL) {
-  cdm <- omopgenerics::cdmReference(x)
+  cdm <- omopgenerics::cdmReference(cohort)
 
   comp <- newTable(name)
 
   # check inputs
   checkInputs(
-    x = x, cdm = cdm, indicationCohortName = indicationCohortName,
+    x = cohort, cdm = cdm, indicationCohortName = indicationCohortName,
     indicationDate = indexDate, window = indicationWindow,
     unknownIndicationTable = unknownIndicationTable, name = name
   )
@@ -98,7 +98,7 @@ addIndication <- function(x,
   names(indicationWindow) <- paste0("win", seq_along(indicationWindow))
 
   # select to interest individuals
-  ind <- x |>
+  ind <- cohort |>
     dplyr::select(dplyr::all_of(c("subject_id", censorDate, indexDate))) |>
     dplyr::distinct() |>
     PatientProfiles::addCohortIntersectFlag(
@@ -117,20 +117,23 @@ addIndication <- function(x,
       window = indicationWindow, table = unknownIndicationTable,
       name = tmpName) |>
     dplyr::select(-dplyr::any_of(censorDate)) |>
-    collapseIndication(window = indicationWindow, name = tmpName) |>
+    collapseIndication(
+      window = indicationWindow,
+      name = tmpName,
+      unknown = length(unknownIndicationTable) > 0) |>
     renameWindows(windowNames)
 
-  newCols <- colnames(result)
-  newCols <- newCols[!newCols %in% c("subject_id", indexDate, censorDate)]
-  toDrop <- intersect(newCols, colnames(x))
+  newCols <- colnames(ind)
+  newCols <- newCols[!newCols %in% c("subject_id", indexDate)]
+  toDrop <- intersect(newCols, colnames(cohort))
   if(length(toDrop) > 0){
     cli::cli_warn("Overwriting existing variables: {toDrop}")
-    x <- x |>
-      dplyr::select(!toDrop)
+    cohort <- cohort |>
+      dplyr::select(!dplyr::all_of(toDrop))
   }
-  
+
   # add the indication columns to the original table
-  result <- x |>
+  result <- cohort |>
     dplyr::left_join(ind, by = c("subject_id", indexDate)) |>
     dplyr::compute(name = comp$name, temporary = comp$temporary)
 
@@ -187,11 +190,12 @@ addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) 
   return(x)
 
 }
-collapseIndication <- function(x, window, name) {
+collapseIndication <- function(x, window, name, unknown) {
   indications <- colnames(x)
   indications <- indications[startsWith(indications, "i_win1_")]
   indications <- substr(indications, 8, nchar(indications))
   indications <- indications[indications != "unknown"]
+  indications <- sort(indications)
 
   combs <- rep(list(c(1, 0)), length(indications))
   names(combs) <- paste0("i_x1x_", indications)
@@ -207,8 +211,8 @@ collapseIndication <- function(x, window, name) {
     val <- paste0(vals, " ~ '", nms, "'")
     xx <- c(xx, val)
   }
-  xx <- c(xx, ".data[['i_x1x_unknown']] == 1 ~ 'unknown'") |>
-    paste0(collapse = ", ")
+  if (unknown) xx <- c(xx, ".data[['i_x1x_unknown']] == 1 ~ 'unknown'")
+  xx <- paste0(xx, collapse = ", ")
 
   q <- character()
   nms <- character()

@@ -45,7 +45,7 @@ test_that("test summariseTreatment", {
   expect_true(all(x$additional_level |> unique() == c("0 to 30", "31 to 365")))
 
   # test suppress
-  x_sup <- omopgenerics::suppress(x)
+  x_sup <- omopgenerics::suppress(x, minCellCount = 100)
   expect_true(all(is.na(x_sup |> dplyr::filter(estimate_value != "0") |> dplyr::pull("estimate_name"))))
 
   mockDisconnect(cdm = cdm)

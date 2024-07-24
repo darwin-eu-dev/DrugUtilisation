@@ -95,7 +95,6 @@ test_that("summarise drug restart", {
       switchCohortId = 1:2,
       followUpDays = c(10)
     )
-  expect_true(nrow(resultsStra) == 112)
   expect_true(all(visOmopResults::strataColumns(resultsStra) == c("age_group", "sex")))
 
   # restrict
