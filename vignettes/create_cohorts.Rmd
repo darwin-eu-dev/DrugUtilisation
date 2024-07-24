@@ -1,7 +1,5 @@
 ---
-title: "Use DrugUtilisation to create a cohort"
-author: "Martí Català, Edward Burn"
-date: "`r Sys.Date()`"
+title: "Creating drug cohorts"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Use DrugUtilisation to create a cohort}
@@ -59,7 +57,7 @@ To create a basic drug users cohort we need two things:
 
 ## Creating a conceptSet
 
-There are four possible forms of a conceptSet:
+There are three possible forms of a conceptSet:
 
 - A named list of concept ids
 ```{r}
@@ -70,20 +68,6 @@ conceptSet
 - A `codelist` object, see `vignette("codelists", package = "omopgenerics")`
 ```{r}
 conceptSet <- list(acetaminophen = c(1, 2, 3)) |> omopgenerics::newCodelist()
-conceptSet
-conceptSet$acetaminophen
-```
-
-- A `codelist_with_details` object, see `vignette("codelists", package = "omopgenerics")`
-```{r}
-conceptSet <- list(acetaminophen = dplyr::tibble(
-  concept_id = c(1125315, 1125360),
-  concept_name = c("acetaminophen", "acetaminophen 500 MG Oral Capsule"),
-  domain_id = "Drug",
-  vocabulary_id = "RxNorm",
-  standard_concept = "S"
-)) |> 
-  omopgenerics::newCodelistWithDetails()
 conceptSet
 conceptSet$acetaminophen
 ```
@@ -653,12 +637,3 @@ Having all this into account the recommended order to apply criteria would be:
 
 Although this is the recommended order, your study design may have a different required specification, for example you may be interested on the first exposure that fulfills some criteria. Thus making applying the require first drug entry at the end.
 
-# Alternatives to create cohorts
-
-`generateDrugUtilisationCohortSet()` is a very specific function to create drug users cohorts. Most of the functions in this package need a cohort as input, this cohort will usually be a cohort generated using `generateDrugUtilisationCohortSet()`, but there exists some alternative to create cohorts
-
-- You can create your own custom cohorts with `tidyverse` functions and `omopgenerics::newCohortTable()`. See omopgenerics vignette.
-
-- You can create concept based cohorts using the `OHDSI` package `CohortConstructor`. See `vignette("a01_building_base_cohorts", package = "CohortConstructor")`.
-
-- You can create cohorts based on ATLAS definitions using CDMConnector. See `vignette("a02_cohorts", package = "CDMConnector.")`.

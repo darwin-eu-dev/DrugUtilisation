@@ -1,6 +1,5 @@
 ---
 title: "Guide on using DrugUtilisataion package to compute drug use related information"
-author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Guide on using DrugUtilisataion package to compute drug use related information}
