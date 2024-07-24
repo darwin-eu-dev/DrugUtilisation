@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Add indications to Drug Utilisation Cohort • DrugUtilisation</title>
+<title>Identify and summarise indications among a drug cohort • DrugUtilisation</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Add indications to Drug Utilisation Cohort">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Identify and summarise indications among a drug cohort">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -41,9 +41,8 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Package functionalities</h6></li>
-    <li><a class="dropdown-item" href="../articles/mock_data.html">Create mock data to test DrugUtilisation package</a></li>
-    <li><a class="dropdown-item" href="../articles/create_cohorts.html">Use DrugUtilisation to create a cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/indication.html">Add indications to Drug Utilisation Cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/create_cohorts.html">Creating drug cohorts</a></li>
+    <li><a class="dropdown-item" href="../articles/indication.html">Identify and summarise indications among a drug cohort</a></li>
     <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Characterise a cohort using Drug Utilisation</a></li>
     <li><a class="dropdown-item" href="../articles/drug_utilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
     <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Obtain treatment summary of a cohort</a></li>
@@ -51,6 +50,7 @@
     <li><a class="dropdown-item" href="../articles/drug_restart.html">Assessing drug restart and switching after treatment</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_add_drug_use.html">Add drug related information to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_route_pattern_dose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
+    <li><a class="dropdown-item" href="../articles/mock_data.html">Create mock data to test DrugUtilisation package</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -71,11 +71,8 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Add indications to Drug Utilisation Cohort</h1>
-                        <h4 data-toc-skip class="author">Mike Du, Martí
-Català</h4>
+      <img src="../logo.png" class="logo" alt=""><h1>Identify and summarise indications among a drug cohort</h1>
             
-            <h4 data-toc-skip class="date">2024-07-24</h4>
       
 
       <div class="d-none name"><code>indication.Rmd</code></div>
@@ -86,13 +83,12 @@ Català</h4>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>In this vignette, we demonstrate how to use the
-<code>addIndications()</code> function to establish a binary indicator
-between a drug utilisation cohort and another concept-based cohort.</p>
+<p>In this vignette, we demonstrate the functionality provided by the
+DrugUtilisation package to help understand the indications of patients
+in a drug cohort.</p>
 <p>The DrugUtilisation package is designed to work with data in the OMOP
 CDM format, so our first step is to create a reference to the data using
-the DBI and CDMConnector packages. The connection to a Postgres database
-would look like:</p>
+the DBI and CDMConnector packages.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dbi.r-dbi.org" class="external-link">DBI</a></span><span class="op">)</span></span>
@@ -100,7 +96,6 @@ would look like:</p>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/" class="external-link">PatientProfiles</a></span><span class="op">)</span></span>
-<span></span>
 <span></span>
 <span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -112,174 +107,749 @@ would look like:</p>
 <div class="section level3">
 <h3 id="create-a-drug-utilisation-cohort">Create a drug utilisation cohort<a class="anchor" aria-label="anchor" href="#create-a-drug-utilisation-cohort"></a>
 </h3>
-<p>We will use <em>acetaminophen</em> as our example drug to construct
-our drug utilisation cohort. To begin, we’ll employ the
-CodelistGenerator package to generate a concept list associated with
-<em>acetaminophen</em>.</p>
+<p>We will use <em>acetaminophen</em> as our example drug. We’ll start
+by creating a cohort of acetaminophen users. Here we’ll include all
+acetaminophen records using a gap era of 7 days, but as we’ve seen in
+the previous vignette we could have also applied various other inclusion
+criteria.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">conceptList</span> <span class="op">&lt;-</span> <span class="fu">CodelistGenerator</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"acetaminophen"</span><span class="op">)</span></span>
-<span><span class="va">conceptList</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; - 161_acetaminophen (7 codes)</span></span></code></pre></div>
-<p>Next, we can create a drug utilisation cohort by using the
-<code>conceptList</code> with the
-<code><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code> function. For a better
-understanding of the arguments and functionalities of
-<code><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code>, please refer to the
-<em>Use DrugUtilisation to create a cohort</em> vignette.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateIngredientCohortSet.html">generateIngredientCohortSet</a></span><span class="op">(</span></span>
 <span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>  name <span class="op">=</span> <span class="st">"acetaminophen_users"</span>,</span>
-<span>  conceptSet <span class="op">=</span> <span class="va">conceptList</span>,</span>
-<span>  limit <span class="op">=</span> <span class="st">"All"</span>,</span>
-<span>  gapEra <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  priorUseWashout <span class="op">=</span> <span class="fl">0</span></span>
+<span>  ingredient <span class="op">=</span> <span class="st">"acetaminophen"</span>, </span>
+<span>  gapEra <span class="op">=</span> <span class="fl">7</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="create-a-indication-cohort">Create a indication cohort<a class="anchor" aria-label="anchor" href="#create-a-indication-cohort"></a>
 </h3>
-<p>Next we going to create our indications cohort to indicate patients
-with sinusitis and bronchitis. This can be done by using
+<p>Next we will create a set of indication cohorts. In this case we will
+create cohorts for sinusitis and bronchitis using
 <code><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">CDMConnector::generateConceptCohortSet()</a></code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">indications</span> <span class="op">&lt;-</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    sinusitis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">257012</span>, <span class="fl">4294548</span>, <span class="fl">40481087</span><span class="op">)</span>,</span>
 <span>    bronchitis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">260139</span>, <span class="fl">258780</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span></span>
-<span>  <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>, name <span class="op">=</span> <span class="st">"indications_cohort"</span>, <span class="va">indications</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/cohortCount.html" class="external-link">cohortCount</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"indications_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/settings.html" class="external-link">settings</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">[[</span><span class="st">"indications_cohort"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">cohort_definition_id</span>, <span class="va">cohort_name</span><span class="op">)</span>,</span>
-<span>    by <span class="op">=</span> <span class="st">"cohort_definition_id"</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 4</span></span></span>
-<span><span class="co">#&gt;   cohort_definition_id number_records number_subjects cohort_name</span></span>
-<span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1           <span style="text-decoration: underline;">2</span>688            <span style="text-decoration: underline;">2</span>688 sinusitis  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    2           <span style="text-decoration: underline;">2</span>546            <span style="text-decoration: underline;">2</span>546 bronchitis</span></span></code></pre></div>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/generateConceptCohortSet.html" class="external-link">generateConceptCohortSet</a></span><span class="op">(</span><span class="va">cdm</span>, name <span class="op">=</span> <span class="st">"indications_cohort"</span>, <span class="va">indications</span><span class="op">)</span></span>
+<span><span class="va">cdm</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="add-indications-with-addindication-function">Add indications with addIndication() function<a class="anchor" aria-label="anchor" href="#add-indications-with-addindication-function"></a>
 </h2>
-<p>Then to add indication to the drug utilisation cohort we can simple
-use the <code><a href="../reference/addIndication.html">addIndication()</a></code> function. To do that, we only need
-the drug utilisation cohort and the <code>indicationCohortName</code>.
-However, other arguments can be specified using the additional
-parameters. An example is provided below.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<p>Now that we have these two cohort tables, one with our drug cohort
+and another with our indications cohort, we can assess patient
+indications. For this we will specify a time window around the drug
+cohort start date for which we identify any intersection with the
+indication cohort. We can add this information as a new variable on our
+cohort table.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
 <span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
-<span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
+<span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>, </span>
+<span>    indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span></span>
 <span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Source:   table&lt;og_006_1721852228&gt; [?? x 7]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpaO6j4M/file1c79536f2455.duckdb]</span></span></span>
-<span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
-<span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1       <span style="text-decoration: underline;">2</span>961 1994-06-29        1994-07-13     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1       <span style="text-decoration: underline;">3</span>423 1992-04-16        1992-04-30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1       <span style="text-decoration: underline;">3</span>949 1976-01-11        1976-01-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1       <span style="text-decoration: underline;">4</span>606 1987-09-07        1987-09-14     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1       <span style="text-decoration: underline;">1</span>217 2003-07-05        2003-07-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1       <span style="text-decoration: underline;">3</span>967 1980-01-18        1980-01-25     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1       <span style="text-decoration: underline;">2</span>298 1978-02-21        1978-03-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1       <span style="text-decoration: underline;">3</span>167 1966-07-06        1966-07-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1       <span style="text-decoration: underline;">3</span>184 1973-01-29        1973-02-12     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1       <span style="text-decoration: underline;">2</span>291 2001-03-14        2001-03-21     </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: indication_0_to_0 &lt;chr&gt;, indication_m30_to_0 &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   indication_m365_to_0 &lt;chr&gt;</span></span></span></code></pre></div>
-<p>Use <code>indicationWindow</code> to specify the time window of
-interests, which are defined as the time window between the event and
-the indication. Additionally, you can use
-<code>unknownIndicationTable</code> to specify the tables to look for
-unknown indication. In above example we specified three different time
-window. So it added three columns to your cohort, one for each time
-window your specified.</p>
+<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rows: ??</span></span>
+<span><span class="co">#&gt; Columns: 5</span></span>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span>
+<span><span class="co">#&gt; $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
+<span><span class="co">#&gt; $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2566, 2909, 3040, 185, 1532, 2925, 3218, 3241, 46…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1946-09-18, 1952-03-21, 1985-06-17, 1977-04-30, …</span></span>
+<span><span class="co">#&gt; $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1946-09-25, 1952-03-28, 1985-07-01, 1977-05-14, …</span></span>
+<span><span class="co">#&gt; $ indication_m30_to_0  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Bronchitis", "Bronchitis", "Bronchitis", "Bronch…</span></span></code></pre></div>
+<p>We can see that individuals are classified as having sinusistis
+(without bronchitis), bronchitis (without sinusitis), sinusitis and
+bronchitis, or no observed indication.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [4 x 2]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bronchitis and Sinusitis     3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sinusitis                   18</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> None                     <span style="text-decoration: underline;">11</span>351</span></span></code></pre></div>
+<p>As well as the indication cohort table, we can also use the clinical
+tables in the OMOP CDM to identify other, unknown, indications. Here we
+consider anyone who is not in an indication cohort but has a record in
+the condition occurrence table to have an “unknown” indication. We can
+see that many of the people previously considered to have no indication
+are now considered as having an unknown indication as they have a
+condition occurrence record in the 30 days up to their drug
+initiation.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_m30_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
+<span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
+<span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    unknownIndicationTable <span class="op">=</span> <span class="st">"condition_occurrence"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bronchitis and Sinusitis     3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Unknown                  <span style="text-decoration: underline;">11</span>344</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> None                         7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Sinusitis                   18</span></span></code></pre></div>
+<p>We can add indications for multiple time windows. Unsurprisingly we
+find more potential indications for wider windows (although this will
+likely increase our risk of false positives).</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_m30_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/addIndication.html">addIndication</a></span><span class="op">(</span></span>
+<span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
+<span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,</span>
+<span>                             <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,</span>
+<span>                             <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    unknownIndicationTable <span class="op">=</span> <span class="st">"condition_occurrence"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_0_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [4 x 2]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt;   indication_0_to_0     n</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Unknown           <span style="text-decoration: underline;">11</span>359</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bronchitis         <span style="text-decoration: underline;">2</span>524</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> None                 15</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sinusitis             1</span></span>
+<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bronchitis and Sinusitis     3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> None                         7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Unknown                  <span style="text-decoration: underline;">11</span>344</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Sinusitis                   18</span></span>
+<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m365_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt;   indication_m365_to_0         n</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Unknown                  <span style="text-decoration: underline;">10</span>968</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sinusitis                  211</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bronchitis                <span style="text-decoration: underline;">2</span>615</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sinusitis and Bronchitis   101</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> None                         4</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="summarise-indications-with-summariseindication">Summarise indications with summariseIndication()<a class="anchor" aria-label="anchor" href="#summarise-indications-with-summariseindication"></a>
 </h3>
-<p>To create a summary table of the indications cohort, you can use the
-<code><a href="../reference/summariseIndication.html">summariseIndication()</a></code> function. It contain similar
-arguments to <code><a href="../reference/addIndication.html">addIndication()</a></code>, but it return a summary table
-of the indications.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span></span>
-<span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
-<span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 30 × 13</span></span></span>
-<span><span class="co">#&gt;    result_id cdm_name            group_name group_level strata_name strata_level</span></span>
-<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 20 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span></span></code></pre></div>
-<p>You can also summarise the indications by using the
-<code>strata</code> argument in the <code><a href="../reference/summariseIndication.html">summariseIndication()</a></code>
-function. In the example below, it is summarized by
-<code>ageGroup</code> and <code>sex</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span></span>
-<span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age"</span> <span class="op">=</span> <span class="st">"age_group"</span>, <span class="st">"sex"</span> <span class="op">=</span> <span class="st">"sex"</span><span class="op">)</span>,</span>
-<span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
-<span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 138 × 13</span></span></span>
-<span><span class="co">#&gt;    result_id cdm_name            group_name group_level strata_name strata_level</span></span>
-<span><span class="co">#&gt;        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>         1 Synthea synthetic … cohort_na… 161_acetam… overall     overall     </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 128 more rows</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: variable_name &lt;chr&gt;, variable_level &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   estimate_name &lt;chr&gt;, estimate_type &lt;chr&gt;, estimate_value &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   additional_name &lt;chr&gt;, additional_level &lt;chr&gt;</span></span></span></code></pre></div>
-<p>Then you can also use the <code>tableIndication</code> function to
-create a <code>gt</code> style table from the output of
-<code>summariseIndication</code>.</p>
+<p>Instead of adding variables with indications like above, we could
+instead obtain a general summary of observed indications.
+<code>summariseIndication</code> has similar arguments to
+<code><a href="../reference/addIndication.html">addIndication()</a></code>, but returns a summary result of the
+indication.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<code class="sourceCode R"><span><span class="va">indication_summary</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_0_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_m30_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_m365_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="../reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span></span>
-<span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age"</span> <span class="op">=</span> <span class="st">"age_group"</span>, <span class="st">"sex"</span> <span class="op">=</span> <span class="st">"sex"</span><span class="op">)</span>,</span>
 <span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
 <span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/tableIndication.html">tableIndication</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p>We can then easily create a plot or a table of the results</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/tableIndication.html">tableIndication</a></span><span class="op">(</span><span class="va">indication_summary</span><span class="op">)</span></span></code></pre></div>
+<div id="mnehfatjcr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#mnehfatjcr table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#mnehfatjcr thead, #mnehfatjcr tbody, #mnehfatjcr tfoot, #mnehfatjcr tr, #mnehfatjcr td, #mnehfatjcr th {
+  border-style: none;
+}
+
+#mnehfatjcr p {
+  margin: 0;
+  padding: 0;
+}
+
+#mnehfatjcr .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#mnehfatjcr .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#mnehfatjcr .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#mnehfatjcr .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#mnehfatjcr .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#mnehfatjcr .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#mnehfatjcr .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#mnehfatjcr .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#mnehfatjcr .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#mnehfatjcr .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#mnehfatjcr .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#mnehfatjcr .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#mnehfatjcr .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#mnehfatjcr .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#mnehfatjcr .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mnehfatjcr .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#mnehfatjcr .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#mnehfatjcr .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#mnehfatjcr .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mnehfatjcr .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#mnehfatjcr .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mnehfatjcr .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#mnehfatjcr .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mnehfatjcr .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mnehfatjcr .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mnehfatjcr .gt_left {
+  text-align: left;
+}
+
+#mnehfatjcr .gt_center {
+  text-align: center;
+}
+
+#mnehfatjcr .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#mnehfatjcr .gt_font_normal {
+  font-weight: normal;
+}
+
+#mnehfatjcr .gt_font_bold {
+  font-weight: bold;
+}
+
+#mnehfatjcr .gt_font_italic {
+  font-style: italic;
+}
+
+#mnehfatjcr .gt_super {
+  font-size: 65%;
+}
+
+#mnehfatjcr .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#mnehfatjcr .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#mnehfatjcr .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#mnehfatjcr .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#mnehfatjcr .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#mnehfatjcr .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#mnehfatjcr .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#mnehfatjcr .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#mnehfatjcr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="table gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings gt_spanner_row">
+<th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" style="text-align: center; font-weight: bold;" scope="col" id="Database name">Database name</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" style="text-align: center; font-weight: bold;" scope="col" id="Indication">Indication</th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="1" style="background-color: #C8C8C8; text-align: center; font-weight: bold;" scope="col" id="Cohort name">
+        <span class="gt_column_spanner">Cohort name</span>
+      </th>
+    </tr>
+<tr class="gt_col_headings">
+<th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="background-color: #E1E1E1; text-align: center; font-weight: bold;" scope="col" id="161 acetaminophen">161 acetaminophen</th>
+    </tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="gt_group_heading_row">
+<th colspan="3" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication on index date">Indication on index date</th>
+    </tr>
+<tr class="gt_row_group_first">
+<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
+<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">2,524 (18.16 %)</td>
+</tr>
+<tr>
+<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">15 (0.11 %)</td>
+</tr>
+<tr>
+<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">1 (0.01 %)</td>
+</tr>
+<tr>
+<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">11,359 (81.73 %)</td>
+</tr>
+<tr class="gt_group_heading_row">
+<th colspan="3" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication time window m30 to 0 days">Indication time window m30 to 0 days</th>
+    </tr>
+<tr class="gt_row_group_first">
+<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
+<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
+<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">2,527 (18.18 %)</td>
+</tr>
+<tr>
+<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">7 (0.05 %)</td>
+</tr>
+<tr>
+<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
+<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">18 (0.13 %)</td>
+</tr>
+<tr>
+<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis and bronchitis</td>
+<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">3 (0.02 %)</td>
+</tr>
+<tr>
+<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
+<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">11,344 (81.62 %)</td>
+</tr>
+<tr class="gt_group_heading_row">
+<th colspan="3" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication time window m365 to 0 days">Indication time window m365 to 0 days</th>
+    </tr>
+<tr class="gt_row_group_first">
+<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
+<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
+<td headers="Indication time window m365 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">2,615 (18.81 %)</td>
+</tr>
+<tr>
+<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
+<td headers="Indication time window m365 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">101 (0.73 %)</td>
+</tr>
+<tr>
+<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication time window m365 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">4 (0.03 %)</td>
+</tr>
+<tr>
+<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
+<td headers="Indication time window m365 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">211 (1.52 %)</td>
+</tr>
+<tr>
+<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
+<td headers="Indication time window m365 to 0 days  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">10,968 (78.91 %)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>As well as getting these overall results, we can also stratify the
+results by some variables of interest. For example, here we stratify our
+results by age groups and sex.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">indication_summary_stratified</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_0_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_m30_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_m365_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span></span>
+<span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>,</span>
+<span>                  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
+<span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/tableIndication.html">tableIndication</a></span><span class="op">(</span><span class="va">indication_summary_stratified</span><span class="op">)</span></span></code></pre></div>
 <div id="iqzbmhjzpq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#iqzbmhjzpq table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -791,31 +1361,31 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,518 (18.17 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,524 (18.16 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,817 (29.93 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,823 (29.90 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">701 (9.00 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">701 (8.98 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,287 (18.41 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,290 (18.42 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,231 (17.92 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,234 (17.90 %)</td>
 </tr>
 <tr>
 <td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -893,31 +1463,31 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,326 (81.72 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,359 (81.73 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,248 (69.98 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,268 (70.01 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,078 (90.86 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,091 (90.88 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,696 (81.50 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,708 (81.50 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,630 (81.94 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,651 (81.96 %)</td>
 </tr>
 <tr class="gt_group_heading_row">
 <th colspan="7" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication time window m30 to 0 days">Indication time window m30 to 0 days</th>
@@ -930,31 +1500,31 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,516 (18.15 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,527 (18.18 %)</td>
 <td headers="Indication time window m30 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,815 (29.90 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,826 (29.95 %)</td>
 <td headers="Indication time window m30 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">701 (9.00 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">701 (8.98 %)</td>
 <td headers="Indication time window m30 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,286 (18.40 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,291 (18.43 %)</td>
 <td headers="Indication time window m30 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,230 (17.90 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,236 (17.93 %)</td>
 </tr>
 <tr>
 <td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1066,31 +1636,31 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,316 (81.65 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,344 (81.62 %)</td>
 <td headers="Indication time window m30 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,238 (69.82 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,253 (69.77 %)</td>
 <td headers="Indication time window m30 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,078 (90.86 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,091 (90.88 %)</td>
 <td headers="Indication time window m30 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,691 (81.43 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,701 (81.40 %)</td>
 <td headers="Indication time window m30 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,625 (81.87 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,643 (81.84 %)</td>
 </tr>
 <tr class="gt_group_heading_row">
 <th colspan="7" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication time window m365 to 0 days">Indication time window m365 to 0 days</th>
@@ -1103,31 +1673,31 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,605 (18.80 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,615 (18.81 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,873 (30.86 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,883 (30.89 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">732 (9.40 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">732 (9.38 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,349 (19.30 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,353 (19.32 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,256 (18.28 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,262 (18.30 %)</td>
 </tr>
 <tr>
 <td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1137,13 +1707,13 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">100 (0.72 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">101 (0.73 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">95 (1.57 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">96 (1.57 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
@@ -1155,7 +1725,7 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">38 (0.54 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">39 (0.56 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
@@ -1211,7 +1781,7 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">191 (3.15 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">191 (3.13 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
@@ -1223,13 +1793,13 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">108 (1.55 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">108 (1.54 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">103 (1.50 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">103 (1.49 %)</td>
 </tr>
 <tr>
 <td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1239,31 +1809,31 @@ create a <code>gt</code> style table from the output of
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">10,940 (78.93 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">10,968 (78.91 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3,911 (64.43 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3,926 (64.40 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,029 (90.23 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,042 (90.25 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,494 (78.61 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,504 (78.58 %)</td>
 <td headers="Indication time window m365 to 0 days  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,446 (79.26 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,464 (79.25 %)</td>
 </tr>
 </tbody>
 </table>
