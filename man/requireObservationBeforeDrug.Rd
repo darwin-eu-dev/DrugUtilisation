@@ -2,7 +2,8 @@
 % Please edit documentation in R/require.R
 \name{requireObservationBeforeDrug}
 \alias{requireObservationBeforeDrug}
-\title{Require number of days of observation before the drug starts.}
+\title{Restrict cohort to only cohort records with the given amount of prior
+observation time in the database}
 \usage{
 requireObservationBeforeDrug(
   cohort,
@@ -14,27 +15,36 @@ requireObservationBeforeDrug(
 \arguments{
 \item{cohort}{A cohort table in a cdm reference.}
 
-\item{priorObservation}{Number of days of prior observation so the records are
-considered.}
+\item{priorObservation}{Number of days of prior observation required before
+cohort start date. Any records with fewer days will be dropped.}
 
 \item{cohortId}{IDs of the cohorts to modify. The default is NULL meaning all
 cohorts will be used; otherwise, only the specified cohorts will be modified,
 and the rest will remain unchanged.}
 
-\item{name}{Name of the new cohort. Default name is the original cohort name.}
+\item{name}{Name of the table with the filtered cohort records. The default
+name is the original cohort name, where the original table will be
+overwritten.}
 }
 \value{
-The cohort table object with the requirements applied.
+The cohort table having applied the prior observation requirement.
 }
 \description{
-Require number of days of observation before the drug starts.
+Filter the cohort table keeping only the cohort records for which the
+individual has the required observation time in the database prior to their
+cohort start date.
 }
 \examples{
 \donttest{
+library(DrugUtilisation)
+library(dplyr)
+
 cdm <- mockDrugUtilisation()
+
 cdm$cohort1 <- cdm$cohort1 |>
-  requireObservationBeforeDrug(priorObservation = 365, cohortId = 1)
-attrition(cdm$cohort1)
+  requireObservationBeforeDrug(priorObservation = 365)
+
+attrition(cdm$cohort1) |> glimpse()
 }
 
 }

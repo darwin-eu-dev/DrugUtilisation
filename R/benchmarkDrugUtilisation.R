@@ -39,6 +39,8 @@ benchmarkDrugUtilisation <- function(cdm,
                                      ingredientId = 1125315,
                                      drugExposureName = "drug_exposure") {
 
+  rlang::check_installed("tictoc")
+
   errorMessage <- checkmate::makeAssertCollection()
 
   checkmate::assertIntegerish(ingredientId,

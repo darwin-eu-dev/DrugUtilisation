@@ -4,7 +4,7 @@ test_that("test summariseTreatment", {
   )
   expect_no_error(
     x <- cdm$cohort1 |>
-      summariseTreatmentFromCohort(
+      summariseTreatment(
         treatmentCohortName = "cohort2",
         window = list(c(0, 30), c(31, 365))
       )
@@ -14,10 +14,15 @@ test_that("test summariseTreatment", {
   expect_true(all(x$additional_level |> unique() == c("0 to 30", "31 to 365")))
 
   # test concept works
+  cdm <- generateDrugUtilisationCohortSet(
+    cdm = cdm,
+    conceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
+    name = "dus_cohort"
+  )
   expect_no_error(
     x <- cdm$cohort1 |>
-      summariseTreatmentFromConceptSet(
-        treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
+      summariseTreatment(
+        treatmentCohortName = "dus_cohort",
         window = list(c(0, Inf))
       )
   )
@@ -31,7 +36,7 @@ test_that("test summariseTreatment", {
   # test order in cohort works
   expect_no_error(
     x <- cdm$cohort1 |>
-      summariseTreatmentFromCohort(
+      summariseTreatment(
         treatmentCohortName = "cohort2",
         treatmentCohortId = c(3, 2),
         window = list(c(0, 30), c(31, 365))

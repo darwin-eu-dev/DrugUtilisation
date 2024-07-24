@@ -23,7 +23,7 @@ summariseTreatmentFromCohort() or summariseTreatmentFromConceptSet().}
 in order. Allowed values: \code{cdm_name}, \code{cohort_name}, \code{strata}, \code{variable},
 \code{estimate} and \code{window_name}.}
 
-\item{splitStrata}{If TRUE strata columns will be splitted.}
+\item{splitStrata}{If TRUE strata columns will be split.}
 
 \item{cdmName}{If TRUE database names will be displayed.}
 
@@ -54,9 +54,9 @@ library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 result <- cdm$cohort1 |>
-  summariseTreatmentFromConceptSet(
-    treatmentConceptSet = list("a" = 1503327, "c" = 43135274, "b" = 2905077),
-    window = list(c(0, 180), c(181, 360))
+  summariseTreatment(
+    treatmentCohortName = "cohort2",
+    window = list(c(0, 30), c(31, 365))
   )
 
 tableTreatment(result)

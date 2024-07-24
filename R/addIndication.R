@@ -14,7 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Get indication for a target cohort
+#' Add a variable indicating individuals´ indication
+#'
+#' @description
+#' Add a variable to a drug cohort indicating their presence in an indication
+#' cohort in a specified time window. If an individual is not in one of the
+#' indication cohorts, they will be considered to have an unknown indication if
+#' they are present in one of the specified OMOP CDM clinical tables. If they
+#' are neither in an indication cohort or a clinical table they will be
+#' considered as having no observed indication.
 #'
 #' @param x Table in the cdm
 #' @param indicationCohortName Name of indication cohort table
@@ -22,9 +30,10 @@
 #' @param indicationWindow time window of interests
 #' @param unknownIndicationTable Tables to search unknown indications
 #' @param indexDate Date of the indication
-#' @param name name of permenant table
+#' @param name name of permanant table
 #'
-#' @return Same cohort adding the indications
+#' @return The original table with a variable added that summarises the
+#' individual´s indications.
 #'
 #' @export
 #'
@@ -32,19 +41,20 @@
 #' \donttest{
 #' library(DrugUtilisation)
 #' library(CDMConnector)
+#' library(dplyr)
 #'
 #' cdm <- mockDrugUtilisation()
 #'
 #' indications <- list("headache" = 378253, "asthma" = 317009)
 #' cdm <- generateConceptCohortSet(
-#'   cdm, indications, "indication_cohorts"
-#' )
+#'   cdm = cdm, conceptSet = indications, name = "indication_cohorts")
 #'
-#' acetaminophen <- getDrugIngredientCodes(cdm, "acetaminophen")
-#' cdm <- generateDrugUtilisationCohortSet(cdm, "drug_cohort", acetaminophen)
+#' cdm <- generateIngredientCohortSet(cdm = cdm, name = "drug_cohort",
+#'                                    ingredient = "acetaminophen")
 #'
-#' cdm[["drug_cohort"]] |>
-#'   addIndication("indication_cohorts", indicationWindow = list(c(0,0)))
+#' cdm$drug_cohort |>
+#'   addIndication("indication_cohorts", indicationWindow = list(c(0,0))) |>
+#'   glimpse()
 #' }
 #'
 addIndication <- function(x,

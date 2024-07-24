@@ -59,18 +59,14 @@ Suggests:
     RPostgres,
     duckdb,
     knitr,
-    PaRe,
     rmarkdown,
-    DT,
-    magick,
-    DiagrammeRsvg,
     ggplot2,
-    cowplot,
-    plotly,
     tibble,
     gt,
     flextable,
-    ggtext
+    ggtext,
+    scales,
+    tictoc
 Config/testthat/edition: 3
 Imports: 
     CDMConnector (>= 1.4.0),
@@ -86,7 +82,6 @@ Imports:
     cli,
     PatientProfiles (>= 1.0.0),
     purrr,
-    tictoc,
     omopgenerics (>= 0.2.3),
     visOmopResults,
     lifecycle,
