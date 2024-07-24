@@ -37,6 +37,7 @@
 #' indications.
 #' @param indexDate A date variable in the cohort table for which indications
 #' will be found relative to.
+#' @param censorDate After that day no indication will be considered.
 #'
 #' @return A summarised result
 #'
@@ -71,7 +72,8 @@ summariseIndication <- function(cohort,
                                 indicationCohortId = NULL,
                                 indicationWindow = list(c(0, 0)),
                                 unknownIndicationTable = NULL,
-                                indexDate = "cohort_start_date") {
+                                indexDate = "cohort_start_date",
+                                censorDate = NULL) {
   # initialChecks
   cdm <- omopgenerics::cdmReference(cohort)
   checkInputs(cohort = cohort, cdm = cdm, strata = strata)
@@ -82,56 +84,89 @@ summariseIndication <- function(cohort,
   if (is.null(names(indicationWindow))) {
     names(indicationWindow) <- rep("", length(indicationWindow))
   }
-  windowNames <- names(indicationWindow)
-  for (k in seq_along(windowNames)) {
-    if (windowNames[k] == "") {
-      windowNames[k] <- windowName(indicationWindow[[k]])
+  windowNames <- lapply(seq_along(indicationWindow), function(k) {
+    if (names(indicationWindow)[k] == "") {
+      return(windowName(indicationWindow[[k]]))
+    } else {
+      return(names(indicationWindow)[k])
     }
-  }
+  }) |>
+    unlist()
   names(indicationWindow) <- paste0("win", seq_along(indicationWindow))
 
   cohort <- cohort |>
+    dplyr::select(!dplyr::any_of("cohort_name")) |>
     PatientProfiles::addCohortName() |>
-    dplyr::select(dplyr::any_of(c("subject_id", "person_id", indexDate, "cohort_name"))) |>
+    dplyr::select(dplyr::all_of(c("subject_id", indexDate, "cohort_name"))) |>
     addIndication(
       indicationCohortName = indicationCohortName,
       indicationCohortId = indicationCohortId,
       indicationWindow = indicationWindow,
       unknownIndicationTable = unknownIndicationTable,
       indexDate = indexDate,
-      name = omopgenerics::uniqueTableName(tablePrefix),
-      nameStyle = "ind_{window_name}_{cohort_name}"
-    )
-  indicationVariables <- indicationColumns(cohort)
+      censorDate = censorDate,
+      name = omopgenerics::uniqueTableName(tablePrefix)
+    ) |>
+    dplyr::collect()
 
-  # update cohort_names
-  cohort <-
-    cohort |> PatientProfiles::addCohortName() |> dplyr::collect()
+  indicationVariables <- colnames(cohort)
+  indicationVariables <- indicationVariables[startsWith(indicationVariables, "indication_")]
+
+  q <- paste0(
+    "dplyr::case_when(",
+    paste0(
+      ".data$variable_name == 'indication_", names(indicationWindow), "' ~ 'Indication ",
+      windowNames, "'", collapse = ", "
+    ),
+    ", .default = .data$variable_name)"
+  ) |>
+    rlang::parse_exprs() |>
+    rlang::set_names("variable_name")
 
   # summarise indication columns
-  result <- PatientProfiles::summariseResult(
-    table = cohort,
-    group = list("cohort_name"),
-    includeOverallGroup = FALSE,
-    includeOverallStrata = TRUE,
-    strata = strata,
-    variables = indicationVariables,
-    estimates = c("count", "percentage")
-  ) |>
+  suppressMessages(
+    result <- PatientProfiles::summariseResult(
+      table = cohort,
+      group = list("cohort_name"),
+      includeOverallGroup = FALSE,
+      includeOverallStrata = TRUE,
+      strata = strata,
+      variables = indicationVariables,
+      estimates = c("count", "percentage")
+    )
+  )
+  result <- result |>
+    dplyr::select(-"cdm_name") |>
     PatientProfiles::addCdmName(cdm = cdm) |>
-    dplyr::mutate(
-      variable_name = dplyr::if_else(
-        substr(.data$variable_name, 1, 11) == "indication_",
-        lapply(strsplit(.data$variable_name, "_"), function(x) {
-          x <- paste0(x[1:min(4, length(x))], collapse = "_")
-          x <- indicationColumnName(x)
-        }) |>
-          unlist(),
-        .data$variable_name
-      )
+    dplyr::mutate(!!!q)
+
+  # make sure all indications are reported
+  vars <- result$variable_name |> unique()
+  vars <- vars[!is.na(vars)]
+  indications <- settings(cdm[[indicationCohortName]])
+  if (!is.null(indicationCohortId)) {
+    indications <- indications |>
+      dplyr::filter(.data$cohort_definition_id %in% .env$indicationCohortId)
+  }
+  indications <- c(indications$cohort_name, ifelse(length(unknownIndicationTable) > 0, "unknown", character()), "none")
+  allcombs <- tidyr::expand_grid(
+    "variable_name" = vars, "variable_level" = indications
+  )
+  result |>
+    dplyr::full_join(
+      result |>
+        dplyr::select(
+          "result_id", "cdm_name", "group_name", "group_level", "strata_name",
+          "strata_level", "additional_name", "additional_level", "estimate_name",
+          "estimate_type") |>
+        dplyr::distinct() |>
+        dplyr::cross_join(allcombs),
+      by = colnames(result)[!colnames(result) %in% c("estimate_value", "variable_level")],
+      relationship = "many-to-many"
     )
 
   result <- result |>
+    dplyr::arrange(.data$group_level)
     omopgenerics::newSummarisedResult(
       settings = dplyr::tibble(
         result_id = unique(result$result_id),
@@ -181,4 +216,3 @@ windowName <- function(win) {
   }
   return(nm)
 }
-

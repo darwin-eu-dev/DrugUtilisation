@@ -11,6 +11,7 @@ addIndication(
   indicationWindow = list(c(0, 0)),
   unknownIndicationTable = NULL,
   indexDate = "cohort_start_date",
+  censorDate = NULL,
   name = NULL
 )
 }
@@ -25,7 +26,9 @@ addIndication(
 
 \item{unknownIndicationTable}{Tables to search unknown indications}
 
-\item{indexDate}{Date of the indication}
+\item{indexDate}{Date respect to indication will be calculated.}
+
+\item{censorDate}{After that day no indication will be considered.}
 
 \item{name}{name of permanant table}
 }
