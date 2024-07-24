@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Assessing time to treatment discontinuation • DrugUtilisation</title>
+<title>Summarising treatment adherence • DrugUtilisation</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,7 +16,7 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Assessing time to treatment discontinuation">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Summarising treatment adherence">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -47,7 +47,7 @@
     <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Characterise a cohort using Drug Utilisation</a></li>
     <li><a class="dropdown-item" href="../articles/drug_utilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
     <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Obtain treatment summary to a Drug Utilisation cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/treatment_discontinuation.html">Assessing time to treatment discontinuation</a></li>
+    <li><a class="dropdown-item" href="../articles/treatment_discontinuation.html">Summarising treatment adherence</a></li>
     <li><a class="dropdown-item" href="../articles/drug_restart.html">Assessing drug restart and switching after treatment</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_add_drug_use.html">Add drug related information to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_route_pattern_dose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
@@ -71,7 +71,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Assessing time to treatment discontinuation</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Summarising treatment adherence</h1>
             
       
 
@@ -83,21 +83,19 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>Time-to-discontinuation is commonly of interest when summarising
-adherence to medications.</p>
+<p>In this vignette we will go through two common approaches for
+assessing treatment adherence that can be performed after creating drug
+cohorts. The first approach is to assess time-to-discontinuation using
+survival methods, while the second is to estimate the proportion of
+patients covered.</p>
 </div>
 <div class="section level2">
-<h2 id="time-to-discontinuation-of-amoxicillin">Time-to-discontinuation of amoxicillin<a class="anchor" aria-label="anchor" href="#time-to-discontinuation-of-amoxicillin"></a>
+<h2 id="adherence-to-amoxicillin">Adherence to amoxicillin<a class="anchor" aria-label="anchor" href="#adherence-to-amoxicillin"></a>
 </h2>
-<p>For example, let’s say we would like to study time-to-discontinuation
-among new users of amoxicillin in their first 90-days of use. For this
-we can first create our amoxicillin study cohort, restricting to first
-occurrence in history. We can then estimate Kaplan-Meier survival curves
-we can use estimateSingleEventSurvival from the CohortSurvival package,
-with the follow-up beginning from an individual’s cohort start date and
-discontinuation occurring at their cohort end date.</p>
-<p>Here we’ll use the synthetic Eunomia dataset to show how this could
-be done.</p>
+<p>For example, let’s say we would like to study adherence among new
+users of amoxicillin over the first 90-days of use. For this we can
+first create our amoxicillin study cohort. Here we’ll use the synthetic
+Eunomia dataset to show how this could be done.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/" class="external-link">PatientProfiles</a></span><span class="op">)</span></span>
@@ -117,40 +115,52 @@ be done.</p>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateIngredientCohortSet.html">generateIngredientCohortSet</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>                                   name <span class="op">=</span> <span class="st">"amoxicillin"</span>,</span>
 <span>                                   ingredient <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>                                   gapEra <span class="op">=</span> <span class="fl">7</span><span class="op">)</span> </span>
-<span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/requireIsFirstDrugEntry.html">requireIsFirstDrugEntry</a></span><span class="op">(</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">discontinuation_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/estimateSingleEventSurvival.html" class="external-link">estimateSingleEventSurvival</a></span><span class="op">(</span><span class="va">cdm</span>, </span>
+<span>                                   gapEra <span class="op">=</span> <span class="fl">7</span><span class="op">)</span> </span></code></pre></div>
+<div class="section level3">
+<h3 id="time-to-discontinuation">Time-to-discontinuation<a class="anchor" aria-label="anchor" href="#time-to-discontinuation"></a>
+</h3>
+<p>We can estimate Kaplan-Meier survival curves we can use
+estimateSingleEventSurvival from the CohortSurvival package, with the
+follow-up beginning from an individual’s cohort start date and
+discontinuation occurring at their cohort end date. As the outcome
+washout is set to Inf we’ll only be considering the first cohort entry
+for an individual. It is important to note that because the survival
+analysis is focused on a single cohort entry, with the cohort end date
+taken to indicate treatment discontinuation, the gap era used above when
+creating the drug cohort can often have an important impact on the
+results.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">discontinuation_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/estimateSingleEventSurvival.html" class="external-link">estimateSingleEventSurvival</a></span><span class="op">(</span><span class="va">cdm</span>, </span>
 <span>                                    targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
 <span>                                    outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>                                    outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>, </span>
+<span>                                    outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
+<span>                                    outcomeWashout <span class="op">=</span> <span class="cn">Inf</span>,</span>
 <span>                                    followUpDays <span class="op">=</span> <span class="fl">90</span>, </span>
 <span>                                    eventGap <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
 <p>We can plot our study result like so:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span><span class="op">)</span></span></code></pre></div>
-<p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-3-1.png" width="75%"></p>
-<p>Or we can similarly create a table summarising the result</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span><span class="op">)</span></span></code></pre></div>
+<p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-4-1.png" width="75%"></p>
+<p>Or we can similarly create a table summarising the result</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/tableSurvival.html" class="external-link">tableSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span><span class="op">)</span></span></code></pre></div>
-<div id="zuhzoepsda" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#zuhzoepsda table {
+<div id="wiyjisysoq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wiyjisysoq table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#zuhzoepsda thead, #zuhzoepsda tbody, #zuhzoepsda tfoot, #zuhzoepsda tr, #zuhzoepsda td, #zuhzoepsda th {
+#wiyjisysoq thead, #wiyjisysoq tbody, #wiyjisysoq tfoot, #wiyjisysoq tr, #wiyjisysoq td, #wiyjisysoq th {
   border-style: none;
 }
 
-#zuhzoepsda p {
+#wiyjisysoq p {
   margin: 0;
   padding: 0;
 }
 
-#zuhzoepsda .gt_table {
+#wiyjisysoq .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -176,12 +186,12 @@ be done.</p>
   border-left-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_caption {
+#wiyjisysoq .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#zuhzoepsda .gt_title {
+#wiyjisysoq .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -193,7 +203,7 @@ be done.</p>
   border-bottom-width: 0;
 }
 
-#zuhzoepsda .gt_subtitle {
+#wiyjisysoq .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -205,7 +215,7 @@ be done.</p>
   border-top-width: 0;
 }
 
-#zuhzoepsda .gt_heading {
+#wiyjisysoq .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -217,13 +227,13 @@ be done.</p>
   border-right-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_bottom_border {
+#wiyjisysoq .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_col_headings {
+#wiyjisysoq .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -238,7 +248,7 @@ be done.</p>
   border-right-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_col_heading {
+#wiyjisysoq .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -258,7 +268,7 @@ be done.</p>
   overflow-x: hidden;
 }
 
-#zuhzoepsda .gt_column_spanner_outer {
+#wiyjisysoq .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -270,15 +280,15 @@ be done.</p>
   padding-right: 4px;
 }
 
-#zuhzoepsda .gt_column_spanner_outer:first-child {
+#wiyjisysoq .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zuhzoepsda .gt_column_spanner_outer:last-child {
+#wiyjisysoq .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zuhzoepsda .gt_column_spanner {
+#wiyjisysoq .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -290,11 +300,11 @@ be done.</p>
   width: 100%;
 }
 
-#zuhzoepsda .gt_spanner_row {
+#wiyjisysoq .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#zuhzoepsda .gt_group_heading {
+#wiyjisysoq .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -320,7 +330,7 @@ be done.</p>
   text-align: left;
 }
 
-#zuhzoepsda .gt_empty_group_heading {
+#wiyjisysoq .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -335,15 +345,15 @@ be done.</p>
   vertical-align: middle;
 }
 
-#zuhzoepsda .gt_from_md > :first-child {
+#wiyjisysoq .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zuhzoepsda .gt_from_md > :last-child {
+#wiyjisysoq .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zuhzoepsda .gt_row {
+#wiyjisysoq .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -362,7 +372,7 @@ be done.</p>
   overflow-x: hidden;
 }
 
-#zuhzoepsda .gt_stub {
+#wiyjisysoq .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -375,7 +385,7 @@ be done.</p>
   padding-right: 5px;
 }
 
-#zuhzoepsda .gt_stub_row_group {
+#wiyjisysoq .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -389,15 +399,15 @@ be done.</p>
   vertical-align: top;
 }
 
-#zuhzoepsda .gt_row_group_first td {
+#wiyjisysoq .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#zuhzoepsda .gt_row_group_first th {
+#wiyjisysoq .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#zuhzoepsda .gt_summary_row {
+#wiyjisysoq .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -407,16 +417,16 @@ be done.</p>
   padding-right: 5px;
 }
 
-#zuhzoepsda .gt_first_summary_row {
+#wiyjisysoq .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_first_summary_row.thick {
+#wiyjisysoq .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#zuhzoepsda .gt_last_summary_row {
+#wiyjisysoq .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -426,7 +436,7 @@ be done.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_grand_summary_row {
+#wiyjisysoq .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -436,7 +446,7 @@ be done.</p>
   padding-right: 5px;
 }
 
-#zuhzoepsda .gt_first_grand_summary_row {
+#wiyjisysoq .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -446,7 +456,7 @@ be done.</p>
   border-top-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_last_grand_summary_row_top {
+#wiyjisysoq .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -456,11 +466,11 @@ be done.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_striped {
+#wiyjisysoq .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zuhzoepsda .gt_table_body {
+#wiyjisysoq .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -469,7 +479,7 @@ be done.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_footnotes {
+#wiyjisysoq .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -483,7 +493,7 @@ be done.</p>
   border-right-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_footnote {
+#wiyjisysoq .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -492,7 +502,7 @@ be done.</p>
   padding-right: 5px;
 }
 
-#zuhzoepsda .gt_sourcenotes {
+#wiyjisysoq .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -506,7 +516,7 @@ be done.</p>
   border-right-color: #D3D3D3;
 }
 
-#zuhzoepsda .gt_sourcenote {
+#wiyjisysoq .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -514,72 +524,72 @@ be done.</p>
   padding-right: 5px;
 }
 
-#zuhzoepsda .gt_left {
+#wiyjisysoq .gt_left {
   text-align: left;
 }
 
-#zuhzoepsda .gt_center {
+#wiyjisysoq .gt_center {
   text-align: center;
 }
 
-#zuhzoepsda .gt_right {
+#wiyjisysoq .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zuhzoepsda .gt_font_normal {
+#wiyjisysoq .gt_font_normal {
   font-weight: normal;
 }
 
-#zuhzoepsda .gt_font_bold {
+#wiyjisysoq .gt_font_bold {
   font-weight: bold;
 }
 
-#zuhzoepsda .gt_font_italic {
+#wiyjisysoq .gt_font_italic {
   font-style: italic;
 }
 
-#zuhzoepsda .gt_super {
+#wiyjisysoq .gt_super {
   font-size: 65%;
 }
 
-#zuhzoepsda .gt_footnote_marks {
+#wiyjisysoq .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#zuhzoepsda .gt_asterisk {
+#wiyjisysoq .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#zuhzoepsda .gt_indent_1 {
+#wiyjisysoq .gt_indent_1 {
   text-indent: 5px;
 }
 
-#zuhzoepsda .gt_indent_2 {
+#wiyjisysoq .gt_indent_2 {
   text-indent: 10px;
 }
 
-#zuhzoepsda .gt_indent_3 {
+#wiyjisysoq .gt_indent_3 {
   text-indent: 15px;
 }
 
-#zuhzoepsda .gt_indent_4 {
+#wiyjisysoq .gt_indent_4 {
   text-indent: 20px;
 }
 
-#zuhzoepsda .gt_indent_5 {
+#wiyjisysoq .gt_indent_5 {
   text-indent: 25px;
 }
 
-#zuhzoepsda .katex-display {
+#wiyjisysoq .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#zuhzoepsda div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#wiyjisysoq div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -607,7 +617,7 @@ be done.</p>
 <p>We can also easily stratify our results. Here we add patient
 demographics to our cohort table using the PatientProfiles packages and
 then stratify results by age group and sex.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span><span class="op">)</span>,</span>
 <span>                                  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">41</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -622,29 +632,29 @@ then stratify results by age group and sex.</p>
 <span>                                    followUpDays <span class="op">=</span> <span class="fl">90</span>, </span>
 <span>                                    eventGap <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
 <p>Again we could present our results in a plot or a table.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span>, </span>
 <span>             facet <span class="op">=</span> <span class="st">"strata_level"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-6-1.png" width="75%"></p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-7-1.png" width="75%"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/tableSurvival.html" class="external-link">tableSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span><span class="op">)</span></span></code></pre></div>
-<div id="xpwwkzgfuj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#xpwwkzgfuj table {
+<div id="efsqxhvhnc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#efsqxhvhnc table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#xpwwkzgfuj thead, #xpwwkzgfuj tbody, #xpwwkzgfuj tfoot, #xpwwkzgfuj tr, #xpwwkzgfuj td, #xpwwkzgfuj th {
+#efsqxhvhnc thead, #efsqxhvhnc tbody, #efsqxhvhnc tfoot, #efsqxhvhnc tr, #efsqxhvhnc td, #efsqxhvhnc th {
   border-style: none;
 }
 
-#xpwwkzgfuj p {
+#efsqxhvhnc p {
   margin: 0;
   padding: 0;
 }
 
-#xpwwkzgfuj .gt_table {
+#efsqxhvhnc .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -670,12 +680,12 @@ then stratify results by age group and sex.</p>
   border-left-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_caption {
+#efsqxhvhnc .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#xpwwkzgfuj .gt_title {
+#efsqxhvhnc .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -687,7 +697,7 @@ then stratify results by age group and sex.</p>
   border-bottom-width: 0;
 }
 
-#xpwwkzgfuj .gt_subtitle {
+#efsqxhvhnc .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -699,7 +709,7 @@ then stratify results by age group and sex.</p>
   border-top-width: 0;
 }
 
-#xpwwkzgfuj .gt_heading {
+#efsqxhvhnc .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -711,13 +721,13 @@ then stratify results by age group and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_bottom_border {
+#efsqxhvhnc .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_col_headings {
+#efsqxhvhnc .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -732,7 +742,7 @@ then stratify results by age group and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_col_heading {
+#efsqxhvhnc .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -752,7 +762,7 @@ then stratify results by age group and sex.</p>
   overflow-x: hidden;
 }
 
-#xpwwkzgfuj .gt_column_spanner_outer {
+#efsqxhvhnc .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -764,15 +774,15 @@ then stratify results by age group and sex.</p>
   padding-right: 4px;
 }
 
-#xpwwkzgfuj .gt_column_spanner_outer:first-child {
+#efsqxhvhnc .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#xpwwkzgfuj .gt_column_spanner_outer:last-child {
+#efsqxhvhnc .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#xpwwkzgfuj .gt_column_spanner {
+#efsqxhvhnc .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -784,11 +794,11 @@ then stratify results by age group and sex.</p>
   width: 100%;
 }
 
-#xpwwkzgfuj .gt_spanner_row {
+#efsqxhvhnc .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#xpwwkzgfuj .gt_group_heading {
+#efsqxhvhnc .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -814,7 +824,7 @@ then stratify results by age group and sex.</p>
   text-align: left;
 }
 
-#xpwwkzgfuj .gt_empty_group_heading {
+#efsqxhvhnc .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -829,15 +839,15 @@ then stratify results by age group and sex.</p>
   vertical-align: middle;
 }
 
-#xpwwkzgfuj .gt_from_md > :first-child {
+#efsqxhvhnc .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#xpwwkzgfuj .gt_from_md > :last-child {
+#efsqxhvhnc .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#xpwwkzgfuj .gt_row {
+#efsqxhvhnc .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -856,7 +866,7 @@ then stratify results by age group and sex.</p>
   overflow-x: hidden;
 }
 
-#xpwwkzgfuj .gt_stub {
+#efsqxhvhnc .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -869,7 +879,7 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#xpwwkzgfuj .gt_stub_row_group {
+#efsqxhvhnc .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -883,15 +893,15 @@ then stratify results by age group and sex.</p>
   vertical-align: top;
 }
 
-#xpwwkzgfuj .gt_row_group_first td {
+#efsqxhvhnc .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#xpwwkzgfuj .gt_row_group_first th {
+#efsqxhvhnc .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#xpwwkzgfuj .gt_summary_row {
+#efsqxhvhnc .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -901,16 +911,16 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#xpwwkzgfuj .gt_first_summary_row {
+#efsqxhvhnc .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_first_summary_row.thick {
+#efsqxhvhnc .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#xpwwkzgfuj .gt_last_summary_row {
+#efsqxhvhnc .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -920,7 +930,7 @@ then stratify results by age group and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_grand_summary_row {
+#efsqxhvhnc .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -930,7 +940,7 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#xpwwkzgfuj .gt_first_grand_summary_row {
+#efsqxhvhnc .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -940,7 +950,7 @@ then stratify results by age group and sex.</p>
   border-top-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_last_grand_summary_row_top {
+#efsqxhvhnc .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -950,11 +960,11 @@ then stratify results by age group and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_striped {
+#efsqxhvhnc .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#xpwwkzgfuj .gt_table_body {
+#efsqxhvhnc .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -963,7 +973,7 @@ then stratify results by age group and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_footnotes {
+#efsqxhvhnc .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -977,7 +987,7 @@ then stratify results by age group and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_footnote {
+#efsqxhvhnc .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -986,7 +996,7 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#xpwwkzgfuj .gt_sourcenotes {
+#efsqxhvhnc .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1000,7 +1010,7 @@ then stratify results by age group and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#xpwwkzgfuj .gt_sourcenote {
+#efsqxhvhnc .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1008,72 +1018,72 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#xpwwkzgfuj .gt_left {
+#efsqxhvhnc .gt_left {
   text-align: left;
 }
 
-#xpwwkzgfuj .gt_center {
+#efsqxhvhnc .gt_center {
   text-align: center;
 }
 
-#xpwwkzgfuj .gt_right {
+#efsqxhvhnc .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#xpwwkzgfuj .gt_font_normal {
+#efsqxhvhnc .gt_font_normal {
   font-weight: normal;
 }
 
-#xpwwkzgfuj .gt_font_bold {
+#efsqxhvhnc .gt_font_bold {
   font-weight: bold;
 }
 
-#xpwwkzgfuj .gt_font_italic {
+#efsqxhvhnc .gt_font_italic {
   font-style: italic;
 }
 
-#xpwwkzgfuj .gt_super {
+#efsqxhvhnc .gt_super {
   font-size: 65%;
 }
 
-#xpwwkzgfuj .gt_footnote_marks {
+#efsqxhvhnc .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#xpwwkzgfuj .gt_asterisk {
+#efsqxhvhnc .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#xpwwkzgfuj .gt_indent_1 {
+#efsqxhvhnc .gt_indent_1 {
   text-indent: 5px;
 }
 
-#xpwwkzgfuj .gt_indent_2 {
+#efsqxhvhnc .gt_indent_2 {
   text-indent: 10px;
 }
 
-#xpwwkzgfuj .gt_indent_3 {
+#efsqxhvhnc .gt_indent_3 {
   text-indent: 15px;
 }
 
-#xpwwkzgfuj .gt_indent_4 {
+#efsqxhvhnc .gt_indent_4 {
   text-indent: 20px;
 }
 
-#xpwwkzgfuj .gt_indent_5 {
+#efsqxhvhnc .gt_indent_5 {
   text-indent: 25px;
 }
 
-#xpwwkzgfuj .katex-display {
+#efsqxhvhnc .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#xpwwkzgfuj div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#efsqxhvhnc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1147,6 +1157,38 @@ then stratify results by age group and sex.</p>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="section level3">
+<h3 id="proportion-of-patients-covered">Proportion of patients covered<a class="anchor" aria-label="anchor" href="#proportion-of-patients-covered"></a>
+</h3>
+<p>Estimating the proportion of amoxicillin patients covered offers an
+alternative approach for describing treatment adherence. Here for each
+day following initiation (taken as the first cohort entry for an
+individual) we estimate the proportion of patients that have an ongoing
+cohort entry among those who are still in observation at that time.
+Unlike with the time-to-discontinuation approach shown above, estimating
+proportion of patients covered allows for individuals to have
+re-initiate the drug after some break. Consequently this method is
+typically far less sensitive to the choice of gap era used when creating
+the drug cohort.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ppc_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summariseProportionOfPatientsCovered.html">summariseProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span>, </span>
+<span>                                    followUpDays <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
+<p>Like with our survival estimates, we can quickly create a plot of our
+results</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotProportionOfPatientsCovered.html">plotProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">ppc_summary</span><span class="op">)</span></span></code></pre></div>
+<p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-10-1.png" width="75%"></p>
+<p>Similarly, we can also stratify our results in a similar way.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ppc_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summariseProportionOfPatientsCovered.html">summariseProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span>, </span>
+<span>                                                    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                                    followUpDays <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotProportionOfPatientsCovered.html">plotProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">ppc_summary</span>, </span>
+<span>                                facet <span class="op">=</span> <span class="st">"strata_level"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-12-1.png" width="75%"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

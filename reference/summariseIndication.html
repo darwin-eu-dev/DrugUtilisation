@@ -38,7 +38,7 @@ indication."><meta property="og:image" content="https://darwin-eu-dev.github.io/
     <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Characterise a cohort using Drug Utilisation</a></li>
     <li><a class="dropdown-item" href="../articles/drug_utilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
     <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Obtain treatment summary to a Drug Utilisation cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/treatment_discontinuation.html">Assessing time to treatment discontinuation</a></li>
+    <li><a class="dropdown-item" href="../articles/treatment_discontinuation.html">Summarising treatment adherence</a></li>
     <li><a class="dropdown-item" href="../articles/drug_restart.html">Assessing drug restart and switching after treatment</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_add_drug_use.html">Add drug related information to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_route_pattern_dose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
@@ -146,8 +146,8 @@ will be found relative to.</p></dd>
 <span class="r-in"><span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The following estimates will be computed:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> indication_minf_to_0: count, percentage</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-24 09:20:57.297353</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-24 09:20:57.348484</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> → Start summary of data, at 2024-07-24 09:40:09.388537</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Summary finished, at 2024-07-24 09:40:09.442404</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 12</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 13</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ result_id        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1</span>
@@ -157,7 +157,7 @@ will be found relative to.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ strata_name      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ strata_level     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ variable_name    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "number records", "number subjects", "Indication any …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ variable_level   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, "Asthma", "Headache", "Headache and Asthma", …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ variable_level   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, "Asthma", "Asthma and Headache", "Headache", …</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ estimate_name    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "count", "count", "count", "count", "count", "count",…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ estimate_type    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "integer", "integer", "integer", "integer", "integer"…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ estimate_value   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "11", "9", "1", "1", "1", "5", "3", "9.09090909090909…</span>
