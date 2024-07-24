@@ -112,14 +112,16 @@ summariseProportionOfPatientsCovered <- function(cohort,
   }
 
   ppc <- ppc |>
-    dplyr::mutate(ppc = .data$numerator_count / .data$denominator_count) |>
+    dplyr::mutate(ppc = round((.data$outcome_count / .data$denominator_count) *100, 2)) |>
     tidyr::pivot_longer(
-      c("numerator_count",
+      c("outcome_count",
         "denominator_count",
         "ppc"),
-      names_to = "estimate_type",
+      names_to = "estimate_name",
       values_to = "estimate_value"
-    )
+    ) |>
+    dplyr::mutate(estimate_type = dplyr::if_else(.data$estimate_name == "ppc",
+                                                 "percentage", "integer"))
 
 
   ppc <- ppc |>
@@ -132,8 +134,8 @@ summariseProportionOfPatientsCovered <- function(cohort,
       strata_level = .data$strata_level,
       variable_name = "overall",
       variable_level = "overall",
-      estimate_name = .data$estimate_type,
-      estimate_type = "numeric",
+      estimate_name = .data$estimate_name,
+      estimate_type = .data$estimate_type,
       estimate_value = as.character(.data$estimate_value),
       additional_name = "time",
       additional_level = as.character(.data$time)
@@ -222,8 +224,8 @@ getPPC <- function(cohort, cohortId, strata, days) {
   result <- dplyr::bind_rows(result)  %>%
     dplyr::mutate(denominator_count = dplyr::if_else(is.na(.data$denominator_count),
                                                      0, .data$denominator_count)) |>
-    dplyr::mutate(numerator_count = dplyr::if_else(is.na(.data$numerator_count),
-                                                   0, .data$numerator_count))|>
+    dplyr::mutate(outcome_count = dplyr::if_else(is.na(.data$outcome_count),
+                                                   0, .data$outcome_count))|>
     dplyr::mutate(cohort_name = .env$workingCohortName)
 
   result
@@ -238,7 +240,7 @@ getOverallStartingCount <- function(workingCohort) {
     dplyr::pull("n")
   dplyr::tibble(
     denominator_count = .env$startN,
-    numerator_count = .env$startN,
+    outcome_count = .env$startN,
     strata_name = "overall",
     strata_level = "overall"
   )
@@ -253,7 +255,7 @@ getOverallCounts <- function(workingCohort) {
       dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) |>
       dplyr::pull("n"),
     # people in cohort on date
-    numerator_count = workingCohort |>
+    outcome_count = workingCohort |>
       dplyr::filter(.data$in_cohort == 1) |>
       dplyr::summarise(n = dplyr::n_distinct(.data$subject_id)) |>
       dplyr::pull("n"),
@@ -269,7 +271,7 @@ getStratifiedStartingCount <- function(workingCohort, workingStrata) {
     dplyr::distinct() |>
     dplyr::group_by(dplyr::pick(.env$workingStrata)) %>%
     dplyr::summarise(denominator_count = dplyr::n(),
-                     numerator_count = dplyr::n()) %>%
+                     outcome_count = dplyr::n()) %>%
     dplyr::ungroup() %>%
     tidyr::unite("strata_level",
                  c(dplyr::all_of(.env$workingStrata)),
@@ -297,7 +299,7 @@ getStratifiedCounts <- function(workingCohort, workingStrata) {
       workingCohort |>
         dplyr::filter(.data$in_cohort == 1) |>
         dplyr::group_by(dplyr::pick(.env$workingStrata)) %>%
-        dplyr::summarise(numerator_count = dplyr::n_distinct(.data$subject_id)),
+        dplyr::summarise(outcome_count = dplyr::n_distinct(.data$subject_id)),
       by = workingStrata
     ) %>%
     dplyr::ungroup()|>

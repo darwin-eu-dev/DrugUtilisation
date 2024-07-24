@@ -14,12 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Format a summarised_indication object into a visual table.
+#' Create a table showing indication results
 #'
 #' `r lifecycle::badge("experimental")`
 #'
-#' @param result A summarised_result object with results from
-#' summariseIndication().
+#' @param result A summarised_result created by summariseIndication().
 #' @param header A vector containing which elements should go into the header
 #' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`.
 #' @param splitStrata If TRUE strata columns will be split.
@@ -39,14 +38,12 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' # result <- cdm$cohort1 |>
-#' #  addIndication(
-#' #    indicationCohortName = "cohort2", indicationGap = c(0, 7, 30, Inf),
-#' #    unknownIndicationTable = "condition_occurrence"
-#' #  ) |>
-#' #  summariseIndication()
+#' result <- cdm$cohort1 |>
+#'  summariseIndication(indicationCohortName = "cohort2",
+#'                      indicationWindow = list(c(-30, 0)),
+#'                      unknownIndicationTable = "condition_occurrence")
 #'
-#' # tableIndication(result)
+#' tableIndication(result, type = "tibble")
 #'
 #' }
 #'
@@ -731,6 +728,133 @@ tableDrugRestart <- function(result,
     .options = .options
   )
 }
+
+
+
+#' Create a table with proportion of patients covered results
+#'
+#' `r lifecycle::badge("experimental")`
+#'
+#' @param result A summarised_result object with results from
+#' summariseProportionOfPatientsCovered().
+#' @param times Days to include in the table. If NULL all days will be
+#' included.
+#' @param header A vector containing which elements should go into the header
+#' in order. Allowed are: `cdm_name`, `group`, `strata`, `variable`.
+#' @param splitStrata If TRUE strata columns will be split.
+#' @param cohortName If TRUE cohort names will be displayed.
+#' @param cdmName If TRUE database names will be displayed.
+#' @param groupColumn Column to use as group labels.
+#' @param type Type of desired formatted table, possibilities: "gt",
+#' "flextable", "tibble".
+#' @param .options Named list with additional formatting options.
+#' DrugUtilisation::defaultTableOptions() shows allowed
+#' arguments and their default values.
+#'
+#' @return A table with a formatted version of summariseProportionOfPatientsCovered() results.
+#' @export
+#'
+tableProportionOfPatientsCovered <- function(result,
+                                             times = NULL,
+                                             header = c("group", "strata"),
+                                             splitStrata = TRUE,
+                                             cohortName = TRUE,
+                                             cdmName = TRUE,
+                                             groupColumn = "variable_name",
+                                             type = "gt",
+                                             .options = list()){
+
+  # check input and filter result
+  if (!cohortName & "cohort_name" %in% unlist(groupColumn)) {
+    cli::cli_abort("If `cohortName = FALSE`, `cohort_name` cannot be used in `groupColumn`.")
+  }
+  if (!cdmName & "cdm_name" %in% unlist(groupColumn)) {
+    cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
+  }
+  if (!is.null(header)) {
+    if (any(! header %in% c("cdm_name", "group", "strata", "variable"))) {
+      cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`")
+    }
+    if (!is.null(groupColumn)) {
+      if (any(grepl(paste0(header, collapse = "|"), unlist(groupColumn)))) {
+        cli::cli_abort("Columns to use as header cannot be in `groupColumn`.")
+      }
+    }
+  }
+  result <- result |>
+    omopgenerics::newSummarisedResult() |>
+    visOmopResults::filterSettings(.data$result_type == "proportion_of_patients_covered") |>
+    dplyr::filter(!grepl("number", .data$variable_name))
+  if (nrow(result) == 0) {
+    cli::cli_abort("There are no results with `result_type = proportion_of_patients_covered`")
+  }
+  checkmate::assertLogical(cohortName, any.missing = FALSE)
+  checkmate::assertLogical(cdmName, any.missing = FALSE)
+  checkmate::assertLogical(splitStrata, any.missing = FALSE)
+  checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
+
+  # .options
+  .options = defaultTableOptionsInternal(.options)
+
+  # Split
+  split <- c("additional")
+
+  if(!is.null(times)){
+  # filter to specified times
+  result <- result |>
+    dplyr::mutate(time = as.numeric(.data$additional_level)) |>
+    dplyr::filter(.data$time %in% .env$times) |>
+    dplyr::select(!"time")
+  }
+
+  # Exclude columns, rename, and split
+  excludeColumns <- c("result_id", "estimate_type", "estimate_name")
+  if (!cohortName) {
+    if ("group" %in% header) {
+      cli::cli_warn(c("!" = "Dropping group from header as `cohortName = FALSE`."))
+      header <- header[!header %in% "group"]
+    }
+    excludeColumns <- c(excludeColumns, "group_name", "group_level")
+  } else {
+    split <- c(split, "group")
+  }
+
+  if (!cdmName) {
+    if ("cdm_name" %in% header) {
+      cli::cli_warn(c("!" = "Dropping cdm_name from header as `cdmName = FALSE`."))
+      header <- header[!header %in% "cdm_name"]
+    }
+    excludeColumns <- c(excludeColumns, "cdm_name")
+    renameColumns <- character()
+  } else {
+    renameColumns <- c("Database name" = "cdm_name")
+  }
+
+
+  # split
+  if (splitStrata) {
+    split <- c(split, "strata")
+  }
+
+  result <-result |>
+    dplyr::filter(estimate_name == "ppc") |>
+    dplyr::mutate(additional_name = "Days since first drug start")
+
+  # table
+  visOmopResults::visOmopTable(
+    result = result,
+    formatEstimateName = c("PPC" = "<ppc>%"),
+    header = c(header),
+    renameColumns = renameColumns,
+    split = split,
+    groupColumn = c(groupColumn)
+  )
+
+
+}
+
+
+
 
 defaultTableOptionsInternal <- function(.options = NULL) {
 

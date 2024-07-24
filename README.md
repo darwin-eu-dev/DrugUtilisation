@@ -63,19 +63,19 @@ cdm$dus_cohort |>
   requireIsFirstDrugEntry() |> 
   requireObservationBeforeDrug(priorObservation = 30)
 #> # Source:   table<main.dus_cohort> [?? x 4]
-#> # Database: DuckDB v1.0.0 [eburn@Windows 10 x64:R 4.2.1/:memory:]
+#> # Database: DuckDB v1.0.0 [eburn@Windows 10 x64:R 4.4.0/:memory:]
 #>    cohort_definition_id subject_id cohort_start_date cohort_end_date
 #>                   <int>      <int> <date>            <date>         
-#>  1                    1          3 1996-09-13        2008-07-15     
-#>  2                    1         42 2002-09-15        2007-12-19     
-#>  3                    1         59 2020-11-09        2021-03-05     
-#>  4                    1         64 2019-01-10        2020-07-06     
-#>  5                    1         71 2017-07-05        2018-09-17     
-#>  6                    1         75 2010-06-16        2011-09-20     
-#>  7                    1         84 2008-10-08        2016-01-31     
-#>  8                    1         45 2017-07-03        2018-07-06     
-#>  9                    1         95 2001-06-13        2010-01-28     
-#> 10                    1         33 2021-02-12        2021-02-14     
+#>  1                    1         14 1990-04-27        1990-05-12     
+#>  2                    1         46 2004-06-27        2011-05-07     
+#>  3                    1         47 1963-12-22        1965-09-16     
+#>  4                    1          3 1996-09-13        2008-07-15     
+#>  5                    1         42 2002-09-15        2007-12-19     
+#>  6                    1         59 2020-11-09        2021-03-05     
+#>  7                    1         64 2019-01-10        2020-07-06     
+#>  8                    1         71 2017-07-05        2018-09-17     
+#>  9                    1         75 2010-06-16        2011-09-20     
+#> 10                    1         84 2008-10-08        2016-01-31     
 #> # ℹ more rows
 ```
 
@@ -107,9 +107,9 @@ indication_summary <- cdm$dus_cohort |>
 #> Try calling computeQuery earlier in your pipeline.
 #> ℹ The following estimates will be computed:
 #> • indication_m30_to_0: count, percentage
-#> → Start summary of data, at 2024-07-23 21:43:34
+#> → Start summary of data, at 2024-07-24 10:37:11.528484
 #> 
-#> ✔ Summary finished, at 2024-07-23 21:43:35
+#> ✔ Summary finished, at 2024-07-24 10:37:11.629409
 indication_summary |> glimpse()
 #> Rows: 8
 #> Columns: 13
@@ -136,7 +136,8 @@ this case the concept for acetaminophen).
 
 ``` r
 drug_utilisation_summary <- cdm$dus_cohort |> 
-  summariseDrugUtilisation(ingredientConceptId = 1125315)
+  summariseDrugUtilisation(ingredientConceptId = 1125315, 
+                           gapEra = 7)
 #> Warning: Your SQL query is over 10,000 characters which can cause issues on some database platforms!
 #> Try calling computeQuery earlier in your pipeline.
 drug_utilisation_summary |> glimpse()

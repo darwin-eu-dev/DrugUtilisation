@@ -438,3 +438,43 @@ test_that("tableDrugRestart", {
 
   mockDisconnect(cdm = cdm)
 })
+
+test_that("tableIndication works", {
+
+  cdm <- mockDrugUtilisation(
+    connectionDetails = connectionDetails,
+    dus_cohort = dplyr::tibble(
+      cohort_definition_id = 1,
+      subject_id = c(1, 1, 2, 3, 4),
+      cohort_start_date = as.Date(c("2000-01-01","2000-01-10", "2002-01-01", "2010-01-01", "2011-01-01")),
+      cohort_end_date = as.Date(c("2000-01-05","2000-01-15", "2002-01-15", "2010-01-20", "2011-01-20"))
+    ),
+    observation_period = dplyr::tibble(
+      observation_period_id = 1:4,
+      person_id = 1:4,
+      observation_period_start_date = as.Date(c("2000-01-01", "2002-01-01", "2010-01-01", "2011-01-01")),
+      observation_period_end_date = as.Date(c("2000-01-25", "2002-01-15", "2010-01-25", "2011-01-25")),
+      period_type_concept_id = 0
+    )
+  )
+  cdm$dus_cohort <- cdm$dus_cohort |>
+    dplyr::mutate(var0 = "group",
+                  var1 = dplyr::if_else(subject_id == 1,
+                                        "group_1", "group_2"),
+                  var2 = dplyr::if_else(subject_id %in% c(1,2),
+                                        "group_a", "group_b"))
+
+  ppc <- cdm$dus_cohort |>
+    summariseProportionOfPatientsCovered(followUpDays = 30,
+                                         strata = c("var1", "var2"))
+  #without times specified
+  expect_no_error(tableProportionOfPatientsCovered(ppc))
+  #with times specified
+  expect_no_error(tableProportionOfPatientsCovered(ppc,
+                                   times = c(0,5,10,15)))
+
+  # after suppression
+  ppc_suppressed <- omopgenerics::suppress(ppc, 4)
+  expect_no_error(tableProportionOfPatientsCovered(ppc_suppressed))
+
+})

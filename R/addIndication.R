@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Add a variable indicating individuals´ indication
+#' Add a variable indicating individuals indications
 #'
 #' @description
 #' Add a variable to a drug cohort indicating their presence in an indication
@@ -116,9 +116,19 @@ addIndication <- function(x,
       indexDate = indexDate, censorDate = censorDate,
       window = indicationWindow, table = unknownIndicationTable,
       name = tmpName) |>
+    dplyr::select(-dplyr::any_of(censorDate)) |>
     collapseIndication(window = indicationWindow, name = tmpName) |>
     renameWindows(windowNames)
 
+  newCols <- colnames(result)
+  newCols <- newCols[!newCols %in% c("subject_id", indexDate, censorDate)]
+  toDrop <- intersect(newCols, colnames(x))
+  if(length(toDrop) > 0){
+    cli::cli_warn("Overwriting existing variables: {toDrop}")
+    x <- x |>
+      dplyr::select(!toDrop)
+  }
+  
   # add the indication columns to the original table
   result <- x |>
     dplyr::left_join(ind, by = c("subject_id", indexDate)) |>

@@ -1,7 +1,5 @@
 ---
 title: "Characterise a cohort using Drug Utilisation"
-author: "Martí Català, Xihang Chen, Theresa Burkard"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Characterise a cohort using Drug Utilisation}

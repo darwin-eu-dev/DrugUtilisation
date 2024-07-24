@@ -70,6 +70,25 @@ test_that("test case single indication", {
       unknownIndicationTable = NULL
     ))
 
+  # check overwrites existing variable with warning
+  expect_warning(cdm$new <- cdm[["cohort1"]] |>
+                   dplyr::mutate(a = 1) |>
+    addIndication(indicationCohortName = "cohort2",
+                  indicationWindow = list(c(0,0),
+                                          c(-Inf, 0)),
+                  indexDate = "cohort_end_date",
+                  unknownIndicationTable = NULL
+    ) |>
+    addIndication(indicationCohortName = "cohort2",
+                  indicationWindow = list(c(0,0),
+                                          c(-Inf, 0)),
+                  indexDate = "cohort_end_date",
+                  unknownIndicationTable = NULL
+    ))
+  expect_true("a" %in%  colnames(cdm$new))
+
+
+
   # check for indication 0
   res0 <- cdm[["cohort1"]] |>
     addIndication(
