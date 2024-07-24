@@ -49,25 +49,25 @@ test_that("simple working example", {
   expect_true(ppc |>
     dplyr::filter(additional_level == 0,
                   estimate_name == "ppc") |>
-    dplyr::pull("estimate_value") == "1")
+    dplyr::pull("estimate_value") == "100")
 
   # on day 4, 4 of 4 people being treated
   expect_true(ppc |>
                 dplyr::filter(additional_level == 4,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == "1")
+                dplyr::pull("estimate_value") == "100")
 
   # on day 6, 3 of 4 people being treated
   expect_true(ppc |>
                 dplyr::filter(additional_level == 6,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == "0.75")
+                dplyr::pull("estimate_value") == "75")
 
   # on day 16, 2 of 3 people being treated, 1 has left
   expect_true(ppc |>
                 dplyr::filter(additional_level == 16,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == as.character(2/3))
+                dplyr::pull("estimate_value") == as.character(round((2/3)*100, 2)))
 
   # on day 21, 0 of 3 people being treated, 1 has left
   expect_true(ppc |>
@@ -113,25 +113,25 @@ test_that("multiple cohort entries", {
   expect_true(ppc |>
                 dplyr::filter(additional_level == 4,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == "1")
+                dplyr::pull("estimate_value") == "100")
 
   # one of two treated on day 6
   expect_true(ppc |>
                 dplyr::filter(additional_level == 6,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == "0.5")
+                dplyr::pull("estimate_value") == "50")
 
   # both treated on day 10
   expect_true(ppc |>
                 dplyr::filter(additional_level == 10,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == "1")
+                dplyr::pull("estimate_value") == "100")
 
   # one person left on day 21, untreated
   expect_true(ppc |>
                 dplyr::filter(additional_level == 10,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == "1")
+                dplyr::pull("estimate_value") == "100")
   expect_true(ppc |>
                 dplyr::filter(additional_level == 21,
                               estimate_name == "ppc") |>
@@ -208,12 +208,12 @@ test_that("multiple cohorts", {
   expect_true(ppc_cohort_1 |>
                 dplyr::filter(additional_level == 12,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == as.character(2/3))
+                dplyr::pull("estimate_value") ==  as.character(round((2/3)*100, 2)))
   # cohort 2 - 1 of 1 people being treated
   expect_true(ppc_cohort_2 |>
                 dplyr::filter(additional_level == 12,
                               estimate_name == "ppc") |>
-                dplyr::pull("estimate_value") == "1")
+                dplyr::pull("estimate_value") == "100")
 
 
   # if one cohort is empty it should still work
@@ -482,10 +482,10 @@ test_that("suppression", {
                 dplyr::filter(additional_level == 0,
                               estimate_name == "denominator_count") |>
                 dplyr::pull("estimate_value") == "4")
-  expect_true(ppc_suppressed |>
+  expect_true(is.na(ppc_suppressed |>
                 dplyr::filter(additional_level == 15,
                               estimate_name == "denominator_count") |>
-                dplyr::pull("estimate_value") == "4")
+                dplyr::pull("estimate_value")))
 
 
 })
