@@ -46,8 +46,8 @@
 
     <div class="section level2">
 
-      <h3 id="generate-a-drug-utilisation-cohort-set">Generate a drug utilisation cohort set<a class="anchor" aria-label="anchor" href="#generate-a-drug-utilisation-cohort-set"></a></h3>
-      <div class="section-desc"><p>Generate a cohort of drug use</p></div>
+      <h3 id="generate-a-set-of-drug-cohorts">Generate a set of drug cohorts<a class="anchor" aria-label="anchor" href="#generate-a-set-of-drug-cohorts"></a></h3>
+      <div class="section-desc"><p>Generate a set of drug cohorts using given concepts or vocabulary hierarchies</p></div>
 
 
     </div><div class="section level2">
@@ -60,20 +60,26 @@
           <code><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code>
 
         </dt>
-        <dd>Generates a cohort of the drug use of a certain list of concepts.</dd>
+        <dd>Generate a set of drug cohorts based on given concepts</dd>
       </dl><dl><dt>
 
           <code><a href="generateIngredientCohortSet.html">generateIngredientCohortSet()</a></code>
 
         </dt>
-        <dd>Generates a cohort of the drug use of ingredient name(s) of interest.</dd>
+        <dd>Generate a set of drug cohorts based on drug ingredients</dd>
       </dl><dl><dt>
 
           <code><a href="generateAtcCohortSet.html">generateAtcCohortSet()</a></code>
 
         </dt>
-        <dd>Generates a cohort of the drug use of ATC name(s) of interest.</dd>
+        <dd>Generate a set of drug cohorts based on ATC classification</dd>
       </dl></div><div class="section level2">
+
+      <h3 id="apply-inclusion-criteria-to-drug-cohorts">Apply inclusion criteria to drug cohorts<a class="anchor" aria-label="anchor" href="#apply-inclusion-criteria-to-drug-cohorts"></a></h3>
+      <div class="section-desc"><p>Apply inclusion criteria that filter drug cohort entries based on specified rules.</p></div>
+
+
+    </div><div class="section level2">
 
 
 
@@ -83,29 +89,29 @@
           <code><a href="requireDrugInDateRange.html">requireDrugInDateRange()</a></code>
 
         </dt>
-        <dd>Restrict to observations that have an indexDate within a certain range.</dd>
+        <dd>Restrict cohort to only cohort records within a certain date range</dd>
       </dl><dl><dt>
 
           <code><a href="requireIsFirstDrugEntry.html">requireIsFirstDrugEntry()</a></code>
 
         </dt>
-        <dd>Require only first record per subject.</dd>
+        <dd>Restrict cohort to only the first cohort record per subject</dd>
       </dl><dl><dt>
 
           <code><a href="requireObservationBeforeDrug.html">requireObservationBeforeDrug()</a></code>
 
         </dt>
-        <dd>Require number of days of observation before the drug starts.</dd>
+        <dd>Restrict cohort to only cohort records with the given amount of prior observation time in the database</dd>
       </dl><dl><dt>
 
           <code><a href="requirePriorDrugWashout.html">requirePriorDrugWashout()</a></code>
 
         </dt>
-        <dd>Require prior days with no exposure.</dd>
+        <dd>Restrict cohort to only cohort records with a given amount of time since the last cohort record ended</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="indication-functions">Indication functions<a class="anchor" aria-label="anchor" href="#indication-functions"></a></h3>
-      <div class="section-desc"><p>Indication functions are used to summarise and obtain the indication information</p></div>
+      <h3 id="identify-and-summarise-indications-for-patients-in-drug-cohorts">Identify and summarise indications for patients in drug cohorts<a class="anchor" aria-label="anchor" href="#identify-and-summarise-indications-for-patients-in-drug-cohorts"></a></h3>
+      <div class="section-desc"><p>Indications idendtified based on their presence in indication cohorts or OMOP CDM clinical tabes.</p></div>
 
 
     </div><div class="section level2">
@@ -118,13 +124,13 @@
           <code><a href="addIndication.html">addIndication()</a></code>
 
         </dt>
-        <dd>Get indication for a target cohort</dd>
+        <dd>Add a variable indicating individuals´ indication</dd>
       </dl><dl><dt>
 
           <code><a href="summariseIndication.html">summariseIndication()</a></code>
 
         </dt>
-        <dd>This function is used to summarise the indication table over multiple cohorts.</dd>
+        <dd>Summarise the indications of individuals in a drug cohort</dd>
       </dl><dl><dt>
 
           <code><a href="tableIndication.html">tableIndication()</a></code>
@@ -254,7 +260,7 @@
           <code><a href="generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet()</a></code>
 
         </dt>
-        <dd>Generates a cohort of the drug use of a certain list of concepts.</dd>
+        <dd>Generate a set of drug cohorts based on given concepts</dd>
       </dl><dl><dt>
 
           <code><a href="mockDrugUtilisation.html">mockDrugUtilisation()</a></code>
