@@ -7,7 +7,7 @@ observation time in the database}
 \usage{
 requireObservationBeforeDrug(
   cohort,
-  priorObservation,
+  days,
   cohortId = NULL,
   name = omopgenerics::tableName(cohort)
 )
@@ -15,8 +15,8 @@ requireObservationBeforeDrug(
 \arguments{
 \item{cohort}{A cohort table in a cdm reference.}
 
-\item{priorObservation}{Number of days of prior observation required before
-cohort start date. Any records with fewer days will be dropped.}
+\item{days}{Number of days of prior observation required before cohort start
+date. Any records with fewer days will be dropped.}
 
 \item{cohortId}{IDs of the cohorts to modify. The default is NULL meaning all
 cohorts will be used; otherwise, only the specified cohorts will be modified,
@@ -42,7 +42,7 @@ library(dplyr)
 cdm <- mockDrugUtilisation()
 
 cdm$cohort1 <- cdm$cohort1 |>
-  requireObservationBeforeDrug(priorObservation = 365)
+  requireObservationBeforeDrug(days = 365)
 
 attrition(cdm$cohort1) |> glimpse()
 }

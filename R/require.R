@@ -184,8 +184,8 @@ requireIsFirstDrugEntry <- function(cohort,
 #' cohort start date.
 #'
 #' @param cohort A cohort table in a cdm reference.
-#' @param priorObservation Number of days of prior observation required before
-#' cohort start date. Any records with fewer days will be dropped.
+#' @param days Number of days of prior observation required before cohort start
+#' date. Any records with fewer days will be dropped.
 #' @param cohortId IDs of the cohorts to modify. The default is NULL meaning all
 #' cohorts will be used; otherwise, only the specified cohorts will be modified,
 #' and the rest will remain unchanged.
@@ -205,23 +205,23 @@ requireIsFirstDrugEntry <- function(cohort,
 #' cdm <- mockDrugUtilisation()
 #'
 #' cdm$cohort1 <- cdm$cohort1 |>
-#'   requireObservationBeforeDrug(priorObservation = 365)
+#'   requireObservationBeforeDrug(days = 365)
 #'
 #' attrition(cdm$cohort1) |> glimpse()
 #' }
 #'
 requireObservationBeforeDrug <- function(cohort,
-                                         priorObservation,
+                                         days,
                                          cohortId = NULL,
                                          name = omopgenerics::tableName(cohort)) {
   # check inputs
   checkInputs(cohort = cohort, cohortId = cohortId, name = name)
-  assertNumeric(priorObservation, integerish = T, length = 1, min = 0)
+  assertNumeric(days, integerish = T, length = 1, min = 0)
   if (is.null(cohortId)) {
     cohortId <- settings(cohort) |> dplyr::pull("cohort_definition_id")
   }
 
-  reason <- "require prior observation of {priorObservation} day{?s}"
+  reason <- "require prior observation of {days} day{?s}"
 
   record_counts <- omopgenerics::cohortCount(cohort) |>
     dplyr::filter(.data$cohort_definition_id %in% cohortId) |>
@@ -235,7 +235,7 @@ requireObservationBeforeDrug <- function(cohort,
         priorObservationType = "days"
       ) |>
       dplyr::filter(
-        .data[[id]] >= .env$priorObservation |
+        .data[[id]] >= .env$days |
           (!.data$cohort_definition_id %in% .env$cohortId)
       ) |>
       dplyr::select(!dplyr::all_of(id))
@@ -243,7 +243,7 @@ requireObservationBeforeDrug <- function(cohort,
 
   set <- settings(cohort) |>
     newSettings(
-      col = "prior_drug_observation", value = priorObservation,
+      col = "prior_drug_observation", value = days,
       cohortId = cohortId
     )
 
