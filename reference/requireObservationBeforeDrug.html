@@ -60,7 +60,7 @@ cohort start date.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">requireObservationBeforeDrug</span><span class="op">(</span></span>
 <span>  <span class="va">cohort</span>,</span>
-<span>  <span class="va">priorObservation</span>,</span>
+<span>  <span class="va">days</span>,</span>
 <span>  cohortId <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  name <span class="op">=</span> <span class="fu">omopgenerics</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/tableName.html" class="external-link">tableName</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -74,9 +74,9 @@ cohort start date.</p>
 <dd><p>A cohort table in a cdm reference.</p></dd>
 
 
-<dt id="arg-priorobservation">priorObservation<a class="anchor" aria-label="anchor" href="#arg-priorobservation"></a></dt>
-<dd><p>Number of days of prior observation required before
-cohort start date. Any records with fewer days will be dropped.</p></dd>
+<dt id="arg-days">days<a class="anchor" aria-label="anchor" href="#arg-days"></a></dt>
+<dd><p>Number of days of prior observation required before cohort start
+date. Any records with fewer days will be dropped.</p></dd>
 
 
 <dt id="arg-cohortid">cohortId<a class="anchor" aria-label="anchor" href="#arg-cohortid"></a></dt>
@@ -105,7 +105,7 @@ overwritten.</p></dd>
 <span class="r-in"><span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">requireObservationBeforeDrug</span><span class="op">(</span>priorObservation <span class="op">=</span> <span class="fl">365</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">requireObservationBeforeDrug</span><span class="op">(</span>days <span class="op">=</span> <span class="fl">365</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/attrition.html" class="external-link">attrition</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">cohort1</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 6</span>
