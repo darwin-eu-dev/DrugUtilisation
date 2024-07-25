@@ -1,7 +1,7 @@
 
 test_that("test flags", {
   skip_on_cran()
-  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema(), seed = 1)
   x <- tidyr::expand_grid(
     duration = c(TRUE, FALSE), quantity = c(TRUE, FALSE), dose = c(TRUE, FALSE)
   )
