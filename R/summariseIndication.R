@@ -200,17 +200,8 @@ indicationCombinations <- function(result, set, indicationCohortId, unknownIndic
     set <- set |>
       dplyr::filter(.data$cohort_definition_id %in% .env$indicationCohortId)
   }
-  indications <- set$cohort_name |> sort()
-  combs <- rep(list(c(0, 1)), length(indications))
-  names(combs) <- indications
-  combs <- tidyr::expand_grid(!!!combs)
-  indications <- character()
-  for (k in 2:nrow(combs)) {
-    cols <- combs[k,] |> as.list() |> unlist()
-    nms <- names(cols)[cols == 1]
-    indications <- c(indications, paste0(nms, collapse = " and "))
-  }
-  indications <- c(indications, ifelse(length(unknownIndicationTable) > 0, "unknown", character()), "none")
+  indications <- set$cohort_name |> sort() |> rev()
+  indications <- c(getCombinations(set$cohort_name), ifelse(length(unknownIndicationTable) > 0, "unknown", character()), "none")
   allcombs <- dplyr::tibble(
     "variable_name" = c("number records", "number subjects"),
     "variable_level" = NA_character_
@@ -247,4 +238,23 @@ indicationCombinations <- function(result, set, indicationCohortId, unknownIndic
     dplyr::arrange(.data$order_id, .data$estimate_name) |>
     dplyr::select(-"order_id")
   return(result)
+}
+getCombinations <- function(indications) {
+  indications <- sort(indications)
+  combs <- rep(list(c(1, 0)), length(indications))
+  names(combs) <- indications
+  sumOp <- paste0('.data[["', indications, '"]]', collapse = "+") |>
+    rlang::parse_exprs() |>
+    rlang::set_names("sum")
+  combs <- tidyr::expand_grid(!!!combs) |>
+    dplyr::mutate(!!!sumOp) |>
+    dplyr::arrange(dplyr::pick(dplyr::all_of(c("sum", rev(indications))))) |>
+    dplyr::select(-"sum")
+  indications <- character()
+  for (k in 2:nrow(combs)) {
+    cols <- combs[k,] |> as.list() |> unlist()
+    nms <- names(cols)[cols == 1]
+    indications <- c(indications, paste0(nms, collapse = " and "))
+  }
+  return(indications)
 }

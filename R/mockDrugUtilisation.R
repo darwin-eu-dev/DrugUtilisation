@@ -53,8 +53,8 @@ mockDrugUtilisation <- function(con = NULL,
 
   # get vocabulary
   vocab <- vocabularyTables(
-    tables$concept, tables$concept_ancestor, tables$drug_strength,
-    tables$concept_relationship
+    tables[["concept"]], tables[["concept_ancestor"]], tables[["drug_strength"]],
+    tables[["concept_relationship"]]
   )
   tables$concept <- vocab$concept
   tables$concept_ancestor <- vocab$concept_ancestor

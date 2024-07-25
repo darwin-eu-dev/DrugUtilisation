@@ -5,7 +5,7 @@
 \title{Add a variable indicating individuals indications}
 \usage{
 addIndication(
-  x,
+  cohort,
   indicationCohortName,
   indicationCohortId = NULL,
   indicationWindow = list(c(0, 0)),
@@ -16,7 +16,7 @@ addIndication(
 )
 }
 \arguments{
-\item{x}{Table in the cdm}
+\item{cohort}{A cohort table in the cdm.}
 
 \item{indicationCohortName}{Name of indication cohort table}
 

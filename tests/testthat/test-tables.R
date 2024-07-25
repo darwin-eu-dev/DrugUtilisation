@@ -65,25 +65,38 @@ test_that("tableIndication works", {
     'Database name', 'Variable name', 'Indication', '[header]Cohort name\n[header_level]Cohort 1', '[header]Cohort name\n[header_level]Cohort 2'
   ))))
   expect_true(all(default$`_data`$`Database name` == c(
-    'DUS MOCK', '', '', '', 'DUS MOCK', '', '', '', 'DUS MOCK', '', '', '', 'DUS MOCK', '', '', ''
+    'DUS MOCK', '', '', '', '', 'DUS MOCK', '', '', '', '', 'DUS MOCK', '', '', '', '', 'DUS MOCK', '', '', '', ''
   )))
 
   tib <- tableIndication(result, header = "variable", groupColumn = "cdm_name", type = "tibble")
   expect_true(nrow(tib) == 2)
   expect_true(all(c(
-    'Database name', 'Cohort name', '[header_level]Indication on index date\n[header_level]Asthma',
-    '[header_level]Indication on index date\n[header_level]Covid', '[header_level]Indication on index date\n[header_level]None',
-    '[header_level]Indication on index date\n[header_level]Unknown', '[header_level]Indication during prior 7 days\n[header_level]Covid',
-    '[header_level]Indication during prior 7 days\n[header_level]Asthma', '[header_level]Indication during prior 7 days\n[header_level]None',
-    '[header_level]Indication during prior 7 days\n[header_level]Unknown', '[header_level]Indication during prior 30 days\n[header_level]Asthma',
-    '[header_level]Indication during prior 30 days\n[header_level]Covid', '[header_level]Indication during prior 30 days\n[header_level]None',
-    '[header_level]Indication during prior 30 days\n[header_level]Unknown', '[header_level]Indication any time prior\n[header_level]Asthma',
-    '[header_level]Indication any time prior\n[header_level]Covid', '[header_level]Indication any time prior\n[header_level]None',
-    '[header_level]Indication any time prior\n[header_level]Unknown'
+    'Database name', 'Cohort name',
+    '[header_level]Indication on index date\n[header_level]Asthma',
+    '[header_level]Indication on index date\n[header_level]Covid',
+    '[header_level]Indication on index date\n[header_level]Asthma and covid',
+    '[header_level]Indication on index date\n[header_level]Unknown',
+    '[header_level]Indication on index date\n[header_level]None',
+    '[header_level]Indication from 7 days before to the index date\n[header_level]Asthma',
+    '[header_level]Indication from 7 days before to the index date\n[header_level]Covid',
+    '[header_level]Indication from 7 days before to the index date\n[header_level]Asthma and covid',
+    '[header_level]Indication from 7 days before to the index date\n[header_level]Unknown',
+    '[header_level]Indication from 7 days before to the index date\n[header_level]None',
+    '[header_level]Indication from 30 days before to the index date\n[header_level]Asthma',
+    '[header_level]Indication from 30 days before to the index date\n[header_level]Covid',
+    '[header_level]Indication from 30 days before to the index date\n[header_level]Asthma and covid',
+    '[header_level]Indication from 30 days before to the index date\n[header_level]Unknown',
+    '[header_level]Indication from 30 days before to the index date\n[header_level]None',
+    '[header_level]Indication any time before or on index date\n[header_level]Asthma',
+    '[header_level]Indication any time before or on index date\n[header_level]Covid',
+    '[header_level]Indication any time before or on index date\n[header_level]Asthma and covid',
+    '[header_level]Indication any time before or on index date\n[header_level]Unknown',
+    '[header_level]Indication any time before or on index date\n[header_level]None'
   ) %in% colnames(tib)))
 
   # strata
   result <- cdm[["cohort1"]] |>
+    dplyr::filter(cohort_definition_id == 1) |>
     PatientProfiles::addAge(
       ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150))
     ) |>
@@ -95,13 +108,16 @@ test_that("tableIndication works", {
       strata = list("age_group", "sex", c("age_group", "sex"))
     )
 
-  fx <- tableIndication(result, cdmName = FALSE, cohortName = FALSE, type = "flextable")
+  fx <- tableIndication(result, cdmName = FALSE, cohortName = FALSE, type = "flextable", header = "group")
   expect_true("flextable" %in% class(fx))
   expect_true(all(colnames(fx$body$dataset) == c(
     'Variable name', 'Age group', 'Sex', 'Indication', 'Estimate value'
   )))
   expect_true(all(fx$body$dataset$`Variable name` |> levels() == c(
-    "Indication any time prior", "Indication during prior 30 days", "Indication during prior 7 days", "Indication on index date"
+    "Indication any time before or on index date",
+    "Indication from 30 days before to the index date",
+    "Indication from 7 days before to the index date",
+    "Indication on index date"
   )))
 
   # expected errors
@@ -288,6 +304,21 @@ test_that("tableDrugUtilisation", {
       observation_period_start_date = as.Date("2000-01-01"),
       observation_period_end_date = as.Date("2030-01-01"),
       period_type_concept_id = 0
+    ),
+    person = dplyr::tibble(
+      person_id = c(1, 2, 3, 4) |> as.integer(),
+      gender_concept_id = c(8507, 8507, 8532, 8532) |> as.integer(),
+      year_of_birth = c(2000, 2000, 1988, 1964) |> as.integer(),
+      day_of_birth = c(1, 1, 24, 13) |> as.integer(),
+      month_of_birth = 1L,
+      birth_datetime = as.Date(c(
+        "2004-05-22", "2003-11-26", "1988-01-24", "1964-01-13"
+      )),
+      race_concept_id = 0L,
+      ethnicity_concept_id = 0L,
+      location_id = 0L,
+      provider_id = 0L,
+      care_site_id = 0L
     )
   )
 
@@ -299,11 +330,13 @@ test_that("tableDrugUtilisation", {
   default <- tableDrugUtilisation(result)
   expect_true("gt_tbl" %in% class(default))
   expect_true(all(colnames(default$`_data`) == c(
-    'Database name', 'Variable', 'Unit', 'Estimate name', 'Concept set', 'Ingredient',
+    'Database name', 'Variable', 'Unit', 'Estimate name', 'Concept set',
+    'Ingredient',
     '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Overall',
     '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Female',
     '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Male',
     '[header]Cohort name\n[header_level]Cohort 2\n[header]Sex\n[header_level]Overall',
+    '[header]Cohort name\n[header_level]Cohort 2\n[header]Sex\n[header_level]Female',
     '[header]Cohort name\n[header_level]Cohort 2\n[header]Sex\n[header_level]Male'
   )))
 
@@ -335,6 +368,7 @@ test_that("tableDrugUtilisation", {
     '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Female',
     '[header]Cohort name\n[header_level]Cohort 1\n[header]Sex\n[header_level]Male',
     '[header]Cohort name\n[header_level]Cohort 2\n[header]Sex\n[header_level]Overall',
+    '[header]Cohort name\n[header_level]Cohort 2\n[header]Sex\n[header_level]Female',
     '[header]Cohort name\n[header_level]Cohort 2\n[header]Sex\n[header_level]Male'
   )))
 
@@ -393,6 +427,21 @@ test_that("tableDrugRestart", {
       observation_period_start_date = as.Date("2000-01-01"),
       observation_period_end_date = as.Date("2030-01-01"),
       period_type_concept_id = 0
+    ),
+    person = dplyr::tibble(
+      person_id = c(1, 2, 3, 4) |> as.integer(),
+      gender_concept_id = c(8507, 8507, 8532, 8532) |> as.integer(),
+      year_of_birth = c(2000, 2000, 1988, 1964) |> as.integer(),
+      day_of_birth = c(1, 1, 24, 13) |> as.integer(),
+      month_of_birth = 1L,
+      birth_datetime = as.Date(c(
+        "2004-05-22", "2003-11-26", "1988-01-24", "1964-01-13"
+      )),
+      race_concept_id = 0L,
+      ethnicity_concept_id = 0L,
+      location_id = 0L,
+      provider_id = 0L,
+      care_site_id = 0L
     )
   )
 
@@ -411,10 +460,8 @@ test_that("tableDrugRestart", {
   expect_true(all(colnames(gt1$`_data`) == c(
     'cdm_name_cohort_name', 'Follow-up', 'Event', 'Estimate name',
     '[header]Age group\n[header_level]0 to 50\n[header]Sex\n[header_level]Overall',
-    '[header]Age group\n[header_level]51 to 100\n[header]Sex\n[header_level]Overall',
     '[header]Age group\n[header_level]0 to 50\n[header]Sex\n[header_level]Female',
     '[header]Age group\n[header_level]0 to 50\n[header]Sex\n[header_level]Male',
-    '[header]Age group\n[header_level]51 to 100\n[header]Sex\n[header_level]Male',
     '[header]Age group\n[header_level]Overall\n[header]Sex\n[header_level]Overall',
     '[header]Age group\n[header_level]Overall\n[header]Sex\n[header_level]Female',
     '[header]Age group\n[header_level]Overall\n[header]Sex\n[header_level]Male'
@@ -442,7 +489,8 @@ test_that("tableDrugRestart", {
 test_that("tableIndication works", {
 
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     dus_cohort = dplyr::tibble(
       cohort_definition_id = 1,
       subject_id = c(1, 1, 2, 3, 4),
@@ -477,4 +525,5 @@ test_that("tableIndication works", {
   ppc_suppressed <- omopgenerics::suppress(ppc, 4)
   expect_no_error(tableProportionOfPatientsCovered(ppc_suppressed))
 
+  mockDisconnect(cdm = cdm)
 })
