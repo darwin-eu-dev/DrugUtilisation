@@ -202,7 +202,7 @@ summariseDoseCoverage <- function(cdm,
       "result_id" = unique(dailyDoseSummary$result_id),
       "package_name" = "DrugUtilisation",
       "package_version" = as.character(utils::packageVersion("DrugUtilisation")),
-      "result_type" = "dose_coverage",
+      "result_type" = "summarise_dose_coverage",
       "sample_size" = sampleSize
     ))
 

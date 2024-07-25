@@ -53,7 +53,7 @@ test_that("summariseDrugUtilisation works", {
     'cumulative dose', 'initial daily dose'
   )))
   expect_true(all(unique(x0$variable_level) %in% c(NA, "milligram")))
-  expect_true(settings(x0)$result_type == "drug_utilisation")
+  expect_true(settings(x0)$result_type == "summarise_drug_utilisation")
   expect_true(all(visOmopResults::additionalColumns(x0) == c("concept_set", "ingredient")))
   expect_true(
     x0 |> dplyr:::filter(grepl("dose", variable_name)) |> dplyr::pull("variable_level") |> unique() == "milligram"
@@ -82,7 +82,7 @@ test_that("summariseDrugUtilisation works", {
     x1 |> dplyr:::filter(grepl("dose", variable_name)) |> dplyr::pull("additional_level") |> unique() == c(
       "ingredient_1125315_descendants &&& acetaminophen", "ingredient_1503297_descendants &&& metformin")
   ))
-  expect_true(settings(x1)$result_type == "drug_utilisation")
+  expect_true(settings(x1)$result_type == "summarise_drug_utilisation")
   expect_true(all(x1 |> visOmopResults::strataColumns() == c("sex")))
 
   # concept

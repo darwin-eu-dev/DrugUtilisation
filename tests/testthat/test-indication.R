@@ -651,7 +651,7 @@ test_that("summariseIndication", {
   expect_true(any(grepl("Indication any time before or on index date", result$variable_name)))
 
   expect_identical(
-    "summarised_indication", unique(settings(result)$result_type))
+    "summarise_indication", unique(settings(result)$result_type))
 
   mockDisconnect(cdm = cdm)
 })

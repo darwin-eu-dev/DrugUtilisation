@@ -203,7 +203,7 @@ summariseTreatmentInternal <- function(cohort,
   result <- result |>
     omopgenerics::newSummarisedResult(settings = dplyr::tibble(
       "result_id" = unique(result$result_id),
-      "result_type" = "summarised_treatment",
+      "result_type" = "summarise_treatment",
       "package_name" = "DrugUtilisation",
       "package_version" = as.character(utils::packageVersion("DrugUtilisation"))
     ))
