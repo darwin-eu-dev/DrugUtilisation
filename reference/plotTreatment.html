@@ -26,7 +26,7 @@ summariseTreatment function."><meta property="og:image" content="https://darwin-
     <li><a class="dropdown-item" href="../articles/indication.html">Identify and summarise indications among a drug cohort</a></li>
     <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Characterise a cohort using Drug Utilisation</a></li>
     <li><a class="dropdown-item" href="../articles/drug_utilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Obtain treatment summary of a cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Summarise treatments received by a cohort</a></li>
     <li><a class="dropdown-item" href="../articles/treatment_discontinuation.html">Summarising treatment adherence</a></li>
     <li><a class="dropdown-item" href="../articles/drug_restart.html">Assessing drug restart and switching after treatment</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_add_drug_use.html">Add drug related information to a Drug Utilisation cohort</a></li>
@@ -69,23 +69,28 @@ summariseTreatment function.</p>
 
 
 <dl><dt id="arg-result">result<a class="anchor" aria-label="anchor" href="#arg-result"></a></dt>
-<dd><p>...</p></dd>
+<dd><p>A summarised_result object with results from
+summariseDrugRestart().</p></dd>
 
 
 <dt id="arg-facetx">facetX<a class="anchor" aria-label="anchor" href="#arg-facetx"></a></dt>
-<dd><p>...</p></dd>
+<dd><p>Vector of variables to facet by horizontally. Allowed options
+are: "cdm_name", "cohort_name", "strata", "variable_name"</p></dd>
 
 
 <dt id="arg-facety">facetY<a class="anchor" aria-label="anchor" href="#arg-facety"></a></dt>
-<dd><p>...</p></dd>
+<dd><p>Vector of variables to facet by vertically Allowed options
+are: "cdm_name", "cohort_name", "strata", "variable_name".</p></dd>
 
 
 <dt id="arg-splitstrata">splitStrata<a class="anchor" aria-label="anchor" href="#arg-splitstrata"></a></dt>
-<dd><p>...</p></dd>
+<dd><p>Whether to split strata columns.</p></dd>
 
 
 <dt id="arg-colour">colour<a class="anchor" aria-label="anchor" href="#arg-colour"></a></dt>
-<dd><p>...</p></dd>
+<dd><p>Vector of variables to distinct by colour. Allowed options
+are: "cdm_name", "cohort_name", "strata", "variable_name", and
+"variable_level".</p></dd>
 
 </dl></div>
     <div class="section level2">
