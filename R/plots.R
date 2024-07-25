@@ -317,8 +317,8 @@ substituteStrata <- function(x, strata) {
 #' indications <- list("headache" = 378253, "asthma" = 317009)
 #' cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 #'
-#' cdm <- generateIngredientCohortSet(cdm = cdm, name = "drug_cohort",
-#'                                    ingredient = "acetaminophen")
+#' cdm <- generateIngredientCohortSet(
+#'   cdm = cdm, name = "drug_cohort", ingredient = "acetaminophen")
 #'
 #' result <- cdm$drug_cohort |>
 #'   summariseIndication(
@@ -331,7 +331,7 @@ substituteStrata <- function(x, strata) {
 #' }
 #'
 plotIndication <- function(result,
-                           x = "indication",
+                           x = "window",
                            facet = c("cdm_name", "cohort_name", "strata"),
                            splitStrata = TRUE) {
   # initial checks
@@ -380,11 +380,6 @@ plotIndication <- function(result,
     dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
     tidyr::unite(col = "x", dplyr::all_of(x), remove = FALSE)
 
-  if (length(facet) > 0) {
-    result <- result |>
-      tidyr::unite(col = "facet", dplyr::all_of(facet), remove = FALSE)
-  }
-
   color <- opts[!opts %in% c(x, facet)]
   if (length(color) > 0) {
     result <- result |>
@@ -394,10 +389,22 @@ plotIndication <- function(result,
   }
 
   result <- result |>
-    dplyr::select(dplyr::any_of(c("x", "estimate_value", "facet", "color")))
+    dplyr::select(dplyr::all_of(c("x", "estimate_value", facet, "color")))
 
-  ggplot2::ggplot(data = result, mapping = ggplot2::aes(x = ))
+  p <- result |>
+    ggplot2::ggplot(mapping = ggplot2::aes(
+      x = x, y = estimate_value, color = color, fill = color)) +
+    ggplot2::geom_col() +
+    ggplot2::xlab("") +
+    ggplot2::ylab("Percentage") +
+    ggplot2::ylim(c(0, 100))
 
+  if (length(facet) > 0) {
+    p <- p +
+      ggplot2::facet_wrap(facets = facet)
+  }
+
+  return(p)
 }
 
 insertValue <- function(x, pos, value) {
