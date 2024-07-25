@@ -332,9 +332,83 @@ substituteStrata <- function(x, strata) {
 #'
 plotIndication <- function(result,
                            x = "indication",
-                           facet = c("cdm_name", "cohort_name", "strata"), # window
+                           facet = c("cdm_name", "cohort_name", "strata"),
                            splitStrata = TRUE) {
+  # initial checks
   assertClass(result, class = "summarised_result")
   result <- result |>
     visOmopResults::filterSettings(.data$result_type == "summarise_indication")
+  if (nrow(result) == 0) {
+    cli::cli_warn(c("!" = "No `summarise_indication` records found, returning empty plot."))
+    return(ggplot2::ggplot())
+  }
+  assertLogical(splitStrata, length = 1)
+  assertCharacter(x, )
+  assertCharacter(facet)
+  if(splitStrata) {
+    strata <- visOmopResults::strataColumns(result)
+  } else {
+    strata <- "strata"
+  }
+  facet <- insertValue(facet, which(facet == "strata"), strata)
+  x <- insertValue(x, which(x == "strata"), strata)
+  facet <- insertValue(facet, which(facet == "group"), "cohort_name")
+  x <- insertValue(x, which(x == "group"), "cohort_name")
+  opts <- c("cdm_name", "cohort_name", strata, "indication", "window")
+  assertChoice(x, choices = opts, unique = TRUE)
+  assertChoice(facet, choices = opts, unique = TRUE)
+  intersection <- intersect(x, facet)
+  if (length(intersection) > 0) {
+    cli::cli_abort("{intersection} present in x and facet, no common values allowed")
+  }
+  if (length(x) == 0) cli::cli_abort("`x` can not be empty")
+
+  if (splitStrata) {
+    result <- result |>
+      visOmopResults::splitStrata()
+  } else {
+    result <- result |>
+      dplyr::mutate(
+        "strata" = paste0(.data$strata_name, ": ", .data$strata_level))
+  }
+  result <- result |>
+    dplyr::filter(.data$estimate_name == "percentage") |>
+    dplyr::select(
+      "cdm_name", "cohort_name" = "group_level",
+      "indication" = "variable_level", "window" = "variable_name",
+      dplyr::all_of(strata), "estimate_value") |>
+    dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
+    tidyr::unite(col = "x", dplyr::all_of(x), remove = FALSE)
+
+  if (length(facet) > 0) {
+    result <- result |>
+      tidyr::unite(col = "facet", dplyr::all_of(facet), remove = FALSE)
+  }
+
+  color <- opts[!opts %in% c(x, facet)]
+  if (length(color) > 0) {
+    result <- result |>
+      tidyr::unite(col = "color", dplyr::all_of(color), remove = FALSE)
+  } else {
+    result <- result |> dplyr::mutate("color" = "percentage")
+  }
+
+  result <- result |>
+    dplyr::select(dplyr::any_of(c("x", "estimate_value", "facet", "color")))
+
+  ggplot2::ggplot(data = result, mapping = ggplot2::aes(x = ))
+
+}
+
+insertValue <- function(x, pos, value) {
+  if (length(pos) == 1) {
+    if (pos == 1) {
+      x <- c(value, x[-1])
+    } else if (pos == length(x)) {
+      x <- c(x[-length(x)], value)
+    } else {
+      x <- c(x[1:(pos-1)], value, x[(pos+1):length(x)])
+    }
+  }
+  return(x)
 }
