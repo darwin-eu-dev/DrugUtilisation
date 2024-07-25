@@ -139,53 +139,6 @@
         <dd>Create a table showing indication results</dd>
       </dl></div><div class="section level2">
 
-      <h3 id="add-daily-dose">Add daily dose<a class="anchor" aria-label="anchor" href="#add-daily-dose"></a></h3>
-      <div class="section-desc"><p>Tools to compute the daily dose, see when it can be computed</p></div>
-
-
-    </div><div class="section level2">
-
-
-
-
-      <dl><dt>
-
-          <code><a href="addDailyDose.html">addDailyDose()</a></code>
-
-        </dt>
-        <dd>add daily dose information to a drug_exposure table</dd>
-      </dl><dl><dt>
-
-          <code><a href="addRoute.html">addRoute()</a></code>
-
-        </dt>
-        <dd>add route column to a table containing drug_exposure information</dd>
-      </dl><dl><dt>
-
-          <code><a href="patternTable.html">patternTable()</a></code>
-
-        </dt>
-        <dd>Function to create a tibble with the patterns from current drug strength table</dd>
-      </dl><dl><dt>
-
-          <code><a href="patternsWithFormula.html">patternsWithFormula</a></code>
-
-        </dt>
-        <dd>Patterns valid to compute daily dose with the associated formula.</dd>
-      </dl><dl><dt>
-
-          <code><a href="summariseDoseCoverage.html">summariseDoseCoverage()</a></code>
-
-        </dt>
-        <dd>Check coverage of daily dose computation in a sample of the cdm for selected concept sets and ingredient</dd>
-      </dl><dl><dt>
-
-          <code><a href="tableDoseCoverage.html">tableDoseCoverage()</a></code>
-          <span class="badge lifecycle lifecycle-experimental">experimental</span>
-        </dt>
-        <dd>Format a dose_coverage object into a visual table.</dd>
-      </dl></div><div class="section level2">
-
       <h3 id="drug-use-functions">Drug use functions<a class="anchor" aria-label="anchor" href="#drug-use-functions"></a></h3>
       <div class="section-desc"><p>Drug use functions are used to summarise and obtain the drug use information</p></div>
 
@@ -350,6 +303,41 @@
         <dd>Format a drug_restart object into a visual table.</dd>
       </dl></div><div class="section level2">
 
+      <h3 id="daily-dose-documentation">Daily dose documentation<a class="anchor" aria-label="anchor" href="#daily-dose-documentation"></a></h3>
+      <div class="section-desc"><p>Functions to assess coverage for the diferent ingredients and document how daily dose is calculated</p></div>
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="patternTable.html">patternTable()</a></code>
+
+        </dt>
+        <dd>Function to create a tibble with the patterns from current drug strength table</dd>
+      </dl><dl><dt>
+
+          <code><a href="patternsWithFormula.html">patternsWithFormula</a></code>
+
+        </dt>
+        <dd>Patterns valid to compute daily dose with the associated formula.</dd>
+      </dl><dl><dt>
+
+          <code><a href="summariseDoseCoverage.html">summariseDoseCoverage()</a></code>
+
+        </dt>
+        <dd>Check coverage of daily dose computation in a sample of the cdm for selected concept sets and ingredient</dd>
+      </dl><dl><dt>
+
+          <code><a href="tableDoseCoverage.html">tableDoseCoverage()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Format a dose_coverage object into a visual table.</dd>
+      </dl></div><div class="section level2">
+
       <h3 id="complementary-functions">Complementary functions<a class="anchor" aria-label="anchor" href="#complementary-functions"></a></h3>
       <div class="section-desc"><p>Complementary functions</p></div>
 
@@ -401,10 +389,22 @@
 
       <dl><dt>
 
+          <code><a href="addDailyDose.html">addDailyDose()</a></code>
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
+        </dt>
+        <dd>add daily dose information to a drug_exposure table</dd>
+      </dl><dl><dt>
+
           <code><a href="addDrugUse.html">addDrugUse()</a></code>
           <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
         <dd>Add new columns with drug use related information</dd>
+      </dl><dl><dt>
+
+          <code><a href="addRoute.html">addRoute()</a></code>
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
+        </dt>
+        <dd>add route column to a table containing drug_exposure information</dd>
       </dl><dl><dt>
 
           <code><a href="dailyDoseCoverage.html">dailyDoseCoverage()</a></code>
@@ -414,19 +414,19 @@
       </dl><dl><dt>
 
           <code><a href="readConceptList.html">readConceptList()</a></code>
-
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
         <dd>Get concept ids from a provided path to json files</dd>
       </dl><dl><dt>
 
           <code><a href="stratifyByUnit.html">stratifyByUnit()</a></code>
-
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
         <dd>Function to stratify a conceptSet by unit</dd>
       </dl><dl><dt>
 
           <code><a href="summariseDrugUse.html">summariseDrugUse()</a></code>
-
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
         </dt>
         <dd>This function is used to summarise the dose table over multiple cohorts.</dd>
       </dl></div>
