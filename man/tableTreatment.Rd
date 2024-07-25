@@ -2,7 +2,7 @@
 % Please edit documentation in R/tables.R
 \name{tableTreatment}
 \alias{tableTreatment}
-\title{Format a summarised_treatment object into a visual table.}
+\title{Format a summarised_treatment result into a visual table.}
 \usage{
 tableTreatment(
   result,
@@ -41,9 +41,7 @@ DrugUtilisation::defaultTableOptions() shows allowed arguments and their
 default values.}
 }
 \value{
-A table with a formatted version of
-summariseTreatmentFromConceptSet() and summariseTreatmentFromCohort()
-results.
+A table with a formatted version of summariseTreatment() results.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}

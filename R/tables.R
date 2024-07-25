@@ -479,7 +479,7 @@ tableDrugUtilisation <- function(result,
 }
 
 
-#' Format a summarised_treatment object into a visual table.
+#' Format a summarised_treatment result into a visual table.
 #'
 #' `r lifecycle::badge("experimental")`
 #'
@@ -514,9 +514,7 @@ tableDrugUtilisation <- function(result,
 #' tableTreatment(result)
 #' }
 #'
-#' @return A table with a formatted version of
-#' summariseTreatmentFromConceptSet() and summariseTreatmentFromCohort()
-#' results.
+#' @return A table with a formatted version of summariseTreatment() results.
 #'
 #' @export
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/summariseTreatment.R
 \name{summariseTreatment}
 \alias{summariseTreatment}
-\title{This function is used to summarise the dose table over multiple cohorts.}
+\title{This function is used to summarise treatments received}
 \usage{
 summariseTreatment(
   cohort,
@@ -16,17 +16,18 @@ summariseTreatment(
 )
 }
 \arguments{
-\item{cohort}{Cohort with drug use variables and strata.}
+\item{cohort}{A cohort table in a cdm reference.}
 
-\item{window}{Window where to summarise the treatments.}
+\item{window}{Time window over which to summarise the treatments.}
 
 \item{treatmentCohortName}{Name of a cohort in the cdm that contains the
-interest treatments.}
+treatments of interest.}
 
 \item{treatmentCohortId}{Cohort definition id of interest from
 treatmentCohortName.}
 
-\item{strata}{Stratification list.}
+\item{strata}{List with column names or vectors of column names groups to
+stratify results by.}
 
 \item{indexDate}{Variable in x that contains the date to compute the
 intersection.}
@@ -37,10 +38,10 @@ column date of x. If NULL, end of observation will be used.}
 \item{minCellCount}{\verb{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}}}
 }
 \value{
-A summary of the drug use stratified by cohort_name and strata_name
+A summary of treatments stratified by cohort_name and strata_name
 }
 \description{
-This function is used to summarise the dose table over multiple cohorts.
+This function is used to summarise treatments received
 }
 \examples{
 \donttest{

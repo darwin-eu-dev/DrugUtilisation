@@ -1,5 +1,5 @@
 ---
-title: "Obtain treatment summary of a cohort"
+title: "Summarise treatments received by a cohort"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -21,17 +21,12 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-The DrugUtilisation package incorporates a function to summarise the
-dose table over multiple cohorts: `summariseTreatment()`. In this
-vignette, we will explore the functionalities and usages of this
-function.
+After creating a study cohort, for example of some specific condition of interest, we may be interested in describing the treatments received by the individuals within it. Here we show how such a summary can be obtained.
 
 ## Create mock table
 
 We will use mock data contained in the package throughout the vignette. Let's
-modify cohort tables `cohort1` and `cohort2` in our mock dataset, so the frist
-includes 3 subcohorts of health conditions, while the second contains three 
-treatments.
+modify cohort tables `cohort1` and `cohort2` in our mock dataset, so the first table includes 3 cohorts of health conditions (our study cohorts), while the second contains three are of treatments they could receive.
 
 ```{r, message = FALSE, warning=FALSE}
 library(DrugUtilisation)
@@ -57,15 +52,14 @@ cdm$cohort2 <- cdm$cohort2 |>
 
 ```
 
-
-Notice that `cohort1` is a cohort with three subcohorts representing
+Notice that `cohort1` is a cohort table with three cohorts representing
 three different conditions:
 
 ```{r, message = FALSE, warning=FALSE}
 settings(cdm$cohort1)
 ```
 
-And `cohort2` is a cohort with three different treatments:
+And `cohort2` is a cohort table with three different treatment cohorts:
 
 ```{r, message = FALSE, warning=FALSE}
 settings(cdm$cohort2)
@@ -73,8 +67,7 @@ settings(cdm$cohort2)
 
 # Summarise treatment 
 
-`summariseTreatment()` function creates a standarised tibble
-summarising the treatment information (already specified in an existing cohort) over multiple cohorts. There are three mandatory arguments:
+The `summariseTreatment()` function produces a summary of the treatment received by our study cohorts. There are three mandatory arguments:
 
 1.  `cohort`: cohort from the cdm object.
 2.  `treatmentCohortName`: name of the treatment cohort's table.
