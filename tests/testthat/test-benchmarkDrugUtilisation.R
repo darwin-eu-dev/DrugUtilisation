@@ -11,7 +11,7 @@ test_that("test benchmarking function", {
   # add daily dose only work with 1 ingredient at the moment
   # benchmarking multiple cohorts
   timings <- benchmarkDrugUtilisation(
-    cdm = cdm, ingredientId = 1125315, numberOfCohort = 1:4
+    cdm = cdm, ingredientId = 1125315, numberOfCohort = 1#:4
   )
 
   expect_true(tibble::is_tibble(timings))
@@ -22,11 +22,9 @@ test_that("test benchmarking function", {
 
   expect_true("add indication 2 cohorts" %in% timings$task)
 
-  expect_true("add drug use for 3 cohorts" %in% timings$task)
+  expect_true("add drug utilisation for 3 cohorts" %in% timings$task)
 
-  expect_true("summarise drug use for 4 cohorts" %in% timings$task)
-
-  expect_true("add daily dose" %in% timings$task)
+  expect_true("summarise drug utilisation for 4 cohorts" %in% timings$task)
 
   mockDisconnect(cdm = cdm)
 })

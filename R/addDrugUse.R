@@ -214,7 +214,7 @@ addDrugUse <- function(cohort,
   if (dose) {
     # add daily dose
     cohortInfo <- cohortInfo |>
-      addDailyDose(ingredientConceptId = ingredientConceptId) |>
+      .addDailyDose(ingredientConceptId = ingredientConceptId) |>
       dplyr::select(-"quantity") |>
       dplyr::distinct()
 

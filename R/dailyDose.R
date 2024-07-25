@@ -197,7 +197,6 @@ summariseDoseCoverage <- function(cdm,
       variables = "daily_dose",
       estimates = estimates
     ) |>
-    suppressWarnings() |>
     dplyr::filter(
       !(.data$strata_name %in% c("Overall", "route")) |
         .data$variable_name != "daily_dose" |

@@ -123,8 +123,8 @@ benchmarkDrugUtilisation <- function(cdm,
 
     t <- tictoc::toc(quiet = TRUE)
 
-    time_record[[paste0("add drug use ", j)]] <- dplyr::tibble(
-      task = paste0("add drug use for ", j, " cohorts"),
+    time_record[[paste0("add drug utilisation ", j)]] <- dplyr::tibble(
+      task = paste0("add drug utilisation for ", j, " cohorts"),
       time_taken_secs = as.numeric(t$toc - t$tic)
     )
 
@@ -132,10 +132,10 @@ benchmarkDrugUtilisation <- function(cdm,
     tictoc::tic()
 
     cdm[[name]] |>
-      summariseDrugUse(cdm = cdm)
+      summariseDrugUtilisation(ingredientConceptId = ingredientId, gapEra = 30)
 
-    time_record[[paste0("summarise drug use ", j)]] <- dplyr::tibble(
-      task = paste0("summarise drug use for ", j, " cohorts"),
+    time_record[[paste0("summarise drug utilisation ", j)]] <- dplyr::tibble(
+      task = paste0("summarise drug utilisation for ", j, " cohorts"),
       time_taken_secs = as.numeric(t$toc - t$tic)
     )
   }

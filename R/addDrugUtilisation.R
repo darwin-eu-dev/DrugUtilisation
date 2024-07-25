@@ -861,7 +861,7 @@ addDrugUseInternal <- function(x,
       nameStyleI <- ingredientNameStyle(nameStyle, ingredientConceptId[k])
       nm <- omopgenerics::uniqueTableName(tablePrefix)
       toJoin <- drugData |>
-        addDailyDose(ingredientConceptId = ingredientConceptId[k], name = nm) |>
+        .addDailyDose(ingredientConceptId = ingredientConceptId[k], name = nm) |>
         dplyr::filter(!is.na(.data$daily_dose) & !is.na(.data$unit))
       if (cumulativeDose) {
         x <- x |>

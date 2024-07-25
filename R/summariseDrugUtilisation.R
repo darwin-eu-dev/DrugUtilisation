@@ -139,7 +139,7 @@ summariseDrugUtilisation <- function(cohort,
       table = cohort, group = list("cohort_name"),
       strata = strata, variables = drugUseCols,
       estimates = estimates
-    )) %>%
+    )) |>
     dplyr::mutate(
       cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA)),
       variable_level =  gsub("_xx.*|xx.*", "", gsub(paste0(variableNames, collapse = "|"), "", .data$variable_name)),
@@ -168,8 +168,7 @@ summariseDrugUtilisation <- function(cohort,
     dplyr::select(-c(dplyr::starts_with("additional"))) |>
     visOmopResults::uniteAdditional(cols = c("concept_set", "ingredient")) |>
     dplyr::select(dplyr::all_of(omopgenerics::resultColumns())) |>
-    dplyr::arrange(.data$result_id, .data$group_name, .data$group_level, .data$strata_name, .data$strata_level) |>
-    suppressWarnings()
+    dplyr::arrange(.data$result_id, .data$group_name, .data$group_level, .data$strata_name, .data$strata_level)
 
   result <- result |>
     omopgenerics::newSummarisedResult(settings = dplyr::tibble(
