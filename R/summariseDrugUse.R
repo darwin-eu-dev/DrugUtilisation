@@ -16,6 +16,8 @@
 
 #' This function is used to summarise the dose table over multiple cohorts.
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param cohort Cohort with drug use variables and strata.
 #' @param cdm Deprecated.
 #' @param strata Stratification list.

@@ -32,10 +32,6 @@ reference:
   desc: Indications identified based on their presence in indication cohorts or OMOP CDM clinical tabes.
 - contents:
   - matches("*Indication")
-- subtitle: Add daily dose
-  desc: Tools to compute the daily dose, see when it can be computed
-- contents:
-  - matches("addDailyDose|addPattern|addRoute|summariseDoseCoverage|patternTable|patternsWithFormula|tableDoseCoverage")
 - subtitle: Drug use functions
   desc: Drug use functions are used to summarise and obtain the drug use information
 - contents:
@@ -52,6 +48,10 @@ reference:
   desc: Summarise the restart of a treatment, or switch to another, during certain time
 - contents:
   - matches("summariseDrugRestart|tableDrugRestart|plotDrugRestart")
+- subtitle: Daily dose documentation
+  desc: Functions to assess coverage for the diferent ingredients and document how daily dose is calculated
+- contents:
+  - matches("summariseDoseCoverage|patternTable|patternsWithFormula|tableDoseCoverage")
 - subtitle: Complementary functions
   desc: Complementary functions
 - contents:
@@ -63,4 +63,4 @@ reference:
 - subtitle: Deprecated functions
   desc: This functions has been deprecated
 - contents:
-  - matches("addDrugUse|summariseDrugUse|indicationToStrata|dailyDoseCoverage|stratifyByUnit|readConceptList")
+  - matches("addDailyDose|addRoute|addDrugUse|summariseDrugUse|indicationToStrata|dailyDoseCoverage|stratifyByUnit|readConceptList")

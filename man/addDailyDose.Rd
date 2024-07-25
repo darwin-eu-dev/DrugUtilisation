@@ -20,7 +20,7 @@ generated.}
 same input table
 }
 \description{
-add daily dose information to a drug_exposure table
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 \donttest{

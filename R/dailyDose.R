@@ -16,6 +16,8 @@
 
 #' add daily dose information to a drug_exposure table
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param drugExposure drugExposure it must contain drug_concept_id, quantity,
 #' drug_exposure_start_date and drug_exposure_end_date as columns
 #' @param ingredientConceptId ingredientConceptId for which to filter the

@@ -113,6 +113,8 @@ drugStrengthPattern <- function(cdm,
 
 #' add route column to a table containing drug_exposure information
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param drugTable Table in the cdm that must contain drug_concept_id
 #'
 #' @return It adds route to the current table
@@ -237,6 +239,8 @@ patternTable <- function(cdm) {
 
 #' Function to stratify a conceptSet by unit
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param conceptSet List of concept sets
 #' @param cdm cdm reference
 #' @param ingredientConceptId ConceptId that refers to an ingredient
@@ -259,6 +263,10 @@ patternTable <- function(cdm) {
 #' }
 #'
 stratifyByUnit <- function(conceptSet, cdm , ingredientConceptId) {
+  lifecycle::deprecate_soft(
+    what = "stratifyByUnit()",
+    when = "0.7.0",
+    with = "CodelistGenerator::stratifyByDoseUnit()")
   # check initial inputs
   checkInputs(
     conceptSet = conceptSet, cdm = cdm,
