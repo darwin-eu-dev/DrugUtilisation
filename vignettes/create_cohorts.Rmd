@@ -370,7 +370,7 @@ To require that a cohort entry (drug episodes) has a certain time of prior obser
 
 ```{r}
 cdm$acetaminophen_cohort <- cdm$acetaminophen_cohort |>
-  requireObservationBeforeDrug(priorObservation = 365)
+  requireObservationBeforeDrug(days = 365)
 ```
 
 The result will be a cohort with the individuals that fulfill the criteria:
@@ -496,7 +496,7 @@ In this case we will see the result of combining in different ways 4 inclusion c
 
 - **first**: `requireIsFirstDrugEntry()`
 - **washout**: `requirePriorDrugWashout(days = 365)`
-- **minObs**: `requireObservationBeforeDrug(priorObservation = 365)`
+- **minObs**: `requireObservationBeforeDrug(days = 365)`
 - **2011-2012** `requireDrugInDateRange(dateRange = as.Date(c("2011-01-01", "2012-12-31)))`
 
 ## first and washout

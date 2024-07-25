@@ -61,7 +61,7 @@ cdm <- generateIngredientCohortSet(
 )
 cdm$dus_cohort |> 
   requireIsFirstDrugEntry() |> 
-  requireObservationBeforeDrug(priorObservation = 30)
+  requireObservationBeforeDrug(days = 30)
 ```
 
 ### Indications of acetaminophen users
