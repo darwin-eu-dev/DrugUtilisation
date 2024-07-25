@@ -114,8 +114,6 @@ drugStrengthPattern <- function(cdm,
 #' add route column to a table containing drug_exposure information
 #'
 #' @param drugTable Table in the cdm that must contain drug_concept_id
-#' @param cdm 'cdm' object created with CDMConnector::cdm_from_con(). It must
-#' must contain 'concept_relationship' table.
 #'
 #' @return It adds route to the current table
 #'
@@ -132,7 +130,9 @@ drugStrengthPattern <- function(cdm,
 #'   addRoute()
 #' }
 #'
-addRoute <- function(drugTable, cdm = attr(drugTable, "cdm_reference")) {
+addRoute <- function(drugTable) {
+  lifecycle::deprecate_soft(when = "0.7.0", what = "addRoute()")
+  cdm <- omopgenerics::cdmReference(drugTable)
   drugTable |>
     dplyr::left_join(
       cdm[["concept_relationship"]] |>
