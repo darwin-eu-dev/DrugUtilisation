@@ -4,18 +4,11 @@
 \alias{addDailyDose}
 \title{add daily dose information to a drug_exposure table}
 \usage{
-addDailyDose(
-  drugExposure,
-  cdm = attr(drugExposure, "cdm_reference"),
-  ingredientConceptId,
-  name = NULL
-)
+addDailyDose(drugExposure, ingredientConceptId, name = NULL)
 }
 \arguments{
 \item{drugExposure}{drugExposure it must contain drug_concept_id, quantity,
 drug_exposure_start_date and drug_exposure_end_date as columns}
-
-\item{cdm}{A cdm reference}
 
 \item{ingredientConceptId}{ingredientConceptId for which to filter the
 drugs of interest}

@@ -1,5 +1,6 @@
 ---
 title: "Guide on using DrugUtilisataion package to compute drug use related information"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Guide on using DrugUtilisataion package to compute drug use related information}
@@ -17,7 +18,17 @@ The `addRoute` function is designed to seamlessly incorporate route information 
 
 ```{r, eval = TRUE}
 library(DrugUtilisation)
-cdm <- mockDrugUtilisation(numberIndividual = 100)
+con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
+connectionDetails <- list(
+  con = con,
+  writeSchema = "main",
+  cdmPrefix = NULL,
+  writePrefix = NULL
+)
+cdm <- mockDrugUtilisation(
+  connectionDetails = connectionDetails,
+  numberIndividual = 100
+)
 # Add route information to the drug table
 addRoute(cdm$drug_exposure)
 
@@ -58,7 +69,6 @@ Now that we have all the patterns and formulas supported, the computation of dai
 
 addDailyDose(
   cdm$drug_exposure,
-  cdm = cdm,
   ingredientConceptId = 1125315
 )
 ```
@@ -151,3 +161,8 @@ cdm[["dus_cohort"]] %>%
              sameIndexMode = "minimum")
 
 ```
+
+```{r}
+DBI::dbDisconnect(con, shutdown = TRUE)
+```
+
