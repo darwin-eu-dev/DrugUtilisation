@@ -295,3 +295,46 @@ substituteStrata <- function(x, strata) {
   }
   return(x)
 }
+
+#' Title
+#'
+#' @param result
+#' @param x
+#' @param facet
+#' @param splitStrata
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(DrugUtilisation)
+#' library(CDMConnector)
+#' library(dplyr)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' indications <- list("headache" = 378253, "asthma" = 317009)
+#' cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
+#'
+#' cdm <- generateIngredientCohortSet(cdm = cdm, name = "drug_cohort",
+#'                                    ingredient = "acetaminophen")
+#'
+#' result <- cdm$drug_cohort |>
+#'   summariseIndication(
+#'     indicationCohortName = "indication_cohorts",
+#'     unknownIndicationTable = "condition_occurrence",
+#'     indicationWindow = list(c(-Inf, 0)))
+#'
+#' plotIndication(result)
+#'
+#' }
+#'
+plotIndication <- function(result,
+                           x = "indication",
+                           facet = c("cdm_name", "cohort_name", "strata"), # window
+                           splitStrata = TRUE) {
+  assertClass(result, class = "summarised_result")
+  result <- result |>
+    visOmopResults::filterSettings(.data$result_type == "summarise_indication")
+}
