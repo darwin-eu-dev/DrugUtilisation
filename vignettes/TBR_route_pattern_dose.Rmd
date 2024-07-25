@@ -18,17 +18,7 @@ The `addRoute` function is designed to seamlessly incorporate route information 
 
 ```{r, eval = TRUE}
 library(DrugUtilisation)
-con <- DBI::dbConnect(duckdb::duckdb(), ":memory:")
-connectionDetails <- list(
-  con = con,
-  writeSchema = "main",
-  cdmPrefix = NULL,
-  writePrefix = NULL
-)
-cdm <- mockDrugUtilisation(
-  connectionDetails = connectionDetails,
-  numberIndividual = 100
-)
+cdm <- mockDrugUtilisation(numberIndividual = 100)
 # Add route information to the drug table
 addRoute(cdm$drug_exposure)
 
