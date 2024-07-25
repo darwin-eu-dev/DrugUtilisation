@@ -17,11 +17,16 @@
 #' Generate a custom ggplot2 from a summarised_result object generated with
 #' summariseTreatment function.
 #'
-#' @param result ...
-#' @param facetX ...
-#' @param facetY ...
-#' @param splitStrata ...
-#' @param colour ...
+#' @param result A summarised_result object with results from
+#' summariseDrugRestart().
+#' @param facetX Vector of variables to facet by horizontally. Allowed options
+#' are: "cdm_name", "cohort_name", "strata", "variable_name"
+#' @param facetY Vector of variables to facet by vertically Allowed options
+#' are: "cdm_name", "cohort_name", "strata", "variable_name".
+#' @param splitStrata Whether to split strata columns.
+#' @param colour Vector of variables to distinct by colour. Allowed options
+#' are: "cdm_name", "cohort_name", "strata", "variable_name", and
+#' "variable_level".
 #'
 #' @return A ggplot2 object.
 #'
@@ -135,7 +140,7 @@ plotTreatment <- function(result,
 #' @param colour Vector of variables to distinct by colour. Allowed options
 #' are: "cdm_name", "cohort_name", "strata", "variable_name", and
 #' "variable_level".
-#' @param splitStrata Weather to split strata columns.
+#' @param splitStrata Whether to split strata columns.
 #'
 #' @return A ggplot2 object.
 #'

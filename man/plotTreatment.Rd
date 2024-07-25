@@ -14,15 +14,20 @@ plotTreatment(
 )
 }
 \arguments{
-\item{result}{...}
+\item{result}{A summarised_result object with results from
+summariseDrugRestart().}
 
-\item{facetX}{...}
+\item{facetX}{Vector of variables to facet by horizontally. Allowed options
+are: "cdm_name", "cohort_name", "strata", "variable_name"}
 
-\item{facetY}{...}
+\item{facetY}{Vector of variables to facet by vertically Allowed options
+are: "cdm_name", "cohort_name", "strata", "variable_name".}
 
-\item{splitStrata}{...}
+\item{splitStrata}{Whether to split strata columns.}
 
-\item{colour}{...}
+\item{colour}{Vector of variables to distinct by colour. Allowed options
+are: "cdm_name", "cohort_name", "strata", "variable_name", and
+"variable_level".}
 }
 \value{
 A ggplot2 object.

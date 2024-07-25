@@ -14,22 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' This function is used to summarise the dose table over multiple cohorts.
+#' This function is used to summarise treatments received
 #'
-#' @param cohort Cohort with drug use variables and strata.
-#' @param window Window where to summarise the treatments.
+#' @param cohort A cohort table in a cdm reference.
+#' @param window Time window over which to summarise the treatments.
 #' @param treatmentCohortName Name of a cohort in the cdm that contains the
-#' interest treatments.
+#'  treatments of interest.
 #' @param treatmentCohortId Cohort definition id of interest from
 #' treatmentCohortName.
-#' @param strata Stratification list.
+#' @param strata List with column names or vectors of column names groups to
+#' stratify results by.
 #' @param indexDate Variable in x that contains the date to compute the
 #' intersection.
 #' @param censorDate Whether to censor overlap events at a specific date or a
 #' column date of x. If NULL, end of observation will be used.
 #' @param minCellCount ```r lifecycle::badge("deprecated")```
 #'
-#' @return A summary of the drug use stratified by cohort_name and strata_name
+#' @return A summary of treatments stratified by cohort_name and strata_name
 #'
 #' @export
 #'

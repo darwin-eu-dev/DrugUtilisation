@@ -27,7 +27,7 @@ are: "cdm_name", "cohort_name", "strata", "variable_name".}
 are: "cdm_name", "cohort_name", "strata", "variable_name", and
 "variable_level".}
 
-\item{splitStrata}{Weather to split strata columns.}
+\item{splitStrata}{Whether to split strata columns.}
 }
 \value{
 A ggplot2 object.
