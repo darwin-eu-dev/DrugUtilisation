@@ -59,7 +59,7 @@ summariseProportionOfPatientsCovered <- function(cohort,
 
   analysisSettings <- dplyr::tibble(
     "result_id" = 1L,
-    "result_type" = "proportion_of_patients_covered",
+    "result_type" = "summarise_proportion_of_patients_covered",
     "package_name" = "DrugUtilisation",
     "package_version" = as.character(utils::packageVersion("DrugUtilisation"))
   )

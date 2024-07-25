@@ -78,10 +78,10 @@ tableIndication <- function(result,
   }
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "summarised_indication") |>
+    visOmopResults::filterSettings(.data$result_type == "summarise_indication") |>
     dplyr::filter(!grepl("number", .data$variable_name))
   if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = summarised_indication`")
+    cli::cli_abort("There are no results with `result_type = summarise_indication`")
   }
   checkmate::assertLogical(cohortName, any.missing = FALSE)
   checkmate::assertLogical(cdmName, any.missing = FALSE)
@@ -213,9 +213,9 @@ tableDoseCoverage <- function(result,
   }
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "dose_coverage")
+    visOmopResults::filterSettings(.data$result_type == "summarise_dose_coverage")
   if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = dose_coverage`")
+    cli::cli_abort("There are no results with `result_type = summarise_dose_coverage`")
   }
   checkmate::assertLogical(ingridientName, any.missing = FALSE)
   checkmate::assertLogical(cdmName, any.missing = FALSE)
@@ -337,9 +337,9 @@ tableDrugUtilisation <- function(result,
   # check input and filter result
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "drug_utilisation")
+    visOmopResults::filterSettings(.data$result_type == "summarise_drug_utilisation")
   if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = drug_utilisation`")
+    cli::cli_abort("There are no results with `result_type = summarise_drug_utilisation`")
   }
   if (!cohortName & "cohort_name" %in% unlist(groupColumn)) {
     cli::cli_abort("If `cohortName = FALSE`, `cohort_name` cannot be used in `groupColumn`.")
@@ -543,9 +543,9 @@ tableTreatment <- function(result,
 
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "summarised_treatment")
+    visOmopResults::filterSettings(.data$result_type == "summarise_treatment")
   if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = summarised_treatment`")
+    cli::cli_abort("There are no results with `result_type = summarise_treatment`")
   }
 
   # .options
@@ -781,10 +781,10 @@ tableProportionOfPatientsCovered <- function(result,
   }
   result <- result |>
     omopgenerics::newSummarisedResult() |>
-    visOmopResults::filterSettings(.data$result_type == "proportion_of_patients_covered") |>
+    visOmopResults::filterSettings(.data$result_type == "summarise_proportion_of_patients_covered") |>
     dplyr::filter(!grepl("number", .data$variable_name))
   if (nrow(result) == 0) {
-    cli::cli_abort("There are no results with `result_type = proportion_of_patients_covered`")
+    cli::cli_abort("There are no results with `result_type = summarise_proportion_of_patients_covered`")
   }
   checkmate::assertLogical(cohortName, any.missing = FALSE)
   checkmate::assertLogical(cdmName, any.missing = FALSE)

@@ -16,9 +16,10 @@
 
 #' add daily dose information to a drug_exposure table
 #'
+#' `r lifecycle::badge("deprecated")`
+#'
 #' @param drugExposure drugExposure it must contain drug_concept_id, quantity,
 #' drug_exposure_start_date and drug_exposure_end_date as columns
-#' @param cdm A cdm reference
 #' @param ingredientConceptId ingredientConceptId for which to filter the
 #' drugs of interest
 #' @param name Name of the computed table, if NULL a temporary table will be
@@ -40,9 +41,10 @@
 #' }
 #'
 addDailyDose <- function(drugExposure,
-                         cdm = attr(drugExposure, "cdm_reference"),
                          ingredientConceptId,
                          name = NULL) {
+  lifecycle::deprecate_soft(when = "0.7.0", what = "addDailyDose()")
+  cdm <- omopgenerics::cdmReference(drugExposure)
   # initial checks
   checkInputs(
     drugExposure = drugExposure, ingredientConceptId = ingredientConceptId,
@@ -202,7 +204,7 @@ summariseDoseCoverage <- function(cdm,
       "result_id" = unique(dailyDoseSummary$result_id),
       "package_name" = "DrugUtilisation",
       "package_version" = as.character(utils::packageVersion("DrugUtilisation")),
-      "result_type" = "dose_coverage",
+      "result_type" = "summarise_dose_coverage",
       "sample_size" = sampleSize
     ))
 

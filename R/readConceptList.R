@@ -16,7 +16,7 @@
 
 #' Get concept ids from a provided path to json files
 #'
-#'
+#' `r lifecycle::badge("deprecated")`
 #'
 #' @param path path to a file or folder containing jsons to be read
 #' @param cdm A cdm reference created with CDMConnector

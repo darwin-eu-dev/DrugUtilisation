@@ -4,19 +4,16 @@
 \alias{addRoute}
 \title{add route column to a table containing drug_exposure information}
 \usage{
-addRoute(drugTable, cdm = attr(drugTable, "cdm_reference"))
+addRoute(drugTable)
 }
 \arguments{
 \item{drugTable}{Table in the cdm that must contain drug_concept_id}
-
-\item{cdm}{'cdm' object created with CDMConnector::cdm_from_con(). It must
-must contain 'concept_relationship' table.}
 }
 \value{
 It adds route to the current table
 }
 \description{
-add route column to a table containing drug_exposure information
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 \donttest{

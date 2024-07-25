@@ -532,7 +532,7 @@ test_that("requireObservationBeforeDrug", {
 
   cdm$cohort3 <- requireObservationBeforeDrug(
     cohort = cdm$cohort1,
-    priorObservation = 0,
+    days = 0,
     cohortId = NULL,
     name = "cohort3"
   )
@@ -545,7 +545,7 @@ test_that("requireObservationBeforeDrug", {
 
   cdm$cohort4 <- requireObservationBeforeDrug(
     cohort = cdm$cohort1,
-    priorObservation = 999999,
+    days = 999999,
     cohortId = 1,
     name = "cohort4"
   )
@@ -559,7 +559,7 @@ test_that("requireObservationBeforeDrug", {
 
   cohort <- requireObservationBeforeDrug(
     cohort = cdm$cohort1,
-    priorObservation = 200
+    days = 200
   )
   expect_true(omopgenerics::tableName(cohort) == "cohort1")
   expect_true(all(cohort |> dplyr::pull("cohort_definition_id") |> sort() == c(1, 1, 2, 3, 3)))

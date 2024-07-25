@@ -147,7 +147,7 @@ summariseIndication <- function(cohort,
     omopgenerics::newSummarisedResult(
       settings = dplyr::tibble(
         result_id = unique(result$result_id),
-        result_type = "summarised_indication",
+        result_type = "summarise_indication",
         package_name = "DrugUtilisation",
         package_version = as.character(utils::packageVersion("DrugUtilisation"))
       )

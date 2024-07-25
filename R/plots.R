@@ -69,7 +69,7 @@ plotTreatment <- function(result,
 
   result <- omopgenerics::newSummarisedResult(result) |>
     visOmopResults::filterSettings(
-      .data$result_type == "summarised_treatment") |>
+      .data$result_type == "summarise_treatment") |>
     dplyr::filter(.data$estimate_name == "percentage")
 
   if (nrow(result) == 0) {

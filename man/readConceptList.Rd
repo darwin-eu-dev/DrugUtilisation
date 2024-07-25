@@ -15,7 +15,7 @@ readConceptList(path, cdm)
 list of concept_ids and respective concept_ids of interest
 }
 \description{
-Get concept ids from a provided path to json files
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 \donttest{

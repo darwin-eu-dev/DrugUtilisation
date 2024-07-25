@@ -1,5 +1,6 @@
 ---
 title: "Guide on using DrugUtilisataion package to compute drug use related information"
+author: "Marti Catala, Mike Du, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Xintong Li"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Guide on using DrugUtilisataion package to compute drug use related information}
@@ -58,7 +59,6 @@ Now that we have all the patterns and formulas supported, the computation of dai
 
 addDailyDose(
   cdm$drug_exposure,
-  cdm = cdm,
   ingredientConceptId = 1125315
 )
 ```
