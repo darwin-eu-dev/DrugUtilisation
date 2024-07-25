@@ -66,7 +66,7 @@ addDrugUtilisation <- function(cohort,
                                ingredientConceptId = NULL,
                                conceptSet = NULL,
                                restrictIncident = TRUE,
-                               gapEra = 1,
+                               gapEra = NULL,
                                numberExposures = TRUE,
                                numberEras = TRUE,
                                exposedTime = TRUE,
@@ -508,7 +508,7 @@ addExposedTime <- function(cohort,
                            indexDate = "cohort_start_date",
                            censorDate = "cohort_end_date",
                            restrictIncident = TRUE,
-                           gapEra = 1,
+                           gapEra = NULL,
                            nameStyle = "exposed_time_{concept_name}",
                            name = NULL) {
   checkConceptSet(conceptSet)
@@ -573,7 +573,7 @@ addNumberEras <- function(cohort,
                           indexDate = "cohort_start_date",
                           censorDate = "cohort_end_date",
                           restrictIncident = TRUE,
-                          gapEra = 1,
+                          gapEra = NULL,
                           nameStyle = "number_eras_{concept_name}",
                           name = NULL) {
   checkConceptSet(conceptSet)
@@ -630,6 +630,19 @@ addDrugUseInternal <- function(x,
   cumulativeQuantity <- validateLogical(cumulativeQuantity, "cumulativeQuantity", call)
   initialDailyDose <- validateLogical(initialDailyDose, "initialDailyDose", call)
   cumulativeDose <- validateLogical(cumulativeDose, "cumulativeDose", call)
+  if (is.null(gapEra)) {
+    suppressMessages(gapEra <- cohortGapEra(cohort) |> unique())
+    if (is.null(gapEra)) {
+      gapEra <- 1L
+      cli::cli_inform("no gap_era found in cohort settings, using as default gapEra = {gapEra}.")
+    } else {
+      if (length(gapEra) > 1) {
+        cli::cli_abort("multiple gapEra found in cohort settings ({gapEra}), please specify one.", call = call)
+      } else {
+        cli::cli_inform("using gapEra = {gapEra} as found in cohort settings.")
+      }
+    }
+  }
   gapEra <- validateGapEra(gapEra, call)
   values <- c(
     numberExposures, numberEras, exposedTime, timeToExposure, initialQuantity,

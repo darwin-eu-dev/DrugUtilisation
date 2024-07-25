@@ -11,7 +11,7 @@ addNumberEras(
   indexDate = "cohort_start_date",
   censorDate = "cohort_end_date",
   restrictIncident = TRUE,
-  gapEra = 1,
+  gapEra = NULL,
   nameStyle = "number_eras_{concept_name}",
   name = NULL
 )

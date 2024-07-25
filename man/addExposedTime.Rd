@@ -11,7 +11,7 @@ addExposedTime(
   indexDate = "cohort_start_date",
   censorDate = "cohort_end_date",
   restrictIncident = TRUE,
-  gapEra = 1,
+  gapEra = NULL,
   nameStyle = "exposed_time_{concept_name}",
   name = NULL
 )
