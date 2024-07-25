@@ -17,7 +17,7 @@ stratifyByUnit(conceptSet, cdm, ingredientConceptId)
 The conceptSet stratified by unit
 }
 \description{
-Function to stratify a conceptSet by unit
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 \donttest{

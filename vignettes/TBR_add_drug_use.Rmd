@@ -111,7 +111,6 @@ including those for quantity, daily dose, unit, and route.
 ```{r, eval=TRUE}
 addDailyDose(
   cdm$drug_exposure,
-  cdm = cdm,
   ingredientConceptId = 1125315
 )
 ```

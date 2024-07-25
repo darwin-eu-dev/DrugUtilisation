@@ -28,7 +28,7 @@ summariseDrugUse(
 A summary of the drug use stratified by cohort_name and strata_name
 }
 \description{
-This function is used to summarise the dose table over multiple cohorts.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 \donttest{
