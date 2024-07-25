@@ -56,12 +56,13 @@ test_that("test case single indication", {
   )
 
   cdm <- mockDrugUtilisation(
-      connectionDetails,
-      cohort1 = targetCohortName,
-      cohort2 = indicationCohortName,
-      condition_occurrence = condition_occurrence,
-      observation_period = observationPeriod
-    )
+    con = connection(),
+    writeSchema = schema(),
+    cohort1 = targetCohortName,
+    cohort2 = indicationCohortName,
+    condition_occurrence = condition_occurrence,
+    observation_period = observationPeriod
+  )
   #check it works without cdm object specified
 
   expect_no_error(cdm[["cohort1"]] |>
@@ -103,12 +104,12 @@ test_that("test case single indication", {
   expect_true(
     res0 |>
       dplyr::filter(.data$subject_id == 3) |>
-      dplyr::pull("indication_0_to_0") == "Asthma"
+      dplyr::pull("indication_0_to_0") == "asthma"
   )
   expect_true(
     all(res0 |>
           dplyr::filter(.data$subject_id != 3) |>
-          dplyr::pull("indication_0_to_0") == "None")
+          dplyr::pull("indication_0_to_0") == "none")
   )
 
   # check for indication 1
@@ -127,12 +128,12 @@ test_that("test case single indication", {
   expect_true(
     res1 |>
       dplyr::filter(.data$subject_id == 3) |>
-      dplyr::pull("indication_m1_to_0") == "Asthma"
+      dplyr::pull("indication_m1_to_0") == "asthma"
   )
   expect_true(
     all(res1 |>
           dplyr::filter(.data$subject_id != 3) |>
-          dplyr::pull("indication_m1_to_0") == "None")
+          dplyr::pull("indication_m1_to_0") == "none")
   )
 
   # check for indication 2
@@ -157,7 +158,7 @@ test_that("test case single indication", {
         .data$cohort_end_date
       ) |>
       dplyr::pull("indication_m2_to_0")==
-    c("Asthma", "None", "None", "Asthma")
+    c("asthma", "none", "none", "asthma")
   ))
 
   # check for all indication Gap
@@ -177,16 +178,17 @@ test_that("test case single indication", {
     resinf |>
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_minf_to_0"),
-    c("Asthma", "Covid and Asthma", "None", "Asthma")
+    c("asthma", "asthma and covid", "none", "asthma")
   ),
   identical(
     resinf |>
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_minf_to_0"),
-    c("Asthma", "Asthma and Covid", "None", "Asthma")
+    c("asthma", "asthma and covid", "none", "asthma")
   )
   ))
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test case single indication with unknown indication table", {
@@ -235,7 +237,8 @@ test_that("test case single indication with unknown indication table", {
     period_type_concept_id = 44814724
   )
   cdm <-mockDrugUtilisation(
-    connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     cohort1 = targetCohortName,
     cohort2 = indicationCohortName, condition_occurrence = condition_occurrence,
     observation_period = observationPeriod
@@ -257,7 +260,7 @@ test_that("test case single indication with unknown indication table", {
     res0 |>
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_0_to_0"),
-    c("None", "None", "None", "Asthma")
+    c("none", "none", "none", "asthma")
   ))
 
   # check for indication 1
@@ -276,7 +279,7 @@ test_that("test case single indication with unknown indication table", {
     res1 |>
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m1_to_0"),
-    c("None", "Unknown", "None", "Asthma")
+    c("none", "unknown", "none", "asthma")
   ))
 
   # check for indication 6
@@ -295,7 +298,7 @@ test_that("test case single indication with unknown indication table", {
     res6 |>
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m6_to_0"),
-    c("Asthma", "Unknown", "None", "Asthma")
+    c("asthma", "unknown", "none", "asthma")
   ))
 
   # check all gaps simultaniously
@@ -335,6 +338,8 @@ test_that("test case single indication with unknown indication table", {
       dplyr::arrange(.data$subject_id, .data$cohort_start_date) |>
       dplyr::pull("indication_m6_to_0")
   ))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test indicationDate", {
@@ -385,7 +390,8 @@ test_that("test indicationDate", {
 
   cdm <-
     mockDrugUtilisation(
-      connectionDetails,
+      con = connection(),
+      writeSchema = schema(),
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
@@ -450,6 +456,7 @@ test_that("test indicationDate", {
       dplyr::pull("indication_m2_to_0")
   ))
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("test attributes", {
@@ -499,7 +506,8 @@ test_that("test attributes", {
   )
   cdm <-
     mockDrugUtilisation(
-      connectionDetails,
+      con = connection(),
+      writeSchema = schema(),
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
@@ -522,6 +530,7 @@ test_that("test attributes", {
     class(cdm[["cohort1new"]])[class(cdm[["cohort1new"]]) != "GeneratedCohortSet"]
   )
 
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("summariseIndication", {
@@ -570,7 +579,8 @@ test_that("summariseIndication", {
   )
   cdm <-
     mockDrugUtilisation(
-      connectionDetails,
+      con = connection(),
+      writeSchema = schema(),
       cohort1 = targetCohortName,
       cohort2 = indicationCohortName,
       condition_occurrence = condition_occurrence,
@@ -586,9 +596,9 @@ test_that("summariseIndication", {
 
   expect_true(inherits(result, "summarised_result"))
   expect_true(any(grepl("Indication on index date", result$variable_name)))
-  expect_true(any(grepl("Indication time window m7 to 0 days", result$variable_name)))
-  expect_true(any(grepl("Indication time window m30 to 0 days", result$variable_name)))
-  expect_true(any(grepl("Indication any time prior", result$variable_name)))
+  expect_true(any(grepl("Indication from 7 days before to the index date", result$variable_name)))
+  expect_true(any(grepl("Indication from 30 days before to the index date", result$variable_name)))
+  expect_true(any(grepl("Indication any time before or on index date", result$variable_name)))
 
   res <- cdm[["cohort1"]] |>
     PatientProfiles::addAge(
@@ -596,8 +606,8 @@ test_that("summariseIndication", {
     ) |>
     PatientProfiles::addSex()
 
-  result <-
-    res |> summariseIndication(
+  result <- res |>
+    summariseIndication(
       strata = list(
         "age_group",
         "sex",
@@ -636,11 +646,12 @@ test_that("summariseIndication", {
       nrow()
   )
   expect_true(any(grepl("Indication on index date", result$variable_name)))
-  expect_true(any(grepl("Indication time window m7 to 0 days", result$variable_name)))
-  expect_true(any(grepl("Indication time window m30 to 0 days", result$variable_name)))
-  expect_true(any(grepl("Indication any time prior", result$variable_name)))
+  expect_true(any(grepl("Indication from 7 days before to the index date", result$variable_name)))
+  expect_true(any(grepl("Indication from 30 days before to the index date", result$variable_name)))
+  expect_true(any(grepl("Indication any time before or on index date", result$variable_name)))
 
   expect_identical(
     "summarised_indication", unique(settings(result)$result_type))
 
+  mockDisconnect(cdm = cdm)
 })

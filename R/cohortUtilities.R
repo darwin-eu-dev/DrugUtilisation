@@ -99,60 +99,6 @@ erafyCohort <- function(cohort, gap) {
 }
 
 #' @noRd
-trimStartDate <- function(cohort, startDate) {
-  if (sumcounts(cohort) > 0 & !is.na(startDate)) {
-    cohort <- cohort |>
-      dplyr::mutate(cohort_start_date = dplyr::if_else(
-        .data$cohort_start_date <= !!startDate,
-        as.Date(!!startDate), as.Date(.data$cohort_start_date)
-      )) |>
-      dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) |>
-      dplyr::compute(
-        name = attr(cohort, "tbl_name"), temporary = FALSE, overwrite = TRUE
-      ) |>
-      omopgenerics::recordCohortAttrition(
-        paste("restrict cohort_start_date on or after", startDate)
-      )
-  }
-  return(cohort)
-}
-
-#' @noRd
-trimEndDate <- function(cohort, endDate) {
-  if (sumcounts(cohort) > 0 & !is.na(endDate)) {
-    cohort <- cohort |>
-      dplyr::mutate(cohort_end_date = dplyr::if_else(
-        .data$cohort_end_date >= !!endDate,
-        as.Date(!!endDate), as.Date(.data$cohort_end_date)
-      )) |>
-      dplyr::filter(.data$cohort_start_date <= .data$cohort_end_date) |>
-      dplyr::compute(
-        name = attr(cohort, "tbl_name"), temporary = FALSE, overwrite = TRUE
-      ) |>
-      omopgenerics::recordCohortAttrition(
-        paste("restrict cohort_end_date on or before", endDate)
-      )
-  }
-  return(cohort)
-}
-
-#' @noRd
-requirePriorObservation <- function(cohort, priorObservation) {
-  if (sumcounts(cohort) > 0 & priorObservation > 0) {
-    res <- paste("require at least", priorObservation, "prior observation")
-    cohort <- cohort |>
-      PatientProfiles::addPriorObservation() |>
-      dplyr::filter(.data$prior_observation >= .env$priorObservation) |>
-      dplyr::select(-"prior_observation") |>
-      dplyr::compute(
-        name = attr(cohort, "tbl_name"), temporary = FALSE, overwrite = TRUE
-      ) |>
-      omopgenerics::recordCohortAttrition(reason = res)
-  }
-  return(cohort)
-}
-
-#' @noRd
 erafy <- function(x,
                   gap = 0,
                   start = "cohort_start_date",
@@ -193,42 +139,6 @@ erafy <- function(x,
       date = end, number = -gap, interval = "day"
     ))) |>
     dplyr::select(dplyr::all_of(c(group, start, end)))
-  return(x)
-}
-
-#' @noRd
-correctDuration <- function(x,
-                            imputeDuration,
-                            durationRange,
-                            start = "cohort_start_date",
-                            end = "cohort_end_date") {
-  name <- attr(x, "tbl_name")
-  x <- x %>%
-    dplyr::mutate(
-      duration = !!CDMConnector::datediff(start = start, end = end) + 1
-    ) |>
-    rowsToImpute("duration", durationRange)
-  impute <- x |>
-    dplyr::summarise(
-      count = sum(.data$impute, na.rm = TRUE),
-      exposures = dplyr::n()
-    ) |>
-    dplyr::collect() |>
-    dplyr::mutate("count" = dplyr::if_else(
-      .data$exposures == 0, 0, .data$count
-    ))
-  impute <- c(impute$count, 100*impute$count/impute$exposures)
-  x <- x |>
-    solveImputation("duration", imputeDuration, TRUE) |>
-    dplyr::mutate(days_to_add = as.integer(.data$duration - 1)) %>%
-    dplyr::mutate(
-      !!end := as.Date(!!CDMConnector::dateadd(date = start, number = "days_to_add"))
-    ) |>
-    dplyr::select(-c("duration", "days_to_add")) |>
-    dplyr::compute(
-      temporary = FALSE, name = name, overwirte = TRUE
-    )
-  attr(x, "impute") <- impute
   return(x)
 }
 

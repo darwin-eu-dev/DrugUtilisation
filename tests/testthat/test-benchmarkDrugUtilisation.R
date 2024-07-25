@@ -3,15 +3,15 @@ test_that("test benchmarking function", {
 
   skip_if_not_installed("tictoc")
 
-  cdm <- mockDrugUtilisation(numberIndividuals = 100)
+  cdm <- mockDrugUtilisation(
+    con = connection(),  writeSchema = schema(), numberIndividuals = 100)
 
 
   # current mock only have concept set of length 4
   # add daily dose only work with 1 ingredient at the moment
   # benchmarking multiple cohorts
-  timings <- benchmarkDrugUtilisation(cdm,
-    ingredientId = 1125315,
-    numberOfCohort = 1:4
+  timings <- benchmarkDrugUtilisation(
+    cdm = cdm, ingredientId = 1125315, numberOfCohort = 1:4
   )
 
   expect_true(tibble::is_tibble(timings))
@@ -27,4 +27,6 @@ test_that("test benchmarking function", {
   expect_true("summarise drug use for 4 cohorts" %in% timings$task)
 
   expect_true("add daily dose" %in% timings$task)
+
+  mockDisconnect(cdm = cdm)
 })

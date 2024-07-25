@@ -1,6 +1,7 @@
 test_that("summariseDrugUtilisation works", {
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 3, 3, 1, 2, 4, 4, 1),
@@ -115,4 +116,6 @@ test_that("summariseDrugUtilisation works", {
     x3 |> dplyr::pull("additional_level") |> unique() == c(
       "overall", "161_acetaminophen")
   ))
+
+  mockDisconnect(cdm = cdm)
 })

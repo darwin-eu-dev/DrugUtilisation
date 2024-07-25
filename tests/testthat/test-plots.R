@@ -1,6 +1,7 @@
 test_that("plotDrugRestart works", {
   cdm <- mockDrugUtilisation(
-    connectionDetails = connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:12,
       person_id = c(1, 1, 1, 2, 2, 2, 1, 1, 2, 4, 4, 1),
@@ -43,6 +44,21 @@ test_that("plotDrugRestart works", {
       observation_period_start_date = as.Date("2000-01-01"),
       observation_period_end_date = as.Date("2030-01-01"),
       period_type_concept_id = 0
+    ),
+    person = dplyr::tibble(
+      person_id = c(1, 2, 3, 4) |> as.integer(),
+      gender_concept_id = c(8507, 8507, 8532, 8532) |> as.integer(),
+      year_of_birth = c(2000, 2000, 1988, 1964) |> as.integer(),
+      day_of_birth = c(1, 1, 24, 13) |> as.integer(),
+      month_of_birth = 1L,
+      birth_datetime = as.Date(c(
+        "2004-05-22", "2003-11-26", "1988-01-24", "1964-01-13"
+      )),
+      race_concept_id = 0L,
+      ethnicity_concept_id = 0L,
+      location_id = 0L,
+      provider_id = 0L,
+      care_site_id = 0L
     )
   )
 
@@ -94,7 +110,8 @@ test_that("plotDrugRestart works", {
   expect_true(all(names(gg3$facet$params$rows) == c("variable_name", "cdm_name")))
   expect_true(all(names(gg3$facet$params$cols) == c("cohort_name")))
   expect_true(all(gg3$data |> dplyr::pull(dplyr::starts_with("id_")) |> unique() ==
-                    c("0 to 50_overall", "51 to 100_overall", "0 to 50_Female",
-                      "0 to 50_Male", "51 to 100_Male", "overall_overall",
-                      "overall_Female","overall_Male")))
+                    c("0 to 50_overall", "0 to 50_Female", "0 to 50_Male",
+                      "overall_overall", "overall_Female","overall_Male")))
+
+  mockDisconnect(cdm = cdm)
 })

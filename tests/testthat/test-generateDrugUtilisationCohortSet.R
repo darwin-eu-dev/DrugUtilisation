@@ -1,5 +1,5 @@
 test_that("test inputs", {
-  cdm <- mockDrugUtilisation(connectionDetails)
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
   expect_error(generateDrugUtilisationCohortSet())
   expect_error(generateDrugUtilisationCohortSet(cdm = cdm))
   expect_error(generateDrugUtilisationCohortSet(cdm, "dus", 1))
@@ -14,12 +14,15 @@ test_that("test inputs", {
     cdm, "dus", list(acetaminophen = 1125360),
     gapEra = "7"
   ))
+
+  mockDisconnect(cdm = cdm)
 })
 
 test_that("basic functionality drug_conceptId", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(
-    connectionDetails,
+    con = connection(),
+    writeSchema = schema(),
     drug_exposure = dplyr::tibble(
       drug_exposure_id = 1:4,
       person_id = c(1, 1, 1, 1),
@@ -38,8 +41,7 @@ test_that("basic functionality drug_conceptId", {
 
   # check gap
   cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen,
-    gapEra = 0
+    cdm, "dus", acetaminophen, gapEra = 0
   )
   expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 4)
   cdm1 <- generateDrugUtilisationCohortSet(
@@ -86,4 +88,5 @@ test_that("basic functionality drug_conceptId", {
 
   # check that end before start dates are dropped
 
+  mockDisconnect(cdm = cdm)
 })

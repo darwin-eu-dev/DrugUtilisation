@@ -37,6 +37,7 @@
 #' indications.
 #' @param indexDate A date variable in the cohort table for which indications
 #' will be found relative to.
+#' @param censorDate After that day no indication will be considered.
 #'
 #' @return A summarised result
 #'
@@ -45,7 +46,6 @@
 #' @examples
 #' \donttest{
 #' library(DrugUtilisation)
-#' library(PatientProfiles)
 #' library(CDMConnector)
 #' library(dplyr)
 #'
@@ -58,9 +58,10 @@
 #'                                    ingredient = "acetaminophen")
 #'
 #' cdm$drug_cohort |>
-#' summariseIndication(indicationCohortName = "indication_cohorts",
-#'                     unknownIndicationTable = "condition_occurrence",
-#'                     indicationWindow = list(c(-Inf, 0))) |>
+#'   summariseIndication(
+#'     indicationCohortName = "indication_cohorts",
+#'     unknownIndicationTable = "condition_occurrence",
+#'     indicationWindow = list(c(-Inf, 0))) |>
 #'  glimpse()
 #'
 #' }
@@ -71,50 +72,76 @@ summariseIndication <- function(cohort,
                                 indicationCohortId = NULL,
                                 indicationWindow = list(c(0, 0)),
                                 unknownIndicationTable = NULL,
-                                indexDate = "cohort_start_date") {
+                                indexDate = "cohort_start_date",
+                                censorDate = NULL) {
   # initialChecks
   cdm <- omopgenerics::cdmReference(cohort)
-  checkInputs(cohort = cohort,
-              cdm = cdm,
-              strata = strata)
+  checkInputs(cohort = cohort, cdm = cdm, strata = strata)
 
-  cohort <-
-    cohort |> addIndication(
+  tablePrefix <- omopgenerics::tmpPrefix()
+
+  if (!is.list(indicationWindow)) indicationWindow <- list(indicationWindow)
+  if (is.null(names(indicationWindow))) {
+    names(indicationWindow) <- rep("", length(indicationWindow))
+  }
+  windowNames <- lapply(seq_along(indicationWindow), function(k) {
+    if (names(indicationWindow)[k] == "") {
+      return(windowName(indicationWindow[[k]]))
+    } else {
+      return(names(indicationWindow)[k])
+    }
+  }) |>
+    unlist()
+  names(indicationWindow) <- paste0("win", seq_along(indicationWindow))
+
+  cohort <- cohort |>
+    dplyr::select(!dplyr::any_of("cohort_name")) |>
+    PatientProfiles::addCohortName() |>
+    dplyr::select(dplyr::all_of(c("subject_id", indexDate, "cohort_name", censorDate, unique(unlist(strata))))) |>
+    addIndication(
       indicationCohortName = indicationCohortName,
       indicationCohortId = indicationCohortId,
       indicationWindow = indicationWindow,
       unknownIndicationTable = unknownIndicationTable,
       indexDate = indexDate,
-      name = NULL
-    )
-  indicationVariables <- indicationColumns(cohort)
+      censorDate = censorDate,
+      name = omopgenerics::uniqueTableName(tablePrefix)
+    ) |>
+    dplyr::collect()
 
-  # update cohort_names
-  cohort <-
-    cohort |> PatientProfiles::addCohortName() |> dplyr::collect()
+  indicationVariables <- colnames(cohort)
+  indicationVariables <- indicationVariables[startsWith(indicationVariables, "indication_")]
+
+  q <- paste0(
+    "dplyr::case_when(",
+    paste0(
+      ".data$variable_name == 'indication_", names(indicationWindow), "' ~ 'Indication ",
+      windowNames, "'", collapse = ", "
+    ),
+    ", .default = .data$variable_name)"
+  ) |>
+    rlang::parse_exprs() |>
+    rlang::set_names("variable_name")
 
   # summarise indication columns
-  result <- PatientProfiles::summariseResult(
-    table = cohort,
-    group = list("cohort_name"),
-    includeOverallGroup = FALSE,
-    includeOverallStrata = TRUE,
-    strata = strata,
-    variables = indicationVariables,
-    estimates = c("count", "percentage")
-  ) |>
-    PatientProfiles::addCdmName(cdm = cdm) |>
-    dplyr::mutate(
-      variable_name = dplyr::if_else(
-        substr(.data$variable_name, 1, 11) == "indication_",
-        lapply(strsplit(.data$variable_name, "_"), function(x) {
-          x <- paste0(x[1:min(4, length(x))], collapse = "_")
-          x <- indicationColumnName(x)
-        }) |>
-          unlist(),
-        .data$variable_name
-      )
+  suppressMessages(
+    result <- PatientProfiles::summariseResult(
+      table = cohort,
+      group = list("cohort_name"),
+      includeOverallGroup = FALSE,
+      includeOverallStrata = TRUE,
+      strata = strata,
+      variables = indicationVariables,
+      estimates = c("count", "percentage")
     )
+  )
+  result <- result |>
+    dplyr::select(-"cdm_name") |>
+    PatientProfiles::addCdmName(cdm = cdm) |>
+    dplyr::mutate(!!!q) |>
+    # make sure all indications are reported
+    indicationCombinations(
+      settings(cdm[[indicationCohortName]]), indicationCohortId, unknownIndicationTable)
 
   result <- result |>
     omopgenerics::newSummarisedResult(
@@ -129,28 +156,105 @@ summariseIndication <- function(cohort,
   return(result)
 }
 
-#' Obtain automatically the indication columns
-#'
-#' @param x Tibble
-#'
-#' @return Name of the indication columns
-#'
-#' @noRd
-#'
-indicationColumns <- function(x) {
-  names <- colnames(x)[substr(colnames(x), 1, 11) == "indication_"]
-  return(names)
+temporalWord <- function(x) {
+  if (x < 0) {
+    return("before")
+  } else {
+    return("after")
+  }
 }
-
-indicationColumnName <- function(x) {
-  x[x == "indication_0_to_0"] <- "Indication on index date"
-  x[x == "indication_minf_to_0"] <- "Indication any time prior"
-  x[x == "indication_0_to_inf"] <- "Indication any time after"
-  id <- substr(x, 1, 11) == "indication_"
-  y <- x[id]
-  x[id] <- gsub("_"," ",paste(
-    "Indication time window", substr(x[id], 12, nchar(x[id])), "days")
-  )
-  return(x)
+daysWord <- function(d) {
+  if (is.infinite(d)) {
+    return("any time")
+  } else {
+    nm <- cli::cli_text("{abs(d)} day{?s}") |>
+      cli::cli_fmt() |>
+      paste0(collapse = " ")
+    return(nm)
+  }
 }
-
+windowName <- function(win) {
+  min <- win[1]
+  max <- win[2]
+  if (min == 0 & max == 0) {
+    nm <- "on index date"
+  } else if (is.infinite(min) & max == 0) {
+    nm <- "any time before or on index date"
+  } else if (min == 0 & is.infinite(max)) {
+    nm <- "any time after or on index date"
+  } else if (is.infinite(min) & is.infinite(max)) {
+    nm <- "any time"
+  } else if (min == 0) {
+    nm <- glue::glue("from index date to {daysWord(max)} after")
+  } else if (max == 0) {
+    nm <- glue::glue("from {daysWord(min)} before to the index date")
+  } else {
+    nm <- glue::glue("from {daysWord(min)} {temporalWord(min)} to {daysWord(max)} {temporalWord(max)} the index date")
+  }
+  return(nm)
+}
+indicationCombinations <- function(result, set, indicationCohortId, unknownIndicationTable) {
+  vars <- result$variable_name |> unique()
+  vars <- vars[startsWith(vars, "Indication")]
+  if (!is.null(indicationCohortId)) {
+    set <- set |>
+      dplyr::filter(.data$cohort_definition_id %in% .env$indicationCohortId)
+  }
+  indications <- set$cohort_name |> sort() |> rev()
+  indications <- c(getCombinations(set$cohort_name), ifelse(length(unknownIndicationTable) > 0, "unknown", character()), "none")
+  allcombs <- dplyr::tibble(
+    "variable_name" = c("number records", "number subjects"),
+    "variable_level" = NA_character_
+  ) |>
+    dplyr::union_all(tidyr::expand_grid(
+      "variable_name" = vars, "variable_level" = indications
+    ))
+  order <- result |>
+    dplyr::select(
+      "result_id", "cdm_name", "group_name", "group_level", "strata_name",
+      "strata_level", "additional_name", "additional_level") |>
+    dplyr::distinct() |>
+    dplyr::cross_join(allcombs) |>
+    dplyr::mutate("order_id" = dplyr::row_number())
+  cols <- colnames(result)
+  cols <- cols[!cols %in% c("estimate_name", "estimate_type", "estimate_value")]
+  toAdd <- order |>
+    dplyr::mutate(
+      "estimate_value" = "0",
+      "estimate_name" = "count",
+      "estimate_type" = "integer") |>
+    dplyr::union_all(
+      order |>
+        dplyr::mutate(
+          "estimate_value" = "0",
+          "estimate_name" = "percentage",
+          "estimate_type" = "percentage")
+    ) |>
+    dplyr::select(-"order_id") |>
+    dplyr::anti_join(result, by = cols)
+  result <- result |>
+    dplyr::union_all(toAdd) |>
+    dplyr::left_join(order, by = cols) |>
+    dplyr::arrange(.data$order_id, .data$estimate_name) |>
+    dplyr::select(-"order_id")
+  return(result)
+}
+getCombinations <- function(indications) {
+  indications <- sort(indications)
+  combs <- rep(list(c(1, 0)), length(indications))
+  names(combs) <- indications
+  sumOp <- paste0('.data[["', indications, '"]]', collapse = "+") |>
+    rlang::parse_exprs() |>
+    rlang::set_names("sum")
+  combs <- tidyr::expand_grid(!!!combs) |>
+    dplyr::mutate(!!!sumOp) |>
+    dplyr::arrange(dplyr::pick(dplyr::all_of(c("sum", rev(indications))))) |>
+    dplyr::select(-"sum")
+  indications <- character()
+  for (k in 2:nrow(combs)) {
+    cols <- combs[k,] |> as.list() |> unlist()
+    nms <- names(cols)[cols == 1]
+    indications <- c(indications, paste0(nms, collapse = " and "))
+  }
+  return(indications)
+}
