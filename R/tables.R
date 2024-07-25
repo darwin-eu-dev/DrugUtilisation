@@ -837,7 +837,7 @@ tableProportionOfPatientsCovered <- function(result,
   }
 
   result <-result |>
-    dplyr::filter(estimate_name == "ppc") |>
+    dplyr::filter(.data$estimate_name == "ppc") |>
     dplyr::mutate(additional_name = "Days since first drug start")
 
   # table
