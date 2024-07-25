@@ -156,12 +156,12 @@ cohort table.</p>
 <span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpHypI9H/file1cea3b6d80b5.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">#&gt; $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2566, 2909, 3040, 185, 1532, 2925, 3218, 3241, 46…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1946-09-18, 1952-03-21, 1985-06-17, 1977-04-30, …</span></span>
-<span><span class="co">#&gt; $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1946-09-25, 1952-03-28, 1985-07-01, 1977-05-14, …</span></span>
-<span><span class="co">#&gt; $ indication_m30_to_0  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Bronchitis", "Bronchitis", "Bronchitis", "Bronch…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 326, 1397, 917, 4504, 5078, 395, 1335, 406, 1813,…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1973-05-18, 1989-02-15, 1981-02-11, 1970-08-01, …</span></span>
+<span><span class="co">#&gt; $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1973-06-01, 1989-03-01, 1981-02-25, 1970-08-15, …</span></span>
+<span><span class="co">#&gt; $ indication_m30_to_0  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "bronchitis", "bronchitis", "bronchitis", "bronch…</span></span></code></pre></div>
 <p>We can see that individuals are classified as having sinusistis
 (without bronchitis), bronchitis (without sinusitis), sinusitis and
 bronchitis, or no observed indication.</p>
@@ -170,13 +170,13 @@ bronchitis, or no observed indication.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [4 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpHypI9H/file1cea3b6d80b5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bronchitis and Sinusitis     3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sinusitis                   18</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> None                     <span style="text-decoration: underline;">11</span>351</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis and sinusitis     3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> sinusitis                   18</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> none                     <span style="text-decoration: underline;">11</span>351</span></span></code></pre></div>
 <p>As well as the indication cohort table, we can also use the clinical
 tables in the OMOP CDM to identify other, unknown, indications. Here we
 consider anyone who is not in an indication cohort but has a record in
@@ -196,14 +196,14 @@ initiation.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpHypI9H/file1cea3b6d80b5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bronchitis and Sinusitis     3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Unknown                  <span style="text-decoration: underline;">11</span>344</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> None                         7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Sinusitis                   18</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> bronchitis and sinusitis     3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> unknown                  <span style="text-decoration: underline;">11</span>344</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> sinusitis                   18</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> none                         7</span></span></code></pre></div>
 <p>We can add indications for multiple time windows. Unsurprisingly we
 find more potential indications for wider windows (although this will
 likely increase our risk of false positives).</p>
@@ -221,37 +221,37 @@ likely increase our risk of false positives).</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_0_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [4 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpHypI9H/file1cea3b6d80b5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_0_to_0     n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Unknown           <span style="text-decoration: underline;">11</span>359</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bronchitis         <span style="text-decoration: underline;">2</span>524</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> None                 15</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sinusitis             1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> none                163</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> unknown           <span style="text-decoration: underline;">11</span>211</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> sinusitis             1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> bronchitis         <span style="text-decoration: underline;">2</span>524</span></span>
 <span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpHypI9H/file1cea3b6d80b5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Bronchitis and Sinusitis     3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> None                         7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Unknown                  <span style="text-decoration: underline;">11</span>344</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Sinusitis                   18</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis and sinusitis     3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> unknown                  <span style="text-decoration: underline;">11</span>344</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> sinusitis                   18</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> none                         7</span></span>
 <span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m365_to_0</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpQVFg8f/file1c556b7e374a.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1//tmp/RtmpHypI9H/file1cea3b6d80b5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_m365_to_0         n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Unknown                  <span style="text-decoration: underline;">10</span>968</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Sinusitis                  211</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Bronchitis                <span style="text-decoration: underline;">2</span>615</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Sinusitis and Bronchitis   101</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> None                         4</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis and sinusitis   101</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> unknown                  <span style="text-decoration: underline;">10</span>968</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> sinusitis                  211</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> none                         4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> bronchitis                <span style="text-decoration: underline;">2</span>615</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="summarise-indications-with-summariseindication">Summarise indications with summariseIndication()<a class="anchor" aria-label="anchor" href="#summarise-indications-with-summariseindication"></a>
 </h3>
@@ -273,23 +273,23 @@ indication.</p>
 <p>We can then easily create a plot or a table of the results</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tableIndication.html">tableIndication</a></span><span class="op">(</span><span class="va">indication_summary</span><span class="op">)</span></span></code></pre></div>
-<div id="mnehfatjcr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#mnehfatjcr table {
+<div id="qnmkjeekpg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qnmkjeekpg table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#mnehfatjcr thead, #mnehfatjcr tbody, #mnehfatjcr tfoot, #mnehfatjcr tr, #mnehfatjcr td, #mnehfatjcr th {
+#qnmkjeekpg thead, #qnmkjeekpg tbody, #qnmkjeekpg tfoot, #qnmkjeekpg tr, #qnmkjeekpg td, #qnmkjeekpg th {
   border-style: none;
 }
 
-#mnehfatjcr p {
+#qnmkjeekpg p {
   margin: 0;
   padding: 0;
 }
 
-#mnehfatjcr .gt_table {
+#qnmkjeekpg .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -315,12 +315,12 @@ indication.</p>
   border-left-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_caption {
+#qnmkjeekpg .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#mnehfatjcr .gt_title {
+#qnmkjeekpg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -332,7 +332,7 @@ indication.</p>
   border-bottom-width: 0;
 }
 
-#mnehfatjcr .gt_subtitle {
+#qnmkjeekpg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -344,7 +344,7 @@ indication.</p>
   border-top-width: 0;
 }
 
-#mnehfatjcr .gt_heading {
+#qnmkjeekpg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -356,13 +356,13 @@ indication.</p>
   border-right-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_bottom_border {
+#qnmkjeekpg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_col_headings {
+#qnmkjeekpg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -377,7 +377,7 @@ indication.</p>
   border-right-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_col_heading {
+#qnmkjeekpg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -397,7 +397,7 @@ indication.</p>
   overflow-x: hidden;
 }
 
-#mnehfatjcr .gt_column_spanner_outer {
+#qnmkjeekpg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -409,15 +409,15 @@ indication.</p>
   padding-right: 4px;
 }
 
-#mnehfatjcr .gt_column_spanner_outer:first-child {
+#qnmkjeekpg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#mnehfatjcr .gt_column_spanner_outer:last-child {
+#qnmkjeekpg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#mnehfatjcr .gt_column_spanner {
+#qnmkjeekpg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -429,11 +429,11 @@ indication.</p>
   width: 100%;
 }
 
-#mnehfatjcr .gt_spanner_row {
+#qnmkjeekpg .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#mnehfatjcr .gt_group_heading {
+#qnmkjeekpg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -459,7 +459,7 @@ indication.</p>
   text-align: left;
 }
 
-#mnehfatjcr .gt_empty_group_heading {
+#qnmkjeekpg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -474,15 +474,15 @@ indication.</p>
   vertical-align: middle;
 }
 
-#mnehfatjcr .gt_from_md > :first-child {
+#qnmkjeekpg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#mnehfatjcr .gt_from_md > :last-child {
+#qnmkjeekpg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#mnehfatjcr .gt_row {
+#qnmkjeekpg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -501,7 +501,7 @@ indication.</p>
   overflow-x: hidden;
 }
 
-#mnehfatjcr .gt_stub {
+#qnmkjeekpg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -514,7 +514,7 @@ indication.</p>
   padding-right: 5px;
 }
 
-#mnehfatjcr .gt_stub_row_group {
+#qnmkjeekpg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -528,15 +528,15 @@ indication.</p>
   vertical-align: top;
 }
 
-#mnehfatjcr .gt_row_group_first td {
+#qnmkjeekpg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#mnehfatjcr .gt_row_group_first th {
+#qnmkjeekpg .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#mnehfatjcr .gt_summary_row {
+#qnmkjeekpg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -546,16 +546,16 @@ indication.</p>
   padding-right: 5px;
 }
 
-#mnehfatjcr .gt_first_summary_row {
+#qnmkjeekpg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_first_summary_row.thick {
+#qnmkjeekpg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#mnehfatjcr .gt_last_summary_row {
+#qnmkjeekpg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -565,7 +565,7 @@ indication.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_grand_summary_row {
+#qnmkjeekpg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -575,7 +575,7 @@ indication.</p>
   padding-right: 5px;
 }
 
-#mnehfatjcr .gt_first_grand_summary_row {
+#qnmkjeekpg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -585,7 +585,7 @@ indication.</p>
   border-top-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_last_grand_summary_row_top {
+#qnmkjeekpg .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -595,11 +595,11 @@ indication.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_striped {
+#qnmkjeekpg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#mnehfatjcr .gt_table_body {
+#qnmkjeekpg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -608,7 +608,7 @@ indication.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_footnotes {
+#qnmkjeekpg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -622,7 +622,7 @@ indication.</p>
   border-right-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_footnote {
+#qnmkjeekpg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -631,7 +631,7 @@ indication.</p>
   padding-right: 5px;
 }
 
-#mnehfatjcr .gt_sourcenotes {
+#qnmkjeekpg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -645,7 +645,7 @@ indication.</p>
   border-right-color: #D3D3D3;
 }
 
-#mnehfatjcr .gt_sourcenote {
+#qnmkjeekpg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -653,72 +653,72 @@ indication.</p>
   padding-right: 5px;
 }
 
-#mnehfatjcr .gt_left {
+#qnmkjeekpg .gt_left {
   text-align: left;
 }
 
-#mnehfatjcr .gt_center {
+#qnmkjeekpg .gt_center {
   text-align: center;
 }
 
-#mnehfatjcr .gt_right {
+#qnmkjeekpg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#mnehfatjcr .gt_font_normal {
+#qnmkjeekpg .gt_font_normal {
   font-weight: normal;
 }
 
-#mnehfatjcr .gt_font_bold {
+#qnmkjeekpg .gt_font_bold {
   font-weight: bold;
 }
 
-#mnehfatjcr .gt_font_italic {
+#qnmkjeekpg .gt_font_italic {
   font-style: italic;
 }
 
-#mnehfatjcr .gt_super {
+#qnmkjeekpg .gt_super {
   font-size: 65%;
 }
 
-#mnehfatjcr .gt_footnote_marks {
+#qnmkjeekpg .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#mnehfatjcr .gt_asterisk {
+#qnmkjeekpg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#mnehfatjcr .gt_indent_1 {
+#qnmkjeekpg .gt_indent_1 {
   text-indent: 5px;
 }
 
-#mnehfatjcr .gt_indent_2 {
+#qnmkjeekpg .gt_indent_2 {
   text-indent: 10px;
 }
 
-#mnehfatjcr .gt_indent_3 {
+#qnmkjeekpg .gt_indent_3 {
   text-indent: 15px;
 }
 
-#mnehfatjcr .gt_indent_4 {
+#qnmkjeekpg .gt_indent_4 {
   text-indent: 20px;
 }
 
-#mnehfatjcr .gt_indent_5 {
+#qnmkjeekpg .gt_indent_5 {
   text-indent: 25px;
 }
 
-#mnehfatjcr .katex-display {
+#qnmkjeekpg .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#mnehfatjcr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#qnmkjeekpg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -737,6 +737,72 @@ indication.</p>
 </thead>
 <tbody class="gt_table_body">
 <tr class="gt_group_heading_row">
+<th colspan="3" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication from 30 days before to the index date">Indication from 30 days before to the index date</th>
+    </tr>
+<tr class="gt_row_group_first">
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">2,527 (18.18 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">18 (0.13 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">3 (0.02 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">11,344 (81.62 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">7 (0.05 %)</td>
+</tr>
+<tr class="gt_group_heading_row">
+<th colspan="3" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication from 365 days before to the index date">Indication from 365 days before to the index date</th>
+    </tr>
+<tr class="gt_row_group_first">
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">2,615 (18.81 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">211 (1.52 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">101 (0.73 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">10,968 (78.91 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">4 (0.03 %)</td>
+</tr>
+<tr class="gt_group_heading_row">
 <th colspan="3" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication on index date">Indication on index date</th>
     </tr>
 <tr class="gt_row_group_first">
@@ -747,87 +813,27 @@ indication.</p>
 </tr>
 <tr>
 <td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
-<td headers="Indication on index date  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">15 (0.11 %)</td>
-</tr>
-<tr>
-<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
 <td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">1 (0.01 %)</td>
 </tr>
 <tr>
 <td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">0 (0.00 %)</td>
+</tr>
+<tr>
+<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
 <td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
 <td headers="Indication on index date  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">11,359 (81.73 %)</td>
-</tr>
-<tr class="gt_group_heading_row">
-<th colspan="3" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication time window m30 to 0 days">Indication time window m30 to 0 days</th>
-    </tr>
-<tr class="gt_row_group_first">
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">2,527 (18.18 %)</td>
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">11,211 (80.66 %)</td>
 </tr>
 <tr>
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">7 (0.05 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">18 (0.13 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis and bronchitis</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">3 (0.02 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">11,344 (81.62 %)</td>
-</tr>
-<tr class="gt_group_heading_row">
-<th colspan="3" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication time window m365 to 0 days">Indication time window m365 to 0 days</th>
-    </tr>
-<tr class="gt_row_group_first">
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">2,615 (18.81 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">101 (0.73 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">4 (0.03 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">211 (1.52 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">10,968 (78.91 %)</td>
+<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen" class="gt_row gt_right" style="text-align: right;">163 (1.17 %)</td>
 </tr>
 </tbody>
 </table>
@@ -842,31 +848,30 @@ results by age groups and sex.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">!</span><span class="st">"indication_m365_to_0"</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">19</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">20</span>, <span class="fl">150</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseIndication.html">summariseIndication</a></span><span class="op">(</span></span>
-<span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>,</span>
-<span>                  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"sex"</span><span class="op">)</span>,</span>
 <span>    indicationCohortName <span class="op">=</span> <span class="st">"indications_cohort"</span>,</span>
 <span>    indicationWindow <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">30</span>,<span class="fl">0</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">365</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    unknownIndicationTable <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"condition_occurrence"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tableIndication.html">tableIndication</a></span><span class="op">(</span><span class="va">indication_summary_stratified</span><span class="op">)</span></span></code></pre></div>
-<div id="iqzbmhjzpq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#iqzbmhjzpq table {
+<div id="hmulxtlvmd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#hmulxtlvmd table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#iqzbmhjzpq thead, #iqzbmhjzpq tbody, #iqzbmhjzpq tfoot, #iqzbmhjzpq tr, #iqzbmhjzpq td, #iqzbmhjzpq th {
+#hmulxtlvmd thead, #hmulxtlvmd tbody, #hmulxtlvmd tfoot, #hmulxtlvmd tr, #hmulxtlvmd td, #hmulxtlvmd th {
   border-style: none;
 }
 
-#iqzbmhjzpq p {
+#hmulxtlvmd p {
   margin: 0;
   padding: 0;
 }
 
-#iqzbmhjzpq .gt_table {
+#hmulxtlvmd .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -892,12 +897,12 @@ results by age groups and sex.</p>
   border-left-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_caption {
+#hmulxtlvmd .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#iqzbmhjzpq .gt_title {
+#hmulxtlvmd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -909,7 +914,7 @@ results by age groups and sex.</p>
   border-bottom-width: 0;
 }
 
-#iqzbmhjzpq .gt_subtitle {
+#hmulxtlvmd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -921,7 +926,7 @@ results by age groups and sex.</p>
   border-top-width: 0;
 }
 
-#iqzbmhjzpq .gt_heading {
+#hmulxtlvmd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -933,13 +938,13 @@ results by age groups and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_bottom_border {
+#hmulxtlvmd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_col_headings {
+#hmulxtlvmd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -954,7 +959,7 @@ results by age groups and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_col_heading {
+#hmulxtlvmd .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -974,7 +979,7 @@ results by age groups and sex.</p>
   overflow-x: hidden;
 }
 
-#iqzbmhjzpq .gt_column_spanner_outer {
+#hmulxtlvmd .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -986,15 +991,15 @@ results by age groups and sex.</p>
   padding-right: 4px;
 }
 
-#iqzbmhjzpq .gt_column_spanner_outer:first-child {
+#hmulxtlvmd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#iqzbmhjzpq .gt_column_spanner_outer:last-child {
+#hmulxtlvmd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#iqzbmhjzpq .gt_column_spanner {
+#hmulxtlvmd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1006,11 +1011,11 @@ results by age groups and sex.</p>
   width: 100%;
 }
 
-#iqzbmhjzpq .gt_spanner_row {
+#hmulxtlvmd .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#iqzbmhjzpq .gt_group_heading {
+#hmulxtlvmd .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1036,7 +1041,7 @@ results by age groups and sex.</p>
   text-align: left;
 }
 
-#iqzbmhjzpq .gt_empty_group_heading {
+#hmulxtlvmd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1051,15 +1056,15 @@ results by age groups and sex.</p>
   vertical-align: middle;
 }
 
-#iqzbmhjzpq .gt_from_md > :first-child {
+#hmulxtlvmd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#iqzbmhjzpq .gt_from_md > :last-child {
+#hmulxtlvmd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#iqzbmhjzpq .gt_row {
+#hmulxtlvmd .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1078,7 +1083,7 @@ results by age groups and sex.</p>
   overflow-x: hidden;
 }
 
-#iqzbmhjzpq .gt_stub {
+#hmulxtlvmd .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1091,7 +1096,7 @@ results by age groups and sex.</p>
   padding-right: 5px;
 }
 
-#iqzbmhjzpq .gt_stub_row_group {
+#hmulxtlvmd .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1105,15 +1110,15 @@ results by age groups and sex.</p>
   vertical-align: top;
 }
 
-#iqzbmhjzpq .gt_row_group_first td {
+#hmulxtlvmd .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#iqzbmhjzpq .gt_row_group_first th {
+#hmulxtlvmd .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#iqzbmhjzpq .gt_summary_row {
+#hmulxtlvmd .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1123,16 +1128,16 @@ results by age groups and sex.</p>
   padding-right: 5px;
 }
 
-#iqzbmhjzpq .gt_first_summary_row {
+#hmulxtlvmd .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_first_summary_row.thick {
+#hmulxtlvmd .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#iqzbmhjzpq .gt_last_summary_row {
+#hmulxtlvmd .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1142,7 +1147,7 @@ results by age groups and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_grand_summary_row {
+#hmulxtlvmd .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1152,7 +1157,7 @@ results by age groups and sex.</p>
   padding-right: 5px;
 }
 
-#iqzbmhjzpq .gt_first_grand_summary_row {
+#hmulxtlvmd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1162,7 +1167,7 @@ results by age groups and sex.</p>
   border-top-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_last_grand_summary_row_top {
+#hmulxtlvmd .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1172,11 +1177,11 @@ results by age groups and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_striped {
+#hmulxtlvmd .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#iqzbmhjzpq .gt_table_body {
+#hmulxtlvmd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1185,7 +1190,7 @@ results by age groups and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_footnotes {
+#hmulxtlvmd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1199,7 +1204,7 @@ results by age groups and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_footnote {
+#hmulxtlvmd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1208,7 +1213,7 @@ results by age groups and sex.</p>
   padding-right: 5px;
 }
 
-#iqzbmhjzpq .gt_sourcenotes {
+#hmulxtlvmd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1222,7 +1227,7 @@ results by age groups and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#iqzbmhjzpq .gt_sourcenote {
+#hmulxtlvmd .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1230,72 +1235,72 @@ results by age groups and sex.</p>
   padding-right: 5px;
 }
 
-#iqzbmhjzpq .gt_left {
+#hmulxtlvmd .gt_left {
   text-align: left;
 }
 
-#iqzbmhjzpq .gt_center {
+#hmulxtlvmd .gt_center {
   text-align: center;
 }
 
-#iqzbmhjzpq .gt_right {
+#hmulxtlvmd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#iqzbmhjzpq .gt_font_normal {
+#hmulxtlvmd .gt_font_normal {
   font-weight: normal;
 }
 
-#iqzbmhjzpq .gt_font_bold {
+#hmulxtlvmd .gt_font_bold {
   font-weight: bold;
 }
 
-#iqzbmhjzpq .gt_font_italic {
+#hmulxtlvmd .gt_font_italic {
   font-style: italic;
 }
 
-#iqzbmhjzpq .gt_super {
+#hmulxtlvmd .gt_super {
   font-size: 65%;
 }
 
-#iqzbmhjzpq .gt_footnote_marks {
+#hmulxtlvmd .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#iqzbmhjzpq .gt_asterisk {
+#hmulxtlvmd .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#iqzbmhjzpq .gt_indent_1 {
+#hmulxtlvmd .gt_indent_1 {
   text-indent: 5px;
 }
 
-#iqzbmhjzpq .gt_indent_2 {
+#hmulxtlvmd .gt_indent_2 {
   text-indent: 10px;
 }
 
-#iqzbmhjzpq .gt_indent_3 {
+#hmulxtlvmd .gt_indent_3 {
   text-indent: 15px;
 }
 
-#iqzbmhjzpq .gt_indent_4 {
+#hmulxtlvmd .gt_indent_4 {
   text-indent: 20px;
 }
 
-#iqzbmhjzpq .gt_indent_5 {
+#hmulxtlvmd .gt_indent_5 {
   text-indent: 25px;
 }
 
-#iqzbmhjzpq .katex-display {
+#hmulxtlvmd .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#iqzbmhjzpq div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#hmulxtlvmd div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1351,6 +1356,352 @@ results by age groups and sex.</p>
 </thead>
 <tbody class="gt_table_body">
 <tr class="gt_group_heading_row">
+<th colspan="7" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication from 30 days before to the index date">Indication from 30 days before to the index date</th>
+    </tr>
+<tr class="gt_row_group_first">
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,527 (18.18 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,826 (29.95 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">701 (8.98 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,291 (18.43 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,236 (17.93 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">18 (0.13 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">15 (0.25 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3 (0.04 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11 (0.16 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">7 (0.10 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3 (0.02 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2 (0.03 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1 (0.01 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1 (0.01 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">2 (0.03 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,344 (81.62 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,253 (69.77 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,091 (90.88 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,701 (81.40 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,643 (81.84 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 30 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 30 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7 (0.05 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7 (0.09 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
+<td headers="Indication from 30 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">7 (0.10 %)</td>
+</tr>
+<tr class="gt_group_heading_row">
+<th colspan="7" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication from 365 days before to the index date">Indication from 365 days before to the index date</th>
+    </tr>
+<tr class="gt_row_group_first">
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,615 (18.81 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,883 (30.89 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">732 (9.38 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,353 (19.32 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,262 (18.30 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">211 (1.52 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">191 (3.13 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">20 (0.26 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">108 (1.54 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">103 (1.49 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">101 (0.73 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">96 (1.57 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5 (0.06 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">39 (0.56 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">62 (0.90 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">10,968 (78.91 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3,926 (64.40 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,042 (90.25 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,504 (78.58 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,464 (79.25 %)</td>
+</tr>
+<tr>
+<td headers="Indication from 365 days before to the index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication from 365 days before to the index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4 (0.03 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4 (0.05 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
+<td headers="Indication from 365 days before to the index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">4 (0.06 %)</td>
+</tr>
+<tr class="gt_group_heading_row">
 <th colspan="7" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication on index date">Indication on index date</th>
     </tr>
 <tr class="gt_row_group_first">
@@ -1389,40 +1740,6 @@ results by age groups and sex.</p>
 </tr>
 <tr>
 <td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
-<td headers="Indication on index date  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">15 (0.11 %)</td>
-<td headers="Indication on index date  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4 (0.07 %)</td>
-<td headers="Indication on index date  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11 (0.14 %)</td>
-<td headers="Indication on index date  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">6 (0.09 %)</td>
-<td headers="Indication on index date  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">9 (0.13 %)</td>
-</tr>
-<tr>
-<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
 <td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
@@ -1441,13 +1758,13 @@ results by age groups and sex.</p>
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
@@ -1457,383 +1774,105 @@ results by age groups and sex.</p>
 </tr>
 <tr>
 <td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]0 to 19
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]20 to 150
+[header]Sex
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
+<td headers="Indication on index date  [header]Cohort name
+[header_level]161 acetaminophen
+[header]Age group
+[header_level]Overall
+[header]Sex
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">0 (0.00 %)</td>
+</tr>
+<tr>
+<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
 <td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,359 (81.73 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,211 (80.66 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,268 (70.01 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,242 (69.59 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,091 (90.88 %)</td>
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">6,969 (89.31 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,708 (81.50 %)</td>
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,619 (80.23 %)</td>
 <td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,651 (81.96 %)</td>
-</tr>
-<tr class="gt_group_heading_row">
-<th colspan="7" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication time window m30 to 0 days">Indication time window m30 to 0 days</th>
-    </tr>
-<tr class="gt_row_group_first">
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,527 (18.18 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,826 (29.95 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">701 (8.98 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,291 (18.43 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,236 (17.93 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,592 (81.10 %)</td>
 </tr>
 <tr>
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
+<td headers="Indication on index date  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
+<td headers="Indication on index date  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
+<td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7 (0.05 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">163 (1.17 %)</td>
+<td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]0 to 19
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">30 (0.49 %)</td>
+<td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]20 to 150
 [header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7 (0.09 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">133 (1.70 %)</td>
+<td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
+[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">95 (1.36 %)</td>
+<td headers="Indication on index date  [header]Cohort name
 [header_level]161 acetaminophen
 [header]Age group
 [header_level]Overall
 [header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">7 (0.10 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">18 (0.13 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">15 (0.25 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3 (0.04 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11 (0.16 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">7 (0.10 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis and bronchitis</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3 (0.02 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2 (0.03 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1 (0.01 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1 (0.01 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">2 (0.03 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m30 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m30 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,344 (81.62 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,253 (69.77 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,091 (90.88 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,701 (81.40 %)</td>
-<td headers="Indication time window m30 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,643 (81.84 %)</td>
-</tr>
-<tr class="gt_group_heading_row">
-<th colspan="7" class="gt_group_heading" style="background-color: #E9E9E9; font-weight: bold;" scope="colgroup" id="Indication time window m365 to 0 days">Indication time window m365 to 0 days</th>
-    </tr>
-<tr class="gt_row_group_first">
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left;">Synthea synthetic health database</td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,615 (18.81 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,883 (30.89 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">732 (9.38 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,353 (19.32 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">1,262 (18.30 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Bronchitis and sinusitis</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">101 (0.73 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">96 (1.57 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5 (0.06 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">39 (0.56 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">62 (0.90 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">None</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4 (0.03 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4 (0.05 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">-</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">4 (0.06 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Sinusitis</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">211 (1.52 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">191 (3.13 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">20 (0.26 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">108 (1.54 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">103 (1.49 %)</td>
-</tr>
-<tr>
-<td headers="Indication time window m365 to 0 days  Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
-<td headers="Indication time window m365 to 0 days  Indication" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Unknown</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">10,968 (78.91 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]0 to 19
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3,926 (64.40 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]20 to 150
-[header]Sex
-[header_level]Overall" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">7,042 (90.25 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Female" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">5,504 (78.58 %)</td>
-<td headers="Indication time window m365 to 0 days  [header]Cohort name
-[header_level]161 acetaminophen
-[header]Age group
-[header_level]Overall
-[header]Sex
-[header_level]Male" class="gt_row gt_right" style="text-align: right;">5,464 (79.25 %)</td>
+[header_level]Male" class="gt_row gt_right" style="text-align: right;">68 (0.99 %)</td>
 </tr>
 </tbody>
 </table>

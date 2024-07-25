@@ -111,14 +111,14 @@ examples.</p>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 9</span></span>
 <span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">#&gt; $ drug_exposure_id         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2, 6, 10, 16, 25, 26, 42, 46, 62, 64, 76, 90,…</span></span>
-<span><span class="co">#&gt; $ person_id                <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 7, 7, 17, 18, 22, 22, 25, 33, 36,…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_id         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 22, 28, 33, 37, 57, 85, 89, 97, 113, 128, 134…</span></span>
+<span><span class="co">#&gt; $ person_id                <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 6, 8, 11, 13, 19, 30, 32, 35, 42, 45, 46, 47,…</span></span>
 <span><span class="co">#&gt; $ drug_concept_id          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 2905077, 2905077, 2905077, 2905077, 2905077, …</span></span>
-<span><span class="co">#&gt; $ drug_exposure_start_date <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-10-26, 2013-01-20, 2013-01-26, 2013-04-…</span></span>
-<span><span class="co">#&gt; $ drug_exposure_end_date   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-01-22, 2013-06-16, 2013-05-09, 2015-04-…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_start_date <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2013-09-22, 1992-02-17, 2007-04-04, 2015-12-…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_end_date   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2014-03-01, 2002-02-02, 2007-04-25, 2016-07-…</span></span>
 <span><span class="co">#&gt; $ drug_type_concept_id     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 38000177, 38000177, 38000177, 38000177, 38000…</span></span>
-<span><span class="co">#&gt; $ quantity                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 90, 50, 15, 100, 100, 60, 15, 40, 50, 20, 30,…</span></span>
-<span><span class="co">#&gt; $ daily_dose               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 9.707865e+03, 3.243243e+03, 1.384615e+03, 1.3…</span></span>
+<span><span class="co">#&gt; $ quantity                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 15, 80, 5, 40, 20, 35, 35, 10, 80, 10, 35, 20…</span></span>
+<span><span class="co">#&gt; $ daily_dose               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 894.40994, 211.04699, 2181.81818, 1699.11504,…</span></span>
 <span><span class="co">#&gt; $ unit                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "milligram", "milligram", "milligram", "milli…</span></span></code></pre></div>
 <p>The <code>drug_exposure</code> table is first subsetted according to
 whether <code>drug_concept_id</code> in the <code>drug_exposure</code>
@@ -150,13 +150,13 @@ drug used in the <code>drug_exposure</code> table.</p>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 8</span></span>
 <span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1/:memory:]</span></span>
-<span><span class="co">#&gt; $ drug_exposure_id         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 13, 15, 16, 1…</span></span>
-<span><span class="co">#&gt; $ person_id                <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 6, …</span></span>
-<span><span class="co">#&gt; $ drug_concept_id          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1503328, 2905077, 1539463, 1516980, 1516978, …</span></span>
-<span><span class="co">#&gt; $ drug_exposure_start_date <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-01-11, 2021-10-26, 2021-08-10, 2021-12-…</span></span>
-<span><span class="co">#&gt; $ drug_exposure_end_date   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-01-26, 2022-01-22, 2021-11-22, 2022-01-…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_id         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 3, 5, 6, 8, 11, 12, 14, 15, 18, 19, 20,…</span></span>
+<span><span class="co">#&gt; $ person_id                <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 2, 2, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, …</span></span>
+<span><span class="co">#&gt; $ drug_concept_id          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1125360, 1125360, 1539463, 1516978, 43135274,…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_start_date <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2004-02-21, 2002-12-25, 2015-12-30, 2016-03-…</span></span>
+<span><span class="co">#&gt; $ drug_exposure_end_date   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2004-05-22, 2004-05-20, 2018-12-21, 2021-06-…</span></span>
 <span><span class="co">#&gt; $ drug_type_concept_id     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 38000177, 38000177, 38000177, 38000177, 38000…</span></span>
-<span><span class="co">#&gt; $ quantity                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 80, 90, 100, 35, 1, 50, 1, 100, 15, 45, 1, 80…</span></span>
+<span><span class="co">#&gt; $ quantity                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 90, 10, 90, 25, 80, 10, 90, 60, 10, 70, 45, 6…</span></span>
 <span><span class="co">#&gt; $ route                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "topical", "topical", "topical", "topical", "…</span></span></code></pre></div>
 <p>Similarly, this adds one extra column named <code>route</code>. For
 example, the drug used in the first entry of the
@@ -181,7 +181,7 @@ provide a platform to associate each drug in the
 <span><span class="co">#&gt; $ validity                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "pattern with formula", "pattern with form…</span></span>
 <span><span class="co">#&gt; $ number_concepts             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 7, 1, 1, 1, 4</span></span>
 <span><span class="co">#&gt; $ number_ingredients          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4, 1, 1, 1, 4</span></span>
-<span><span class="co">#&gt; $ number_records              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 350, 67, 63, 74, 61</span></span>
+<span><span class="co">#&gt; $ number_records              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 374, 54, 47, 63, 79</span></span>
 <span><span class="co">#&gt; $ amount_numeric              <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 0, 0, 0, NA</span></span>
 <span><span class="co">#&gt; $ amount_unit_concept_id      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 8576, NA, NA, NA, NA</span></span>
 <span><span class="co">#&gt; $ numerator_numeric           <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 1, 1, NA</span></span>
@@ -238,7 +238,7 @@ take <em>acetaminophen</em> as an example.</p>
 <span><span class="co">#&gt; $ variable_level   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</span></span>
 <span><span class="co">#&gt; $ estimate_name    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "count", "count_missing", "percentage_missing", "mean…</span></span>
 <span><span class="co">#&gt; $ estimate_type    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "integer", "integer", "percentage", "numeric", "numer…</span></span>
-<span><span class="co">#&gt; $ estimate_value   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "174", "0", "0", "4986.89847658171", "22201.148944306…</span></span>
+<span><span class="co">#&gt; $ estimate_value   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "168", "0", "0", "2626.64291918964", "10222.253243722…</span></span>
 <span><span class="co">#&gt; $ additional_name  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span></span>
 <span><span class="co">#&gt; $ additional_level <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "overall", "overall", "overall", "overall", "overall"…</span></span></code></pre></div>
 <p>The output will summarise the usage of <em>acetaminophen</em> in the
@@ -256,23 +256,23 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/summariseDoseCoverage.html">summariseDoseCoverage</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/tableDoseCoverage.html">tableDoseCoverage</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div id="etsduaorad" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#etsduaorad table {
+<div id="yvszpzoaks" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yvszpzoaks table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#etsduaorad thead, #etsduaorad tbody, #etsduaorad tfoot, #etsduaorad tr, #etsduaorad td, #etsduaorad th {
+#yvszpzoaks thead, #yvszpzoaks tbody, #yvszpzoaks tfoot, #yvszpzoaks tr, #yvszpzoaks td, #yvszpzoaks th {
   border-style: none;
 }
 
-#etsduaorad p {
+#yvszpzoaks p {
   margin: 0;
   padding: 0;
 }
 
-#etsduaorad .gt_table {
+#yvszpzoaks .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -298,12 +298,12 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-left-color: #D3D3D3;
 }
 
-#etsduaorad .gt_caption {
+#yvszpzoaks .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#etsduaorad .gt_title {
+#yvszpzoaks .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -315,7 +315,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-bottom-width: 0;
 }
 
-#etsduaorad .gt_subtitle {
+#yvszpzoaks .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -327,7 +327,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-top-width: 0;
 }
 
-#etsduaorad .gt_heading {
+#yvszpzoaks .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -339,13 +339,13 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-right-color: #D3D3D3;
 }
 
-#etsduaorad .gt_bottom_border {
+#yvszpzoaks .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#etsduaorad .gt_col_headings {
+#yvszpzoaks .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -360,7 +360,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-right-color: #D3D3D3;
 }
 
-#etsduaorad .gt_col_heading {
+#yvszpzoaks .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -380,7 +380,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   overflow-x: hidden;
 }
 
-#etsduaorad .gt_column_spanner_outer {
+#yvszpzoaks .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -392,15 +392,15 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   padding-right: 4px;
 }
 
-#etsduaorad .gt_column_spanner_outer:first-child {
+#yvszpzoaks .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#etsduaorad .gt_column_spanner_outer:last-child {
+#yvszpzoaks .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#etsduaorad .gt_column_spanner {
+#yvszpzoaks .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -412,11 +412,11 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   width: 100%;
 }
 
-#etsduaorad .gt_spanner_row {
+#yvszpzoaks .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#etsduaorad .gt_group_heading {
+#yvszpzoaks .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -442,7 +442,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   text-align: left;
 }
 
-#etsduaorad .gt_empty_group_heading {
+#yvszpzoaks .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -457,15 +457,15 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   vertical-align: middle;
 }
 
-#etsduaorad .gt_from_md > :first-child {
+#yvszpzoaks .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#etsduaorad .gt_from_md > :last-child {
+#yvszpzoaks .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#etsduaorad .gt_row {
+#yvszpzoaks .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -484,7 +484,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   overflow-x: hidden;
 }
 
-#etsduaorad .gt_stub {
+#yvszpzoaks .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -497,7 +497,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   padding-right: 5px;
 }
 
-#etsduaorad .gt_stub_row_group {
+#yvszpzoaks .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -511,15 +511,15 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   vertical-align: top;
 }
 
-#etsduaorad .gt_row_group_first td {
+#yvszpzoaks .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#etsduaorad .gt_row_group_first th {
+#yvszpzoaks .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#etsduaorad .gt_summary_row {
+#yvszpzoaks .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -529,16 +529,16 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   padding-right: 5px;
 }
 
-#etsduaorad .gt_first_summary_row {
+#yvszpzoaks .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#etsduaorad .gt_first_summary_row.thick {
+#yvszpzoaks .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#etsduaorad .gt_last_summary_row {
+#yvszpzoaks .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -548,7 +548,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-bottom-color: #D3D3D3;
 }
 
-#etsduaorad .gt_grand_summary_row {
+#yvszpzoaks .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -558,7 +558,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   padding-right: 5px;
 }
 
-#etsduaorad .gt_first_grand_summary_row {
+#yvszpzoaks .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -568,7 +568,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-top-color: #D3D3D3;
 }
 
-#etsduaorad .gt_last_grand_summary_row_top {
+#yvszpzoaks .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -578,11 +578,11 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-bottom-color: #D3D3D3;
 }
 
-#etsduaorad .gt_striped {
+#yvszpzoaks .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#etsduaorad .gt_table_body {
+#yvszpzoaks .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -591,7 +591,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-bottom-color: #D3D3D3;
 }
 
-#etsduaorad .gt_footnotes {
+#yvszpzoaks .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -605,7 +605,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-right-color: #D3D3D3;
 }
 
-#etsduaorad .gt_footnote {
+#yvszpzoaks .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -614,7 +614,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   padding-right: 5px;
 }
 
-#etsduaorad .gt_sourcenotes {
+#yvszpzoaks .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -628,7 +628,7 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   border-right-color: #D3D3D3;
 }
 
-#etsduaorad .gt_sourcenote {
+#yvszpzoaks .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -636,72 +636,72 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
   padding-right: 5px;
 }
 
-#etsduaorad .gt_left {
+#yvszpzoaks .gt_left {
   text-align: left;
 }
 
-#etsduaorad .gt_center {
+#yvszpzoaks .gt_center {
   text-align: center;
 }
 
-#etsduaorad .gt_right {
+#yvszpzoaks .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#etsduaorad .gt_font_normal {
+#yvszpzoaks .gt_font_normal {
   font-weight: normal;
 }
 
-#etsduaorad .gt_font_bold {
+#yvszpzoaks .gt_font_bold {
   font-weight: bold;
 }
 
-#etsduaorad .gt_font_italic {
+#yvszpzoaks .gt_font_italic {
   font-style: italic;
 }
 
-#etsduaorad .gt_super {
+#yvszpzoaks .gt_super {
   font-size: 65%;
 }
 
-#etsduaorad .gt_footnote_marks {
+#yvszpzoaks .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#etsduaorad .gt_asterisk {
+#yvszpzoaks .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#etsduaorad .gt_indent_1 {
+#yvszpzoaks .gt_indent_1 {
   text-indent: 5px;
 }
 
-#etsduaorad .gt_indent_2 {
+#yvszpzoaks .gt_indent_2 {
   text-indent: 10px;
 }
 
-#etsduaorad .gt_indent_3 {
+#yvszpzoaks .gt_indent_3 {
   text-indent: 15px;
 }
 
-#etsduaorad .gt_indent_4 {
+#yvszpzoaks .gt_indent_4 {
   text-indent: 20px;
 }
 
-#etsduaorad .gt_indent_5 {
+#yvszpzoaks .gt_indent_5 {
   text-indent: 25px;
 }
 
-#etsduaorad .katex-display {
+#yvszpzoaks .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#etsduaorad div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#yvszpzoaks div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -738,13 +738,13 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">174</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">168</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,986.90 (22,201.15)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,626.64 (10,222.25)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">131.07 (18.45 - 936.23)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">198.25 (32.06 - 1,171.92)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -753,13 +753,13 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">174</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">168</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,986.90 (22,201.15)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,626.64 (10,222.25)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">131.07 (18.45 - 936.23)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">198.25 (32.06 - 1,171.92)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -768,13 +768,13 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Oral</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">49</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">68</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">328.91 (956.18)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,422.52 (5,419.69)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">26.85 (7.81 - 188.98)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">59.94 (11.77 - 298.60)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -783,13 +783,13 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Topical</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">125</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">100</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">6,812.83 (25,987.96)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3,445.45 (12,438.51)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">261.78 (39.68 - 1,384.62)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">454.55 (96.04 - 1,819.79)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -798,13 +798,13 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Oral</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">9</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">49</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">68</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">328.91 (956.18)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,422.52 (5,419.69)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">26.85 (7.81 - 188.98)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">59.94 (11.77 - 298.60)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -813,13 +813,13 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Topical</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">18</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">67</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">54</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,277.48 (34,285.86)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,622.85 (15,796.86)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">970.92 (317.48 - 4,882.05)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">882.78 (203.14 - 2,717.75)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -828,13 +828,13 @@ pattern (which we saw in <code><a href="../reference/patternTable.html">patternT
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;"></td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">9</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">58</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">46</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,655.39 (7,590.12)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,063.27 (6,546.49)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">35.55 (12.06 - 167.58)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">146.93 (26.11 - 576.83)</td>
 </tr>
 </tbody>
 </table>
@@ -844,23 +844,23 @@ example the following will suppress the <code>cdmName</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/summariseDoseCoverage.html">summariseDoseCoverage</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/tableDoseCoverage.html">tableDoseCoverage</a></span><span class="op">(</span>cdmName <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span></code></pre></div>
-<div id="ozrxbqzxex" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ozrxbqzxex table {
+<div id="wyonnuoobi" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wyonnuoobi table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ozrxbqzxex thead, #ozrxbqzxex tbody, #ozrxbqzxex tfoot, #ozrxbqzxex tr, #ozrxbqzxex td, #ozrxbqzxex th {
+#wyonnuoobi thead, #wyonnuoobi tbody, #wyonnuoobi tfoot, #wyonnuoobi tr, #wyonnuoobi td, #wyonnuoobi th {
   border-style: none;
 }
 
-#ozrxbqzxex p {
+#wyonnuoobi p {
   margin: 0;
   padding: 0;
 }
 
-#ozrxbqzxex .gt_table {
+#wyonnuoobi .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -886,12 +886,12 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-left-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_caption {
+#wyonnuoobi .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ozrxbqzxex .gt_title {
+#wyonnuoobi .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -903,7 +903,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-bottom-width: 0;
 }
 
-#ozrxbqzxex .gt_subtitle {
+#wyonnuoobi .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -915,7 +915,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-top-width: 0;
 }
 
-#ozrxbqzxex .gt_heading {
+#wyonnuoobi .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -927,13 +927,13 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-right-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_bottom_border {
+#wyonnuoobi .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_col_headings {
+#wyonnuoobi .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -948,7 +948,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-right-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_col_heading {
+#wyonnuoobi .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -968,7 +968,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   overflow-x: hidden;
 }
 
-#ozrxbqzxex .gt_column_spanner_outer {
+#wyonnuoobi .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -980,15 +980,15 @@ example the following will suppress the <code>cdmName</code>:</p>
   padding-right: 4px;
 }
 
-#ozrxbqzxex .gt_column_spanner_outer:first-child {
+#wyonnuoobi .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ozrxbqzxex .gt_column_spanner_outer:last-child {
+#wyonnuoobi .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ozrxbqzxex .gt_column_spanner {
+#wyonnuoobi .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1000,11 +1000,11 @@ example the following will suppress the <code>cdmName</code>:</p>
   width: 100%;
 }
 
-#ozrxbqzxex .gt_spanner_row {
+#wyonnuoobi .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ozrxbqzxex .gt_group_heading {
+#wyonnuoobi .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1030,7 +1030,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   text-align: left;
 }
 
-#ozrxbqzxex .gt_empty_group_heading {
+#wyonnuoobi .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1045,15 +1045,15 @@ example the following will suppress the <code>cdmName</code>:</p>
   vertical-align: middle;
 }
 
-#ozrxbqzxex .gt_from_md > :first-child {
+#wyonnuoobi .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ozrxbqzxex .gt_from_md > :last-child {
+#wyonnuoobi .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ozrxbqzxex .gt_row {
+#wyonnuoobi .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1072,7 +1072,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   overflow-x: hidden;
 }
 
-#ozrxbqzxex .gt_stub {
+#wyonnuoobi .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1085,7 +1085,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   padding-right: 5px;
 }
 
-#ozrxbqzxex .gt_stub_row_group {
+#wyonnuoobi .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1099,15 +1099,15 @@ example the following will suppress the <code>cdmName</code>:</p>
   vertical-align: top;
 }
 
-#ozrxbqzxex .gt_row_group_first td {
+#wyonnuoobi .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ozrxbqzxex .gt_row_group_first th {
+#wyonnuoobi .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ozrxbqzxex .gt_summary_row {
+#wyonnuoobi .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1117,16 +1117,16 @@ example the following will suppress the <code>cdmName</code>:</p>
   padding-right: 5px;
 }
 
-#ozrxbqzxex .gt_first_summary_row {
+#wyonnuoobi .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_first_summary_row.thick {
+#wyonnuoobi .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ozrxbqzxex .gt_last_summary_row {
+#wyonnuoobi .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1136,7 +1136,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-bottom-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_grand_summary_row {
+#wyonnuoobi .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1146,7 +1146,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   padding-right: 5px;
 }
 
-#ozrxbqzxex .gt_first_grand_summary_row {
+#wyonnuoobi .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1156,7 +1156,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-top-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_last_grand_summary_row_top {
+#wyonnuoobi .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1166,11 +1166,11 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-bottom-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_striped {
+#wyonnuoobi .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ozrxbqzxex .gt_table_body {
+#wyonnuoobi .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1179,7 +1179,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-bottom-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_footnotes {
+#wyonnuoobi .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1193,7 +1193,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-right-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_footnote {
+#wyonnuoobi .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1202,7 +1202,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   padding-right: 5px;
 }
 
-#ozrxbqzxex .gt_sourcenotes {
+#wyonnuoobi .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1216,7 +1216,7 @@ example the following will suppress the <code>cdmName</code>:</p>
   border-right-color: #D3D3D3;
 }
 
-#ozrxbqzxex .gt_sourcenote {
+#wyonnuoobi .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1224,72 +1224,72 @@ example the following will suppress the <code>cdmName</code>:</p>
   padding-right: 5px;
 }
 
-#ozrxbqzxex .gt_left {
+#wyonnuoobi .gt_left {
   text-align: left;
 }
 
-#ozrxbqzxex .gt_center {
+#wyonnuoobi .gt_center {
   text-align: center;
 }
 
-#ozrxbqzxex .gt_right {
+#wyonnuoobi .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ozrxbqzxex .gt_font_normal {
+#wyonnuoobi .gt_font_normal {
   font-weight: normal;
 }
 
-#ozrxbqzxex .gt_font_bold {
+#wyonnuoobi .gt_font_bold {
   font-weight: bold;
 }
 
-#ozrxbqzxex .gt_font_italic {
+#wyonnuoobi .gt_font_italic {
   font-style: italic;
 }
 
-#ozrxbqzxex .gt_super {
+#wyonnuoobi .gt_super {
   font-size: 65%;
 }
 
-#ozrxbqzxex .gt_footnote_marks {
+#wyonnuoobi .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ozrxbqzxex .gt_asterisk {
+#wyonnuoobi .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ozrxbqzxex .gt_indent_1 {
+#wyonnuoobi .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ozrxbqzxex .gt_indent_2 {
+#wyonnuoobi .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ozrxbqzxex .gt_indent_3 {
+#wyonnuoobi .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ozrxbqzxex .gt_indent_4 {
+#wyonnuoobi .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ozrxbqzxex .gt_indent_5 {
+#wyonnuoobi .gt_indent_5 {
   text-indent: 25px;
 }
 
-#ozrxbqzxex .katex-display {
+#wyonnuoobi .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#ozrxbqzxex div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#wyonnuoobi div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1324,13 +1324,13 @@ example the following will suppress the <code>cdmName</code>:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">174</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">168</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,986.90 (22,201.15)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,626.64 (10,222.25)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">131.07 (18.45 - 936.23)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">198.25 (32.06 - 1,171.92)</td>
 </tr>
 <tr>
 <td headers="Ingredient name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1338,13 +1338,13 @@ example the following will suppress the <code>cdmName</code>:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">174</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">168</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,986.90 (22,201.15)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,626.64 (10,222.25)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">131.07 (18.45 - 936.23)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">198.25 (32.06 - 1,171.92)</td>
 </tr>
 <tr>
 <td headers="Ingredient name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1352,13 +1352,13 @@ example the following will suppress the <code>cdmName</code>:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Oral</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">49</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">68</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">328.91 (956.18)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,422.52 (5,419.69)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">26.85 (7.81 - 188.98)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">59.94 (11.77 - 298.60)</td>
 </tr>
 <tr>
 <td headers="Ingredient name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1366,13 +1366,13 @@ example the following will suppress the <code>cdmName</code>:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Topical</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">125</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">100</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">6,812.83 (25,987.96)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3,445.45 (12,438.51)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">261.78 (39.68 - 1,384.62)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">454.55 (96.04 - 1,819.79)</td>
 </tr>
 <tr>
 <td headers="Ingredient name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1380,13 +1380,13 @@ example the following will suppress the <code>cdmName</code>:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Oral</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">9</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">49</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">68</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">328.91 (956.18)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,422.52 (5,419.69)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">26.85 (7.81 - 188.98)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">59.94 (11.77 - 298.60)</td>
 </tr>
 <tr>
 <td headers="Ingredient name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1394,13 +1394,13 @@ example the following will suppress the <code>cdmName</code>:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Topical</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">18</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">67</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">54</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,277.48 (34,285.86)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,622.85 (15,796.86)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">970.92 (317.48 - 4,882.05)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">882.78 (203.14 - 2,717.75)</td>
 </tr>
 <tr>
 <td headers="Ingredient name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1408,13 +1408,13 @@ example the following will suppress the <code>cdmName</code>:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;"></td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">9</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">58</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">46</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,655.39 (7,590.12)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,063.27 (6,546.49)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">35.55 (12.06 - 167.58)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">146.93 (26.11 - 576.83)</td>
 </tr>
 </tbody>
 </table>
@@ -1424,23 +1424,23 @@ they could try the following:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/summariseDoseCoverage.html">summariseDoseCoverage</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, ingredientConceptId <span class="op">=</span> <span class="fl">1125315</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/tableDoseCoverage.html">tableDoseCoverage</a></span><span class="op">(</span>.options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Title of summariseDoseCoverage"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div id="pjgquqgvye" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#pjgquqgvye table {
+<div id="jchbzrjvqv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jchbzrjvqv table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#pjgquqgvye thead, #pjgquqgvye tbody, #pjgquqgvye tfoot, #pjgquqgvye tr, #pjgquqgvye td, #pjgquqgvye th {
+#jchbzrjvqv thead, #jchbzrjvqv tbody, #jchbzrjvqv tfoot, #jchbzrjvqv tr, #jchbzrjvqv td, #jchbzrjvqv th {
   border-style: none;
 }
 
-#pjgquqgvye p {
+#jchbzrjvqv p {
   margin: 0;
   padding: 0;
 }
 
-#pjgquqgvye .gt_table {
+#jchbzrjvqv .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1466,12 +1466,12 @@ they could try the following:</p>
   border-left-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_caption {
+#jchbzrjvqv .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#pjgquqgvye .gt_title {
+#jchbzrjvqv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1483,7 +1483,7 @@ they could try the following:</p>
   border-bottom-width: 0;
 }
 
-#pjgquqgvye .gt_subtitle {
+#jchbzrjvqv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1495,7 +1495,7 @@ they could try the following:</p>
   border-top-width: 0;
 }
 
-#pjgquqgvye .gt_heading {
+#jchbzrjvqv .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1507,13 +1507,13 @@ they could try the following:</p>
   border-right-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_bottom_border {
+#jchbzrjvqv .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_col_headings {
+#jchbzrjvqv .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1528,7 +1528,7 @@ they could try the following:</p>
   border-right-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_col_heading {
+#jchbzrjvqv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1548,7 +1548,7 @@ they could try the following:</p>
   overflow-x: hidden;
 }
 
-#pjgquqgvye .gt_column_spanner_outer {
+#jchbzrjvqv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1560,15 +1560,15 @@ they could try the following:</p>
   padding-right: 4px;
 }
 
-#pjgquqgvye .gt_column_spanner_outer:first-child {
+#jchbzrjvqv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pjgquqgvye .gt_column_spanner_outer:last-child {
+#jchbzrjvqv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pjgquqgvye .gt_column_spanner {
+#jchbzrjvqv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1580,11 +1580,11 @@ they could try the following:</p>
   width: 100%;
 }
 
-#pjgquqgvye .gt_spanner_row {
+#jchbzrjvqv .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#pjgquqgvye .gt_group_heading {
+#jchbzrjvqv .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1610,7 +1610,7 @@ they could try the following:</p>
   text-align: left;
 }
 
-#pjgquqgvye .gt_empty_group_heading {
+#jchbzrjvqv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1625,15 +1625,15 @@ they could try the following:</p>
   vertical-align: middle;
 }
 
-#pjgquqgvye .gt_from_md > :first-child {
+#jchbzrjvqv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pjgquqgvye .gt_from_md > :last-child {
+#jchbzrjvqv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pjgquqgvye .gt_row {
+#jchbzrjvqv .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1652,7 +1652,7 @@ they could try the following:</p>
   overflow-x: hidden;
 }
 
-#pjgquqgvye .gt_stub {
+#jchbzrjvqv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1665,7 +1665,7 @@ they could try the following:</p>
   padding-right: 5px;
 }
 
-#pjgquqgvye .gt_stub_row_group {
+#jchbzrjvqv .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1679,15 +1679,15 @@ they could try the following:</p>
   vertical-align: top;
 }
 
-#pjgquqgvye .gt_row_group_first td {
+#jchbzrjvqv .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#pjgquqgvye .gt_row_group_first th {
+#jchbzrjvqv .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#pjgquqgvye .gt_summary_row {
+#jchbzrjvqv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1697,16 +1697,16 @@ they could try the following:</p>
   padding-right: 5px;
 }
 
-#pjgquqgvye .gt_first_summary_row {
+#jchbzrjvqv .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_first_summary_row.thick {
+#jchbzrjvqv .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#pjgquqgvye .gt_last_summary_row {
+#jchbzrjvqv .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1716,7 +1716,7 @@ they could try the following:</p>
   border-bottom-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_grand_summary_row {
+#jchbzrjvqv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1726,7 +1726,7 @@ they could try the following:</p>
   padding-right: 5px;
 }
 
-#pjgquqgvye .gt_first_grand_summary_row {
+#jchbzrjvqv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1736,7 +1736,7 @@ they could try the following:</p>
   border-top-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_last_grand_summary_row_top {
+#jchbzrjvqv .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1746,11 +1746,11 @@ they could try the following:</p>
   border-bottom-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_striped {
+#jchbzrjvqv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#pjgquqgvye .gt_table_body {
+#jchbzrjvqv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1759,7 +1759,7 @@ they could try the following:</p>
   border-bottom-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_footnotes {
+#jchbzrjvqv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1773,7 +1773,7 @@ they could try the following:</p>
   border-right-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_footnote {
+#jchbzrjvqv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1782,7 +1782,7 @@ they could try the following:</p>
   padding-right: 5px;
 }
 
-#pjgquqgvye .gt_sourcenotes {
+#jchbzrjvqv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1796,7 +1796,7 @@ they could try the following:</p>
   border-right-color: #D3D3D3;
 }
 
-#pjgquqgvye .gt_sourcenote {
+#jchbzrjvqv .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1804,72 +1804,72 @@ they could try the following:</p>
   padding-right: 5px;
 }
 
-#pjgquqgvye .gt_left {
+#jchbzrjvqv .gt_left {
   text-align: left;
 }
 
-#pjgquqgvye .gt_center {
+#jchbzrjvqv .gt_center {
   text-align: center;
 }
 
-#pjgquqgvye .gt_right {
+#jchbzrjvqv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pjgquqgvye .gt_font_normal {
+#jchbzrjvqv .gt_font_normal {
   font-weight: normal;
 }
 
-#pjgquqgvye .gt_font_bold {
+#jchbzrjvqv .gt_font_bold {
   font-weight: bold;
 }
 
-#pjgquqgvye .gt_font_italic {
+#jchbzrjvqv .gt_font_italic {
   font-style: italic;
 }
 
-#pjgquqgvye .gt_super {
+#jchbzrjvqv .gt_super {
   font-size: 65%;
 }
 
-#pjgquqgvye .gt_footnote_marks {
+#jchbzrjvqv .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#pjgquqgvye .gt_asterisk {
+#jchbzrjvqv .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#pjgquqgvye .gt_indent_1 {
+#jchbzrjvqv .gt_indent_1 {
   text-indent: 5px;
 }
 
-#pjgquqgvye .gt_indent_2 {
+#jchbzrjvqv .gt_indent_2 {
   text-indent: 10px;
 }
 
-#pjgquqgvye .gt_indent_3 {
+#jchbzrjvqv .gt_indent_3 {
   text-indent: 15px;
 }
 
-#pjgquqgvye .gt_indent_4 {
+#jchbzrjvqv .gt_indent_4 {
   text-indent: 20px;
 }
 
-#pjgquqgvye .gt_indent_5 {
+#jchbzrjvqv .gt_indent_5 {
   text-indent: 25px;
 }
 
-#pjgquqgvye .katex-display {
+#jchbzrjvqv .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#pjgquqgvye div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#jchbzrjvqv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1909,13 +1909,13 @@ they could try the following:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">174</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">168</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,986.90 (22,201.15)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,626.64 (10,222.25)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">131.07 (18.45 - 936.23)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">198.25 (32.06 - 1,171.92)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1924,13 +1924,13 @@ they could try the following:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">174</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">168</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,986.90 (22,201.15)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,626.64 (10,222.25)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">131.07 (18.45 - 936.23)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">198.25 (32.06 - 1,171.92)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1939,13 +1939,13 @@ they could try the following:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Oral</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">49</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">68</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">328.91 (956.18)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,422.52 (5,419.69)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">26.85 (7.81 - 188.98)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">59.94 (11.77 - 298.60)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1954,13 +1954,13 @@ they could try the following:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Topical</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Overall</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">125</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">100</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">6,812.83 (25,987.96)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">3,445.45 (12,438.51)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">261.78 (39.68 - 1,384.62)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">454.55 (96.04 - 1,819.79)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1969,13 +1969,13 @@ they could try the following:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Oral</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">9</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">49</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">68</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">328.91 (956.18)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,422.52 (5,419.69)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">26.85 (7.81 - 188.98)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">59.94 (11.77 - 298.60)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1984,13 +1984,13 @@ they could try the following:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">Topical</td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">18</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">67</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">54</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">11,277.48 (34,285.86)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">4,622.85 (15,796.86)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">970.92 (317.48 - 4,882.05)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">882.78 (203.14 - 2,717.75)</td>
 </tr>
 <tr>
 <td headers="Database name" class="gt_row gt_left" style="text-align: left; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000;"></td>
@@ -1999,13 +1999,13 @@ they could try the following:</p>
 <td headers="Route" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: hidden; border-top-color: #000000; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;"></td>
 <td headers="Pattern id" class="gt_row gt_left" style="text-align: left; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">9</td>
 <td headers="[header_level]Number records
-[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">58</td>
+[header_level]N" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">46</td>
 <td headers="[header_level]Missing dose
 [header_level]N (%)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">0 (0.00 %)</td>
 <td headers="[header_level]Daily dose
-[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">1,655.39 (7,590.12)</td>
+[header_level]Mean (SD)" class="gt_row gt_right" style="text-align: right; border-left-width: 1px; border-left-style: solid; border-left-color: #D3D3D3; border-right-width: 1px; border-right-style: solid; border-right-color: #D3D3D3; border-top-width: 1px; border-top-style: solid; border-top-color: #D3D3D3; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #D3D3D3;">2,063.27 (6,546.49)</td>
 <td headers="[header_level]Daily dose
-[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">35.55 (12.06 - 167.58)</td>
+[header_level]Median (Q25 - Q75)" class="gt_row gt_right" style="text-align: right;">146.93 (26.11 - 576.83)</td>
 </tr>
 </tbody>
 </table>
