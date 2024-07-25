@@ -1,11 +1,13 @@
 test_that("test same results for ingredient cohorts", {
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
-  cdm <- generateAtcCohortSet(cdm = cdm, name = "test_cohort_1")
+  expect_warning(cdm <- generateAtcCohortSet(cdm = cdm, name = "test_cohort_1"))
 
+  codes <- CodelistGenerator::getATCCodes(cdm)
+  names(codes) <- tolower(names(codes))
   cdm <- generateDrugUtilisationCohortSet(
     cdm = cdm,
-    conceptSet = CodelistGenerator::getATCCodes(cdm),
+    conceptSet = codes,
     name = "test_cohort_2"
   )
 

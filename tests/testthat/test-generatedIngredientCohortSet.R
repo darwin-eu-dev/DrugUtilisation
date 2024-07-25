@@ -11,9 +11,7 @@ test_that("test same results for ingredient cohorts", {
   cdm <- generateDrugUtilisationCohortSet(
     cdm = cdm,
     conceptSet = CodelistGenerator::getDrugIngredientCodes(
-      cdm = cdm,
-      name = "acetaminophen"
-    ),
+      cdm = cdm, name = "acetaminophen"),
     name = "test_cohort_2"
   )
 

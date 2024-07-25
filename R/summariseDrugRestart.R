@@ -57,7 +57,6 @@
 #'
 #' CDMConnector::cdmDisconnect(cdm = cdm)
 #' }
-
 summariseDrugRestart <- function(cohort,
                                  switchCohortTable,
                                  switchCohortId = NULL,
@@ -109,7 +108,6 @@ summariseDrugRestart <- function(cohort,
   prefix <- omopgenerics::tmpPrefix()
   tempName <- omopgenerics::uniqueTableName(prefix = prefix)
   workingCohort <- cohort |> dplyr::compute(name = tempName, temporary = FALSE)
-  initialCols <- colnames(cohort)
 
   # remove cohort entries ending before censor date and throw warning saying how many
   if (!is.null(censorDate)) {
@@ -140,7 +138,10 @@ summariseDrugRestart <- function(cohort,
   # }
 
   # get first switch - cohort
+  cols <- c("cohort_definition_id", "subject_id", "cohort_start_date",
+            "cohort_end_date", censorDate, unique(unlist(strata)))
   results <- workingCohort |>
+    dplyr::select(dplyr::all_of(cols)) |>
     PatientProfiles::addCohortIntersectDays(
       targetCohortTable = switchCohortTable,
       targetCohortId = switchCohortId,
@@ -155,12 +156,9 @@ summariseDrugRestart <- function(cohort,
       values_to = "switch_days",
       names_to = "cohort_switch_name"
     ) |>
-    dplyr::filter(
-      .data$switch_days == min(.data$switch_days, na.rm = TRUE) | all(is.na(.data$switch_days)),
-      .by = dplyr::all_of(initialCols)
-    ) |>
-    dplyr::select(!dplyr::starts_with("cohort_switch_")) |>
-    dplyr::distinct() |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
+    dplyr::summarise(
+      switch_days = min(.data$switch_days, na.rm = TRUE), .groups = "drop") |>
     dplyr::compute(name = tempName, temporary = FALSE)
 
   results <- results |>

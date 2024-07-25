@@ -76,8 +76,7 @@ benchmarkDrugUtilisation <- function(cdm,
 
   time_record <- list()
 
-  for (j in numberOfCohort)
-  {
+  for (j in numberOfCohort) {
     conceptSetList <- conceptSet[c(1:j)]
 
     name <- paste0("dus_", j)
@@ -88,14 +87,7 @@ benchmarkDrugUtilisation <- function(cdm,
     cdm <- generateDrugUtilisationCohortSet(
       cdm = cdm,
       name = name,
-      conceptSet = conceptSetList,
-      durationRange = c(1, Inf),
-      imputeDuration = "none",
-      gapEra = 0,
-      priorUseWashout = 0,
-      priorObservation = 0,
-      cohortDateRange = as.Date(c(NA, NA)),
-      limit = "all"
+      conceptSet = conceptSetList
     )
 
     omopgenerics::cohortCount(cdm[[name]])
@@ -111,7 +103,9 @@ benchmarkDrugUtilisation <- function(cdm,
     tictoc::tic()
 
     cdm[[name]] |>
-      addIndication(indicationCohortName = indicationCohortName, indicationWindow = list(c(0,0)),
+      addIndication(
+        indicationCohortName = indicationCohortName,
+        indicationWindow = list(c(0,0)),
         unknownIndicationTable = NULL
       )
 
@@ -124,23 +118,13 @@ benchmarkDrugUtilisation <- function(cdm,
 
     tictoc::tic()
 
-    x <- addDrugUse(
-      cohort = cdm[[name]],
-      ingredientConceptId = ingredientId,
-      gapEra = 30,
-      eraJoinMode = "Previous",
-      overlapMode = "Sum",
-      sameIndexMode = "Sum",
-      imputeDuration = "none",
-      imputeDailyDose = "none",
-      durationRange = c(1, Inf),
-      dailyDoseRange = c(0, Inf)
-    )
+    x <- cdm[[name]] |>
+      addDrugUtilisation(ingredientConceptId = ingredientId, gapEra = 30)
 
     t <- tictoc::toc(quiet = TRUE)
 
-    time_record[[paste0("add drug use ", j)]] <- dplyr::tibble(
-      task = paste0("add drug use for ", j, " cohorts"),
+    time_record[[paste0("add drug utilisation ", j)]] <- dplyr::tibble(
+      task = paste0("add drug utilisation for ", j, " cohorts"),
       time_taken_secs = as.numeric(t$toc - t$tic)
     )
 
@@ -148,25 +132,15 @@ benchmarkDrugUtilisation <- function(cdm,
     tictoc::tic()
 
     cdm[[name]] |>
-      summariseDrugUse(cdm = cdm)
+      summariseDrugUtilisation(ingredientConceptId = ingredientId, gapEra = 30)
 
-    time_record[[paste0("summarise drug use ", j)]] <- dplyr::tibble(
-      task = paste0("summarise drug use for ", j, " cohorts"),
+    time_record[[paste0("summarise drug utilisation ", j)]] <- dplyr::tibble(
+      task = paste0("summarise drug utilisation for ", j, " cohorts"),
       time_taken_secs = as.numeric(t$toc - t$tic)
     )
   }
 
-
   tictoc::tic()
-
-  addDailyDose(cdm[[drugExposureName]], ingredientConceptId = ingredientId)
-
-  t <- tictoc::toc(quiet = TRUE)
-
-  time_record[[paste0("add daily dose")]] <- dplyr::tibble(
-    task = paste0("add daily dose"),
-    time_taken_secs = as.numeric(t$toc - t$tic)
-  )
 
   time_record <- dplyr::bind_rows(time_record) |>
     dplyr::mutate(time_taken_secs = round(.data$time_taken_secs, 2)) |>

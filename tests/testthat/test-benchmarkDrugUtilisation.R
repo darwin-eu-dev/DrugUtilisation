@@ -1,6 +1,5 @@
 test_that("test benchmarking function", {
   skip_on_cran()
-
   skip_if_not_installed("tictoc")
 
   cdm <- mockDrugUtilisation(
@@ -22,11 +21,9 @@ test_that("test benchmarking function", {
 
   expect_true("add indication 2 cohorts" %in% timings$task)
 
-  expect_true("add drug use for 3 cohorts" %in% timings$task)
+  expect_true("add drug utilisation for 3 cohorts" %in% timings$task)
 
-  expect_true("summarise drug use for 4 cohorts" %in% timings$task)
-
-  expect_true("add daily dose" %in% timings$task)
+  expect_true("summarise drug utilisation for 4 cohorts" %in% timings$task)
 
   mockDisconnect(cdm = cdm)
 })

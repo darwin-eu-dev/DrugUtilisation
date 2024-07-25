@@ -134,6 +134,10 @@ drugStrengthPattern <- function(cdm,
 #'
 addRoute <- function(drugTable) {
   lifecycle::deprecate_soft(when = "0.7.0", what = "addRoute()")
+  .addRoute(drugTable = drugTable)
+}
+
+.addRoute <- function(drugTable) {
   cdm <- omopgenerics::cdmReference(drugTable)
   drugTable |>
     dplyr::left_join(

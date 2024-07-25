@@ -94,13 +94,13 @@ test_that("functionality of addDailyDose function",{
     concept_relationship = concept_relationship
   )
 
-  daily_dose <- addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1)
+  daily_dose <- .addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1)
 
   # compute behavior
   initialTables <- CDMConnector::listTables(CDMConnector::cdmCon(cdm))
   expect_no_error(
     x <- cdm[["drug_exposure"]] |>
-      addDailyDose(ingredientConceptId = 1, name = "my_custom_name")
+      .addDailyDose(ingredientConceptId = 1, name = "my_custom_name")
   )
   finalTables <- CDMConnector::listTables(CDMConnector::cdmCon(cdm))
   expect_identical(omopgenerics::tableName(x), "my_custom_name")
@@ -244,7 +244,7 @@ test_that("functionality of addDailyDose function",{
   expect_true(settings(coverage)$sample_size == 50)
 
   #check it works without specifying cdm object
-  expect_no_error(addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))
+  expect_no_error(.addDailyDose(cdm[["drug_exposure"]], ingredientConceptId = 1))
 
   mockDisconnect(cdm = cdm)
 })
