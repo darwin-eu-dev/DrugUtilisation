@@ -151,8 +151,3 @@ cdm[["dus_cohort"]] %>%
              sameIndexMode = "minimum")
 
 ```
-
-```{r}
-DBI::dbDisconnect(con, shutdown = TRUE)
-```
-
