@@ -296,14 +296,16 @@ substituteStrata <- function(x, strata) {
   return(x)
 }
 
-#' Title
+#' Generate a plot visualisation (ggplot2) from the output of
+#' summariseIndication
 #'
-#' @param result
-#' @param x
-#' @param facet
-#' @param splitStrata
+#' @param result A summarised_result object.
+#' @param x Variables to be used in the x axis.
+#' @param facet Variables to be used to facet the plot.
+#' @param splitStrata Whether to split strata.
 #'
-#' @return
+#' @return A ggplot2 object
+#'
 #' @export
 #'
 #' @examples
@@ -324,7 +326,7 @@ substituteStrata <- function(x, strata) {
 #'   summariseIndication(
 #'     indicationCohortName = "indication_cohorts",
 #'     unknownIndicationTable = "condition_occurrence",
-#'     indicationWindow = list(c(-Inf, 0)))
+#'     indicationWindow = list(c(-Inf, 0), c(-365, 0)))
 #'
 #' plotIndication(result)
 #'
