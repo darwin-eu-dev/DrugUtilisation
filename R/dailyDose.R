@@ -40,10 +40,20 @@
 #'   addDailyDose(ingredientConceptId = 1125315)
 #' }
 #'
+
 addDailyDose <- function(drugExposure,
                          ingredientConceptId,
                          name = NULL) {
   lifecycle::deprecate_soft(when = "0.7.0", what = "addDailyDose()")
+  .addDailyDose(
+    drugExposure = drugExposure,
+    ingredientConceptId = ingredientConceptId,
+    name = name)
+}
+
+.addDailyDose <- function(drugExposure,
+                          ingredientConceptId,
+                          name) {
   cdm <- omopgenerics::cdmReference(drugExposure)
   # initial checks
   checkInputs(
@@ -155,7 +165,7 @@ summariseDoseCoverage <- function(cdm,
       "drug_concept_id", "daily_dose", "unit", "pattern_id",
       "concept_id" =  "ingredient_concept_id"
     ) |>
-    addRoute() |>
+    .addRoute() |>
     dplyr::left_join(
       cdm[["concept"]] |>
         dplyr::rename("ingredient_name" = "concept_name") |>
