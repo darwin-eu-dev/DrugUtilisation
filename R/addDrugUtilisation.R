@@ -631,7 +631,7 @@ addDrugUseInternal <- function(x,
   initialDailyDose <- validateLogical(initialDailyDose, "initialDailyDose", call)
   cumulativeDose <- validateLogical(cumulativeDose, "cumulativeDose", call)
   if (is.null(gapEra)) {
-    suppressMessages(gapEra <- cohortGapEra(cohort) |> unique())
+    suppressMessages(gapEra <- cohortGapEra(x) |> unique())
     if (is.null(gapEra)) {
       gapEra <- 1L
       cli::cli_inform("no gap_era found in cohort settings, using as default gapEra = {gapEra}.")
