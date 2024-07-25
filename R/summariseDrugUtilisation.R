@@ -155,7 +155,7 @@ summariseDrugUtilisation <- function(cohort,
       ingredient_id = gsub(".*xx_|.*xx", "", .data$variable_name),
       ingredient_id = dplyr::if_else(
         nchar(.data$ingredient_id) == 0 | grepl("records|subjects", .data$variable_level),
-        NA, as.numeric(.data$ingredient_id)),
+        NA, suppressWarnings(as.numeric(.data$ingredient_id))),
       !!!variableNameExp(variableNames)
     ) |>
     dplyr::left_join(dic, by = "concept_set_name") |>

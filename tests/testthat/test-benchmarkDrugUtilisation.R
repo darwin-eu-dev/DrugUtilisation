@@ -1,6 +1,5 @@
 test_that("test benchmarking function", {
   skip_on_cran()
-
   skip_if_not_installed("tictoc")
 
   cdm <- mockDrugUtilisation(
@@ -11,7 +10,7 @@ test_that("test benchmarking function", {
   # add daily dose only work with 1 ingredient at the moment
   # benchmarking multiple cohorts
   timings <- benchmarkDrugUtilisation(
-    cdm = cdm, ingredientId = 1125315, numberOfCohort = 1#:4
+    cdm = cdm, ingredientId = 1125315, numberOfCohort = 1:4
   )
 
   expect_true(tibble::is_tibble(timings))

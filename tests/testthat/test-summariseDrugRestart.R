@@ -125,7 +125,7 @@ test_that("summarise drug restart", {
 
   # expected errors
   expect_error(summariseDrugRestart(cdm$dus_cohort))
-  expect_error(summariseDrugRestart(cdm$dus_cohort, switchCohortTable = "switch_cohort", switchCohortId = 5))
+  expect_warning(expect_error(summariseDrugRestart(cdm$dus_cohort, switchCohortTable = "switch_cohort", switchCohortId = 5)))
 
   mockDisconnect(cdm = cdm)
 })

@@ -53,7 +53,7 @@ addDailyDose <- function(drugExposure,
 
 .addDailyDose <- function(drugExposure,
                           ingredientConceptId,
-                          name) {
+                          name = NULL) {
   cdm <- omopgenerics::cdmReference(drugExposure)
   # initial checks
   checkInputs(
