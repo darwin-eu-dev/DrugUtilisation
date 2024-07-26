@@ -259,8 +259,8 @@ plotDrugRestart <- function(result,
 
 warnDuplicatePoints <- function(result, exclude) {
   result <- result |>
-    dplyr::rename("cohort_name" = "group_level", "strata" = "strata_level")
-  potential <- c("result_id", "cdm_name", "cohort_name", "strata", "variable_name")
+    dplyr::rename("cohort_name" = "group_level", "strata" = "strata_level", "treatment" = "variable_name")
+  potential <- c("result_id", "cdm_name", "cohort_name", "strata", "treatment")
   potential <- potential[!potential %in% exclude]
   duplicates <- result |>
     dplyr::select(dplyr::all_of(potential)) |>

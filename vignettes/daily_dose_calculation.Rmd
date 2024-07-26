@@ -1,8 +1,8 @@
 ---
-title: "Characterise a cohort using Drug Utilisation"
+title: "Daily dose calculation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Characterise a cohort using Drug Utilisation}
+  %\VignetteIndexEntry{Daily dose calculation}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 

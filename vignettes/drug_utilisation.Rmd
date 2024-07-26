@@ -18,55 +18,41 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-
-
 # Introduction
 
 The DrugUtilisation package includes a range of functions that add drug-related information of subjects in OMOP CDM tables and cohort tables. Essentially, there are two functionalities: `add` and `summarise`. While the first return patient-level information on drug usage, the second returns aggregate estimates of it. In this vignette, we will explore these functions and provide some examples for its usage.
 
-
-
-
 # Set up
 
-### Mock data
+## Mock data
 
 For this vignette we will use mock data contained in the DrugUtilisation package. This mock dataset contains cohorts, we will take "cohort1" as the cohort table of interest from which we want to study drug usage of acetaminophen.
 
 ```{r setup, message = FALSE, warning = FALSE}
 library(DrugUtilisation)
-library(CDMConnector)
-library(dplyr)
-library(PatientProfiles)
-library(CodelistGenerator)
 
 cdm <- mockDrugUtilisation(numberIndividual  = 200)
-cdm$cohort1 |> glimpse()
+cdm$cohort1 |> 
+  dplyr::glimpse()
 ```
 
-### Drug codes
+## Drug codes
 
 Since we want to characterise *acetaminophen* and *simvastatin* usage for subjects in cohort1, we first have to get the codelist with CodelistGenerator:
 
 ```{r, message = FALSE, warning = FALSE}
-drugConcepts <- getDrugIngredientCodes(cdm = cdm, name = c("acetaminophen", "simvastatin"))
+drugConcepts <- CodelistGenerator::getDrugIngredientCodes(cdm = cdm, name = c("acetaminophen", "simvastatin"))
 ```
-
-
-
 
 # Add drug utilisation information
 
-## addNumberExposures() and addNumberEras()
-
-### addNumberExposures()
+## addNumberExposures()
 
 With the function **`addNumberExposures()`** we can get how many exposures to acetaminophen each patient in our cohort had during a certain time. There are 2 thing to keep in mind when using this function:
 
 - **Time period of interest:** The `indexDate` and `censorDate` arguments refer to the time-period in which we are interested to compute the number of exposure to acetaminophen. The refer to date columns in the cohort table, and by default this are "cohort_start_date" and "cohort_end_date" respectively.
 
-- **Incident or prevalent events?** Do we want to consider only those exposures to the drug of interest starting during the time-period (`restrictIncident = TRUE`), or do we also want to take into account those thaat started before but underwent for at least some time during the follow-up period considered (`restrictIncident = FALSE`)?
+- **Incident or prevalent events?** Do we want to consider only those exposures to the drug of interest starting during the time-period (`restrictIncident = TRUE`), or do we also want to take into account those that started before but underwent for at least some time during the follow-up period considered (`restrictIncident = FALSE`)?
 
 In what follows we add a column in the cohort table, with the number of incident exposures during the time patients are in the cohort:
 
@@ -81,11 +67,11 @@ cohort <- addNumberExposures(
   name = NULL
 )
 
-cohort |> glimpse()
+cohort |> 
+  dplyr::glimpse()
 ```
 
-
-### addNumberEras()
+## addNumberEras()
 
 This function works like the previous one, but calculates the **number of eras** instead of exposures. The difference between these two is given by the `gapEra` argument: consecutive drug exposures separated by less than the days specified in `gapEra`, are collapsed together into the same era.
 
@@ -105,12 +91,44 @@ cohort <- addNumberEras(
   name = NULL
 )
 
-cohort |> glimpse()
+cohort |> 
+  dplyr::glimpse()
 ```
+
+## exposedTime 
+
+This argument set to TRUE will add a column specifying the time in days a person has been exposed to the drug of interest. Take note that `gapEra` and `restrictIncident` will be taken into account for this calculation: 
+
+1) **Drug eras:** exposed time will be based on drug eras according to `gapEra`.
+
+2) **Incident exposures:** if `restrictIncident = TRUE`, exposed time will consider only those drug exposures starting after indexDate, while if `restrictIncident = FALSE`, exposures that started before indexDate and ended afterwards will also be taken into account.
+
+The subfunction to get only this information is `addExposedTime()`.
+
+## timeToExposure
+
+If set to TRUE, a column will be added that shows the number of days until the first exposure occurring within the considered time window. Notice that the value of `restrictIncident` will be taken into account: if TRUE, the time to the first incident exposure during the time interval is measured; otherwise, exposures that start before the `indexDate` and end afterwards will be considered (in these cases, time to exposure is 0).
+
+The subfunction to get only this information is `addTimeToExposure()`
+
+
+## initialQuantity and cumulativeQuantity
+
+These, if TRUE, will add a column each specifying which was the initial quantity prescribed at the start of the first exposure considered (`initialQuantity`), and the cumulative quantity taken throughout the exposures in the considered time-window (`cumulativeQuantity`). 
+
+Quantities are measured at conceptSet level not ingredient. Notice that for both measures `restrictIncident` is considered, while `gapEra` is used for the `cumulative quantity`.
+
+The subfunctions to get this information are `addInitialQuantity()` and `addCumulativeQuantity()` respectively.
+
+## initialDailyDose and cumulativeDose
+
+If `initialDailyDose` is TRUE, a column will be add specifying for each of the ingredients in a conceptSet which was the initial daily dose given. The `cumulativeDose` will measure for each ingredient the total dose taken throughout the exposures considered in the time-window. Recall that `restrictIncident` is considered in these calculations, and that the cumulative dose also considers `gapEra`.
+
+The subfunctions to get this information are `addInitialDailyDose()` and `addCumulativeDose()` respectively.
 
 ## addDrugUtilisation()
 
-The `addNumberExposures()` and `addNumberEras()` functions are subfunctions of the more comprehensive **`addDrugUtilisation()`**. This broader function computes multiple drug utilization metrics, including the number of exposures and eras.
+All the explained **`add`** functions are subfunctions of the more comprehensive **`addDrugUtilisation()`**. This broader function computes multiple drug utilization metrics.
 
 ```{r, eval = FALSE}
 addDrugUtilisation(
@@ -134,43 +152,6 @@ addDrugUtilisation(
 )
 ```
 
-In what follows we will explore each of its functionalities, and demonstrate how they are integrated into the main `addDrugUtilisation()` function.
-
-
-### - exposedTime 
-
-This argument set to TRUE will add a column specifying the time in days a person has been exposed to the drug of interest. Take note that `gapEra` and `restrictIncident` will be taken into account for this calculation: 
-
-1) **Drug eras:** exposed time will be based on drug eras according to `gapEra`.
-
-2) **Incident exposures:** if `restrictIncident = TRUE`, exposed time will consider only those drug exposures starting after indexDate, while if `restrictIncident = FALSE`, exposures that started before indexDate and ended afterwards will also be taken into account.
-
-The subfunction to get only this information is `addExposedTime()`.
-
-### - timeToExposure
-
-If set to TRUE, a column will be added that shows the number of days until the first exposure occurring within the considered time window. Notice that the value of `restrictIncident` will be taken into account: if TRUE, the time to the first incident exposure during the time interval is measured; otherwise, exposures that start before the `indexDate` and end afterwards will be considered (in these cases, time to exposure is 0).
-
-The subfunction to get only this information is `addTimeToExposure()`
-
-
-### - initialQuantity and cumulativeQuantity
-
-These, if TRUE, will add a column each specifying which was the initial quantity prescribed at the start of the first exposure considered (`initialQuantity`), and the cumulative quantity taken throughout the exposures in the considered time-window (`cumulativeQuantity`). 
-
-Quantities are measured at conceptSet level not ingredient. Notice that for both measures `restrictIncident` is considered, while `gapEra` is used for the `cumulative quantity`.
-
-The subfunctions to get this information are `addInitialQuantity()` and `addCumulativeQuantity()` respectively.
-
-### - initialDailyDose and cumulativeDose
-
-If `initialDailyDose` is TRUE, a column will be add specifying for each of the ingredients in a conceptSet which was the initial daily dose given. The `cumulativeDose` will measure for each ingredient the total dose taken throughout the exposures considered in the time-window. Recall that `restrictIncident` is considered in these calculations, and that the cumulative dose also considers `gapEra`.
-
-The subfunctions to get this information are `addInitialDailyDose()` and `addCumulativeDose()` respectively.
-
-
-### ! Note
-
 - Using `addDrugUtilisation()` is recommended when multiple parameters are needed, as it is more computationally efficient than chaining the different subfunctions. 
 
 -  If `conceptSet` is NULL, it will be produced from descendants of given ingredients. 
@@ -179,7 +160,7 @@ The subfunctions to get this information are `addInitialDailyDose()` and `addCum
 
 - By default it returns a temporal table, but if `name` is not NULL a permanent table with the defined name will be computed in the database.
 
-### Use case
+## Use case
 
 In what follows we create a permanent table "drug_utilisation_example" in the database with the information on dosage and quantity of the ingredients  1125315 (acetaminophen) and 1503297 (metformin). We are interested in exposures happening from cohort end date, until the end of the patient's observation data. Additionally, we define an exposure era using a gap of 7 days, and we only consider incident exposures during that time.
 
@@ -207,21 +188,20 @@ cdm$drug_utilisation_example <- cdm$cohort1 |>
     name = "drug_utilisation_example"
   )
 
-cdm$drug_utilisation_example |> glimpse()
+cdm$drug_utilisation_example |> 
+  dplyr::glimpse()
 ```
-
 
 # Summarise drug utilisation information
 
 The information given by `addDrugUtilisation()` or its sub-functions is at patient level. If we are interested in aggregated estimates for these measure we can use `summariseDrugUtilisation()`.
-
 
 ## summariseDrugUtilisation()
 
 This function will provide the desired estimates (set in the argument `estimates`) of the targeted drug utilisation measures. Similar to `addDrugUtilisation()`, by setting TRUE or FALSE each of the drug utilisation measures, the user can choose which measures to obtain.
 
 ```{r, eval = TRUE}
-du_results <- summariseDrugUtilisation(
+duResults <- summariseDrugUtilisation(
   cohort = cdm$cohort1,
   strata = list(),
   estimates = c("q25", "median", "q75", "mean", "sd", "count_missing",
@@ -242,8 +222,8 @@ du_results <- summariseDrugUtilisation(
   cumulativeDose = TRUE
 )
 
-du_results |>
-  glimpse()
+duResults |>
+  dplyr::glimpse()
 ```
 
 
@@ -252,7 +232,7 @@ As seen below, the result of this function is a `summarised_result` object. For 
 Additionally, the `strata` argument will provide the estimates for different stratifications defined by columns in the cohort. For instance, we can add a column indicating the sex, and another indicating if the subject is older than 50, and use those to stratify by sex and age, together and separately as follows:
 
 ```{r, eval = TRUE}
-du_results <- cdm$cohort1 |>
+duResults <- cdm$cohort1 |>
   # add age and sex
   PatientProfiles::addDemographics(
     age = TRUE,
@@ -281,8 +261,8 @@ du_results <- cdm$cohort1 |>
     cumulativeDose = TRUE
   )
 
-du_results |>
-  glimpse()
+duResults |>
+  dplyr::glimpse()
 ```
 
 The estimates obtained in this last part correspond to the mean (`mean`) and standard deviation (`sd`) of those that had information on dose and quantity, and the number  (`count_missing`) (and percentage  (`percentage_missing`)) of subjects with missing information.
@@ -292,14 +272,14 @@ The estimates obtained in this last part correspond to the mean (`mean`) and sta
 Results from `summariseDrugUtilisation()` can be nicely visualised in a tabular format using the function `tableDrugUtilisation()`.
 
 ```{r, eval = TRUE}
-tableDrugUtilisation(du_results)
+tableDrugUtilisation(duResults)
 ```
 
 By default, it returns a gt table object, in which strata is split and both cohort name (group columns in the summarised result) and strata are in the table's header. However, this dispositions can be customised, for instance:
 
 ```{r, eval = TRUE}
 tableDrugUtilisation(
-  du_results,
+  duResults,
   header = c("group", "estimate"),
   splitStrata = FALSE,
   cohortName = TRUE,

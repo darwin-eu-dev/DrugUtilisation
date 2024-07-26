@@ -191,6 +191,7 @@ summariseTreatmentInternal <- function(cohort,
     dplyr::select(-c("window", "additional_name", "additional_level")) |>
     visOmopResults::uniteAdditional(cols = "window_name") |>
     PatientProfiles::addCdmName(cdm = cdm) |>
+    # need to add zeros, same than summariseIndication
     dplyr::mutate(variable_name = factor(.data$variable_name, levels = variableLevel)) |>
     dplyr::group_by_at(c(
       "result_id", "cdm_name", "group_name",  "group_level", "strata_name",
