@@ -37,6 +37,12 @@
 #' @param doseForm Only descendants codes with the specified dose form
 #' will be returned. If NULL, descendant codes will be returned regardless
 #' of dose form.
+#' @param doseUnit Only descendants codes with the specified dose unit
+#' will be returned. If NULL, descendant codes will be returned regardless
+#' of dose unit
+#' @param routeCategory Only descendants codes with the specified route
+#' will be returned. If NULL, descendant codes will be returned regardless
+#' of route category.
 #' @param ingredientRange Used to restrict descendant codes to those
 #' associated with a specific number of ingredients. Must be a vector of length
 #' two with the first element the minimum number of ingredients allowed and
@@ -78,6 +84,8 @@ generateIngredientCohortSet <- function(cdm,
                                         name,
                                         ingredient = NULL,
                                         doseForm = NULL,
+                                        doseUnit = NULL,
+                                        routeCategory = NULL,
                                         ingredientRange = c(1, Inf),
                                         gapEra = 1,
                                         durationRange = lifecycle::deprecated(),
@@ -132,7 +140,9 @@ generateIngredientCohortSet <- function(cdm,
       cdm = cdm,
       name = ingredient,
       doseForm = doseForm,
-      ingredientRange = ingredientRange
+      ingredientRange = ingredientRange,
+      doseUnit = doseUnit,
+      routeCategory = routeCategory
     )
   } else {
     conceptSet <- lapply(ingredient, function(values) {
@@ -142,6 +152,8 @@ generateIngredientCohortSet <- function(cdm,
           name = value,
           doseForm = doseForm,
           ingredientRange = ingredientRange,
+          doseUnit = doseUnit,
+          routeCategory = routeCategory
         )
       }) |>
         unname() |>

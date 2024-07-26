@@ -33,6 +33,19 @@ test_that("test same results for ingredient cohorts", {
   mockDisconnect(cdm = cdm)
 })
 
+test_that("options", {
+
+  cdm <- mockDrugUtilisation(con = connection(),
+                             writeSchema = schema())
+
+  expect_no_error(generateIngredientCohortSet(
+  cdm = cdm,
+  ingredient = "acetaminophen",
+  doseUnit = "milligram",
+  name = "test_cohort_1"))
+
+})
+
 test_that("handle empty ingredient name gracefully", {
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
