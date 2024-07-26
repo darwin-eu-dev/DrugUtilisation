@@ -302,6 +302,7 @@ substituteStrata <- function(x, strata) {
 #' @param result A summarised_result object.
 #' @param x Variables to be used in the x axis.
 #' @param facet Variables to be used to facet the plot.
+#' @param color Variables to be used to color the plot.
 #' @param splitStrata Whether to split strata.
 #'
 #' @return A ggplot2 object
@@ -335,6 +336,7 @@ substituteStrata <- function(x, strata) {
 plotIndication <- function(result,
                            x = "window",
                            facet = c("cdm_name", "cohort_name", "strata"),
+                           color = c("indication"),
                            splitStrata = TRUE) {
   # initial checks
   assertClass(result, class = "summarised_result")
@@ -345,8 +347,9 @@ plotIndication <- function(result,
     return(ggplot2::ggplot())
   }
   assertLogical(splitStrata, length = 1)
-  assertCharacter(x, )
+  assertCharacter(x)
   assertCharacter(facet)
+  assertCharacter(color)
   if(splitStrata) {
     strata <- visOmopResults::strataColumns(result)
   } else {
@@ -354,11 +357,14 @@ plotIndication <- function(result,
   }
   facet <- insertValue(facet, which(facet == "strata"), strata)
   x <- insertValue(x, which(x == "strata"), strata)
+  color <- insertValue(color, which(color == "strata"), strata)
   facet <- insertValue(facet, which(facet == "group"), "cohort_name")
   x <- insertValue(x, which(x == "group"), "cohort_name")
+  color <- insertValue(color, which(color == "group"), "cohort_name")
   opts <- c("cdm_name", "cohort_name", strata, "indication", "window")
   assertChoice(x, choices = opts, unique = TRUE)
   assertChoice(facet, choices = opts, unique = TRUE)
+  assertChoice(color, choices = opts, unique = TRUE)
   intersection <- intersect(x, facet)
   if (length(intersection) > 0) {
     cli::cli_abort("{intersection} present in x and facet, no common values allowed")
@@ -380,9 +386,26 @@ plotIndication <- function(result,
       "indication" = "variable_level", "window" = "variable_name",
       dplyr::all_of(strata), "estimate_value") |>
     dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
+    dplyr::group_by(dplyr::across(!c("estimate_value", "indication"))) |>
+    dplyr::mutate(
+      estimate_value = 100 * .data$estimate_value / sum(.data$estimate_value)) |>
+    dplyr::ungroup() |>
     tidyr::unite(col = "x", dplyr::all_of(x), remove = FALSE)
 
-  color <- opts[!opts %in% c(x, facet)]
+  notPresent <- unique(c(x, facet, color))
+  notPresent <- notPresent[!notPresent %in% opts]
+  if (length(notPresent) > 0) {
+    notPresentNoUnique <- character()
+    for (k in notPresent) {
+      if (length(result[[k]] |> unique()) > 0) {
+        notPresentNoUnique <- c(notPresentNoUnique, k)
+      }
+    }
+    if (length(notPresentNoUnique) > 0) {
+      cli::cli_abort("{.var {notPresent}} must be in either 'x', 'facet' or 'color'")
+    }
+  }
+
   if (length(color) > 0) {
     result <- result |>
       tidyr::unite(col = "color", dplyr::all_of(color), remove = FALSE)
@@ -391,7 +414,7 @@ plotIndication <- function(result,
   }
 
   result <- result |>
-    dplyr::select(dplyr::all_of(c("x", "estimate_value", facet, "color")))
+    dplyr::select(dplyr::all_of(c("x", facet, "color", "estimate_value")))
 
   p <- result |>
     ggplot2::ggplot(mapping = ggplot2::aes(
@@ -399,7 +422,7 @@ plotIndication <- function(result,
     ggplot2::geom_col() +
     ggplot2::xlab("") +
     ggplot2::ylab("Percentage") +
-    ggplot2::ylim(c(0, 100))
+    ggplot2::ylim(c(0, 101))
 
   if (length(facet) > 0) {
     p <- p +

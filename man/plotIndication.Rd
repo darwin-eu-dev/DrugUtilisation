@@ -9,6 +9,7 @@ plotIndication(
   result,
   x = "window",
   facet = c("cdm_name", "cohort_name", "strata"),
+  color = c("indication"),
   splitStrata = TRUE
 )
 }
@@ -18,6 +19,8 @@ plotIndication(
 \item{x}{Variables to be used in the x axis.}
 
 \item{facet}{Variables to be used to facet the plot.}
+
+\item{color}{Variables to be used to color the plot.}
 
 \item{splitStrata}{Whether to split strata.}
 }
