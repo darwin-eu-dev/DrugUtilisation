@@ -28,6 +28,7 @@ concatenated into a single cohort entry."><meta property="og:image" content="htt
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Package functionalities</h6></li>
+    <li><a class="dropdown-item" href="../articles/mock_data.html">Create mock data to test DrugUtilisation package</a></li>
     <li><a class="dropdown-item" href="../articles/create_cohorts.html">Creating drug cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/indication.html">Identify and summarise indications among a drug cohort</a></li>
     <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Characterise a cohort using Drug Utilisation</a></li>
@@ -37,7 +38,6 @@ concatenated into a single cohort entry."><meta property="og:image" content="htt
     <li><a class="dropdown-item" href="../articles/drug_restart.html">Assessing drug restart and switching after treatment</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_add_drug_use.html">Add drug related information to a Drug Utilisation cohort</a></li>
     <li><a class="dropdown-item" href="../articles/TBR_route_pattern_dose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
-    <li><a class="dropdown-item" href="../articles/mock_data.html">Create mock data to test DrugUtilisation package</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -153,10 +153,10 @@ the new cohort table.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Rows: ??</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1/:memory:]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 2, 2, 2, 1, 2, 2, 1, 1, 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 7, 1, 10, 5, 4, 10, 9, 7, 6, 2, 3, 9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-11-21, 2021-12-27, 1997-07-25, 2012-11-02, 1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-02-03, 2022-01-17, 1997-10-28, 2012-12-18, 2…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 2, 2, 1, 2, 1, 1, 2, 2, 1, 1, 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 7, 4, 7, 9, 10, 10, 1, 5, 6, 2, 9, 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2021-11-21, 1998-10-20, 2021-10-06, 2017-02-18, 1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-02-03, 2003-12-29, 2021-12-26, 2019-12-10, 1…</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
