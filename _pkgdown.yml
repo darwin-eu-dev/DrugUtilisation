@@ -6,6 +6,7 @@ articles:
 - title: Package functionalities
   navbar: Package functionalities
   contents:
+  - mock_data
   - create_cohorts
   - indication
   - daily_dose_calculation
@@ -15,7 +16,6 @@ articles:
   - drug_restart
   - TBR_add_drug_use
   - TBR_route_pattern_dose
-  - mock_data
 
 reference:
 - subtitle: Generate a set of drug cohorts

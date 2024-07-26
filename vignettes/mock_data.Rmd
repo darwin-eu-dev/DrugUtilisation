@@ -20,7 +20,7 @@ library(DrugUtilisation)
 
 # Introduction
 
-In this vignette we will see how to use `mockDrugUtilisation()` function to create mock data. This function is predominantly used in this package's unit testing.
+In this vignette we will see how to use `mockDrugUtilisation()` function to create mock data. This function is predominantly used in this package's unit testing. But it can also be useful to create some mock data to learn some of the functionalities of the package.
 
 For example, one could use the default parameters to create a mock cdm reference like so:
 
@@ -72,7 +72,7 @@ cdm$cohort2 |>
 
 ## Setting seeds
 
-The user can also set the seed to control the randomness within the data.
+The user can also set the seed to control the randomness within the data. This would allow us to regenerate the same mock data again.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm <- mockDrugUtilisation(
@@ -80,7 +80,7 @@ cdm <- mockDrugUtilisation(
 )
 ```
 
-We now observe that `cohort1` has been changed as a result of this seed:
+Note that to consecutive calls of `mockDrugUtilisation()` do not generate the same mock data, if the seed parameter is not set to a specific number. For example we can now observe that `cohort1` is different as a result of this seed:
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1 |> 
@@ -109,7 +109,7 @@ cdm$person |>
   dplyr::tally()
 ```
 
-As a consequence of this, the number of rows for other tables such as `visit_occurrence`, `condition_occurrence` and `drug_strength` will have more rows compared to the mock data produced using default settings.
+As a consequence of this, the number of rows for other tables such as `visit_occurrence`, `condition_occurrence` and `drug_exposure` will have more rows compared to the mock data produced using default settings.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$visit_occurrence |>
@@ -150,7 +150,7 @@ cdm$drug_exposure |>
   dplyr::glimpse()
 ```
 
-However, one needs to be vigilant that the customised omop table is implicitly dependent on other omop tables. For example, the `drug_exposure_start_date` of someone in the `drug_exposure` table should lie within that person's `observation_period_start_date` and `observation_period_end_date`.
+However, one needs to be vigilant that the customised omop table is implicitly dependent on other omop tables. For example, the `drug_exposure_start_date` of someone in the `drug_exposure` table should lie within that person's `observation_period_start_date` and `observation_period_end_date`. And that individual should be present in person table with a birth date before the `drug_exposure_start_date`.
 
 One could also modify other omop tables including `person`, `concept`, `concept_ancestor`, `drug_strength`, `observation_period`, `condition_occurrence`, `observation`, and `concept_relationship` in a similar fashion.
 
@@ -160,23 +160,62 @@ Similarly, cohort tables can also be customised.
 
 ```{r, message= FALSE, warning=FALSE}
 cdm <- mockDrugUtilisation(
-  observation_period = dplyr::tibble(
-      observation_period_id = 1,
-      person_id = 1:2,
-      observation_period_start_date = as.Date("1900-01-01"),
-      observation_period_end_date = as.Date("2100-01-01"),
-      period_type_concept_id = 0
-    ),
-    cohort1 = dplyr::tibble(
-      cohort_definition_id = 1,
-      subject_id = c(1, 1, 2),
-      cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
-      cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
-    )
+  cohort1 = dplyr::tibble(
+    cohort_definition_id = 1,
+    subject_id = c(1, 1, 2),
+    cohort_start_date = as.Date(c("2000-01-01", "2001-01-01", "2000-01-01")),
+    cohort_end_date = as.Date(c("2000-03-01", "2001-03-01", "2000-03-01"))
   )
+)
 ```
 
 ```{r, message= FALSE, warning=FALSE}
 cdm$cohort1 |> 
   dplyr::glimpse()
+```
+
+Automatically the person table will be populated with individuals 1 and 2:
+```{r}
+cdm$person |>
+  dplyr::glimpse()
+```
+
+And each one of this subjects will have an observation period that starts before the first cohort observation and ends after the last cohort observation.
+```{r}
+cdm$observation_period |>
+  dplyr::glimpse()
+```
+
+## Insert you cdm object to a database
+
+By default the cdm reference object provided is in duckdb:
+```{r}
+omopgenerics::cdmSourceType(cdm)
+```
+
+You can insert this to another database management system, in this case if we would have an instance of sql server we could insert it like:
+```{r, eval = FALSE}
+con <- DBI::dbConnect(
+  odbc::odbc(),
+  Driver   = "ODBC Driver 18 for SQL Server",
+  Server   = Sys.getenv("SQL_SERVER_SERVER"),
+  Database = Sys.getenv("SQL_SERVER_CDM_DATABASE"),
+  UID      = Sys.getenv("SQL_SERVER_USER"),
+  PWD      = Sys.getenv("SQL_SERVER_PASSWORD"),
+  TrustServerCertificate = "yes",
+  Port     = Sys.getenv("SQL_SERVER_PORT")
+)
+cdm <- mockDrugUtilisation(con = con, writeSchema = c(catalog = "omop", schema = "results", prefix = "mock_dus_"))
+```
+
+This would write the mock tables in the `results` schema of `omop` catalog, and all table names would start with "mock_dus_".
+```{r, echo = FALSE}
+con <- DBI::dbConnect(duckdb::duckdb())
+cdm <- mockDrugUtilisation(
+  con = con, writeSchema = c(schema = "main", prefix = "mock_dus_"))
+attributes(attr(cdm, "cdm_source"))$source_type <- "sql server"
+```
+```{r}
+omopgenerics::cdmSourceType(cdm)
+DBI::dbListTables(con)
 ```

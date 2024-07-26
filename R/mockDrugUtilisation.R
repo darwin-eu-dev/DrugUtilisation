@@ -118,7 +118,6 @@ mockDrugUtilisation <- function(con = NULL,
   cdm <- omopgenerics::cdmFromTables(
     tables = tables, cdmName = "DUS MOCK", cohortTables = cohorts)
 
-  writeSchema <- strsplit(writeSchema, "\\.")[[1]]
   suppressMessages(
     cdm <- CDMConnector::copyCdmTo(
       con = con, cdm = cdm, schema = writeSchema, overwrite = TRUE
