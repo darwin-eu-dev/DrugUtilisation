@@ -6,9 +6,9 @@
 \usage{
 addDrugUtilisation(
   cohort,
+  gapEra,
   conceptSet = NULL,
   ingredientConceptId = NULL,
-  gapEra,
   indexDate = "cohort_start_date",
   censorDate = "cohort_end_date",
   restrictIncident = TRUE,
@@ -27,14 +27,14 @@ addDrugUtilisation(
 \arguments{
 \item{cohort}{Cohort in the cdm}
 
+\item{gapEra}{Number of days between two continuous exposures to be
+considered in the same era.}
+
 \item{conceptSet}{List of concepts to be included. If NULL all the
 descendants of ingredient concept id will be used.}
 
 \item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
 the study. It is a compulsory input, no default value is provided.}
-
-\item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
 
 \item{indexDate}{Name of a column that indicates the date to start the
 analysis.}

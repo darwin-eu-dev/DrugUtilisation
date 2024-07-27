@@ -17,12 +17,12 @@
 #' Add new columns with drug use related information
 #'
 #' @param cohort Cohort in the cdm
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
 #' @param conceptSet List of concepts to be included. If NULL all the
 #' descendants of ingredient concept id will be used.
 #' @param ingredientConceptId Ingredient OMOP concept that we are interested for
 #' the study. It is a compulsory input, no default value is provided.
-#' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era.
 #' @param indexDate Name of a column that indicates the date to start the
 #' analysis.
 #' @param censorDate Name of a column that indicates the date to stop the
@@ -61,9 +61,9 @@
 #' }
 #'
 addDrugUtilisation <- function(cohort,
+                               gapEra,
                                conceptSet = NULL,
                                ingredientConceptId = NULL,
-                               gapEra,
                                indexDate = "cohort_start_date",
                                censorDate = "cohort_end_date",
                                restrictIncident = TRUE,
