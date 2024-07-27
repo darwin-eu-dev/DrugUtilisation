@@ -40,7 +40,6 @@
 #'   addDailyDose(ingredientConceptId = 1125315)
 #' }
 #'
-
 addDailyDose <- function(drugExposure,
                          ingredientConceptId,
                          name = NULL) {
@@ -231,7 +230,6 @@ summariseDoseCoverage <- function(cdm,
 #' @return The function returns information of the coverage of computeDailyDose.R
 #' for the selected ingredients and concept sets
 #' @export
-#'
 #'
 dailyDoseCoverage <- function(cdm,
                               ingredientConceptId) {

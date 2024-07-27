@@ -885,7 +885,7 @@ addDrugUseInternal <- function(x,
           compute2(name)
         if (initialDailyDose) {
           toJoin <- toJoin |>
-            dplyr::group_by(dplyr::across(c(cols, "concept_name"))) |>
+            dplyr::group_by(dplyr::across(dplyr::all_of(c(cols, "concept_name")))) |>
             dplyr::filter(
               .data$drug_exposure_start_date == min(
                 .data$drug_exposure_start_date, na.rm = TRUE) |
@@ -931,7 +931,6 @@ compute2 <- function(x, name) {
   }
   return(x)
 }
-
 validateX <- function(x, call) {
   assertClass(x, "cdm_table", call = call)
   id <- c("subject_id", "person_id")
@@ -1036,7 +1035,6 @@ validateName <- function(name, cdm, call) {
   }
   return(invisible(name))
 }
-
 noIngredientNameStyle <- function(x) {
   x <- gsub("_{ingredient}", "", x, fixed = TRUE)
   x <- gsub("{ingredient}_", "", x, fixed = TRUE)
