@@ -14,8 +14,6 @@ articles:
   - summarise_treatments
   - treatment_discontinuation
   - drug_restart
-  - TBR_add_drug_use
-  - TBR_route_pattern_dose
 
 reference:
 - subtitle: Generate a set of drug cohorts
@@ -51,15 +49,11 @@ reference:
 - subtitle: Daily dose documentation
   desc: Functions to assess coverage for the diferent ingredients and document how daily dose is calculated
 - contents:
-  - matches("summariseDoseCoverage|patternTable|patternsWithFormula|tableDoseCoverage")
+  - matches("patternsWithFormula|patternTable|summariseDoseCoverage|tableDoseCoverage")
 - subtitle: Complementary functions
   desc: Complementary functions
 - contents:
-  - matches("mockDrugUtilisation|defaultTableOptions")
-- subtitle: Benchmarking function
-  desc: Function to test performance of different functions in DrugUtilisation
-- contents:
-  - matches("benchmark")
+  - matches("defaultTableOptions|mockDrugUtilisation|benchmark*")
 - subtitle: Deprecated functions
   desc: This functions has been deprecated
 - contents:
