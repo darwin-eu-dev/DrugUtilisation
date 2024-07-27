@@ -143,3 +143,64 @@ generateDrugUtilisationCohortSet <- function(cdm,
 
   return(cdm)
 }
+
+
+#' Get the gapEra used to create a cohort
+#'
+#' @param cohort A `cohort_table` object.
+#' @param cohortId Integer vector refering to cohortIds from cohort. If NULL all
+#' cohort definition ids in settings will be used.
+#'
+#' @return gapEra values for the specific cohortIds
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#' library(CDMConnector)
+#' library(DrugUtilisation)
+#' library(dplyr)
+#'
+#' cdm <- mockDrugUtilisation()
+#'
+#' druglist <- getDrugIngredientCodes(cdm, c("acetaminophen", "metformin"))
+#'
+#' cdm <- generateDrugUtilisationCohortSet(
+#'   cdm = cdm,
+#'   name = "drug_cohorts",
+#'   conceptSet = druglist,
+#'   gapEra = 100
+#' )
+#'
+#' cohortGapEra(cdm$drug_cohorts)
+#' }
+#'
+cohortGapEra <- function(cohort, cohortId = NULL) {
+  assertClass(cohort, class = "cohort_table")
+  assertNumeric(cohortId, integerish = TRUE, null = TRUE)
+  set <- settings(cohort)
+  opts <- set |> dplyr::pull("cohort_definition_id")
+  if (is.null(cohortId)) cohortId <- opts
+  removed <- cohortId[!cohortId %in% opts]
+  if (length(removed) > 0) {
+    cli::cli_warn(c("!" = "cohortIds: {removed} not present in settings."))
+  }
+  cohortId <- cohortId[cohortId %in% opts]
+  if ("gap_era" %in% colnames(set)) {
+    gapEra <- set |>
+      dplyr::select("gap_era", "cohort_definition_id") |>
+      dplyr::inner_join(
+        dplyr::tibble(
+          "cohort_definition_id" = cohortId, "order" = seq_along(cohortId)
+        ),
+        by = "cohort_definition_id"
+      ) |>
+      dplyr::arrange(.data$order) |>
+      dplyr::pull("gap_era") |>
+      as.integer()
+  } else {
+    cli::cli_inform("`gap_era` not present in settings, returning NULL.")
+    gapEra <- NULL
+  }
+  return(gapEra)
+}

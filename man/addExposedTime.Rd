@@ -8,10 +8,10 @@
 addExposedTime(
   cohort,
   conceptSet,
+  gapEra,
   indexDate = "cohort_start_date",
   censorDate = "cohort_end_date",
   restrictIncident = TRUE,
-  gapEra = 1,
   nameStyle = "exposed_time_{concept_name}",
   name = NULL
 )
@@ -20,6 +20,9 @@ addExposedTime(
 \item{cohort}{Cohort in the cdm.}
 
 \item{conceptSet}{List of concepts to be included.}
+
+\item{gapEra}{Number of days between two continuous exposures to be
+considered in the same era.}
 
 \item{indexDate}{Name of a column that indicates the date to start the
 analysis.}
@@ -30,9 +33,6 @@ analysis, if NULL end of individuals observation is used.}
 \item{restrictIncident}{Whether to include only incident prescriptions in the
 analysis. If FALSE all prescriptions that overlap with the study period will
 be included.}
-
-\item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
 
 \item{nameStyle}{Character string to specify the nameStyle of the new columns.}
 
@@ -57,7 +57,7 @@ cdm <- generateDrugUtilisationCohortSet(
 )
 
 cdm$dus_cohort |>
-  addExposedTime(conceptSet = codelist)
+  addExposedTime(conceptSet = codelist, gapEra = 1)
 }
 
 }

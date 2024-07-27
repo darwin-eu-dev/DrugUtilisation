@@ -17,19 +17,19 @@
 #' Add new columns with drug use related information
 #'
 #' @param cohort Cohort in the cdm
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
+#' @param conceptSet List of concepts to be included. If NULL all the
+#' descendants of ingredient concept id will be used.
+#' @param ingredientConceptId Ingredient OMOP concept that we are interested for
+#' the study. It is a compulsory input, no default value is provided.
 #' @param indexDate Name of a column that indicates the date to start the
 #' analysis.
 #' @param censorDate Name of a column that indicates the date to stop the
 #' analysis, if NULL end of individuals observation is used.
-#' @param ingredientConceptId Ingredient OMOP concept that we are interested for
-#' the study. It is a compulsory input, no default value is provided.
-#' @param conceptSet List of concepts to be included. If NULL all the
-#' descendants of ingredient concept id will be used.
 #' @param restrictIncident Whether to include only incident prescriptions in the
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
-#' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era.
 #' @param numberExposures Whether to add a column with the number of exposures.
 #' @param numberEras Whether to add a column with the number of eras.
 #' @param exposedTime Whether to add a column with the number of exposed days.
@@ -57,16 +57,16 @@
 #'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 #' )
 #' cdm[["dus_cohort"]] |>
-#'   addDrugUtilisation(ingredientConceptId = 1125315)
+#'   addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 30)
 #' }
 #'
 addDrugUtilisation <- function(cohort,
+                               gapEra,
+                               conceptSet = NULL,
+                               ingredientConceptId = NULL,
                                indexDate = "cohort_start_date",
                                censorDate = "cohort_end_date",
-                               ingredientConceptId = NULL,
-                               conceptSet = NULL,
                                restrictIncident = TRUE,
-                               gapEra = 1,
                                numberExposures = TRUE,
                                numberEras = TRUE,
                                exposedTime = TRUE,
@@ -472,6 +472,8 @@ addTimeToExposure <- function(cohort,
 #'
 #' @param cohort Cohort in the cdm.
 #' @param conceptSet List of concepts to be included.
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
 #' @param indexDate Name of a column that indicates the date to start the
 #' analysis.
 #' @param censorDate Name of a column that indicates the date to stop the
@@ -479,8 +481,6 @@ addTimeToExposure <- function(cohort,
 #' @param restrictIncident Whether to include only incident prescriptions in the
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
-#' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
 #' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
@@ -500,15 +500,15 @@ addTimeToExposure <- function(cohort,
 #' )
 #'
 #' cdm$dus_cohort |>
-#'   addExposedTime(conceptSet = codelist)
+#'   addExposedTime(conceptSet = codelist, gapEra = 1)
 #' }
 #'
 addExposedTime <- function(cohort,
                            conceptSet,
+                           gapEra,
                            indexDate = "cohort_start_date",
                            censorDate = "cohort_end_date",
                            restrictIncident = TRUE,
-                           gapEra = 1,
                            nameStyle = "exposed_time_{concept_name}",
                            name = NULL) {
   checkConceptSet(conceptSet)
@@ -537,6 +537,8 @@ addExposedTime <- function(cohort,
 #'
 #' @param cohort Cohort in the cdm.
 #' @param conceptSet List of concepts to be included.
+#' @param gapEra Number of days between two continuous exposures to be
+#' considered in the same era.
 #' @param indexDate Name of a column that indicates the date to start the
 #' analysis.
 #' @param censorDate Name of a column that indicates the date to stop the
@@ -544,8 +546,6 @@ addExposedTime <- function(cohort,
 #' @param restrictIncident Whether to include only incident prescriptions in the
 #' analysis. If FALSE all prescriptions that overlap with the study period will
 #' be included.
-#' @param gapEra Number of days between two continuous exposures to be
-#' considered in the same era.
 #' @param nameStyle Character string to specify the nameStyle of the new columns.
 #' @param name Name of the new computed cohort table, if NULL a temporary tables is
 #' created.
@@ -565,15 +565,15 @@ addExposedTime <- function(cohort,
 #' )
 #'
 #' cdm$dus_cohort |>
-#'   addNumberEras(conceptSet = codelist)
+#'   addNumberEras(conceptSet = codelist, gapEra = 1)
 #' }
 #'
 addNumberEras <- function(cohort,
                           conceptSet,
+                          gapEra,
                           indexDate = "cohort_start_date",
                           censorDate = "cohort_end_date",
                           restrictIncident = TRUE,
-                          gapEra = 1,
                           nameStyle = "number_eras_{concept_name}",
                           name = NULL) {
   checkConceptSet(conceptSet)
