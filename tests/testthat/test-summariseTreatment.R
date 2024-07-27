@@ -41,7 +41,7 @@ test_that("test summariseTreatment", {
       )
   )
   expect_true(inherits(x, "summarised_result"))
-  expect_true(all(x$variable_name |> unique() == c("cohort_3", "cohort_2", "untreated")))
+  expect_true(all(x$variable_name |> unique() == c("cohort_2", "cohort_3", "untreated")))
   expect_true(all(x$additional_level |> unique() == c("0 to 30", "31 to 365")))
 
   # test suppress

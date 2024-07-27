@@ -897,7 +897,7 @@ addDrugUseInternal <- function(x,
         x <- x |>
           dplyr::left_join(
             toJoin |>
-              dplyr::group_by(dplyr::across(c(cols, "concept_name", "unit"))) |>
+              dplyr::group_by(dplyr::across(dplyr::all_of(c(cols, "concept_name", "unit")))) |>
               dplyr::summarise(
                 "initial_daily_dose" = sum(.data$daily_dose, na.rm = TRUE),
                 .groups = "drop"
