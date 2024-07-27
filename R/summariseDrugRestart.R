@@ -214,8 +214,9 @@ summariseDrugRestart <- function(cohort,
       estimates = c("count", "percentage"),
       counts = TRUE
     ) |>
-    suppressMessages()
-
+    suppressMessages() |>
+    dplyr::select(-"cdm_name") |>
+    PatientProfiles::addCdmName(cdm = cdm)
 
   # add empty categories with 0:
   zeroResults <- results |>
