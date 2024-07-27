@@ -6,12 +6,12 @@
 \usage{
 addDrugUtilisation(
   cohort,
+  gapEra,
+  conceptSet = NULL,
+  ingredientConceptId = NULL,
   indexDate = "cohort_start_date",
   censorDate = "cohort_end_date",
-  ingredientConceptId = NULL,
-  conceptSet = NULL,
   restrictIncident = TRUE,
-  gapEra = 1,
   numberExposures = TRUE,
   numberEras = TRUE,
   exposedTime = TRUE,
@@ -27,24 +27,24 @@ addDrugUtilisation(
 \arguments{
 \item{cohort}{Cohort in the cdm}
 
+\item{gapEra}{Number of days between two continuous exposures to be
+considered in the same era.}
+
+\item{conceptSet}{List of concepts to be included. If NULL all the
+descendants of ingredient concept id will be used.}
+
+\item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
+the study. It is a compulsory input, no default value is provided.}
+
 \item{indexDate}{Name of a column that indicates the date to start the
 analysis.}
 
 \item{censorDate}{Name of a column that indicates the date to stop the
 analysis, if NULL end of individuals observation is used.}
 
-\item{ingredientConceptId}{Ingredient OMOP concept that we are interested for
-the study. It is a compulsory input, no default value is provided.}
-
-\item{conceptSet}{List of concepts to be included. If NULL all the
-descendants of ingredient concept id will be used.}
-
 \item{restrictIncident}{Whether to include only incident prescriptions in the
 analysis. If FALSE all prescriptions that overlap with the study period will
 be included.}
-
-\item{gapEra}{Number of days between two continuous exposures to be
-considered in the same era.}
 
 \item{numberExposures}{Whether to add a column with the number of exposures.}
 
@@ -84,7 +84,7 @@ cdm <- generateDrugUtilisationCohortSet(
   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
 )
 cdm[["dus_cohort"]] |>
-  addDrugUtilisation(ingredientConceptId = 1125315)
+  addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 30)
 }
 
 }

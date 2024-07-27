@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In this vignette we will introduce how to create a drug users cohorts. A cohort is a set of people that satisfy a certain inclusion criteria during a certain time frame. The cohort object is defined in : [`vignette("cdm_reference", package = "omopgenerics")`](https://darwin-eu-dev.github.io/omopgenerics/articles/cohorts.html).
+In this vignette we will introduce how to create a drug users cohorts. A cohort is a set of people that satisfy a certain inclusion criteria during a certain time frame. The cohort object is defined in : `vignette("cdm_reference", package = "omopgenerics")`.
 
 The function `generateDrugUtilisationCohortSet` is used to generate cohorts of drug users based on the `drug_exposure` table and a conceptSet.
 
@@ -36,12 +36,9 @@ These cohorts can be subsetted to the exposures of interest applying the differe
 
 # Creating a `cdm_reference` object
 
-The first thing that we need is a `cdm_reference` object to our OMOP CDM instance.
+The first thing that we need is a `cdm_reference` object to our OMOP CDM instance. You can learn how to create cdm references using CDMConnector here: `vignette("a04_DBI_connection_examples", package = "CDMConnector")`.
 
-- You can learn more about the *cdm reference* object in in omopgenerics: (`vignette("cdm_reference", package = "omopgenerics")`)[https://darwin-eu.github.io/omopgenerics/articles/cdm_reference.html].
-- You can learn how to create cdm references using CDMConnector here: (`vignette("a04_DBI_connection_examples", package = "CDMConnector")`)[https://darwin-eu.github.io/CDMConnector/articles/a04_DBI_connection_examples.html].
-
-The DrugUtilisation package contains some mock data that can be useful to test the package:
+The DrugUtilisation packages contains some mock data that can be useful to test the package:
 
 ```{r}
 library(DrugUtilisation)
@@ -592,7 +589,7 @@ If we would apply the initially the **washout** requirement and then the **minOb
 x |>
   dplyr::mutate(color = as.factor(c(0, 0, 0, 1))) |>
   doplot() + 
-  ggplot2::ggtitle("washout + minObs")
+  ggplot2::ggtitle("washout + first")
 ```
 
 Whereas if we would apply initially the **minObs** criteria and then the **washout** one the second and the fourth exposures are the ones that would be selected:

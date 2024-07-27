@@ -9,6 +9,8 @@ generateIngredientCohortSet(
   name,
   ingredient = NULL,
   doseForm = NULL,
+  doseUnit = NULL,
+  routeCategory = NULL,
   ingredientRange = c(1, Inf),
   gapEra = 1,
   durationRange = lifecycle::deprecated(),
@@ -37,6 +39,14 @@ named group.}
 \item{doseForm}{Only descendants codes with the specified dose form
 will be returned. If NULL, descendant codes will be returned regardless
 of dose form.}
+
+\item{doseUnit}{Only descendants codes with the specified dose unit
+will be returned. If NULL, descendant codes will be returned regardless
+of dose unit}
+
+\item{routeCategory}{Only descendants codes with the specified route
+will be returned. If NULL, descendant codes will be returned regardless
+of route category.}
 
 \item{ingredientRange}{Used to restrict descendant codes to those
 associated with a specific number of ingredients. Must be a vector of length

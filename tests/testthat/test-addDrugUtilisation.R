@@ -49,7 +49,7 @@ test_that("Basic functionality", {
   # basic functionality
   expect_no_error(
     x0 <- cdm$dus_cohort |>
-      addDrugUtilisation(ingredientConceptId = 1125315) |>
+      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 1) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date)
   )
@@ -89,7 +89,7 @@ test_that("Basic functionality", {
   # restrictIncident
   expect_no_error(
     x1 <- cdm$dus_cohort |>
-      addDrugUtilisation(ingredientConceptId = 1125315, restrictIncident = F) |>
+      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 1, restrictIncident = F) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date)
   )
@@ -181,7 +181,7 @@ test_that("gapEra consecutive prescriptions", {
 
   expect_no_error(
     x <- cdm$dus_cohort |>
-      addDrugUtilisation(ingredientConceptId = 1125315) |>
+      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 1) |>
       dplyr::collect()
   )
   expect_identical(x$number_exposures_ingredient_1125315_descendants, 2L)
@@ -240,7 +240,7 @@ test_that("test subfunctions", {
   # main
   expect_no_error(
     x0 <- cdm$dus_cohort |>
-      addDrugUtilisation(ingredientConceptId = 1125315) |>
+      addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 1) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date)
   )
@@ -312,7 +312,7 @@ test_that("test subfunctions", {
   expect_identical(
     x0$exposed_time_ingredient_1125315_descendants,
     cdm$dus_cohort |>
-      addExposedTime(conceptSet = codes) |>
+      addExposedTime(conceptSet = codes, gapEra = 1) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date) |>
       dplyr::pull("exposed_time_acetaminophen")
@@ -322,22 +322,22 @@ test_that("test subfunctions", {
   expect_identical(
     x0$number_eras_ingredient_1125315_descendants,
     cdm$dus_cohort |>
-      addNumberEras(conceptSet = codes) |>
+      addNumberEras(conceptSet = codes, gapEra = 1) |>
       dplyr::collect() |>
       dplyr::arrange(cohort_definition_id, subject_id, cohort_start_date) |>
       dplyr::pull("number_eras_acetaminophen")
   )
 
   # errors: check correct call to parent frame
-  expect_snapshot(addNumberEras(cdm$dus_cohort, NULL), error = TRUE)
-  expect_snapshot(addExposedTime(cdm$dus_cohort, NULL), error = TRUE)
+  expect_snapshot(addNumberEras(cdm$dus_cohort, NULL, gapEra = 1), error = TRUE)
+  expect_snapshot(addExposedTime(cdm$dus_cohort, NULL, gapEra = 1), error = TRUE)
   expect_snapshot(addTimeToExposure(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addInitialQuantity(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addCumulativeQuantity(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addNumberExposures(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addCumulativeDose(cdm$dus_cohort, NULL), error = TRUE)
   expect_snapshot(addInitialDailyDose(cdm$dus_cohort, NULL), error = TRUE)
-  expect_snapshot(addDrugUtilisation(cdm$dus_cohort), error = TRUE)
+  expect_snapshot(addDrugUtilisation(cdm$dus_cohort, gapEra = 1), error = TRUE)
 
   mockDisconnect(cdm = cdm)
 })

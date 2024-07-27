@@ -13,4 +13,3 @@ README.Rmd
 ^CRAN-SUBMISSION$
 ^doc$
 ^Meta$
-^vignettes/*_files$
