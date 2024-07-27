@@ -58,10 +58,10 @@ addDrugUtilisation() for efficiency."><meta property="og:image" content="https:/
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">addNumberEras</span><span class="op">(</span></span>
 <span>  <span class="va">cohort</span>,</span>
 <span>  <span class="va">conceptSet</span>,</span>
+<span>  <span class="va">gapEra</span>,</span>
 <span>  indexDate <span class="op">=</span> <span class="st">"cohort_start_date"</span>,</span>
 <span>  censorDate <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
 <span>  restrictIncident <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  gapEra <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  nameStyle <span class="op">=</span> <span class="st">"number_eras_{concept_name}"</span>,</span>
 <span>  name <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -79,6 +79,11 @@ addDrugUtilisation() for efficiency."><meta property="og:image" content="https:/
 <dd><p>List of concepts to be included.</p></dd>
 
 
+<dt id="arg-gapera">gapEra<a class="anchor" aria-label="anchor" href="#arg-gapera"></a></dt>
+<dd><p>Number of days between two continuous exposures to be
+considered in the same era.</p></dd>
+
+
 <dt id="arg-indexdate">indexDate<a class="anchor" aria-label="anchor" href="#arg-indexdate"></a></dt>
 <dd><p>Name of a column that indicates the date to start the
 analysis.</p></dd>
@@ -93,11 +98,6 @@ analysis, if NULL end of individuals observation is used.</p></dd>
 <dd><p>Whether to include only incident prescriptions in the
 analysis. If FALSE all prescriptions that overlap with the study period will
 be included.</p></dd>
-
-
-<dt id="arg-gapera">gapEra<a class="anchor" aria-label="anchor" href="#arg-gapera"></a></dt>
-<dd><p>Number of days between two continuous exposures to be
-considered in the same era.</p></dd>
 
 
 <dt id="arg-namestyle">nameStyle<a class="anchor" aria-label="anchor" href="#arg-namestyle"></a></dt>
@@ -126,18 +126,18 @@ created.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cdm</span><span class="op">$</span><span class="va">dus_cohort</span> <span class="op">|&gt;</span></span></span>
-<span class="r-in"><span>  <span class="fu">addNumberEras</span><span class="op">(</span>conceptSet <span class="op">=</span> <span class="va">codelist</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_085_1722038390&gt; [9 x 5]</span></span>
+<span class="r-in"><span>  <span class="fu">addNumberEras</span><span class="op">(</span>conceptSet <span class="op">=</span> <span class="va">codelist</span>, gapEra <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Source:   table&lt;og_085_1722100025&gt; [9 x 5]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1024-azure:R 4.4.1/:memory:]</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   cohort_definition_id subject_id cohort_start_date cohort_end_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          1 1991-09-04        1991-10-29     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    1          5 1993-07-09        1995-08-07     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>                    1          1 1992-04-10        1992-05-28     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>                    1          7 2021-12-02        2022-04-29     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>                    1         10 2018-07-10        2018-07-13     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>                    1          9 1990-03-29        1992-02-28     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span>                    1          4 1982-05-02        1997-01-22     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>                    1          7 2021-12-02        2022-04-29     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>                    1         10 2018-07-10        2018-07-13     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>                    1          9 1990-03-29        1992-02-28     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>                    1          4 1982-05-02        1997-01-22     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>                    1          1 1991-09-04        1991-10-29     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span>                    1          5 1993-07-09        1995-08-07     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span>                    1          1 1992-04-10        1992-05-28     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span>                    1         10 2018-09-22        2018-11-30     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">9</span>                    1          2 2022-12-05        2022-12-10     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: number_eras_161_acetaminophen &lt;int&gt;</span></span>
