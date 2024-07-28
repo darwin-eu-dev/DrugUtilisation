@@ -1,8 +1,8 @@
 ---
-title: "Characterise a cohort using Drug Utilisation"
+title: "Daily dose calculation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Characterise a cohort using Drug Utilisation}
+  %\VignetteIndexEntry{Daily dose calculation}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -25,133 +25,155 @@ knitr::opts_chunk$set(
 
 # Introduction
 
-In DrugUtilisation package, there are also functions on daily dose of
-drugs. The best way to learn these functions is to consider a few
-examples.
+In this vignette is assessed how daily dose is calculated in the DrugUtilisation package. This function is used internally in `addDrugUtilisation()`.
 
-## Create mock data first
+## Daily dose
 
-```{r, message= FALSE, warning=FALSE}
+Daily dose is always computed at the ingredient level. So we can calculate the daily dose for each record in *drug exposure* table for each given ingredient. Then the first step to calculate the daily dose for a given drug record and an ingredient concept id is to examine the relationship between drug concept id and ingredient concept id through the *drug strength* table:
+
+```{r}
 library(DrugUtilisation)
-library(CodelistGenerator)
-library(CDMConnector)
-library(dplyr)
-library(PatientProfiles)
-
-cdm <- mockDrugUtilisation(numberIndividual  = 200)
+cdm <- mockDrugUtilisation(numberIndividuals = 100, seed = 123456)
+cdm$drug_strength |>
+  dplyr::glimpse()
 ```
 
-## Add daily dose information via addDailyDose() function
+You can read the documentation of the *drug strength* table and description of the different fields here: <https://www.ohdsi.org/web/wiki/doku.php?id=documentation:cdm:drug_strength>.
 
-The following example calculates the daily dose of *acetaminophen* in
-the `drug_exposure` table.
+Not all drug concept ids and ingredient concept ids can be related, if no relation is found then daily dose is considered as `NA`.
 
-```{r, message= FALSE, warning=FALSE}
-cdm$drug_exposure |>
-  filter(drug_concept_id == 2905077) |>
-  addDailyDose(ingredientConceptId = 1125315) |>
-  glimpse()
+Using vocabulary version: "v5.0 31-AUG-23" there exist 2,980,115 relationships between a drug concept id and an ingredient concept id. These relationships can be classified into **128** different patterns. Patterns are identified of combinations of 6 variables:
+
+- *amount*: Whether the amount_value field is numeric or NA.
+- *amount_unit*: The unit of the amount field.
+- *numerator*: Whether the numerator_value field is numeric or NA.
+- *numerator_unit*: The unit of the numerator field.
+- *denominator*: Whether the denominator_value field is numeric or NA.
+- *denominator_unit*: The unit of the denominator field.
+
+These 128 combinations were analysed to see if they could be used to compute daily dose. **41 viable** patterns were identified, these patterns covered a total of 2,514,608 (84%) relationships between drug concept id and ingredient concept id. The patterns were classified into 4 different formulas:
+
+1. **Time based with denominator**
+
+This formula was applied for the following 3 patterns that cover 8,044 (<1%) relationships:
+
+```{r, echo = FALSE}
+patternsWithFormula |>
+  dplyr::filter(formula_name == "time based with denominator") |>
+  dplyr::select(pattern_id, amount, amount_unit, numerator, numerator_unit, denominator, denominator_unit) |>
+  flextable::flextable()
 ```
 
-The `drug_exposure` table is first subsetted according to whether
-`drug_concept_id` in the `drug_exposure` table equals $2905077$ or not;
-this is to subset the `drug_exposure` table to the use of *acetaminophen*
-in the marketed product form. Later the ID $1125315$ is supplied in
-`addDailyDose()` function, which corresponds to the ingredient form of
-*acetaminophen*.
+The formula in this case will be as follows:
 
-We see that there are two extra columns at the end detailing the daily
-dose of *acetaminophen* - `daily_dose` and `unit`. Take first entry for
-example, we see that in that drug exposure of *acetaminophen*, the daily
-dose on average is $48,000$ milligram. The way daily dose is being
-calculated is to take into consideration both the strength of the drug
-and the duration of the episode.
+\begin{equation}
+if (denominator > 24) \rightarrow \textrm{daily dose} = 24 \cdot \frac{numerator}{denominator} \\
+if (denominator \leq 24) \rightarrow \textrm{daily dose} = numerator
+\end{equation}
 
-## Add route information via addRoute() function
+Note that daily dose has always unit associated in this case it will be determined by the `numerator_unit` field.
 
-Next, the user could also obtain the information on the route of each
-drug used in the `drug_exposure` table.
+2. **Time based no denominator**
 
-```{r, message= FALSE, warning=FALSE}
-cdm$drug_exposure |>
-  addRoute() |>
-  glimpse()
+This formula was applied for the following 2 patterns that cover 5,611 (<1%) relationships:
+
+```{r, echo = FALSE}
+patternsWithFormula |>
+  dplyr::filter(formula_name == "time based no denominator") |>
+  dplyr::select(pattern_id, amount, amount_unit, numerator, numerator_unit, denominator, denominator_unit) |>
+  flextable::flextable()
 ```
 
-Similarly, this adds one extra column named `route`. For example, the
-drug used in the first entry of the `drug_exposure` table is an oral
-drug.
+The formula in this case will be as follows:
+
+\begin{equation}
+\textrm{daily dose} = 24 \cdot numerator
+\end{equation}
+
+In this case unit will be determined by the `numerator_unit` field.
+
+3. **Fixed amount formulation**
+
+This formula was applied for the following 6 patterns that cover 1,102,435 (37%) relationships:
+
+```{r, echo = FALSE}
+patternsWithFormula |>
+  dplyr::filter(formula_name == "fixed amount formulation") |>
+  dplyr::select(pattern_id, amount, amount_unit, numerator, numerator_unit, denominator, denominator_unit) |>
+  flextable::flextable()
+```
+
+The formula in this case will be as follows:
+
+\begin{equation}
+\textrm{daily dose} = \frac{quantity \cdot amount}{days\: exposed}
+\end{equation}
+
+In this case unit will be determined by the `amount_unit` field.
+
+4. **Concentration formulation**
+
+This formula was applied for the following 30 patterns that cover 1,398,518 (47%) relationships:
+
+```{r, echo = FALSE}
+patternsWithFormula |>
+  dplyr::filter(formula_name == "concentration formulation") |>
+  dplyr::select(pattern_id, amount, amount_unit, numerator, numerator_unit, denominator, denominator_unit) |>
+  flextable::flextable()
+```
+
+The formula in this case will be as follows:
+
+\begin{equation}
+\textrm{daily dose} = \frac{quantity \cdot numerator}{days\: exposed}
+\end{equation}
+
+In this case unit will be determined by the `numerator_unit` field.
+
+For formulas (3) and (4) quantity is obtained from the `quantity` column of the *drug exposure* table and time exposed is obtained as the difference in days between `drug_exposure_start_date` and `drug_exposure_end_date` plus one.
+
+The described formulas and patterns can be found in the exported `patternsWithFormula` data set:
+
+```{r}
+patternsWithFormula |>
+  dplyr::glimpse()
+```
+
+The described formulas were validated into 5 different databases and the results were included in an article. Please refer to it for more details on dose calculations: [Calculating daily dose in the Observational Medical Outcomes Partnership Common Data Model](https://doi.org/10.1002/pds.5809).
 
 ## Finding out the pattern information using patternTable() function
 
-The user could also find the patterns used in the `drug_strength` table.
-The output will also include a column of potentially valid and invalid
-combinations. The idea of a pattern to provide a platform to associate
-each drug in the `drug_strength` table with its constituent ingredients.
+The user could also find the patterns used in the `drug_strength` table. The output will also include a column of potentially valid and invalid combinations. The idea of a pattern to provide a platform to associate each drug in the `drug_strength` table with its constituent ingredients.
 
 ```{r, message= FALSE, warning=FALSE}
 patternTable(cdm) |>
-  glimpse()
+  dplyr::glimpse()
 ```
 
-The output has three important columns, namely `number_concepts`,
-`number_ingredients` and `number_records`, which corresponds to count of
-distinct concepts in the patterns, count of distinct ingredients
-involved and overall count of records in the patterns respectively.
-
-We also see that there is a column named `pattern_id` together with
-information such as `number_concepts` and `number_ingredients`. The idea
-is to use this output in conjunction with the data named
-`patternWithFormula` that the user can find in this package via
-`pattern_id`. Please see the data `patternWithFormula` for different
-patterns, their associated formula and combinations of `amount_unit`,
-`numerator_unit` and `denominator_unit`.
-
-```{r, message= FALSE, warning=FALSE}
-patternsWithFormula |>
-  glimpse()
-```
+The output has three important columns, namely `number_concepts`, `number_ingredients` and `number_records`, which corresponds to count of distinct concepts in the patterns, count of distinct ingredients involved and overall count of records in the patterns respectively. The `pattern_id` column can be used to relate the patterns with the `patternsWithFormula` data set.
 
 ## Finding out the dose coverage using summariseDoseCoverage() function
 
-This package also provides a function to check the coverage of daily
-dose computation for chosen concept sets and ingredients. Again let's
-take *acetaminophen* as an example.
+This package also provides a functionality to check the coverage daily dose computation for chosen concept sets and ingredients. Let's take *acetaminophen* as an example.
 
 ```{r, message= FALSE, warning=FALSE}
 summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315) |>
-  glimpse()
+  dplyr::glimpse()
 ```
 
-The output will summarise the usage of *acetaminophen* in the database.
-For example, overall there are $13$ records of *acetaminophen* use and
-none missing in terms of the duration and strength. By default the
-output will also include the mean, median, lower and upper quartiles and
-standard deviation of the daily dose of *acetaminophen* (calculated using
-`addDailyDose()`). The results will also be stratified by unit, route
-(which we saw in `addRoute()` function) and pattern (which we saw in
-`patternTable()` function).
+The output will summarise the usage of *acetaminophen* in the database. For example, overall there are $78$ records of *acetaminophen* and for all of them daily dose can be calculated. By default the output will also include the mean, median, lower and upper quartiles and standard deviation of the daily dose of *acetaminophen* calculated as explained above. The results will also be stratified by unit, route and pattern (which we saw in `patternsWithFormula` data set).
 
-One may wish to display the output of `summariseDoseCoverage()` in a gt
-table form like so:
+Different routes are documented in the **CodelistGenerator** package. Route is defined at the concept (`drug_concept_id`) level, there exist an equivalence between each concept and a route. You can stratify a codelist using the function: `CodelistGenerator::stratifyByRouteCategory()`.
+
+To better inspect the content of the output of `summariseDoseCoverage()` we can create a gt table like so:
 
 ```{r, message= FALSE, warning=FALSE}
-summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315) |>
-  tableDoseCoverage()
+coverageResult <- summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315)
+tableDoseCoverage(coverageResult)
 ```
 
-The user also has the freedom to customize the gt table output. For
-example the following will suppress the `cdmName`:
+The user also has the freedom to customize the gt table output. For example the following will suppress the `cdmName`:
 
 ```{r, message= FALSE, warning=FALSE}
-summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315) |>
-  tableDoseCoverage(cdmName = F)
-```
-
-Additionally, if the user wants to specify a title for the gt output,
-they could try the following:
-
-```{r, message= FALSE, warning=FALSE}
-summariseDoseCoverage(cdm = cdm, ingredientConceptId = 1125315) |>
-  tableDoseCoverage(.options = list(title = "Title of summariseDoseCoverage"))
+tableDoseCoverage(coverageResult, cdmName = F)
 ```

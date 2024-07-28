@@ -1,9 +1,8 @@
 ---
-title: "Summarise treatments received by a cohort"
-date: "`r Sys.Date()`"
+title: "Summarise treatments"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Obtain treatment summary of a cohort}
+  %\VignetteIndexEntry{Summarise treatments}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -30,26 +29,22 @@ modify cohort tables `cohort1` and `cohort2` in our mock dataset, so the first t
 
 ```{r, message = FALSE, warning=FALSE}
 library(DrugUtilisation)
-library(CDMConnector)
-library(dplyr)
-library(PatientProfiles)
 
 cdm <- mockDrugUtilisation(numberIndividual = 200)
 
-new_cohort_set <- settings(cdm$cohort1) %>%
-  dplyr::arrange(cohort_definition_id) %>%
+new_cohort_set <- settings(cdm$cohort1) |>
+  dplyr::arrange(cohort_definition_id) |>
   dplyr::mutate(cohort_name = c("asthma","bronchitis","pneumonia"))
 
 cdm$cohort1 <- cdm$cohort1 |>
-  newCohortTable(cohortSetRef = new_cohort_set)
+  omopgenerics::newCohortTable(cohortSetRef = new_cohort_set)
 
-new_cohort_set <- settings(cdm$cohort2) %>%
-  dplyr::arrange(cohort_definition_id) %>%
+new_cohort_set <- settings(cdm$cohort2) |>
+  dplyr::arrange(cohort_definition_id) |>
   dplyr::mutate(cohort_name = c("albuterol","fluticasone","montelukast"))
 
 cdm$cohort2 <- cdm$cohort2 |>
-  newCohortTable(cohortSetRef = new_cohort_set)
-
+  omopgenerics::newCohortTable(cohortSetRef = new_cohort_set)
 ```
 
 Notice that `cohort1` is a cohort table with three cohorts representing
@@ -89,9 +84,9 @@ We can also stratify our cohort and calculate the estimates within each
 strata group by using the `strata` parameter.
 
 ```{r, message = FALSE, warning=FALSE}
-cdm[["cohort1"]] <- cdm[["cohort1"]] %>%
-  addSex() %>%
-  addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
+cdm[["cohort1"]] <- cdm[["cohort1"]] |>
+  PatientProfiles::addSex() |>
+  PatientProfiles::addAge(ageGroup = list("<40" = c(0, 39), ">=40" = c(40, 150)))
 
 results <- summariseTreatment(
   cohort = cdm$cohort1,
@@ -105,7 +100,6 @@ results <- summariseTreatment(
 Notice that we have also used the `treatmentCohortId` parameter to
 specify that we only want to explore `albuterol` across the cohorts defined in
 `cohort1`.
-
 
 # Visualise results
 

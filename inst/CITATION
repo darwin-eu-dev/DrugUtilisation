@@ -1,0 +1,11 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "Calculating daily dose in the Observational Medical Outcomes Partnership Common Data Model",
+  author   = "Burkard, Theresa and López-Güell, Kim and Gorbachev, Artem and Bellas, Lucía and Jödicke, Annika M. and Burn, Edward and de Ridder, Maria and Mosseveld, Mees and Gratton, Jasmine and Seager, Sarah and Vojinovic, Dina and Mayer, Miguel Angel and Ramírez-Anguita, Juan Manuel and Machín, Angela Leis and Oja, Marek and Kolde, Raivo and Bonadt, Klaus and Prieto-Alhambra, Daniel and Reich, Chistian and Català, Martí",
+  journal  = "Pharmacoepidemiology and Drug Safety",
+  year     = "2024",
+  volume   = "33",
+  number   = "6",
+  pages    = "e5809",
+  doi      = "https://doi.org/10.1002/pds.5809"
+)
