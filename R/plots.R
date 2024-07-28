@@ -418,7 +418,8 @@ plotIndication <- function(result,
 
   p <- result |>
     ggplot2::ggplot(mapping = ggplot2::aes(
-      x = x, y = estimate_value, color = color, fill = color)) +
+      x = .data$x, y = .data$estimate_value, color = .data$color,
+      fill = .data$color)) +
     ggplot2::geom_col() +
     ggplot2::xlab("") +
     ggplot2::ylab("Percentage") +
