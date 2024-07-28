@@ -45,7 +45,14 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.0" id="drugutilisation-070">DrugUtilisation 0.7.0<a class="anchor" aria-label="anchor" href="#drugutilisation-070"></a></h2>
-<ul><li>Complete refactor of the addDrugUse function.</li>
+<ul><li><p>Deprecate dose specific functions: <code>addDailyDose</code>, <code>addRoute</code>, <code>stratifyByUnit</code>.</p></li>
+<li><p>Deprecate drug use functions: <code>addDrugUse</code>, <code>summariseDrugUse</code>.</p></li>
+<li><p>Rename <code>dailyDoseCoverage</code> -&gt; <code>summariseDoseCoverage</code>.</p></li>
+<li><p>Refactor of <code>addIndication</code> to create a categorical variable per window.</p></li>
+<li><p>New functionality <code>summariseProportionOfPatientsCovered</code>, <code>tableProportionOfPatientsCovered</code> and <code>plotProportionOfPatientsCovered</code>.</p></li>
+<li><p>Create <code>require*</code> functions.</p></li>
+<li><p>New functionality <code>summariseDrugRestart</code>, <code>tableDrugRestart</code> and <code>plotDrugRestart</code>.</p></li>
+<li><p>New functionality <code>addDrugUtilisation</code>, <code>summariseDrugUtilisation</code> and <code>tableDrugUtilisation</code></p></li>
 </ul></div>
   </main></div>
 
