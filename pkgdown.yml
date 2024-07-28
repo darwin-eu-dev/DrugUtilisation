@@ -9,10 +9,8 @@ articles:
   indication: indication.html
   mock_data: mock_data.html
   summarise_treatments: summarise_treatments.html
-  TBR_add_drug_use: TBR_add_drug_use.html
-  TBR_route_pattern_dose: TBR_route_pattern_dose.html
   treatment_discontinuation: treatment_discontinuation.html
-last_built: 2024-07-27T17:04Z
+last_built: 2024-07-28T00:27Z
 urls:
   reference: https://darwin-eu-dev.github.io/DrugUtilisation/reference
   article: https://darwin-eu-dev.github.io/DrugUtilisation/articles

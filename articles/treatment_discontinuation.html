@@ -41,16 +41,14 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Package functionalities</h6></li>
+    <li><a class="dropdown-item" href="../articles/mock_data.html">Create mock data to test DrugUtilisation package</a></li>
     <li><a class="dropdown-item" href="../articles/create_cohorts.html">Creating drug cohorts</a></li>
     <li><a class="dropdown-item" href="../articles/indication.html">Identify and summarise indications among a drug cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Characterise a cohort using Drug Utilisation</a></li>
+    <li><a class="dropdown-item" href="../articles/daily_dose_calculation.html">Daily dose calculation</a></li>
     <li><a class="dropdown-item" href="../articles/drug_utilisation.html">Getting drug utilisation related information of subjects in a cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Summarise treatments received by a cohort</a></li>
+    <li><a class="dropdown-item" href="../articles/summarise_treatments.html">Summarise treatments</a></li>
     <li><a class="dropdown-item" href="../articles/treatment_discontinuation.html">Summarising treatment adherence</a></li>
     <li><a class="dropdown-item" href="../articles/drug_restart.html">Assessing drug restart and switching after treatment</a></li>
-    <li><a class="dropdown-item" href="../articles/TBR_add_drug_use.html">Add drug related information to a Drug Utilisation cohort</a></li>
-    <li><a class="dropdown-item" href="../articles/TBR_route_pattern_dose.html">Guide on using DrugUtilisataion package to compute drug use related information</a></li>
-    <li><a class="dropdown-item" href="../articles/mock_data.html">Create mock data to test DrugUtilisation package</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -97,15 +95,11 @@ users of amoxicillin over the first 90-days of use. For this we can
 first create our amoxicillin study cohort. Here we’ll use the synthetic
 Eunomia dataset to show how this could be done.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu.github.io/CDMConnector/" class="external-link">CDMConnector</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/PatientProfiles/" class="external-link">PatientProfiles</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/CohortSurvival/" class="external-link">CohortSurvival</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, </span>
-<span>                     dbdir <span class="op">=</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span></span>
+<span>                     dbdir <span class="op">=</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span></span>
 <span>  con <span class="op">=</span> <span class="va">db</span>,</span>
 <span>  cdm_schema <span class="op">=</span> <span class="st">"main"</span>, </span>
 <span>  write_schema <span class="op">=</span> <span class="st">"main"</span>, </span>
@@ -130,20 +124,21 @@ taken to indicate treatment discontinuation, the gap era used above when
 creating the drug cohort can often have an important impact on the
 results.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">discontinuation_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/estimateSingleEventSurvival.html" class="external-link">estimateSingleEventSurvival</a></span><span class="op">(</span><span class="va">cdm</span>, </span>
-<span>                                    targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>                                    outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>                                    outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
-<span>                                    outcomeWashout <span class="op">=</span> <span class="cn">Inf</span>,</span>
-<span>                                    followUpDays <span class="op">=</span> <span class="fl">90</span>, </span>
-<span>                                    eventGap <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">discontinuationSummary</span> <span class="op">&lt;-</span> <span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/estimateSingleEventSurvival.html" class="external-link">estimateSingleEventSurvival</a></span><span class="op">(</span></span>
+<span>  cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
+<span>  targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
+<span>  outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
+<span>  outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
+<span>  outcomeWashout <span class="op">=</span> <span class="cn">Inf</span>,</span>
+<span>  followUpDays <span class="op">=</span> <span class="fl">90</span>, </span>
+<span>  eventGap <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
 <p>We can plot our study result like so:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuationSummary</span><span class="op">)</span></span></code></pre></div>
 <p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-4-1.png" width="75%"></p>
 <p>Or we can similarly create a table summarising the result</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/tableSurvival.html" class="external-link">tableSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/tableSurvival.html" class="external-link">tableSurvival</a></span><span class="op">(</span><span class="va">discontinuationSummary</span><span class="op">)</span></span></code></pre></div>
 <div id="wiyjisysoq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#wiyjisysoq table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -619,42 +614,40 @@ demographics to our cohort table using the PatientProfiles packages and
 then stratify results by age group and sex.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span>ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span><span class="op">)</span>,</span>
-<span>                                  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">41</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">compute</a></span><span class="op">(</span>temporary <span class="op">=</span> <span class="cn">FALSE</span>, name <span class="op">=</span> <span class="st">"amoxicillin"</span><span class="op">)</span></span>
+<span>  <span class="fu">PatientProfiles</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span></span>
+<span>    ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">41</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"amoxicillin"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">discontinuation_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/estimateSingleEventSurvival.html" class="external-link">estimateSingleEventSurvival</a></span><span class="op">(</span><span class="va">cdm</span>, </span>
-<span>                                                       strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>,</span>
-<span>                                                                     <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                                    targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>                                    outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>                                    outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>, </span>
-<span>                                    followUpDays <span class="op">=</span> <span class="fl">90</span>, </span>
-<span>                                    eventGap <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">discontinuationSummary</span> <span class="op">&lt;-</span> <span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/estimateSingleEventSurvival.html" class="external-link">estimateSingleEventSurvival</a></span><span class="op">(</span></span>
+<span>  cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
+<span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
+<span>  outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
+<span>  outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>, </span>
+<span>  followUpDays <span class="op">=</span> <span class="fl">90</span>, </span>
+<span>  eventGap <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
 <p>Again we could present our results in a plot or a table.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span>, </span>
-<span>             facet <span class="op">=</span> <span class="st">"strata_level"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuationSummary</span>, facet <span class="op">=</span> <span class="st">"strata_level"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-7-1.png" width="75%"></p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/tableSurvival.html" class="external-link">tableSurvival</a></span><span class="op">(</span><span class="va">discontinuation_summary</span><span class="op">)</span></span></code></pre></div>
-<div id="efsqxhvhnc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#efsqxhvhnc table {
+<code class="sourceCode R"><span><span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/tableSurvival.html" class="external-link">tableSurvival</a></span><span class="op">(</span><span class="va">discontinuationSummary</span><span class="op">)</span></span></code></pre></div>
+<div id="vhncrookxg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vhncrookxg table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#efsqxhvhnc thead, #efsqxhvhnc tbody, #efsqxhvhnc tfoot, #efsqxhvhnc tr, #efsqxhvhnc td, #efsqxhvhnc th {
+#vhncrookxg thead, #vhncrookxg tbody, #vhncrookxg tfoot, #vhncrookxg tr, #vhncrookxg td, #vhncrookxg th {
   border-style: none;
 }
 
-#efsqxhvhnc p {
+#vhncrookxg p {
   margin: 0;
   padding: 0;
 }
 
-#efsqxhvhnc .gt_table {
+#vhncrookxg .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -680,12 +673,12 @@ then stratify results by age group and sex.</p>
   border-left-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_caption {
+#vhncrookxg .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#efsqxhvhnc .gt_title {
+#vhncrookxg .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -697,7 +690,7 @@ then stratify results by age group and sex.</p>
   border-bottom-width: 0;
 }
 
-#efsqxhvhnc .gt_subtitle {
+#vhncrookxg .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -709,7 +702,7 @@ then stratify results by age group and sex.</p>
   border-top-width: 0;
 }
 
-#efsqxhvhnc .gt_heading {
+#vhncrookxg .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -721,13 +714,13 @@ then stratify results by age group and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_bottom_border {
+#vhncrookxg .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_col_headings {
+#vhncrookxg .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -742,7 +735,7 @@ then stratify results by age group and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_col_heading {
+#vhncrookxg .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -762,7 +755,7 @@ then stratify results by age group and sex.</p>
   overflow-x: hidden;
 }
 
-#efsqxhvhnc .gt_column_spanner_outer {
+#vhncrookxg .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -774,15 +767,15 @@ then stratify results by age group and sex.</p>
   padding-right: 4px;
 }
 
-#efsqxhvhnc .gt_column_spanner_outer:first-child {
+#vhncrookxg .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#efsqxhvhnc .gt_column_spanner_outer:last-child {
+#vhncrookxg .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#efsqxhvhnc .gt_column_spanner {
+#vhncrookxg .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -794,11 +787,11 @@ then stratify results by age group and sex.</p>
   width: 100%;
 }
 
-#efsqxhvhnc .gt_spanner_row {
+#vhncrookxg .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#efsqxhvhnc .gt_group_heading {
+#vhncrookxg .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -824,7 +817,7 @@ then stratify results by age group and sex.</p>
   text-align: left;
 }
 
-#efsqxhvhnc .gt_empty_group_heading {
+#vhncrookxg .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -839,15 +832,15 @@ then stratify results by age group and sex.</p>
   vertical-align: middle;
 }
 
-#efsqxhvhnc .gt_from_md > :first-child {
+#vhncrookxg .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#efsqxhvhnc .gt_from_md > :last-child {
+#vhncrookxg .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#efsqxhvhnc .gt_row {
+#vhncrookxg .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -866,7 +859,7 @@ then stratify results by age group and sex.</p>
   overflow-x: hidden;
 }
 
-#efsqxhvhnc .gt_stub {
+#vhncrookxg .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -879,7 +872,7 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#efsqxhvhnc .gt_stub_row_group {
+#vhncrookxg .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -893,15 +886,15 @@ then stratify results by age group and sex.</p>
   vertical-align: top;
 }
 
-#efsqxhvhnc .gt_row_group_first td {
+#vhncrookxg .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#efsqxhvhnc .gt_row_group_first th {
+#vhncrookxg .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#efsqxhvhnc .gt_summary_row {
+#vhncrookxg .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -911,16 +904,16 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#efsqxhvhnc .gt_first_summary_row {
+#vhncrookxg .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_first_summary_row.thick {
+#vhncrookxg .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#efsqxhvhnc .gt_last_summary_row {
+#vhncrookxg .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -930,7 +923,7 @@ then stratify results by age group and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_grand_summary_row {
+#vhncrookxg .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -940,7 +933,7 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#efsqxhvhnc .gt_first_grand_summary_row {
+#vhncrookxg .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -950,7 +943,7 @@ then stratify results by age group and sex.</p>
   border-top-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_last_grand_summary_row_top {
+#vhncrookxg .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -960,11 +953,11 @@ then stratify results by age group and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_striped {
+#vhncrookxg .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#efsqxhvhnc .gt_table_body {
+#vhncrookxg .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -973,7 +966,7 @@ then stratify results by age group and sex.</p>
   border-bottom-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_footnotes {
+#vhncrookxg .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -987,7 +980,7 @@ then stratify results by age group and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_footnote {
+#vhncrookxg .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -996,7 +989,7 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#efsqxhvhnc .gt_sourcenotes {
+#vhncrookxg .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1010,7 +1003,7 @@ then stratify results by age group and sex.</p>
   border-right-color: #D3D3D3;
 }
 
-#efsqxhvhnc .gt_sourcenote {
+#vhncrookxg .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1018,72 +1011,72 @@ then stratify results by age group and sex.</p>
   padding-right: 5px;
 }
 
-#efsqxhvhnc .gt_left {
+#vhncrookxg .gt_left {
   text-align: left;
 }
 
-#efsqxhvhnc .gt_center {
+#vhncrookxg .gt_center {
   text-align: center;
 }
 
-#efsqxhvhnc .gt_right {
+#vhncrookxg .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#efsqxhvhnc .gt_font_normal {
+#vhncrookxg .gt_font_normal {
   font-weight: normal;
 }
 
-#efsqxhvhnc .gt_font_bold {
+#vhncrookxg .gt_font_bold {
   font-weight: bold;
 }
 
-#efsqxhvhnc .gt_font_italic {
+#vhncrookxg .gt_font_italic {
   font-style: italic;
 }
 
-#efsqxhvhnc .gt_super {
+#vhncrookxg .gt_super {
   font-size: 65%;
 }
 
-#efsqxhvhnc .gt_footnote_marks {
+#vhncrookxg .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#efsqxhvhnc .gt_asterisk {
+#vhncrookxg .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#efsqxhvhnc .gt_indent_1 {
+#vhncrookxg .gt_indent_1 {
   text-indent: 5px;
 }
 
-#efsqxhvhnc .gt_indent_2 {
+#vhncrookxg .gt_indent_2 {
   text-indent: 10px;
 }
 
-#efsqxhvhnc .gt_indent_3 {
+#vhncrookxg .gt_indent_3 {
   text-indent: 15px;
 }
 
-#efsqxhvhnc .gt_indent_4 {
+#vhncrookxg .gt_indent_4 {
   text-indent: 20px;
 }
 
-#efsqxhvhnc .gt_indent_5 {
+#vhncrookxg .gt_indent_5 {
   text-indent: 25px;
 }
 
-#efsqxhvhnc .katex-display {
+#vhncrookxg .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#efsqxhvhnc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#vhncrookxg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1173,20 +1166,21 @@ re-initiate the drug after some break. Consequently this method is
 typically far less sensitive to the choice of gap era used when creating
 the drug cohort.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ppc_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summariseProportionOfPatientsCovered.html">summariseProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span>, </span>
-<span>                                    followUpDays <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ppcSummary</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/summariseProportionOfPatientsCovered.html">summariseProportionOfPatientsCovered</a></span><span class="op">(</span>followUpDays <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
 <p>Like with our survival estimates, we can quickly create a plot of our
 results</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotProportionOfPatientsCovered.html">plotProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">ppc_summary</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotProportionOfPatientsCovered.html">plotProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">ppcSummary</span><span class="op">)</span></span></code></pre></div>
 <p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-10-1.png" width="75%"></p>
 <p>Similarly, we can also stratify our results in a similar way.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ppc_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/summariseProportionOfPatientsCovered.html">summariseProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span>, </span>
-<span>                                                    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                                    followUpDays <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ppcSummary</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="../reference/summariseProportionOfPatientsCovered.html">summariseProportionOfPatientsCovered</a></span><span class="op">(</span></span>
+<span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    followUpDays <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotProportionOfPatientsCovered.html">plotProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">ppc_summary</span>, </span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotProportionOfPatientsCovered.html">plotProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">ppcSummary</span>, </span>
 <span>                                facet <span class="op">=</span> <span class="st">"strata_level"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-12-1.png" width="75%"></p>
 </div>

@@ -1,8 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/404.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/LICENSE.html</loc></url>
-<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/TBR_add_drug_use.html</loc></url>
-<url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/TBR_route_pattern_dose.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/create_cohorts.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/daily_dose_calculation.html</loc></url>
 <url><loc>https://darwin-eu-dev.github.io/DrugUtilisation/articles/drug_restart.html</loc></url>
