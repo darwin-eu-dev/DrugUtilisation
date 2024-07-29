@@ -13,3 +13,9 @@ README.Rmd
 ^CRAN-SUBMISSION$
 ^doc$
 ^Meta$
+^vignettes/mock_data.Rmd
+^vignettes/indication.Rmd
+^vignettes/daily_dose_calculation.Rmd
+^vignettes/summarise_treatments.Rmd
+^vignettes/treatment_discontinuation.Rmd
+^vignettes/drug_restart.Rmd

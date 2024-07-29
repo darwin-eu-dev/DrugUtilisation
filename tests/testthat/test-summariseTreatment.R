@@ -1,5 +1,4 @@
 test_that("test summariseTreatment", {
-  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
   expect_no_error(
     x <- cdm$cohort1 |>
