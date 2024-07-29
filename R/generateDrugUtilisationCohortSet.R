@@ -50,7 +50,8 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' druglist <- getDrugIngredientCodes(cdm, c("acetaminophen", "metformin"))
+#' druglist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, c("acetaminophen", "metformin"))
 #'
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm,
@@ -163,7 +164,8 @@ generateDrugUtilisationCohortSet <- function(cdm,
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' druglist <- getDrugIngredientCodes(cdm, c("acetaminophen", "metformin"))
+#' druglist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, c("acetaminophen", "metformin"))
 #'
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm,

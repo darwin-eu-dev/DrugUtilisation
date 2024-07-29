@@ -306,9 +306,8 @@ tableDoseCoverage <- function(result,
 #' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
-#' )
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(cdm, "acetaminophen")
+#' cdm <- generateDrugUtilisationCohortSet(cdm, "dus_cohort", codelist)
 #' cdm[["dus_cohort"]] %>%
 #'   summariseDrugUtilisation(ingredientConceptId = 1125315) |>
 #'   tableDrugUtilisation()

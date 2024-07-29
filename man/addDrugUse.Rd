@@ -108,9 +108,10 @@ The same cohort with the added columns.
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
-cdm <- generateDrugUtilisationCohortSet(
-  cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
-)
+codelist <- CodelistGenerator::getDrugIngredientCodes(
+  cdm, name = "acetaminophen")
+
+cdm <- generateDrugUtilisationCohortSet(cdm, "dus_cohort", codelist)
 cdm[["dus_cohort"]] |>
   addDrugUse(ingredientConceptId = 1125315)
 }

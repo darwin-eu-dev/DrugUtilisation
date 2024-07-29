@@ -34,8 +34,9 @@
 #' library(PatientProfiles)
 #'
 #' cdm <- mockDrugUtilisation()
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, "acetaminophen")
+#'   cdm, "dus_cohort", codelist
 #' )
 #' cdm[["dus_cohort"]] <- cdm[["dus_cohort"]] |>
 #'   addDrugUse(ingredientConceptId = 1125315)

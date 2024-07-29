@@ -53,9 +53,10 @@
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
-#' )
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, name = "acetaminophen")
+#'
+#' cdm <- generateDrugUtilisationCohortSet(cdm, "dus_cohort", codelist)
 #' cdm[["dus_cohort"]] |>
 #'   addDrugUtilisation(ingredientConceptId = 1125315, gapEra = 30)
 #' }
@@ -122,7 +123,8 @@ addDrugUtilisation <- function(cohort,
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, name = "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -306,7 +308,8 @@ addInitialDailyDose <- function(cohort,
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, name = "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -368,7 +371,8 @@ addCumulativeQuantity <- function(cohort,
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, name = "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -430,7 +434,8 @@ addInitialQuantity <- function(cohort,
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, name = "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -494,7 +499,8 @@ addTimeToExposure <- function(cohort,
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, name = "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -559,7 +565,8 @@ addExposedTime <- function(cohort,
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm, name = "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
