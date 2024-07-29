@@ -543,6 +543,7 @@ test_that("test attributes", {
 })
 
 test_that("summariseIndication", {
+  skip_on_cran()
   targetCohortName <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),

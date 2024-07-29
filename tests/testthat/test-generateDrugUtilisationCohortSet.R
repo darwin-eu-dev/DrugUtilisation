@@ -20,6 +20,7 @@ test_that("test inputs", {
 })
 
 test_that("basic functionality drug_conceptId", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),

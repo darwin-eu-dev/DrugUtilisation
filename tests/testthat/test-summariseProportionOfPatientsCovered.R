@@ -1,4 +1,5 @@
 test_that("simple working example", {
+  skip_on_cran()
   # basic example one cohort entry
   # id 1 - in cohort for 5 days, exits the database after 25
   # id 2 - in cohort for 15 days, exits the database after 15
