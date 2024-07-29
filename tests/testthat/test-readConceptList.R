@@ -1,4 +1,5 @@
 test_that("test inputs", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
   expect_warning(expect_error(readConceptList()))
   expect_warning(expect_error(readConceptList(cdm = cdm)))

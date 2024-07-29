@@ -1,4 +1,5 @@
 test_that("test inputs", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
   expect_error(generateDrugUtilisationCohortSet())
   expect_error(generateDrugUtilisationCohortSet(cdm = cdm))
@@ -19,7 +20,6 @@ test_that("test inputs", {
 })
 
 test_that("basic functionality drug_conceptId", {
-  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),

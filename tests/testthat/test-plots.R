@@ -1,4 +1,5 @@
 test_that("plotDrugRestart works", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),

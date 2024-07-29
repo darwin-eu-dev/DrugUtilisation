@@ -80,6 +80,7 @@ test_that("simple working example", {
 })
 
 test_that("multiple cohort entries", {
+  skip_on_cran()
   # id 1 - in cohort for 5 days, out for 5 days, in again for 5, exits database after 20
   # id 2 - in cohort for 15 days, exits the database after 25
 
@@ -145,6 +146,7 @@ test_that("multiple cohort entries", {
 })
 
 test_that("multiple cohorts", {
+  skip_on_cran()
 
   # id 1 - in cohort 1 for 5 days, exits the database after 25
   # id 2 - in cohort 1 for 15 days, exits the database after 15
@@ -235,6 +237,7 @@ test_that("multiple cohorts", {
 })
 
 test_that("stratification", {
+  skip_on_cran()
   # basic example one cohort entry
   # id 1 - in cohort for 5 days, break, 5 more days, exits the database after 25
   # id 2 - in cohort for 15 days, exits the database after 15
@@ -404,6 +407,7 @@ test_that("stratification", {
 })
 
 test_that("expected errors", {
+  skip_on_cran()
 
   cdm <- mockDrugUtilisation(
     con = connection(),
@@ -456,6 +460,8 @@ test_that("expected errors", {
 })
 
 test_that("suppression", {
+  skip_on_cran()
+
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),

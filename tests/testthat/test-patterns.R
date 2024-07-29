@@ -1,4 +1,5 @@
 test_that("create patterns, correct output", {
+  skip_on_cran()
  drug_strength <- dplyr::tibble(
    drug_concept_id = c(1, 1, 2),
    ingredient_concept_id = c(13, 14, 15),

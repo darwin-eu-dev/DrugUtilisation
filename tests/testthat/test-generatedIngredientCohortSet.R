@@ -1,4 +1,5 @@
 test_that("test same results for ingredient cohorts", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   cdm <- generateIngredientCohortSet(
@@ -34,7 +35,7 @@ test_that("test same results for ingredient cohorts", {
 })
 
 test_that("options", {
-
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(),
                              writeSchema = schema())
 
@@ -47,6 +48,7 @@ test_that("options", {
 })
 
 test_that("handle empty ingredient name gracefully", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   expect_error(generateIngredientCohortSet(
@@ -61,7 +63,7 @@ test_that("handle empty ingredient name gracefully", {
 })
 
 test_that("date works", {
-
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   cdm <- generateIngredientCohortSet(
@@ -88,8 +90,8 @@ test_that("date works", {
   mockDisconnect(cdm = cdm)
 })
 
-
 test_that("ingredient list and vector both work", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   ingredient1 = c("simvastatin", "acetaminophen", "metformin")

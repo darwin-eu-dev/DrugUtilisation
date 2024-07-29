@@ -965,6 +965,7 @@ test_that("check output format", {
 })
 
 test_that("check all estimates", {
+  skip_on_cran()
   all_estimates <- c(
     "min", "max", "mean", "median", # "iqr", "range",
     "q05", "q10", "q15", "q20",
@@ -1022,6 +1023,7 @@ test_that("check all estimates", {
 })
 
 test_that("check all variables", {
+  skip_on_cran()
   all_estimates <- c(
     "min", "max", "mean", "median", # "iqr", "range",
     "q05", "q10", "q15", "q20",

@@ -1,4 +1,5 @@
 test_that("tableIndication works", {
+  skip_on_cran()
   targetCohortName <- dplyr::tibble(
     cohort_definition_id = c(1, 1, 1, 2),
     subject_id = c(1, 1, 2, 3),
@@ -128,6 +129,7 @@ test_that("tableIndication works", {
 })
 
 test_that("tableDoseCoverage", {
+  skip_on_cran()
   drug_strength <- dplyr::tibble(
     drug_concept_id = c(
       2905077, 1516983, 2905075, 1503327, 1516978, 1503326, 1503328, 1516980,
@@ -262,6 +264,7 @@ test_that("tableDoseCoverage", {
 })
 
 test_that("tableDrugUtilisation", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),
@@ -382,6 +385,7 @@ test_that("tableDrugUtilisation", {
 })
 
 test_that("tableDrugRestart", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),
@@ -487,6 +491,7 @@ test_that("tableDrugRestart", {
 })
 
 test_that("tableIndication works", {
+  skip_on_cran()
 
   cdm <- mockDrugUtilisation(
     con = connection(),
