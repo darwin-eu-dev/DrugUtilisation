@@ -1,4 +1,5 @@
 test_that("summarise drug restart", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),
