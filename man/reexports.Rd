@@ -11,10 +11,6 @@
 \alias{suppress}
 \alias{exportSummarisedResult}
 \alias{mockDisconnect}
-\alias{getDrugIngredientCodes}
-\alias{getATCCodes}
-\alias{codesFromCohort}
-\alias{codesFromConceptSet}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -22,8 +18,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{CodelistGenerator}{\code{\link[CodelistGenerator]{codesFromCohort}}, \code{\link[CodelistGenerator]{codesFromConceptSet}}, \code{\link[CodelistGenerator]{getATCCodes}}, \code{\link[CodelistGenerator]{getDrugIngredientCodes}}}
-
   \item{omopgenerics}{\code{\link[omopgenerics]{attrition}}, \code{\link[omopgenerics]{bind}}, \code{\link[omopgenerics]{cohortCodelist}}, \code{\link[omopgenerics]{cohortCount}}, \code{\link[omopgenerics]{exportSummarisedResult}}, \code{\link[omopgenerics]{settings}}, \code{\link[omopgenerics]{suppress}}}
 
   \item{PatientProfiles}{\code{\link[PatientProfiles]{mockDisconnect}}}
