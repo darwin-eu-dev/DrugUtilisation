@@ -238,7 +238,14 @@ dailyDoseCoverage <- function(cdm,
     when = "0.7.0",
     what = "dailyDoseCoverage()",
     with = "summariseDoseCoverage()")
-  summariseDoseCoverage(cdm = cdm, ingredientConceptId = ingredientConceptId)
+  summariseDoseCoverage(
+    cdm = cdm,
+    ingredientConceptId = ingredientConceptId,
+    estimates = c(
+      "count_missing", "percentage_missing", "mean", "sd", "min", "q05",
+      "q25", "median", "q75", "q95", "max"
+    )
+  )
 }
 
 standardUnits <- function(drugExposure) {
