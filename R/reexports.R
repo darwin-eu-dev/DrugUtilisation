@@ -1,4 +1,3 @@
-
 #' @importFrom omopgenerics cohortCount
 #' @export
 omopgenerics::cohortCount

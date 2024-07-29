@@ -22,4 +22,3 @@ test_that("test same results for ingredient cohorts", {
 
   mockDisconnect(cdm = cdm)
 })
-

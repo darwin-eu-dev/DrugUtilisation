@@ -37,9 +37,10 @@ summariseProportionOfPatientsCovered <- function(cohort,
                                                  strata = list(),
                                                  followUpDays = NULL) {
   checkmate::assert_integerish(followUpDays,
-                               lower = 1,
-                               len = 1,
-                               null.ok = TRUE)
+    lower = 1,
+    len = 1,
+    null.ok = TRUE
+  )
 
   checkmate::checkList(strata, types = "character")
   if (isFALSE(all(unlist(strata) %in% colnames(cohort)))) {
@@ -80,7 +81,7 @@ summariseProportionOfPatientsCovered <- function(cohort,
       )) %>%
       dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
       dplyr::summarise(days = sum(.data$days_in_cohort, na.rm = TRUE)) |>
-      dplyr::group_by(.data$cohort_definition_id)  |>
+      dplyr::group_by(.data$cohort_definition_id) |>
       dplyr::summarise(max_days = as.integer(max(.data$days, na.rm = TRUE))) |>
       dplyr::collect()
   } else {
@@ -97,31 +98,38 @@ summariseProportionOfPatientsCovered <- function(cohort,
       dplyr::pull()
 
     ppc[[j]] <- getPPC(cohort,
-                       cohortId = workingCohortId,
-                       strata = strata,
-                       days = workingMaxDays)
+      cohortId = workingCohortId,
+      strata = strata,
+      days = workingMaxDays
+    )
   }
 
   ppc <- dplyr::bind_rows(ppc)
 
-  if(nrow(ppc) == 0){
-  cli::cli_inform(c("i" =
-                    "No results found for any cohort, returning an empty summarised result"))
-  return(omopgenerics::newSummarisedResult(omopgenerics::emptySummarisedResult(),
-                                           settings = analysisSettings))
+  if (nrow(ppc) == 0) {
+    cli::cli_inform(c(
+      "i" =
+        "No results found for any cohort, returning an empty summarised result"
+    ))
+    return(omopgenerics::newSummarisedResult(omopgenerics::emptySummarisedResult(),
+      settings = analysisSettings
+    ))
   }
 
   ppc <- ppc |>
-    dplyr::mutate(ppc = round((.data$outcome_count / .data$denominator_count) *100, 2)) |>
+    dplyr::mutate(ppc = round((.data$outcome_count / .data$denominator_count) * 100, 2)) |>
     tidyr::pivot_longer(
-      c("outcome_count",
+      c(
+        "outcome_count",
         "denominator_count",
-        "ppc"),
+        "ppc"
+      ),
       names_to = "estimate_name",
       values_to = "estimate_value"
     ) |>
     dplyr::mutate(estimate_type = dplyr::if_else(.data$estimate_name == "ppc",
-                                                 "percentage", "integer"))
+      "percentage", "integer"
+    ))
 
 
   ppc <- ppc |>
@@ -144,14 +152,13 @@ summariseProportionOfPatientsCovered <- function(cohort,
 
 
   ppc <- omopgenerics::newSummarisedResult(ppc,
-                                           settings = analysisSettings)
+    settings = analysisSettings
+  )
 
   ppc
-
 }
 
 getPPC <- function(cohort, cohortId, strata, days) {
-
   result <- list()
 
   workingCohortName <- omopgenerics::settings(cohort) |>
@@ -162,11 +169,13 @@ getPPC <- function(cohort, cohortId, strata, days) {
   cli::cli_inform("Collecting cohort into memory")
   workingCohort <- cohort |>
     dplyr::filter(.data$cohort_definition_id == .env$cohortId) |>
-    PatientProfiles::addFutureObservationQuery(futureObservationName = "observation_end_date",
-                                               futureObservationType = "date") |>
+    PatientProfiles::addFutureObservationQuery(
+      futureObservationName = "observation_end_date",
+      futureObservationType = "date"
+    ) |>
     dplyr::collect()
 
-  if(nrow(workingCohort) == 0){
+  if (nrow(workingCohort) == 0) {
     cli::cli_inform(c("i" = "No records found for {workingCohortName}"))
     return(NULL)
   }
@@ -174,7 +183,8 @@ getPPC <- function(cohort, cohortId, strata, days) {
   workingCohort <- workingCohort |>
     dplyr::group_by(.data$subject_id) |>
     dplyr::mutate(min_cohort_start_date = min(.data$cohort_start_date,
-                                              na.rm = TRUE)) |>
+      na.rm = TRUE
+    )) |>
     dplyr::ungroup()
 
   cli::cli_inform(glue::glue("Geting PPC over {days} days following first cohort entry"))
@@ -183,12 +193,15 @@ getPPC <- function(cohort, cohortId, strata, days) {
     dplyr::mutate(time = 0)
   for (j in seq_along(strata)) {
     result[[paste0("strata_", j, "_time_0")]] <-
-      getStratifiedStartingCount(workingCohort,
-                                 strata[[j]]) |>
+      getStratifiedStartingCount(
+        workingCohort,
+        strata[[j]]
+      ) |>
       dplyr::mutate(time = 0)
   }
 
-  cli::cli_progress_bar(.envir = parent.frame(),
+  cli::cli_progress_bar(
+    .envir = parent.frame(),
     total = days,
     format = " -- getting PPC for {cli::pb_bar} {cli::pb_current} of {cli::pb_total} days"
   )
@@ -203,7 +216,7 @@ getPPC <- function(cohort, cohortId, strata, days) {
           1,
           0
         ),
-        in_observation =  dplyr::if_else(.data$observation_end_date >= .data$working_date, 1, 0)
+        in_observation = dplyr::if_else(.data$observation_end_date >= .data$working_date, 1, 0)
       )
 
     # overall
@@ -213,23 +226,23 @@ getPPC <- function(cohort, cohortId, strata, days) {
 
     # stratified results
     for (j in seq_along(strata)) {
-      result[[paste0("strata_", j, "_" , i)]] <-
+      result[[paste0("strata_", j, "_", i)]] <-
         getStratifiedCounts(c, strata[[j]]) |>
         dplyr::mutate(time = i)
     }
-
   }
   cli::cli_progress_done(.envir = parent.frame())
 
-  result <- dplyr::bind_rows(result)  %>%
+  result <- dplyr::bind_rows(result) %>%
     dplyr::mutate(denominator_count = dplyr::if_else(is.na(.data$denominator_count),
-                                                     0, .data$denominator_count)) |>
+      0, .data$denominator_count
+    )) |>
     dplyr::mutate(outcome_count = dplyr::if_else(is.na(.data$outcome_count),
-                                                   0, .data$outcome_count))|>
+      0, .data$outcome_count
+    )) |>
     dplyr::mutate(cohort_name = .env$workingCohortName)
 
   result
-
 }
 
 getOverallStartingCount <- function(workingCohort) {
@@ -247,8 +260,7 @@ getOverallStartingCount <- function(workingCohort) {
 }
 
 getOverallCounts <- function(workingCohort) {
-
-    dplyr::tibble(
+  dplyr::tibble(
     # people still in observation
     denominator_count = workingCohort |>
       dplyr::filter(.data$in_observation == 1) |>
@@ -262,7 +274,6 @@ getOverallCounts <- function(workingCohort) {
     strata_name = "overall",
     strata_level = "overall"
   )
-
 }
 
 getStratifiedStartingCount <- function(workingCohort, workingStrata) {
@@ -270,13 +281,16 @@ getStratifiedStartingCount <- function(workingCohort, workingStrata) {
     dplyr::select(c("subject_id", dplyr::all_of(workingStrata))) |>
     dplyr::distinct() |>
     dplyr::group_by(dplyr::pick(.env$workingStrata)) %>%
-    dplyr::summarise(denominator_count = dplyr::n(),
-                     outcome_count = dplyr::n()) %>%
+    dplyr::summarise(
+      denominator_count = dplyr::n(),
+      outcome_count = dplyr::n()
+    ) %>%
     dplyr::ungroup() %>%
     tidyr::unite("strata_level",
-                 c(dplyr::all_of(.env$workingStrata)),
-                 remove = FALSE,
-                 sep = " &&& ") %>%
+      c(dplyr::all_of(.env$workingStrata)),
+      remove = FALSE,
+      sep = " &&& "
+    ) %>%
     dplyr::mutate(strata_name = !!paste0(workingStrata, collapse = " &&& ")) %>%
     dplyr::relocate("strata_level", .after = "strata_name") %>%
     dplyr::select(!dplyr::any_of(workingStrata))
@@ -302,13 +316,13 @@ getStratifiedCounts <- function(workingCohort, workingStrata) {
         dplyr::summarise(outcome_count = dplyr::n_distinct(.data$subject_id)),
       by = workingStrata
     ) %>%
-    dplyr::ungroup()|>
+    dplyr::ungroup() |>
     tidyr::unite("strata_level",
-                 c(dplyr::all_of(.env$workingStrata)),
-                 remove = FALSE,
-                 sep = " &&& ") %>%
+      c(dplyr::all_of(.env$workingStrata)),
+      remove = FALSE,
+      sep = " &&& "
+    ) %>%
     dplyr::mutate(strata_name = !!paste0(workingStrata, collapse = " &&& ")) %>%
     dplyr::relocate("strata_level", .after = "strata_name") %>%
     dplyr::select(!dplyr::any_of(workingStrata))
-
 }

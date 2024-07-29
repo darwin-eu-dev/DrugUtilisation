@@ -95,15 +95,27 @@ drugStrengthPattern <- function(cdm,
 
   # select desired columns
   variables <- c(
-    {if (pattern) "pattern_id"},
-    {if (patternDetails) c(
-      "amount_value", "numerator_value", "denominator_value",
-      "amount_unit_concept_id", "numerator_unit_concept_id",
-      "denominator_unit_concept_id"
-    )},
-    {if (unit) "unit"},
-    {if (formula) "formula_name"},
-    {if (ingredient) "ingredient_concept_id"}
+    {
+      if (pattern) "pattern_id"
+    },
+    {
+      if (patternDetails) {
+        c(
+          "amount_value", "numerator_value", "denominator_value",
+          "amount_unit_concept_id", "numerator_unit_concept_id",
+          "denominator_unit_concept_id"
+        )
+      }
+    },
+    {
+      if (unit) "unit"
+    },
+    {
+      if (formula) "formula_name"
+    },
+    {
+      if (ingredient) "ingredient_concept_id"
+    }
   )
   drugStrengthRelated <- drugStrengthRelated |>
     dplyr::select(dplyr::all_of(c("drug_concept_id", variables)))
@@ -213,7 +225,8 @@ patternTable <- function(cdm) {
     )) |>
     dplyr::arrange(.data$pattern_id) |>
     dplyr::left_join(
-      patterns |> dplyr::select(-"unit"), by = c("pattern_id", "formula_name")
+      patterns |> dplyr::select(-"unit"),
+      by = c("pattern_id", "formula_name")
     )
 
   # not present / new patterns
@@ -266,11 +279,12 @@ patternTable <- function(cdm) {
 #' codelistStratified
 #' }
 #'
-stratifyByUnit <- function(conceptSet, cdm , ingredientConceptId) {
+stratifyByUnit <- function(conceptSet, cdm, ingredientConceptId) {
   lifecycle::deprecate_soft(
     what = "stratifyByUnit()",
     when = "0.7.0",
-    with = "CodelistGenerator::stratifyByDoseUnit()")
+    with = "CodelistGenerator::stratifyByDoseUnit()"
+  )
   # check initial inputs
   checkInputs(
     conceptSet = conceptSet, cdm = cdm,
@@ -278,7 +292,7 @@ stratifyByUnit <- function(conceptSet, cdm , ingredientConceptId) {
   )
 
   # add the conceptSet to a tibble
-  x <- lapply(conceptSet, function(x){
+  x <- lapply(conceptSet, function(x) {
     x <- dplyr::tibble(drug_concept_id = x) |>
       dplyr::inner_join(
         drugStrengthPattern(

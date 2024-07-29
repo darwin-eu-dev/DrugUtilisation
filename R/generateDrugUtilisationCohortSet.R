@@ -51,7 +51,8 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' druglist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, c("acetaminophen", "metformin"))
+#'   cdm, c("acetaminophen", "metformin")
+#' )
 #'
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm,
@@ -60,7 +61,7 @@
 #' )
 #'
 #' cdm$drug_cohorts |>
-#' glimpse()
+#'   glimpse()
 #' }
 #'
 generateDrugUtilisationCohortSet <- function(cdm,
@@ -73,7 +74,6 @@ generateDrugUtilisationCohortSet <- function(cdm,
                                              priorObservation = lifecycle::deprecated(),
                                              cohortDateRange = lifecycle::deprecated(),
                                              limit = lifecycle::deprecated()) {
-
   if (lifecycle::is_present(durationRange)) {
     lifecycle::deprecate_warn(
       when = "0.7.0",
@@ -165,7 +165,8 @@ generateDrugUtilisationCohortSet <- function(cdm,
 #' cdm <- mockDrugUtilisation()
 #'
 #' druglist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, c("acetaminophen", "metformin"))
+#'   cdm, c("acetaminophen", "metformin")
+#' )
 #'
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm,

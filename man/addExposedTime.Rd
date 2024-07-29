@@ -52,7 +52,9 @@ library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 codelist <- CodelistGenerator::getDrugIngredientCodes(
-  cdm, name = "acetaminophen")
+  cdm,
+  name = "acetaminophen"
+)
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 )

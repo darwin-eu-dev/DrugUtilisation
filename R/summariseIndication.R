@@ -54,16 +54,18 @@
 #' indications <- list("headache" = 378253, "asthma" = 317009)
 #' cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 #'
-#' cdm <- generateIngredientCohortSet(cdm = cdm, name = "drug_cohort",
-#'                                    ingredient = "acetaminophen")
+#' cdm <- generateIngredientCohortSet(
+#'   cdm = cdm, name = "drug_cohort",
+#'   ingredient = "acetaminophen"
+#' )
 #'
 #' cdm$drug_cohort |>
 #'   summariseIndication(
 #'     indicationCohortName = "indication_cohorts",
 #'     unknownIndicationTable = "condition_occurrence",
-#'     indicationWindow = list(c(-Inf, 0))) |>
-#'  glimpse()
-#'
+#'     indicationWindow = list(c(-Inf, 0))
+#'   ) |>
+#'   glimpse()
 #' }
 #'
 summariseIndication <- function(cohort,
@@ -116,7 +118,8 @@ summariseIndication <- function(cohort,
     "dplyr::case_when(",
     paste0(
       ".data$variable_name == 'indication_", names(indicationWindow), "' ~ 'Indication ",
-      windowNames, "'", collapse = ", "
+      windowNames, "'",
+      collapse = ", "
     ),
     ", .default = .data$variable_name)"
   ) |>
@@ -141,7 +144,8 @@ summariseIndication <- function(cohort,
     dplyr::mutate(!!!q) |>
     # make sure all indications are reported
     indicationCombinations(
-      settings(cdm[[indicationCohortName]]), indicationCohortId, unknownIndicationTable)
+      settings(cdm[[indicationCohortName]]), indicationCohortId, unknownIndicationTable
+    )
 
   result <- result |>
     omopgenerics::newSummarisedResult(
@@ -200,7 +204,9 @@ indicationCombinations <- function(result, set, indicationCohortId, unknownIndic
     set <- set |>
       dplyr::filter(.data$cohort_definition_id %in% .env$indicationCohortId)
   }
-  indications <- set$cohort_name |> sort() |> rev()
+  indications <- set$cohort_name |>
+    sort() |>
+    rev()
   indications <- c(getCombinations(set$cohort_name), ifelse(length(unknownIndicationTable) > 0, "unknown", character()), "none")
   allcombs <- dplyr::tibble(
     "variable_name" = c("number records", "number subjects"),
@@ -212,7 +218,8 @@ indicationCombinations <- function(result, set, indicationCohortId, unknownIndic
   order <- result |>
     dplyr::select(
       "result_id", "cdm_name", "group_name", "group_level", "strata_name",
-      "strata_level", "additional_name", "additional_level") |>
+      "strata_level", "additional_name", "additional_level"
+    ) |>
     dplyr::distinct() |>
     dplyr::cross_join(allcombs) |>
     dplyr::mutate("order_id" = dplyr::row_number())
@@ -222,13 +229,15 @@ indicationCombinations <- function(result, set, indicationCohortId, unknownIndic
     dplyr::mutate(
       "estimate_value" = "0",
       "estimate_name" = "count",
-      "estimate_type" = "integer") |>
+      "estimate_type" = "integer"
+    ) |>
     dplyr::union_all(
       order |>
         dplyr::mutate(
           "estimate_value" = "0",
           "estimate_name" = "percentage",
-          "estimate_type" = "percentage")
+          "estimate_type" = "percentage"
+        )
     ) |>
     dplyr::select(-"order_id") |>
     dplyr::anti_join(result, by = cols)
@@ -252,7 +261,9 @@ getCombinations <- function(indications) {
     dplyr::select(-"sum")
   indications <- character()
   for (k in 2:nrow(combs)) {
-    cols <- combs[k,] |> as.list() |> unlist()
+    cols <- combs[k, ] |>
+      as.list() |>
+      unlist()
     nms <- names(cols)[cols == 1]
     indications <- c(indications, paste0(nms, collapse = " and "))
   }

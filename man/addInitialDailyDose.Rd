@@ -53,7 +53,7 @@ library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 
-cdm$cohort1|>
+cdm$cohort1 |>
   addInitialDailyDose(ingredientConceptId = 1125315)
 }
 

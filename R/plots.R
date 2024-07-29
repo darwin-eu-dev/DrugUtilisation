@@ -54,11 +54,15 @@ plotTreatment <- function(result,
   rlang::check_installed("ggplot2")
   # check input
   assertChoice(
-    facetX, choices = c("window_name", "cdm_name", "cohort_name", "strata"),
-    null = TRUE, unique = T)
+    facetX,
+    choices = c("window_name", "cdm_name", "cohort_name", "strata"),
+    null = TRUE, unique = T
+  )
   assertChoice(
-    facetY, choices = c("window_name", "cdm_name", "cohort_name", "strata"),
-    null = TRUE, unique = T)
+    facetY,
+    choices = c("window_name", "cdm_name", "cohort_name", "strata"),
+    null = TRUE, unique = T
+  )
   assertLogical(splitStrata, length = 1)
   assertChoice(
     colour,
@@ -69,7 +73,8 @@ plotTreatment <- function(result,
 
   result <- omopgenerics::newSummarisedResult(result) |>
     visOmopResults::filterSettings(
-      .data$result_type == "summarise_treatment") |>
+      .data$result_type == "summarise_treatment"
+    ) |>
     dplyr::filter(.data$estimate_name == "percentage")
 
   if (nrow(result) == 0) {
@@ -78,7 +83,9 @@ plotTreatment <- function(result,
   }
 
   # to display order accordingly
-  lev <- result$variable_name |> unique() |> rev()
+  lev <- result$variable_name |>
+    unique() |>
+    rev()
 
   warnDuplicatePoints(result, unique(c(facetX, facetY, colour)))
 
@@ -95,7 +102,8 @@ plotTreatment <- function(result,
 
   result <- result |>
     dplyr::select(
-      "cdm_name", "cohort_name" = "group_level", dplyr::all_of(strata),
+      "cdm_name",
+      "cohort_name" = "group_level", dplyr::all_of(strata),
       "treatment" = "variable_name", "estimate_value",
       "window_name" = "additional_level"
     ) |>
@@ -125,7 +133,6 @@ plotTreatment <- function(result,
     ggplot2::geom_col() +
     ggplot2::facet_grid(form) +
     ggplot2::labs(fill = colourLab, x = "Percentage", y = "Treatment")
-
 }
 
 #' Generate a custom ggplot2 from a summarised_result object generated with
@@ -175,11 +182,15 @@ plotDrugRestart <- function(result,
   rlang::check_installed("ggplot2")
   # check input
   assertChoice(
-    facetX, choices = c("cdm_name", "cohort_name", "strata", "variable_name"),
-    null = TRUE, unique = TRUE)
+    facetX,
+    choices = c("cdm_name", "cohort_name", "strata", "variable_name"),
+    null = TRUE, unique = TRUE
+  )
   assertChoice(
-    facetY, choices = c("cdm_name", "cohort_name", "strata", "variable_name"),
-    null = TRUE, unique = TRUE)
+    facetY,
+    choices = c("cdm_name", "cohort_name", "strata", "variable_name"),
+    null = TRUE, unique = TRUE
+  )
   assertLogical(splitStrata, length = 1)
   assertChoice(
     colour,
@@ -215,13 +226,15 @@ plotDrugRestart <- function(result,
 
   result <- result |>
     dplyr::select(
-      "cdm_name", "cohort_name" = "group_level", dplyr::all_of(strata),
+      "cdm_name",
+      "cohort_name" = "group_level", dplyr::all_of(strata),
       "variable_name", "estimate_value", "variable_level"
     ) |>
     dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
     dplyr::mutate("variable_level" = factor(
-      .data$variable_level, levels = lev, labels = stringr::str_to_sentence(lev)
-      ))
+      .data$variable_level,
+      levels = lev, labels = stringr::str_to_sentence(lev)
+    ))
 
   if (length(colour) > 0) {
     cols <- colour
@@ -254,7 +267,6 @@ plotDrugRestart <- function(result,
     ggplot2::facet_grid(form) +
     ggplot2::labs(fill = colourLab, x = "Percentage", y = "Event") +
     ggplot2::theme(legend.title = ggplot2::element_blank())
-
 }
 
 warnDuplicatePoints <- function(result, exclude) {
@@ -288,9 +300,9 @@ substituteStrata <- function(x, strata) {
     if (id == 1) {
       x <- c(strata, x[-1])
     } else if (id == len) {
-      x <- c(x[1:(id-1)], strata)
+      x <- c(x[1:(id - 1)], strata)
     } else {
-      x <- c(x[1:(id-1)], strata, x[(id+1):len])
+      x <- c(x[1:(id - 1)], strata, x[(id + 1):len])
     }
   }
   return(x)
@@ -321,16 +333,17 @@ substituteStrata <- function(x, strata) {
 #' cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 #'
 #' cdm <- generateIngredientCohortSet(
-#'   cdm = cdm, name = "drug_cohort", ingredient = "acetaminophen")
+#'   cdm = cdm, name = "drug_cohort", ingredient = "acetaminophen"
+#' )
 #'
 #' result <- cdm$drug_cohort |>
 #'   summariseIndication(
 #'     indicationCohortName = "indication_cohorts",
 #'     unknownIndicationTable = "condition_occurrence",
-#'     indicationWindow = list(c(-Inf, 0), c(-365, 0)))
+#'     indicationWindow = list(c(-Inf, 0), c(-365, 0))
+#'   )
 #'
 #' plotIndication(result)
-#'
 #' }
 #'
 plotIndication <- function(result,
@@ -350,7 +363,7 @@ plotIndication <- function(result,
   assertCharacter(x)
   assertCharacter(facet)
   assertCharacter(color)
-  if(splitStrata) {
+  if (splitStrata) {
     strata <- visOmopResults::strataColumns(result)
   } else {
     strata <- "strata"
@@ -377,18 +390,22 @@ plotIndication <- function(result,
   } else {
     result <- result |>
       dplyr::mutate(
-        "strata" = paste0(.data$strata_name, ": ", .data$strata_level))
+        "strata" = paste0(.data$strata_name, ": ", .data$strata_level)
+      )
   }
   result <- result |>
     dplyr::filter(.data$estimate_name == "percentage") |>
     dplyr::select(
-      "cdm_name", "cohort_name" = "group_level",
+      "cdm_name",
+      "cohort_name" = "group_level",
       "indication" = "variable_level", "window" = "variable_name",
-      dplyr::all_of(strata), "estimate_value") |>
+      dplyr::all_of(strata), "estimate_value"
+    ) |>
     dplyr::mutate("estimate_value" = as.numeric(.data$estimate_value)) |>
     dplyr::group_by(dplyr::across(!c("estimate_value", "indication"))) |>
     dplyr::mutate(
-      estimate_value = 100 * .data$estimate_value / sum(.data$estimate_value)) |>
+      estimate_value = 100 * .data$estimate_value / sum(.data$estimate_value)
+    ) |>
     dplyr::ungroup() |>
     tidyr::unite(col = "x", dplyr::all_of(x), remove = FALSE)
 
@@ -419,7 +436,8 @@ plotIndication <- function(result,
   p <- result |>
     ggplot2::ggplot(mapping = ggplot2::aes(
       x = .data$x, y = .data$estimate_value, color = .data$color,
-      fill = .data$color)) +
+      fill = .data$color
+    )) +
     ggplot2::geom_col() +
     ggplot2::xlab("") +
     ggplot2::ylab("Percentage") +
@@ -440,7 +458,7 @@ insertValue <- function(x, pos, value) {
     } else if (pos == length(x)) {
       x <- c(x[-length(x)], value)
     } else {
-      x <- c(x[1:(pos-1)], value, x[(pos+1):length(x)])
+      x <- c(x[1:(pos - 1)], value, x[(pos + 1):length(x)])
     }
   }
   return(x)

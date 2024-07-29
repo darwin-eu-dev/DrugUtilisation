@@ -77,7 +77,7 @@
 #' )
 #'
 #' cdm$acetaminophen |>
-#' glimpse()
+#'   glimpse()
 #' }
 #'
 generateIngredientCohortSet <- function(cdm,
@@ -94,7 +94,6 @@ generateIngredientCohortSet <- function(cdm,
                                         priorObservation = lifecycle::deprecated(),
                                         cohortDateRange = lifecycle::deprecated(),
                                         limit = lifecycle::deprecated()) {
-
   if (lifecycle::is_present(durationRange)) {
     lifecycle::deprecate_warn(
       when = "0.7.0",

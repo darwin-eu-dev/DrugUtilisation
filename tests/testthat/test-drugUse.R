@@ -1,4 +1,3 @@
-
 test_that("test flags", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema(), seed = 1)

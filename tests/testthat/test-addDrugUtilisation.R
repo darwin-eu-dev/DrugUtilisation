@@ -1,5 +1,6 @@
 
 test_that("Basic functionality", {
+  skip_on_cran()
   # basic functionality
   cdm <- mockDrugUtilisation(
     con = connection(),

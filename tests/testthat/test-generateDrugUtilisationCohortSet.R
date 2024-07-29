@@ -41,7 +41,8 @@ test_that("basic functionality drug_conceptId", {
 
   # check gap
   cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, gapEra = 0
+    cdm, "dus", acetaminophen,
+    gapEra = 0
   )
   expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 4)
   cdm1 <- generateDrugUtilisationCohortSet(

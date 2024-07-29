@@ -53,21 +53,21 @@ summariseTreatment <- function(cohort,
                                strata = list(),
                                indexDate = "cohort_start_date",
                                censorDate = NULL,
-                               minCellCount = lifecycle::deprecated()){
-
+                               minCellCount = lifecycle::deprecated()) {
   if (lifecycle::is_present(minCellCount)) {
     lifecycle::deprecate_warn("0.7.0", "summariseCodeUse(minCellCount)", with = "omopgenerics::suppress()")
   }
 
-  return(summariseTreatmentInternal(cohort = cohort,
-                                    strata = strata,
-                                    window = window,
-                                    indexDate = indexDate,
-                                    censorDate = censorDate,
-                                    treatmentCohortName = treatmentCohortName,
-                                    treatmentCohortId   = treatmentCohortId,
-                                    combination  = FALSE))
-
+  return(summariseTreatmentInternal(
+    cohort = cohort,
+    strata = strata,
+    window = window,
+    indexDate = indexDate,
+    censorDate = censorDate,
+    treatmentCohortName = treatmentCohortName,
+    treatmentCohortId = treatmentCohortId,
+    combination = FALSE
+  ))
 }
 
 
@@ -171,11 +171,13 @@ summariseTreatmentInternal <- function(cohort,
       by = "window"
     ) |>
     dplyr::select(-c(
-      "cdm_name", "additional_name", "additional_level", "window")) |>
+      "cdm_name", "additional_name", "additional_level", "window"
+    )) |>
     treatmentCombinations(
       namesWindow = namesWindow,
       treatments = treatments,
-      cohortNames = cohortNames) |>
+      cohortNames = cohortNames
+    ) |>
     visOmopResults::uniteAdditional(cols = "window_name") |>
     PatientProfiles::addCdmName(cdm = cdm)
 
@@ -199,14 +201,16 @@ untreated <- function(cols, w) {
 }
 treatmentCombinations <- function(result, namesWindow, treatments, cohortNames) {
   treatments <- dplyr::tibble(
-    "variable_name" = treatments, "variable_level" = NA_character_) |>
+    "variable_name" = treatments, "variable_level" = NA_character_
+  ) |>
     dplyr::mutate(order_treatment = dplyr::row_number())
   strata <- result |>
     dplyr::select("result_id", "strata_name", "strata_level") |>
     dplyr::distinct() |>
     dplyr::mutate(order_strata = dplyr::row_number())
   cohorts <- dplyr::tibble(
-    group_name = "cohort_name", group_level = cohortNames) |>
+    group_name = "cohort_name", group_level = cohortNames
+  ) |>
     dplyr::mutate(order_group = dplyr::row_number())
   windows <- dplyr::tibble(window_name = namesWindow) |>
     dplyr::mutate(order_window = dplyr::row_number())
@@ -216,7 +220,8 @@ treatmentCombinations <- function(result, namesWindow, treatments, cohortNames) 
     dplyr::cross_join(treatments) |>
     dplyr::arrange(
       .data$order_group, .data$order_strata, .data$order_window,
-      .data$order_treatment) |>
+      .data$order_treatment
+    ) |>
     dplyr::mutate("id" = dplyr::row_number()) |>
     dplyr::select(!dplyr::starts_with("order"))
   cols <- colnames(result)
@@ -225,13 +230,15 @@ treatmentCombinations <- function(result, namesWindow, treatments, cohortNames) 
     dplyr::mutate(
       "estimate_value" = "0",
       "estimate_name" = "count",
-      "estimate_type" = "integer") |>
+      "estimate_type" = "integer"
+    ) |>
     dplyr::union_all(
       order |>
         dplyr::mutate(
           "estimate_value" = "0",
           "estimate_name" = "percentage",
-          "estimate_type" = "percentage")
+          "estimate_type" = "percentage"
+        )
     ) |>
     dplyr::select(-"id") |>
     dplyr::anti_join(result, by = cols)

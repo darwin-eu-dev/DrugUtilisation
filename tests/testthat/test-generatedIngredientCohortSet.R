@@ -12,7 +12,8 @@ test_that("test same results for ingredient cohorts", {
   cdm <- generateDrugUtilisationCohortSet(
     cdm = cdm,
     conceptSet = CodelistGenerator::getDrugIngredientCodes(
-      cdm = cdm, name = "acetaminophen"),
+      cdm = cdm, name = "acetaminophen"
+    ),
     name = "test_cohort_2"
   )
 
@@ -36,15 +37,17 @@ test_that("test same results for ingredient cohorts", {
 
 test_that("options", {
   skip_on_cran()
-  cdm <- mockDrugUtilisation(con = connection(),
-                             writeSchema = schema())
+  cdm <- mockDrugUtilisation(
+    con = connection(),
+    writeSchema = schema()
+  )
 
   expect_no_error(generateIngredientCohortSet(
-  cdm = cdm,
-  ingredient = "acetaminophen",
-  doseUnit = "milligram",
-  name = "test_cohort_1"))
-
+    cdm = cdm,
+    ingredient = "acetaminophen",
+    doseUnit = "milligram",
+    name = "test_cohort_1"
+  ))
 })
 
 test_that("handle empty ingredient name gracefully", {
@@ -74,7 +77,8 @@ test_that("date works", {
 
   cdm$date_range_test <- cdm$date_range_test |>
     requireDrugInDateRange(
-      dateRange = c(as.Date("2020-01-01"), as.Date("2020-12-31"))) |>
+      dateRange = c(as.Date("2020-01-01"), as.Date("2020-12-31"))
+    ) |>
     requireDrugInDateRange(
       dateRange = c(as.Date("2020-01-01"), as.Date("2020-12-31")),
       indexDate = "cohort_end_date"
@@ -94,7 +98,7 @@ test_that("ingredient list and vector both work", {
   skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
-  ingredient1 = c("simvastatin", "acetaminophen", "metformin")
+  ingredient1 <- c("simvastatin", "acetaminophen", "metformin")
 
   cdm <- generateIngredientCohortSet(
     cdm = cdm,
@@ -104,8 +108,10 @@ test_that("ingredient list and vector both work", {
 
   expect_true(length(cdm$test_vector |> dplyr::pull("cohort_definition_id") |> unique()) == 3)
 
-  ingredient2 = list( "test_1" = c("simvastatin", "acetaminophen"),
-                      "test_2" = "metformin")
+  ingredient2 <- list(
+    "test_1" = c("simvastatin", "acetaminophen"),
+    "test_2" = "metformin"
+  )
 
   cdm <- generateIngredientCohortSet(
     cdm = cdm,
@@ -115,12 +121,13 @@ test_that("ingredient list and vector both work", {
   expect_true(length(cdm$test_list |> dplyr::pull("cohort_definition_id") |> unique()) == 2)
 
   expect_true(all(
-    settings(cdm$test_vector) |> dplyr::pull("cohort_name")|> sort() == c(
-      "161_acetaminophen", "36567_simvastatin", "6809_metformin")
+    settings(cdm$test_vector) |> dplyr::pull("cohort_name") |> sort() == c(
+      "161_acetaminophen", "36567_simvastatin", "6809_metformin"
+    )
   ))
 
-  expect_true(all(settings(cdm$test_list) |> dplyr::pull("cohort_name")|>
-                    sort() == c("test_1","test_2")))
+  expect_true(all(settings(cdm$test_list) |> dplyr::pull("cohort_name") |>
+    sort() == c("test_1", "test_2")))
 
   mockDisconnect(cdm = cdm)
 })

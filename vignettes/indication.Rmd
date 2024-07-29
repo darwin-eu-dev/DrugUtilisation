@@ -51,7 +51,7 @@ We will use *acetaminophen* as our example drug. We'll start by creating a cohor
 cdm <- generateIngredientCohortSet(
   cdm = cdm,
   name = "acetaminophen_users",
-  ingredient = "acetaminophen", 
+  ingredient = "acetaminophen",
   gapEra = 7
 )
 ```
@@ -63,11 +63,14 @@ Note that `addIndication` works with a cohort as input, in this example we will 
 Next we will create a set of indication cohorts. In this case we will create cohorts for sinusitis  and bronchitis using `CDMConnector::generateConceptCohortSet()`. 
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
-indications <- list(sinusitis = c(257012, 4294548, 40481087),
-                    bronchitis = c(260139, 258780))
+indications <- list(
+  sinusitis = c(257012, 4294548, 40481087),
+  bronchitis = c(260139, 258780)
+)
 
 cdm <- CDMConnector::generateConceptCohortSet(
-  cdm = cdm, name = "indications_cohort", indications, end = 0)
+  cdm = cdm, name = "indications_cohort", indications, end = 0
+)
 cdm
 ```
 
@@ -80,17 +83,17 @@ Now that we have these two cohort tables, one with our drug cohort and another w
 cdm[["acetaminophen_users"]] <- cdm[["acetaminophen_users"]] |>
   addIndication(
     indicationCohortName = "indications_cohort",
-    indicationWindow =  list(c(-30,0)), 
+    indicationWindow = list(c(-30, 0)),
     indexDate = "cohort_start_date"
   )
-cdm[["acetaminophen_users"]] |> 
+cdm[["acetaminophen_users"]] |>
   dplyr::glimpse()
 ```
 
 We can see that individuals are classified as having sinusistis (without bronchitis), bronchitis (without sinusitis), sinusitis and bronchitis, or no observed indication.
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
-cdm[["acetaminophen_users"]] |> 
-  dplyr::group_by(indication_m30_to_0) |> 
+cdm[["acetaminophen_users"]] |>
+  dplyr::group_by(indication_m30_to_0) |>
   dplyr::tally()
 ```
 
@@ -101,30 +104,30 @@ cdm[["acetaminophen_users"]] |>
   dplyr::select(!"indication_m30_to_0") |>
   addIndication(
     indicationCohortName = "indications_cohort",
-    indicationWindow =  list(c(-30,0)),
+    indicationWindow = list(c(-30, 0)),
     unknownIndicationTable = "condition_occurrence"
-  ) |> 
-  dplyr::group_by(indication_m30_to_0) |> 
+  ) |>
+  dplyr::group_by(indication_m30_to_0) |>
   dplyr::tally()
 ```
 
 We can add indications for multiple time windows. Unsurprisingly we find more potential indications for wider windows (although this will likely increase our risk of false positives).
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 cdm[["acetaminophen_users"]] <- cdm[["acetaminophen_users"]] |>
-  dplyr::select(!"indication_m30_to_0") |> 
+  dplyr::select(!"indication_m30_to_0") |>
   addIndication(
     indicationCohortName = "indications_cohort",
-    indicationWindow =  list(c(0,0), c(-30,0), c(-365,0)),
+    indicationWindow = list(c(0, 0), c(-30, 0), c(-365, 0)),
     unknownIndicationTable = "condition_occurrence"
   )
-cdm[["acetaminophen_users"]] |> 
-  dplyr::group_by(indication_0_to_0) |> 
+cdm[["acetaminophen_users"]] |>
+  dplyr::group_by(indication_0_to_0) |>
   dplyr::tally()
-cdm[["acetaminophen_users"]] |> 
-  dplyr::group_by(indication_m30_to_0) |> 
+cdm[["acetaminophen_users"]] |>
+  dplyr::group_by(indication_m30_to_0) |>
   dplyr::tally()
-cdm[["acetaminophen_users"]] |> 
-  dplyr::group_by(indication_m365_to_0) |> 
+cdm[["acetaminophen_users"]] |>
+  dplyr::group_by(indication_m365_to_0) |>
   dplyr::tally()
 ```
 
@@ -134,11 +137,11 @@ Instead of adding variables with indications like above, we could instead obtain
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 indicationSummary <- cdm[["acetaminophen_users"]] |>
-  dplyr::select(!dplyr::starts_with("indication")) |>  
+  dplyr::select(!dplyr::starts_with("indication")) |>
   summariseIndication(
     indicationCohortName = "indications_cohort",
-    indicationWindow =  list(c(0,0),c(-30,0),c(-365,0)),
-    unknownIndicationTable =  c("condition_occurrence")
+    indicationWindow = list(c(0, 0), c(-30, 0), c(-365, 0)),
+    unknownIndicationTable = c("condition_occurrence")
   )
 ```
 
@@ -155,13 +158,13 @@ As well as getting these overall results, we can also stratify the results by so
 
 ```{r, eval=TRUE, message= FALSE, warning=FALSE}
 indicationSummaryStratified <- cdm[["acetaminophen_users"]] |>
-  dplyr::select(!dplyr::starts_with("indication")) |> 
+  dplyr::select(!dplyr::starts_with("indication")) |>
   PatientProfiles::addDemographics(ageGroup = list(c(0, 19), c(20, 150))) |>
   summariseIndication(
     strata = list("age_group", "sex"),
     indicationCohortName = "indications_cohort",
-    indicationWindow =  list(c(0, 0), c(-30, 0), c(-365, 0)),
-    unknownIndicationTable =  c("condition_occurrence")
+    indicationWindow = list(c(0, 0), c(-30, 0), c(-365, 0)),
+    unknownIndicationTable = c("condition_occurrence")
   )
 ```
 
@@ -173,7 +176,7 @@ tableIndication(indicationSummaryStratified)
 indicationSummaryStratified |>
   dplyr::filter(variable_name == "Indication on index date") |>
   plotIndication(
-    x = c("strata"), 
+    x = c("strata"),
     facet = c("cdm_name", "cohort_name"),
     color = "indication",
     splitStrata = FALSE

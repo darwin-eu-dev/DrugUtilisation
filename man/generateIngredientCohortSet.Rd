@@ -95,7 +95,7 @@ cdm <- generateIngredientCohortSet(
 )
 
 cdm$acetaminophen |>
-glimpse()
+  glimpse()
 }
 
 }

@@ -31,7 +31,7 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' codelist <- readConceptList(
-#'   path = system.file("concepts",package="DrugUtilisation"), cdm = cdm
+#'   path = system.file("concepts", package = "DrugUtilisation"), cdm = cdm
 #' )
 #' }
 #'

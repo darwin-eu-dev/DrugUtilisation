@@ -104,10 +104,8 @@ test_that("input validation", {
   cohort1 <- dplyr::tibble(
     cohort_definition_id = as.integer(c()),
     subject_id = as.integer(c()),
-    cohort_start_date = as.Date(c(
-    )),
-    cohort_end_date = as.Date(c(
-    ))
+    cohort_start_date = as.Date(c()),
+    cohort_end_date = as.Date(c())
   )
 
   observationPeriod <- dplyr::tibble(
@@ -131,9 +129,11 @@ test_that("input validation", {
     )
 
   expect_no_error(
-    requirePriorDrugWashout(cohort = cdm$cohort1,
-                           days = 90,
-                           name = "cohort2")
+    requirePriorDrugWashout(
+      cohort = cdm$cohort1,
+      days = 90,
+      name = "cohort2"
+    )
   )
 
   mockDisconnect(cdm = cdm)
@@ -172,49 +172,54 @@ test_that("requirePrioUseWashout example", {
       observation_period = observationPeriod
     )
 
-  cdm$cohort2 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 90,
-                                        name = "cohort2")
+  cdm$cohort2 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 90,
+    name = "cohort2"
+  )
 
   expect_true((cdm$cohort1 |>
-                 dplyr::tally() |>
-                 dplyr::pull("n") |>
-                 as.numeric()) !=
-                (cdm$cohort2 |>
-                   dplyr::tally() |>
-                   dplyr::pull("n") |>
-                   as.numeric())
-  )
+    dplyr::tally() |>
+    dplyr::pull("n") |>
+    as.numeric()) !=
+    (cdm$cohort2 |>
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()))
 
   expect_equal(
     (cdm$cohort2 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     2
   )
 
-  cdm$cohort2 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 10,
-                                        name = "cohort2")
+  cdm$cohort2 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 10,
+    name = "cohort2"
+  )
 
   expect_equal(
     (cdm$cohort2 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     3
   )
 
-  cdm$cohort2 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = Inf,
-                                        name = "cohort2")
+  cdm$cohort2 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = Inf,
+    name = "cohort2"
+  )
 
   expect_equal(
     (cdm$cohort2 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     2
   )
 
@@ -247,21 +252,25 @@ test_that("requirePrioUseWashout example", {
       observation_period = observationPeriod
     )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 90,
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 90,
+    name = "cohort3"
+  )
 
   expect_equal(
     (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     2
   )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 0,
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 0,
+    name = "cohort3"
+  )
 
   expect_equal(
     cdm$cohort3 |> dplyr::tally() |> dplyr::pull("n") |> as.numeric(),
@@ -270,36 +279,41 @@ test_that("requirePrioUseWashout example", {
 
   cdm$cohort3 <- cdm$cohort1 |>
     requirePriorDrugWashout(
-      days = 90, cohortId = 1, name = "cohort3")
+      days = 90, cohortId = 1, name = "cohort3"
+    )
 
   expect_equal(
     cdm$cohort3 |> dplyr::tally() |> dplyr::pull("n") |> as.numeric(),
     3
   )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 90,
-                                        cohortId = 2,
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 90,
+    cohortId = 2,
+    name = "cohort3"
+  )
 
   expect_equal(
     (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     3
   )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 90,
-                                        cohortId = c(1,2),
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 90,
+    cohortId = c(1, 2),
+    name = "cohort3"
+  )
 
   expect_equal(
     (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     2
   )
 
@@ -339,65 +353,75 @@ test_that("test cohortId, example 2", {
       observation_period = observationPeriod
     )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 90,
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 90,
+    name = "cohort3"
+  )
 
   expect_equal(
     (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     4
   )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 0,
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 0,
+    name = "cohort3"
+  )
 
   expect_equal(
     (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     4
   )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 90,
-                                        cohortId = 1,
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 90,
+    cohortId = 1,
+    name = "cohort3"
+  )
   expect_equal(
     (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     4
   )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 90,
-                                        cohortId = 2,
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 90,
+    cohortId = 2,
+    name = "cohort3"
+  )
 
   expect_equal(
     (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     4
   )
 
-  cdm$cohort3 <- requirePriorDrugWashout(cohort = cdm$cohort1,
-                                        days = 90,
-                                        cohortId = c(1,2),
-                                        name = "cohort3")
+  cdm$cohort3 <- requirePriorDrugWashout(
+    cohort = cdm$cohort1,
+    days = 90,
+    cohortId = c(1, 2),
+    name = "cohort3"
+  )
 
   expect_equal(
     (cdm$cohort3 |>
-       dplyr::tally() |>
-       dplyr::pull("n") |>
-       as.numeric()),
+      dplyr::tally() |>
+      dplyr::pull("n") |>
+      as.numeric()),
     4
   )
 
@@ -433,9 +457,9 @@ test_that("requireDrugInDateRange", {
   expect_true(nrow(cdm$cohort3 |> dplyr::collect()) == 1)
   expect_true(cdm$cohort3 |> dplyr::pull("subject_id") == 1)
   expect_true(all(attrition(cdm$cohort3)$reason == c(
-    'Initial qualifying events', 'require cohort_start_date between 2020-01-01 to 2020-12-12',
-    'Initial qualifying events', 'require cohort_start_date between 2020-01-01 to 2020-12-12',
-    'Initial qualifying events', 'require cohort_start_date between 2020-01-01 to 2020-12-12'
+    "Initial qualifying events", "require cohort_start_date between 2020-01-01 to 2020-12-12",
+    "Initial qualifying events", "require cohort_start_date between 2020-01-01 to 2020-12-12",
+    "Initial qualifying events", "require cohort_start_date between 2020-01-01 to 2020-12-12"
   )))
 
   cdm$cohort4 <- requireDrugInDateRange(
@@ -448,9 +472,9 @@ test_that("requireDrugInDateRange", {
   expect_true(nrow(cdm$cohort4 |> dplyr::collect()) == 4)
   expect_true(cdm$cohort4 |> dplyr::pull("cohort_definition_id") |> unique() == 1)
   expect_true(all(attrition(cdm$cohort4)$reason == c(
-    'Initial qualifying events',
-    'Initial qualifying events', 'require cohort_start_date between 2020-01-01 to 2020-12-12',
-    'Initial qualifying events', 'require cohort_start_date between 2020-01-01 to 2020-12-12'
+    "Initial qualifying events",
+    "Initial qualifying events", "require cohort_start_date between 2020-01-01 to 2020-12-12",
+    "Initial qualifying events", "require cohort_start_date between 2020-01-01 to 2020-12-12"
   )))
 
   cdm$cohort5 <- requireDrugInDateRange(
@@ -462,9 +486,9 @@ test_that("requireDrugInDateRange", {
   expect_true(nrow(cdm$cohort5 |> dplyr::collect()) == 2)
   expect_true(all(cdm$cohort5 |> dplyr::pull("cohort_definition_id") |> unique() |> sort() == c(1, 3)))
   expect_true(all(attrition(cdm$cohort5)$reason == c(
-    'Initial qualifying events', 'require cohort_start_date before 2000-01-01',
-    'Initial qualifying events', 'require cohort_start_date before 2000-01-01',
-    'Initial qualifying events', 'require cohort_start_date before 2000-01-01'
+    "Initial qualifying events", "require cohort_start_date before 2000-01-01",
+    "Initial qualifying events", "require cohort_start_date before 2000-01-01",
+    "Initial qualifying events", "require cohort_start_date before 2000-01-01"
   )))
 
   cdm$cohort6 <- requireDrugInDateRange(
@@ -477,9 +501,9 @@ test_that("requireDrugInDateRange", {
   expect_true(all(cdm$cohort6 |> dplyr::pull("cohort_definition_id") |> sort() == c(1, 1, 2, 3)))
   expect_true(all(cdm$cohort6 |> dplyr::pull("subject_id") |> unique() |> sort() == c(1, 2, 4, 9)))
   expect_true(all(attrition(cdm$cohort6)$reason == c(
-    'Initial qualifying events', 'require cohort_end_date after 2020-01-01',
-    'Initial qualifying events', 'require cohort_end_date after 2020-01-01',
-    'Initial qualifying events', 'require cohort_end_date after 2020-01-01'
+    "Initial qualifying events", "require cohort_end_date after 2020-01-01",
+    "Initial qualifying events", "require cohort_end_date after 2020-01-01",
+    "Initial qualifying events", "require cohort_end_date after 2020-01-01"
   )))
 
   cohort1 <- cdm$cohort1 |> collectCohort()
@@ -489,9 +513,9 @@ test_that("requireDrugInDateRange", {
     indexDate = "cohort_end_date"
   )
   expect_true(all(attrition(cdm$cohort1)$reason == c(
-    'Initial qualifying events', 'No date restrictions to cohort_end_date',
-    'Initial qualifying events', 'No date restrictions to cohort_end_date',
-    'Initial qualifying events', 'No date restrictions to cohort_end_date'
+    "Initial qualifying events", "No date restrictions to cohort_end_date",
+    "Initial qualifying events", "No date restrictions to cohort_end_date",
+    "Initial qualifying events", "No date restrictions to cohort_end_date"
   )))
   expect_equal(cohort1, cdm$cohort1 |> collectCohort())
 
@@ -519,12 +543,12 @@ test_that("requireObservationBeforeDrug", {
       observation_period_id = 1:10 |> as.integer(),
       person_id = 1:10 |> as.integer(),
       observation_period_start_date = as.Date(c(
-        '2020-04-01', '2022-05-21', '1983-08-02', '2020-12-16', '2013-01-18',
-        '1989-05-25', '2015-03-10', '2012-01-29', '2022-06-01', '1990-02-25'
+        "2020-04-01", "2022-05-21", "1983-08-02", "2020-12-16", "2013-01-18",
+        "1989-05-25", "2015-03-10", "2012-01-29", "2022-06-01", "1990-02-25"
       )),
       observation_period_end_date = as.Date(c(
-        '2021-04-25', '2022-06-13', '2010-08-27', '2022-05-25', '2020-05-30',
-        '1992-04-27', '2019-02-02', '2012-02-19', '2022-12-23', '2006-03-14'
+        "2021-04-25", "2022-06-13", "2010-08-27", "2022-05-25", "2020-05-30",
+        "1992-04-27", "2019-02-02", "2012-02-19", "2022-12-23", "2006-03-14"
       )),
       period_type_concept_id = 44814724L
     )
@@ -538,9 +562,9 @@ test_that("requireObservationBeforeDrug", {
   )
   expect_equal(cdm$cohort1 |> collectCohort(), cdm$cohort3 |> collectCohort())
   expect_true(all(attrition(cdm$cohort3)$reason == c(
-    'Initial qualifying events', 'require prior observation of 0 days',
-    'Initial qualifying events', 'require prior observation of 0 days',
-    'Initial qualifying events', 'require prior observation of 0 days'
+    "Initial qualifying events", "require prior observation of 0 days",
+    "Initial qualifying events", "require prior observation of 0 days",
+    "Initial qualifying events", "require prior observation of 0 days"
   )))
 
   cdm$cohort4 <- requireObservationBeforeDrug(
@@ -552,9 +576,9 @@ test_that("requireObservationBeforeDrug", {
   expect_false(1 %in% (cdm$cohort4 |> dplyr::pull("cohort_definition_id")))
   expect_equal(cdm$cohort1 |> collectCohort(2:3), cdm$cohort4 |> collectCohort(2:3))
   expect_true(all(attrition(cdm$cohort4)$reason == c(
-    'Initial qualifying events', 'require prior observation of 999999 days',
-    'Initial qualifying events',
-    'Initial qualifying events'
+    "Initial qualifying events", "require prior observation of 999999 days",
+    "Initial qualifying events",
+    "Initial qualifying events"
   )))
 
   cohort <- requireObservationBeforeDrug(

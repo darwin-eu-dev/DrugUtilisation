@@ -59,7 +59,6 @@ cdm <- mockDrugUtilisation()
 result <- summariseDoseCoverage(cdm, 1125315)
 
 tableDoseCoverage(result)
-
 }
 
 }

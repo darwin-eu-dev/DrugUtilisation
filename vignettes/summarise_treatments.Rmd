@@ -34,14 +34,14 @@ cdm <- mockDrugUtilisation(numberIndividual = 200)
 
 new_cohort_set <- settings(cdm$cohort1) |>
   dplyr::arrange(cohort_definition_id) |>
-  dplyr::mutate(cohort_name = c("asthma","bronchitis","pneumonia"))
+  dplyr::mutate(cohort_name = c("asthma", "bronchitis", "pneumonia"))
 
 cdm$cohort1 <- cdm$cohort1 |>
   omopgenerics::newCohortTable(cohortSetRef = new_cohort_set)
 
 new_cohort_set <- settings(cdm$cohort2) |>
   dplyr::arrange(cohort_definition_id) |>
-  dplyr::mutate(cohort_name = c("albuterol","fluticasone","montelukast"))
+  dplyr::mutate(cohort_name = c("albuterol", "fluticasone", "montelukast"))
 
 cdm$cohort2 <- cdm$cohort2 |>
   omopgenerics::newCohortTable(cohortSetRef = new_cohort_set)
@@ -73,9 +73,11 @@ See an example of its usage below, where we use
 `cohort2` in the cohorts defined in `cohort1`.
 
 ```{r, message = FALSE, warning=FALSE}
-summariseTreatment(cohort = cdm$cohort1,
-                   treatmentCohortName = c("cohort2"),
-                   window = list(c(0,0), c(1,30)))
+summariseTreatment(
+  cohort = cdm$cohort1,
+  treatmentCohortName = c("cohort2"),
+  window = list(c(0, 0), c(1, 30))
+)
 ```
 
 ## strata parameter
@@ -91,7 +93,7 @@ cdm[["cohort1"]] <- cdm[["cohort1"]] |>
 results <- summariseTreatment(
   cohort = cdm$cohort1,
   treatmentCohortName = c("cohort2"),
-  window = list(c(0,0)),
+  window = list(c(0, 0)),
   treatmentCohortId = 1,
   strata = list("sex", "age_group")
 )

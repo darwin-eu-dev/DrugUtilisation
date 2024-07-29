@@ -39,12 +39,13 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' result <- cdm$cohort1 |>
-#'  summariseIndication(indicationCohortName = "cohort2",
-#'                      indicationWindow = list(c(-30, 0)),
-#'                      unknownIndicationTable = "condition_occurrence")
+#'   summariseIndication(
+#'     indicationCohortName = "cohort2",
+#'     indicationWindow = list(c(-30, 0)),
+#'     unknownIndicationTable = "condition_occurrence"
+#'   )
 #'
 #' tableIndication(result, type = "tibble")
-#'
 #' }
 #'
 #' @return A table with a formatted version of summariseIndication() results.
@@ -67,7 +68,7 @@ tableIndication <- function(result,
     cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
   }
   if (!is.null(header)) {
-    if (any(! header %in% c("cdm_name", "group", "strata", "variable"))) {
+    if (any(!header %in% c("cdm_name", "group", "strata", "variable"))) {
       cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`")
     }
     if (!is.null(groupColumn)) {
@@ -89,7 +90,7 @@ tableIndication <- function(result,
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
-  .options = defaultTableOptionsInternal(.options)
+  .options <- defaultTableOptionsInternal(.options)
 
   # Split
   split <- c("additional")
@@ -173,7 +174,6 @@ tableIndication <- function(result,
 #' result <- summariseDoseCoverage(cdm, 1125315)
 #'
 #' tableDoseCoverage(result)
-#'
 #' }
 #'
 #' @return A table with a formatted version of summariseDrugCoverage() results.
@@ -223,7 +223,7 @@ tableDoseCoverage <- function(result,
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
-  .options = defaultTableOptionsInternal(.options)
+  .options <- defaultTableOptionsInternal(.options)
 
   # Split
   split <- c("additional")
@@ -353,7 +353,7 @@ tableDrugUtilisation <- function(result,
     cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
   }
   if (!is.null(header)) {
-    if (any(! header %in% c("cdm_name", "group", "strata", "variable", "estimate"))) {
+    if (any(!header %in% c("cdm_name", "group", "strata", "variable", "estimate"))) {
       cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`, `estimate`")
     }
     if (!is.null(groupColumn)) {
@@ -382,7 +382,7 @@ tableDrugUtilisation <- function(result,
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
-  .options = defaultTableOptionsInternal(.options)
+  .options <- defaultTableOptionsInternal(.options)
 
   # Exclude columns, rename, and split
   excludeColumns <- c("result_id", "estimate_type")
@@ -524,10 +524,12 @@ tableTreatment <- function(result,
                            groupColumn = c("cdm_name", "cohort_name"),
                            type = "gt",
                            formatEstimateName = c(
-                             "N (%)" = "<count> (<percentage> %)"),
+                             "N (%)" = "<count> (<percentage> %)"
+                           ),
                            .options = list()) {
   opts <- c(
-    "cdm_name", "cohort_name", "strata", "variable_name", "estimate", "window_name")
+    "cdm_name", "cohort_name", "strata", "variable_name", "estimate", "window_name"
+  )
   assertChoice(header, choices = opts, null = TRUE, unique = TRUE)
   assertChoice(unlist(groupColumn), choices = opts, null = TRUE, unique = TRUE)
   assertChoice(type, choices = c("gt", "flextable", "tibble"), length = 1)
@@ -548,7 +550,7 @@ tableTreatment <- function(result,
   }
 
   # .options
-  .options = defaultTableOptionsInternal(.options)
+  .options <- defaultTableOptionsInternal(.options)
 
   # Split
   split <- c("group", "additional")
@@ -648,14 +650,18 @@ tableDrugRestart <- function(result,
                              groupColumn = c("cdm_name", "cohort_name"),
                              type = "gt",
                              formatEstimateName = c(
-                               "N (%)" = "<count> (<percentage> %)"),
+                               "N (%)" = "<count> (<percentage> %)"
+                             ),
                              .options = list()) {
-
   # checks
-  assertChoice(header, choices = c("cdm_name", "cohort_name", "strata", "variable", "estimate"),
-               null = TRUE, unique = TRUE)
-  assertChoice(unlist(groupColumn), choices = c("cdm_name", "cohort_name", "strata", "variable_name", "variable_level", "estimate_name"),
-               null = TRUE, unique = TRUE)
+  assertChoice(header,
+    choices = c("cdm_name", "cohort_name", "strata", "variable", "estimate"),
+    null = TRUE, unique = TRUE
+  )
+  assertChoice(unlist(groupColumn),
+    choices = c("cdm_name", "cohort_name", "strata", "variable_name", "variable_level", "estimate_name"),
+    null = TRUE, unique = TRUE
+  )
   assertChoice(type, choices = c("gt", "flextable", "tibble"), length = 1)
   assertClass(result, class = "summarised_result")
   assertLogical(splitStrata, length = 1)
@@ -674,7 +680,7 @@ tableDrugRestart <- function(result,
   }
 
   # .options
-  .options = defaultTableOptionsInternal(.options)
+  .options <- defaultTableOptionsInternal(.options)
 
   # Split
   split <- c("additional")
@@ -759,8 +765,7 @@ tableProportionOfPatientsCovered <- function(result,
                                              cdmName = TRUE,
                                              groupColumn = "variable_name",
                                              type = "gt",
-                                             .options = list()){
-
+                                             .options = list()) {
   # check input and filter result
   if (!cohortName & "cohort_name" %in% unlist(groupColumn)) {
     cli::cli_abort("If `cohortName = FALSE`, `cohort_name` cannot be used in `groupColumn`.")
@@ -769,7 +774,7 @@ tableProportionOfPatientsCovered <- function(result,
     cli::cli_abort("If `cdmName = FALSE`, `cdm_name` cannot be used in `groupColumn`.")
   }
   if (!is.null(header)) {
-    if (any(! header %in% c("cdm_name", "group", "strata", "variable"))) {
+    if (any(!header %in% c("cdm_name", "group", "strata", "variable"))) {
       cli::cli_abort("`header` should be a character vector restricted to the following values: `cdm_name`, `group`, `strata`, `variable`")
     }
     if (!is.null(groupColumn)) {
@@ -791,17 +796,17 @@ tableProportionOfPatientsCovered <- function(result,
   checkmate::assertCharacter(header, any.missing = FALSE, null.ok = TRUE)
 
   # .options
-  .options = defaultTableOptionsInternal(.options)
+  .options <- defaultTableOptionsInternal(.options)
 
   # Split
   split <- c("additional")
 
-  if(!is.null(times)){
-  # filter to specified times
-  result <- result |>
-    dplyr::mutate(time = as.numeric(.data$additional_level)) |>
-    dplyr::filter(.data$time %in% .env$times) |>
-    dplyr::select(!"time")
+  if (!is.null(times)) {
+    # filter to specified times
+    result <- result |>
+      dplyr::mutate(time = as.numeric(.data$additional_level)) |>
+      dplyr::filter(.data$time %in% .env$times) |>
+      dplyr::select(!"time")
   }
 
   # Exclude columns, rename, and split
@@ -833,7 +838,7 @@ tableProportionOfPatientsCovered <- function(result,
     split <- c(split, "strata")
   }
 
-  result <-result |>
+  result <- result |>
     dplyr::filter(.data$estimate_name == "ppc") |>
     dplyr::mutate(additional_name = "Days since first drug start")
 
@@ -846,15 +851,12 @@ tableProportionOfPatientsCovered <- function(result,
     split = split,
     groupColumn = c(groupColumn)
   )
-
-
 }
 
 
 
 
 defaultTableOptionsInternal <- function(.options = NULL) {
-
   defaults <- visOmopResults::optionsVisOmopTable()
 
   for (opt in names(.options)) {
@@ -877,11 +879,9 @@ defaultTableOptionsInternal <- function(.options = NULL) {
 #'
 #' @examples
 #' {
-#' defaultTableOptions()
+#'   defaultTableOptions()
 #' }
 #'
 defaultTableOptions <- function() {
-
   defaultTableOptionsInternal(NULL)
-
 }

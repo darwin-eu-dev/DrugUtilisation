@@ -76,11 +76,11 @@ conceptSet$acetaminophen
 
 ```{r}
 conceptSet <- list(acetaminophen = dplyr::tibble(
-  concept_id = 1125315, 
+  concept_id = 1125315,
   excluded = FALSE,
   descendants = TRUE,
   mapped = FALSE
-)) |> 
+)) |>
   omopgenerics::newConceptSetExpression()
 conceptSet
 conceptSet$acetaminophen
@@ -129,7 +129,7 @@ dplyr::tibble(
       start = as.Date(c("2020-01-20", "2020-03-15", "2020-04-20")),
       end = as.Date(c("2020-01-30", "2020-02-15", "2020-04-19"))
     ) |>
-      tidyr::pivot_longer(c("start", "end")), 
+      tidyr::pivot_longer(c("start", "end")),
     mapping = ggplot2::aes(x = value, y = y, group = y, color = type),
     inherit.aes = FALSE,
     linewidth = 2
@@ -140,15 +140,15 @@ dplyr::tibble(
       type = c("overlap", "gap", "gap"),
       lab = c("overlap", "gap = 29 days", "gap = 1 day"),
       start = as.Date(c("2020-01-25", "2020-03-01", "2020-04-19"))
-    ), 
+    ),
     mapping = ggplot2::aes(x = start, y = y, group = y, color = type, label = lab),
     inherit.aes = FALSE,
     nudge_y = 0.2
   ) +
-  #ggplot2::ggtitle("subject_id = 1") +
+  # ggplot2::ggtitle("subject_id = 1") +
   ggplot2::ylab("Drug exposure id") +
   ggplot2::xlab("Time") +
-  ggplot2::theme(legend.position="none")
+  ggplot2::theme(legend.position = "none")
 ```
 
 If we would create the episode with **gapEra = 0**, we would have 3 resultant episodes, the first two that overlap would be joined in a single episode, but then the other two would be independent:
@@ -407,7 +407,7 @@ To require that a cohort entry (drug episodes) has a certain date within an spec
 ```{r}
 cdm$acetaminophen_cohort <- cdm$acetaminophen_cohort |>
   requireDrugInDateRange(
-    indexDate = "cohort_start_date", 
+    indexDate = "cohort_start_date",
     dateRange = as.Date(c("2000-01-01", "2020-12-31"))
   )
 ```
@@ -457,11 +457,11 @@ x <- dplyr::tibble(
 )
 y <- dplyr::tibble(
   start = x$cohort_end_date[-nrow(x)] + 1, end = x$cohort_start_date[-1] - 1
-) |> 
+) |>
   dplyr::mutate(
-    record_id = dplyr::row_number(), 
+    record_id = dplyr::row_number(),
     distance = as.numeric(end - start + 1),
-    mean = start + distance/2,
+    mean = start + distance / 2,
     distance = paste0(distance, " days")
   ) |>
   tidyr::pivot_longer(c("start", "end"))
@@ -472,10 +472,12 @@ x |>
   ggplot2::geom_line(linewidth = 1.5) +
   ggplot2::lims(y = c(0.8, 1.2)) +
   ggplot2::geom_point(
-    ggplot2::aes(x = as.Date("2010-01-01"), y = 1), shape = 23, color = "#00AF6A", size = 5, fill = "#00AF6A"
+    ggplot2::aes(x = as.Date("2010-01-01"), y = 1),
+    shape = 23, color = "#00AF6A", size = 5, fill = "#00AF6A"
   ) +
   ggplot2::geom_text(
-    ggplot2::aes(x = as.Date("2010-01-01"), y = 0.92, label = "Start observation", hjust = "left"), color = "#00AF6A"
+    ggplot2::aes(x = as.Date("2010-01-01"), y = 0.92, label = "Start observation", hjust = "left"),
+    color = "#00AF6A"
   ) +
   ggplot2::geom_line(
     data = y,
@@ -483,13 +485,14 @@ x |>
     linewidth = 1.1
   ) +
   ggplot2::geom_text(data = y, ggplot2::aes(x = mean, y = 1.09, label = distance), nudge_y = 0.008) +
-  ggplot2::xlim(as.Date(c("2010-01-01", "2014-01-01"))) + 
+  ggplot2::xlim(as.Date(c("2010-01-01", "2014-01-01"))) +
   ggplot2::ylab("") +
   ggplot2::xlab("Time") +
   ggplot2::theme(
-    legend.position = "none", 
+    legend.position = "none",
     axis.ticks.y = ggplot2::element_blank(),
-    axis.text.y = ggplot2::element_blank())
+    axis.text.y = ggplot2::element_blank()
+  )
 ```
 
 In this case we will see the result of combining in different ways 4 inclusion criteria:
@@ -510,17 +513,19 @@ doplot <- function(x) {
     dplyr::mutate(record_id = dplyr::row_number()) |>
     tidyr::pivot_longer(c("cohort_start_date", "cohort_end_date")) |>
     ggplot2::ggplot(ggplot2::aes(
-      x = value, y = 1, group = record_id, label = value, color = color)) +
+      x = value, y = 1, group = record_id, label = value, color = color
+    )) +
     ggplot2::geom_line(linewidth = 1.5) +
     ggplot2::lims(y = c(0.75, 1.25)) +
-    ggplot2::xlim(as.Date(c("2010-01-01", "2014-01-01"))) + 
+    ggplot2::xlim(as.Date(c("2010-01-01", "2014-01-01"))) +
     ggplot2::ylab("") +
     ggplot2::xlab("Time") +
     ggplot2::scale_color_manual(values = colours) +
     ggplot2::theme(
-      legend.position = "none", 
+      legend.position = "none",
       axis.ticks.y = ggplot2::element_blank(),
-      axis.text.y = ggplot2::element_blank())
+      axis.text.y = ggplot2::element_blank()
+    )
 }
 x <- dplyr::tibble(
   "cohort_start_date" = as.Date(c("2010-03-01", "2011-02-15", "2012-03-05", "2013-06-15")),
@@ -528,7 +533,7 @@ x <- dplyr::tibble(
 )
 x |>
   dplyr::mutate(color = as.factor(c(1, 0, 0, 0))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("first + washout")
 ```
 
@@ -537,7 +542,7 @@ Whereas if we would apply initially the **washout** criteria and then the **firs
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 0, 0, 1))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("washout + first")
 ```
 
@@ -548,7 +553,7 @@ If we would apply the initially the **first** requirement and then the **minObs*
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 0, 0, 0))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("first + minObs")
 ```
 
@@ -557,7 +562,7 @@ Whereas if we would apply initially the **minObs** criteria and then the **first
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 1, 0, 0))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("minObs + first")
 ```
 
@@ -568,7 +573,7 @@ If we would apply the initially the **first** requirement and then the **2011-20
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 0, 0, 0))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("first + 2011-2012")
 ```
 
@@ -577,7 +582,7 @@ Whereas if we would apply initially the **2011-2012** criteria and then the **fi
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 1, 0, 0))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("2011-2012 + first")
 ```
 
@@ -588,7 +593,7 @@ If we would apply the initially the **washout** requirement and then the **minOb
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 0, 0, 1))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("washout + first")
 ```
 
@@ -597,7 +602,7 @@ Whereas if we would apply initially the **minObs** criteria and then the **washo
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 1, 0, 1))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("minObs + washout")
 ```
 
@@ -608,7 +613,7 @@ If we would apply initially the **washout** requirement and then the **2011-2012
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 0, 0, 0))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("washout + 2011-2012")
 ```
 
@@ -617,7 +622,7 @@ Whereas if we would apply initially the **2011-2012** criteria and then the **wa
 ```{r, echo = FALSE, fig.width = 7, fig.height = 2}
 x |>
   dplyr::mutate(color = as.factor(c(0, 1, 0, 0))) |>
-  doplot() + 
+  doplot() +
   ggplot2::ggtitle("2011-2012 + washout")
 ```
 

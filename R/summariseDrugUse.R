@@ -51,15 +51,15 @@
 #'   summariseDrugUse(strata = list("age_group", "sex", c("age_group", "sex")))
 #' }
 #'
-summariseDrugUse<- function(cohort,
-                            cdm = lifecycle::deprecated(),
-                            strata = list(),
-                            estimates = c(
-                              "min", "q05", "q25", "median", "q75", "q95",
-                              "max", "mean", "sd", "count_missing",
-                              "percentage_missing"
-                            ),
-                            minCellCount = lifecycle::deprecated()) {
+summariseDrugUse <- function(cohort,
+                             cdm = lifecycle::deprecated(),
+                             strata = list(),
+                             estimates = c(
+                               "min", "q05", "q25", "median", "q75", "q95",
+                               "max", "mean", "sd", "count_missing",
+                               "percentage_missing"
+                             ),
+                             minCellCount = lifecycle::deprecated()) {
   if (lifecycle::is_present(cdm)) {
     lifecycle::deprecate_warn(when = "0.5.0", what = "summariseDrugUse(cdm = )")
   }
@@ -74,7 +74,9 @@ summariseDrugUse<- function(cohort,
   )
 
   # update cohort_names
-  cohort <- cohort |> PatientProfiles::addCohortName() |> dplyr::collect()
+  cohort <- cohort |>
+    PatientProfiles::addCohortName() |>
+    dplyr::collect()
 
   # summarise drug use columns
   result <- PatientProfiles::summariseResult(

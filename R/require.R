@@ -86,10 +86,13 @@ requirePriorDrugWashout <- function(cohort,
           dplyr::filter(.data$cohort_definition_id %in% .env$cohortId) |>
           dplyr::group_by(.data$cohort_definition_id, .data$subject_id) |>
           dplyr::mutate("prior_end_date" = dplyr::lag(
-            .data$cohort_end_date, order_by = .data$cohort_start_date)) |>
+            .data$cohort_end_date,
+            order_by = .data$cohort_start_date
+          )) |>
           dplyr::ungroup() %>%
           dplyr::mutate(prior_time = !!CDMConnector::datediff(
-            "prior_end_date", "cohort_start_date")) |>
+            "prior_end_date", "cohort_start_date"
+          )) |>
           dplyr::filter(.data$prior_time < .env$days) |>
           dplyr::select("cohort_definition_id", "subject_id", "cohort_start_date"),
         by = c("cohort_definition_id", "subject_id", "cohort_start_date")
@@ -156,7 +159,7 @@ requireIsFirstDrugEntry <- function(cohort,
 
   if (any(record_counts > 0)) {
     cohort <- cohort |>
-      dplyr::group_by(.data$subject_id,.data$cohort_definition_id) |>
+      dplyr::group_by(.data$subject_id, .data$cohort_definition_id) |>
       dplyr::filter(
         .data$cohort_start_date == min(.data$cohort_start_date, na.rm = TRUE) |
           (!.data$cohort_definition_id %in% .env$cohortId)
@@ -286,7 +289,8 @@ requireObservationBeforeDrug <- function(cohort,
 #'
 #' cdm$cohort1 <- cdm$cohort1 |>
 #'   requireDrugInDateRange(
-#'     dateRange = as.Date(c("2020-01-01", NA)))
+#'     dateRange = as.Date(c("2020-01-01", NA))
+#'   )
 #'
 #' attrition(cdm$cohort1) |> glimpse()
 #' }
@@ -330,16 +334,18 @@ requireDrugInDateRange <- function(cohort,
     cohort <- cohort |>
       dplyr::filter(
         (.data[[indexDate]] >= !!dateRange[1] &
-           .data[[indexDate]] <= !!dateRange[2]) |
+          .data[[indexDate]] <= !!dateRange[2]) |
           !(.data$cohort_definition_id %in% !!cohortId)
       )
   }
 
   set <- settings(cohort) |>
     newSettings(
-      col = paste0("min_", indexDate), value = dateRange[1], cohortId = cohortId) |>
+      col = paste0("min_", indexDate), value = dateRange[1], cohortId = cohortId
+    ) |>
     newSettings(
-      col = paste0("max_", indexDate), value = dateRange[2], cohortId = cohortId)
+      col = paste0("max_", indexDate), value = dateRange[2], cohortId = cohortId
+    )
 
   cohort <- cohort |>
     dplyr::compute(name = name, temporary = FALSE) |>

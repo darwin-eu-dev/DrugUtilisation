@@ -18,18 +18,22 @@ library(dplyr)
 
 # add the mock vocabulary data
 mockDrugStrength <- readr::read_csv(
-  here::here("data-raw", "drug_strength.csv"), show_col_types = FALSE
+  here::here("data-raw", "drug_strength.csv"),
+  show_col_types = FALSE
 )
 mockConcept <- readr::read_csv(
-  here::here("data-raw", "concept.csv"), show_col_types = FALSE
+  here::here("data-raw", "concept.csv"),
+  show_col_types = FALSE
 )
 mockConceptAncestor <- readr::read_csv(
-  here::here("data-raw", "concept_ancestor.csv"), show_col_types = FALSE
+  here::here("data-raw", "concept_ancestor.csv"),
+  show_col_types = FALSE
 )
 
 # add the information related to the different domains
 domainInformation <- readr::read_csv(
-  here::here("data-raw", "domain_information.csv"), show_col_types = FALSE
+  here::here("data-raw", "domain_information.csv"),
+  show_col_types = FALSE
 )
 
 formulas <- readr::read_csv(
@@ -96,5 +100,6 @@ patterns <- formulas |>
 
 usethis::use_data(
   mockDrugStrength, mockConcept, mockConceptAncestor, domainInformation,
-  patterns, routes, internal = TRUE, overwrite = TRUE
+  patterns, routes,
+  internal = TRUE, overwrite = TRUE
 )

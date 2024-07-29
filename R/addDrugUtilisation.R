@@ -54,7 +54,9 @@
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, name = "acetaminophen")
+#'   cdm,
+#'   name = "acetaminophen"
+#' )
 #'
 #' cdm <- generateDrugUtilisationCohortSet(cdm, "dus_cohort", codelist)
 #' cdm[["dus_cohort"]] |>
@@ -95,7 +97,8 @@ addDrugUtilisation <- function(cohort,
       cumulativeDose = cumulativeDose,
       gapEra = gapEra,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 #' To add a new column with the number of exposures. To add multiple columns use
@@ -124,7 +127,9 @@ addDrugUtilisation <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, name = "acetaminophen")
+#'   cdm,
+#'   name = "acetaminophen"
+#' )
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -158,7 +163,8 @@ addNumberExposures <- function(cohort,
       cumulativeDose = FALSE,
       gapEra = 0,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 #' To add a new column with the cumulative dose. To add multiple columns use
@@ -190,7 +196,7 @@ addNumberExposures <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' cdm$cohort1|>
+#' cdm$cohort1 |>
 #'   addCumulativeDose(ingredientConceptId = 1125315)
 #' }
 #'
@@ -219,7 +225,8 @@ addCumulativeDose <- function(cohort,
       cumulativeDose = TRUE,
       gapEra = 0,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 #' To add a new column with the initial daily dose. To add multiple columns use
@@ -251,7 +258,7 @@ addCumulativeDose <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #'
-#' cdm$cohort1|>
+#' cdm$cohort1 |>
 #'   addInitialDailyDose(ingredientConceptId = 1125315)
 #' }
 #'
@@ -280,7 +287,8 @@ addInitialDailyDose <- function(cohort,
       cumulativeDose = FALSE,
       gapEra = 0,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 #' To add a new column with the cumulative quantity. To add multiple columns use
@@ -309,7 +317,9 @@ addInitialDailyDose <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, name = "acetaminophen")
+#'   cdm,
+#'   name = "acetaminophen"
+#' )
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -343,7 +353,8 @@ addCumulativeQuantity <- function(cohort,
       cumulativeDose = FALSE,
       gapEra = 0,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 #' To add a new column with the initial quantity. To add multiple columns use
@@ -372,7 +383,9 @@ addCumulativeQuantity <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, name = "acetaminophen")
+#'   cdm,
+#'   name = "acetaminophen"
+#' )
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -406,7 +419,8 @@ addInitialQuantity <- function(cohort,
       cumulativeDose = FALSE,
       gapEra = 0,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 #' To add a new column with the time to exposure. To add multiple columns use
@@ -435,7 +449,9 @@ addInitialQuantity <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, name = "acetaminophen")
+#'   cdm,
+#'   name = "acetaminophen"
+#' )
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -469,7 +485,8 @@ addTimeToExposure <- function(cohort,
       cumulativeDose = FALSE,
       gapEra = 0,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 #' To add a new column with the exposed time. To add multiple columns use
@@ -500,7 +517,9 @@ addTimeToExposure <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, name = "acetaminophen")
+#'   cdm,
+#'   name = "acetaminophen"
+#' )
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -535,7 +554,8 @@ addExposedTime <- function(cohort,
       cumulativeDose = FALSE,
       gapEra = gapEra,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 #' To add a new column with the number of eras. To add multiple columns use
@@ -566,7 +586,9 @@ addExposedTime <- function(cohort,
 #'
 #' cdm <- mockDrugUtilisation()
 #' codelist <- CodelistGenerator::getDrugIngredientCodes(
-#'   cdm, name = "acetaminophen")
+#'   cdm,
+#'   name = "acetaminophen"
+#' )
 #' cdm <- generateDrugUtilisationCohortSet(
 #'   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 #' )
@@ -601,7 +623,8 @@ addNumberEras <- function(cohort,
       cumulativeDose = FALSE,
       gapEra = gapEra,
       nameStyle = nameStyle,
-      name = name)
+      name = name
+    )
 }
 
 addDrugUseInternal <- function(x,
@@ -662,7 +685,7 @@ addDrugUseInternal <- function(x,
   id <- omopgenerics::getPersonIdentifier(x)
   idFuture <- omopgenerics::uniqueId(exclude = colnames(x))
 
-  xdates <- x|>
+  xdates <- x |>
     dplyr::select(dplyr::all_of(c(id, indexDate, censorDate))) |>
     dplyr::distinct() |>
     PatientProfiles::addFutureObservation(
@@ -730,7 +753,7 @@ addDrugUseInternal <- function(x,
     ) |>
       rlang::parse_exprs() |>
       rlang::set_names(c(
-        "number_exposures", "time_to_exposure","cumulative_quantity"
+        "number_exposures", "time_to_exposure", "cumulative_quantity"
       ))
     qs <- qs[c(numberExposures, timeToExposure, cumulativeQuantity)]
     toJoin <- drugData |>
@@ -838,7 +861,9 @@ addDrugUseInternal <- function(x,
         dplyr::group_by(dplyr::across(dplyr::all_of(c(cols, "concept_name")))) |>
         dplyr::filter(
           .data$drug_exposure_start_date == min(
-            .data$drug_exposure_start_date, na.rm = TRUE) |
+            .data$drug_exposure_start_date,
+            na.rm = TRUE
+          ) |
             .data$drug_exposure_start_date <= .data[[indexDate]]
         ) |>
         dplyr::ungroup()
@@ -895,8 +920,11 @@ addDrugUseInternal <- function(x,
             dplyr::group_by(dplyr::across(dplyr::all_of(c(cols, "concept_name")))) |>
             dplyr::filter(
               .data$drug_exposure_start_date == min(
-                .data$drug_exposure_start_date, na.rm = TRUE) |
-                .data$drug_exposure_start_date <= .data[[indexDate]]) |>
+                .data$drug_exposure_start_date,
+                na.rm = TRUE
+              ) |
+                .data$drug_exposure_start_date <= .data[[indexDate]]
+            ) |>
             dplyr::ungroup()
         }
       }
@@ -967,16 +995,18 @@ validateConceptSet <- function(conceptSet, ingredientConceptId, cdm, call) {
       dplyr::group_split() |>
       lapply(dplyr::pull, "descendant_concept_id") |>
       rlang::set_names(paste0("ingredient_", sort(ingredientConceptId), "_descendants"))
-
   }
   conceptSet <- omopgenerics::newCodelist(conceptSet)
 
   return(invisible(conceptSet))
 }
 validateIngredientConceptId <- function(ingredientConceptId, cdm, call) {
-  if (is.null(ingredientConceptId)) return(invisible(ingredientConceptId))
+  if (is.null(ingredientConceptId)) {
+    return(invisible(ingredientConceptId))
+  }
   assertNumeric(
-    ingredientConceptId, integerish = TRUE, min = 0, unique = TRUE, call = call
+    ingredientConceptId,
+    integerish = TRUE, min = 0, unique = TRUE, call = call
   )
   ingredients <- cdm$concept |>
     dplyr::filter(.data$concept_class_id == "Ingredient") |>
@@ -984,7 +1014,8 @@ validateIngredientConceptId <- function(ingredientConceptId, cdm, call) {
     dplyr::pull("concept_id") |>
     as.integer()
   missingIngredients <- ingredientConceptId[
-    !as.integer(ingredientConceptId) %in% ingredients]
+    !as.integer(ingredientConceptId) %in% ingredients
+  ]
   if (length(missingIngredients) > 0) {
     "Ingredients not present in concept table: {missingIngredients}" |>
       cli::cli_abort(call = call)
@@ -995,16 +1026,24 @@ validateIndexDate <- function(indexDate, x, call) {
   msg <- "{.strong indexDate} must point to date column in x"
   assertCharacter(indexDate, length = 1, call = call, msg = msg)
   if (!indexDate %in% colnames(x)) cli::cli_abort(message = msg, call = call)
-  type <- x |> utils::head(1) |> dplyr::pull(indexDate) |> dplyr::type_sum()
+  type <- x |>
+    utils::head(1) |>
+    dplyr::pull(indexDate) |>
+    dplyr::type_sum()
   if (type != "date") cli::cli_abort(message = msg, call = call)
   return(invisible(indexDate))
 }
 validateCensorDate <- function(censorDate, x, call) {
-  if (is.null(censorDate)) return(invisible(censorDate))
+  if (is.null(censorDate)) {
+    return(invisible(censorDate))
+  }
   msg <- "{.strong censorDate} must be NULL or point to date column in x"
   assertCharacter(censorDate, length = 1, call = call, msg = msg)
   if (!censorDate %in% colnames(x)) cli::cli_abort(message = msg, call = call)
-  type <- x |> utils::head(1) |> dplyr::pull(censorDate) |> dplyr::type_sum()
+  type <- x |>
+    utils::head(1) |>
+    dplyr::pull(censorDate) |>
+    dplyr::type_sum()
   if (type != "date") cli::cli_abort(message = msg, call = call)
   return(invisible(censorDate))
 }

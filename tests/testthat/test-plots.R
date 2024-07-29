@@ -67,7 +67,7 @@ test_that("plotDrugRestart works", {
   cdm <- generateDrugUtilisationCohortSet(cdm = cdm, name = "switch_cohort", conceptSet = conceptlist)
   results <- cdm$dus_cohort |>
     PatientProfiles::addDemographics(
-      ageGroup = list(c(0,50), c(51,100))
+      ageGroup = list(c(0, 50), c(51, 100))
     ) |>
     summariseDrugRestart(
       switchCohortTable = "switch_cohort", followUpDays = c(100, 300, Inf),
@@ -78,11 +78,13 @@ test_that("plotDrugRestart works", {
   default <- plotDrugRestart(results)
   expect_true(ggplot2::is.ggplot(default))
   expect_true(all(
-    c('cdm_name', 'cohort_name', 'age_group', 'sex', 'variable_name',
-    'estimate_value', 'variable_level') %in% colnames(default$data)
+    c(
+      "cdm_name", "cohort_name", "age_group", "sex", "variable_name",
+      "estimate_value", "variable_level"
+    ) %in% colnames(default$data)
   ))
   expect_true(all(default$data |> dplyr::pull(dplyr::starts_with("id_")) |> unique() ==
-                    c("Restart", "Switch", "Restart and switch", "Not treated")))
+    c("Restart", "Switch", "Restart and switch", "Not treated")))
   expect_true(default$labels$fill == "variable level")
   expect_true(default$labels$x == "Percentage")
   expect_true(default$labels$y == "Event")
@@ -95,7 +97,7 @@ test_that("plotDrugRestart works", {
   expect_true(all(names(gg1$facet$params$rows) == c("cdm_name", "cohort_name", "strata")))
   expect_true(all(names(gg1$facet$params$cols) == c("variable_name")))
   expect_true(all(gg1$data |> dplyr::pull(dplyr::starts_with("id_")) |> unique() ==
-                    c("Restart", "Switch", "Restart and switch", "Not treated")))
+    c("Restart", "Switch", "Restart and switch", "Not treated")))
 
   expect_message(
     gg2 <- plotDrugRestart(results, facetY = c("cohort_name"))
@@ -103,16 +105,20 @@ test_that("plotDrugRestart works", {
   expect_true(all(names(gg2$facet$params$rows) == c("cohort_name")))
   expect_true(all(names(gg2$facet$params$cols) == c("variable_name")))
   expect_true(all(gg2$data |> dplyr::pull(dplyr::starts_with("id_")) |> unique() ==
-                    c("Restart", "Switch", "Restart and switch", "Not treated")))
+    c("Restart", "Switch", "Restart and switch", "Not treated")))
 
-  gg3 <- plotDrugRestart(results, facetX = c("cohort_name"),
-                         facetY = c("variable_name", "cdm_name"),
-                         colour = c("strata"))
+  gg3 <- plotDrugRestart(results,
+    facetX = c("cohort_name"),
+    facetY = c("variable_name", "cdm_name"),
+    colour = c("strata")
+  )
   expect_true(all(names(gg3$facet$params$rows) == c("variable_name", "cdm_name")))
   expect_true(all(names(gg3$facet$params$cols) == c("cohort_name")))
   expect_true(all(gg3$data |> dplyr::pull(dplyr::starts_with("id_")) |> unique() ==
-                    c("0 to 50_overall", "0 to 50_Female", "0 to 50_Male",
-                      "overall_overall", "overall_Female","overall_Male")))
+    c(
+      "0 to 50_overall", "0 to 50_Female", "0 to 50_Male",
+      "overall_overall", "overall_Female", "overall_Male"
+    )))
 
   mockDisconnect(cdm = cdm)
 })

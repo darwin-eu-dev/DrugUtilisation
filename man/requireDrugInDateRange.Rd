@@ -45,7 +45,8 @@ cdm <- mockDrugUtilisation()
 
 cdm$cohort1 <- cdm$cohort1 |>
   requireDrugInDateRange(
-    dateRange = as.Date(c("2020-01-01", NA)))
+    dateRange = as.Date(c("2020-01-01", NA))
+  )
 
 attrition(cdm$cohort1) |> glimpse()
 }

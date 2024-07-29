@@ -61,7 +61,8 @@ library(dplyr)
 cdm <- mockDrugUtilisation()
 
 druglist <- CodelistGenerator::getDrugIngredientCodes(
-  cdm, c("acetaminophen", "metformin"))
+  cdm, c("acetaminophen", "metformin")
+)
 
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm,
@@ -70,7 +71,7 @@ cdm <- generateDrugUtilisationCohortSet(
 )
 
 cdm$drug_cohorts |>
-glimpse()
+  glimpse()
 }
 
 }
