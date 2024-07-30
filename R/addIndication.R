@@ -48,20 +48,23 @@
 #'
 #' indications <- list("headache" = 378253, "asthma" = 317009)
 #' cdm <- generateConceptCohortSet(
-#'   cdm = cdm, conceptSet = indications, name = "indication_cohorts")
+#'   cdm = cdm, conceptSet = indications, name = "indication_cohorts"
+#' )
 #'
-#' cdm <- generateIngredientCohortSet(cdm = cdm, name = "drug_cohort",
-#'                                    ingredient = "acetaminophen")
+#' cdm <- generateIngredientCohortSet(
+#'   cdm = cdm, name = "drug_cohort",
+#'   ingredient = "acetaminophen"
+#' )
 #'
 #' cdm$drug_cohort |>
-#'   addIndication("indication_cohorts", indicationWindow = list(c(0,0))) |>
+#'   addIndication("indication_cohorts", indicationWindow = list(c(0, 0))) |>
 #'   glimpse()
 #' }
 #'
 addIndication <- function(cohort,
                           indicationCohortName,
                           indicationCohortId = NULL,
-                          indicationWindow = list(c(0,0)),
+                          indicationWindow = list(c(0, 0)),
                           unknownIndicationTable = NULL,
                           indexDate = "cohort_start_date",
                           censorDate = NULL,
@@ -88,8 +91,8 @@ addIndication <- function(cohort,
   assertNumeric(indicationCohortId, null = TRUE)
 
   # indicationWindow as list
-  if (!inherits(indicationWindow,"list")){
-    indicationWindow = list(indicationWindow)
+  if (!inherits(indicationWindow, "list")) {
+    indicationWindow <- list(indicationWindow)
   }
 
   tmpName <- omopgenerics::uniqueTableName()
@@ -115,18 +118,20 @@ addIndication <- function(cohort,
     addUnknownIndication(
       indexDate = indexDate, censorDate = censorDate,
       window = indicationWindow, table = unknownIndicationTable,
-      name = tmpName) |>
+      name = tmpName
+    ) |>
     dplyr::select(-dplyr::any_of(censorDate)) |>
     collapseIndication(
       window = indicationWindow,
       name = tmpName,
-      unknown = length(unknownIndicationTable) > 0) |>
+      unknown = length(unknownIndicationTable) > 0
+    ) |>
     renameWindows(windowNames)
 
   newCols <- colnames(ind)
   newCols <- newCols[!newCols %in% c("subject_id", indexDate)]
   toDrop <- intersect(newCols, colnames(cohort))
-  if(length(toDrop) > 0){
+  if (length(toDrop) > 0) {
     cli::cli_warn("Overwriting existing variables: {toDrop}")
     cohort <- cohort |>
       dplyr::select(!dplyr::all_of(toDrop))
@@ -143,7 +148,9 @@ addIndication <- function(cohort,
 }
 
 addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) {
-  if (length(table) == 0) return(x)
+  if (length(table) == 0) {
+    return(x)
+  }
 
   cdm <- omopgenerics::cdmReference(x)
   q <- paste0("dplyr::if_all(dplyr::starts_with('", names(window), "'), ~ . == 0)", collapse = " | ") |>
@@ -155,7 +162,8 @@ addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) 
     dplyr::filter(!!!q) |>
     dplyr::select(dplyr::any_of(c("subject_id", indexDate, censorDate))) |>
     dplyr::compute(
-      name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE)
+      name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
+    )
 
   for (tab in table) {
     xx <- xx |>
@@ -188,7 +196,6 @@ addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) 
   )
 
   return(x)
-
 }
 collapseIndication <- function(x, window, name, unknown) {
   indications <- colnames(x)
@@ -202,7 +209,9 @@ collapseIndication <- function(x, window, name, unknown) {
   combs <- tidyr::expand_grid(!!!combs)
   xx <- character()
   for (k in seq_len(nrow(combs) - 1)) {
-    cols <- combs[k,] |> as.list() |> unlist()
+    cols <- combs[k, ] |>
+      as.list() |>
+      unlist()
     nms <- names(cols)[cols == 1]
     vals <- paste0(".data[['", nms, "']] == 1", collapse = " & ")
     nms <- substr(nms, 7, nchar(nms)) |>
@@ -224,7 +233,9 @@ collapseIndication <- function(x, window, name, unknown) {
     ))
     nms <- c(nms, paste0("indication_win", win))
   }
-  q <- q |> rlang::parse_exprs() |> rlang::set_names(nms)
+  q <- q |>
+    rlang::parse_exprs() |>
+    rlang::set_names(nms)
 
   x <- x |>
     dplyr::mutate(!!!q) |>
@@ -239,7 +250,7 @@ renameWindows <- function(x, windowNames) {
   x <- x |>
     dplyr::rename(!!cols)
 }
-getWindowNames <- function (window) {
+getWindowNames <- function(window) {
   getname <- function(element) {
     element <- tolower(as.character(element))
     element <- gsub("-", "m", element)

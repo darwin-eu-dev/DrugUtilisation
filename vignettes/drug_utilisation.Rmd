@@ -31,8 +31,8 @@ For this vignette we will use mock data contained in the DrugUtilisation package
 ```{r setup, message = FALSE, warning = FALSE}
 library(DrugUtilisation)
 
-cdm <- mockDrugUtilisation(numberIndividual  = 200)
-cdm$cohort1 |> 
+cdm <- mockDrugUtilisation(numberIndividual = 200)
+cdm$cohort1 |>
   dplyr::glimpse()
 ```
 
@@ -67,7 +67,7 @@ cohort <- addNumberExposures(
   name = NULL
 )
 
-cohort |> 
+cohort |>
   dplyr::glimpse()
 ```
 
@@ -91,7 +91,7 @@ cohort <- addNumberEras(
   name = NULL
 )
 
-cohort |> 
+cohort |>
   dplyr::glimpse()
 ```
 
@@ -188,7 +188,7 @@ cdm$drug_utilisation_example <- cdm$cohort1 |>
     name = "drug_utilisation_example"
   )
 
-cdm$drug_utilisation_example |> 
+cdm$drug_utilisation_example |>
   dplyr::glimpse()
 ```
 
@@ -204,8 +204,10 @@ This function will provide the desired estimates (set in the argument `estimates
 duResults <- summariseDrugUtilisation(
   cohort = cdm$cohort1,
   strata = list(),
-  estimates = c("q25", "median", "q75", "mean", "sd", "count_missing",
-                "percentage_missing"),
+  estimates = c(
+    "q25", "median", "q75", "mean", "sd", "count_missing",
+    "percentage_missing"
+  ),
   indexDate = "cohort_start_date",
   censorDate = "cohort_end_date",
   ingredientConceptId = c(1125315, 1503297),
@@ -289,8 +291,8 @@ tableDrugUtilisation(
   groupColumn = list("Strata" = c("strata_name", "strata_level")),
   type = "flextable",
   formatEstimateName = c(
-    `Missing, N (%)` = "<count_missing> (<percentage_missing> %)", 
-    N = "<count>", 
+    `Missing, N (%)` = "<count_missing> (<percentage_missing> %)",
+    N = "<count>",
     `Non-missing, Mean (SD)` = "<mean> (<sd>)"
   )
 )

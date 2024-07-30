@@ -8,10 +8,10 @@ vignette: >
 ---
   
 ```{r, include = FALSE}
-  knitr::opts_chunk$set(
+knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
-  )
+)
 ```
   
 # Introduction
@@ -27,7 +27,7 @@ For this vignette we will use mock data contained in the DrugUtilisation package
 ```{r, message = FALSE, warning = FALSE}
 library(DrugUtilisation)
 
-cdm <- mockDrugUtilisation(numberIndividual  = 200)
+cdm <- mockDrugUtilisation(numberIndividual = 200)
 ```
 
 ## Generate study cohorts
@@ -45,13 +45,13 @@ insulin <- CodelistGenerator::getDrugIngredientCodes(cdm = cdm, name = "insulin 
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm, name = "metformin", conceptSet = metformin
 )
-cdm$metformin |> 
+cdm$metformin |>
   cohortCount()
 
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm, name = "insulin", conceptSet = insulin
 )
-cdm$insulin |> 
+cdm$insulin |>
   cohortCount()
 ```
 
@@ -86,7 +86,7 @@ results <- cdm$metformin |>
     restrictToFirstDiscontinuation = TRUE
   )
 
-results |> 
+results |>
   dplyr::glimpse()
 ```
 

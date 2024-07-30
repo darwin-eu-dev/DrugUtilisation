@@ -47,7 +47,10 @@ To add a new column with the number of exposures. To add multiple columns use
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
-codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+codelist <- CodelistGenerator::getDrugIngredientCodes(
+  cdm,
+  name = "acetaminophen"
+)
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 )

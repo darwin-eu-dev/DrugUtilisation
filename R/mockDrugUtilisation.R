@@ -99,24 +99,28 @@ mockDrugUtilisation <- function(con = NULL,
   # create condition_occurrence if NULL
   if (!"condition_occurrence" %in% names(tables)) {
     tables$condition_occurrence <- createConditionOccurrence(
-      tables$observation_period, tables$concept)
+      tables$observation_period, tables$concept
+    )
   }
 
   # create observation if NULL
   if (!"observation" %in% names(tables)) {
     tables$observation <- createObservation(
-      tables$observation_period, tables$concept)
+      tables$observation_period, tables$concept
+    )
   }
 
   tables$visit_occurrence <- createVisitOccurrence(
-    tables$condition_occurrence, tables$drug_exposure)
+    tables$condition_occurrence, tables$drug_exposure
+  )
 
   cohortPos <- lapply(tables, isCohort) |> unlist()
   cohorts <- tables[cohortPos] |> createCohorts(tables$observation_period)
   tables <- tables[!cohortPos]
 
   cdm <- omopgenerics::cdmFromTables(
-    tables = tables, cdmName = "DUS MOCK", cohortTables = cohorts)
+    tables = tables, cdmName = "DUS MOCK", cohortTables = cohorts
+  )
 
   writeSchema <- strsplit(writeSchema, "\\.")[[1]]
   suppressMessages(
@@ -151,7 +155,7 @@ vocabularyTables <- function(concept, concept_ancestor, drug_strength, concept_r
       ),
       concept_id_2 = c(
         19016586, 46275062, 35894935, 19135843, 19082107, 19011932, 19082108,
-        2008660,  2008661,  2008662, 19082109, 43126087, 19130307, 42629089,
+        2008660, 2008661, 2008662, 19082109, 43126087, 19130307, 42629089,
         19103220, 19082048, 19082049, 19082256, 19082050, 19082071, 19082072,
         19135438, 19135446, 19135439, 19135440, 46234466, 19082653, 19057400,
         19082227, 19082286, 19009068, 19082628, 19082224, 19095972, 19095973,
@@ -201,7 +205,8 @@ createPersonTable <- function(numberIndividuals, tables) {
     dplyr::mutate(
       birth_datetime = clock::add_days(
         as.Date(paste0(.data$year_of_birth, "-01-01"), "%Y-%m-%d"),
-        .data$day_of_birth - 1)
+        .data$day_of_birth - 1
+      )
     ) |>
     dplyr::mutate(
       year_of_birth = clock::get_year(.data$birth_datetime),
@@ -271,7 +276,8 @@ calculateMinDate <- function(tables) {
     minDate <- dplyr::tibble(
       person_id = integer(),
       date_min = as.Date(character()),
-      date_max = as.Date(character()))
+      date_max = as.Date(character())
+    )
   }
   return(minDate)
 }
@@ -305,7 +311,8 @@ createCohort <- function(observation_period) {
       cohort_definition_id = sample(1:3, nrow(cohort), replace = T)
     ) |>
     dplyr::select(
-      "cohort_definition_id", "subject_id" = "person_id", "cohort_start_date",
+      "cohort_definition_id",
+      "subject_id" = "person_id", "cohort_start_date",
       "cohort_end_date"
     )
 }
@@ -395,7 +402,8 @@ createConditionOccurrence <- function(observation_period, concept) {
       )
     condition_occurrence <- condition_occurrence |>
       dplyr::mutate(condition_concept_id = sample(
-        concepts, nrow(condition_occurrence), replace = T
+        concepts, nrow(condition_occurrence),
+        replace = T
       )) |>
       dplyr::select(
         "condition_occurrence_id", "person_id", "condition_concept_id",
@@ -411,7 +419,7 @@ createConditionOccurrence <- function(observation_period, concept) {
       condition_type_concept_id = numeric()
     )
   }
-  condition_occurrence <- condition_occurrence  |>
+  condition_occurrence <- condition_occurrence |>
     dplyr::mutate(
       condition_start_datetime = as.Date(NA),
       condition_end_datetime = as.Date(NA),
@@ -431,13 +439,15 @@ createConditionOccurrence <- function(observation_period, concept) {
 createVisitOccurrence <- function(condition_occurrence, drug_exposure) {
   condition_occurrence |>
     dplyr::select(
-      "person_id", "visit_start_date" = "condition_start_date",
+      "person_id",
+      "visit_start_date" = "condition_start_date",
       "visit_end_date" = "condition_end_date"
     ) |>
     dplyr::union_all(
       drug_exposure |>
         dplyr::select(
-          "person_id", "visit_start_date" = "drug_exposure_start_date",
+          "person_id",
+          "visit_start_date" = "drug_exposure_start_date",
           "visit_end_date" = "drug_exposure_end_date"
         )
     ) |>
@@ -471,7 +481,8 @@ createObservation <- function(observation_period, concept) {
       )
     observation <- observation |>
       dplyr::mutate(observation_concept_id = sample(
-        concepts, nrow(observation), replace = T
+        concepts, nrow(observation),
+        replace = T
       )) |>
       dplyr::select(
         "observation_id", "person_id", "observation_concept_id",

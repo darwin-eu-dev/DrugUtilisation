@@ -56,11 +56,11 @@ To generate the cohort of acetaminophen users we will use `generateIngredientCoh
 cdm <- generateIngredientCohortSet(
   cdm = cdm,
   name = "dus_cohort",
-  ingredient = "acetaminophen", 
+  ingredient = "acetaminophen",
   gapEra = 7
 )
-cdm$dus_cohort |> 
-  requireIsFirstDrugEntry() |> 
+cdm$dus_cohort |>
+  requireIsFirstDrugEntry() |>
   requireObservationBeforeDrug(days = 30)
 ```
 
@@ -70,18 +70,21 @@ Now we´ve created our cohort we could first summarise the indications of the co
 
 ```{r}
 indications <- list(headache = 378253, influenza = 4266367)
-cdm <- generateConceptCohortSet(cdm, 
-                                conceptSet = indications, 
-                                name = "indications_cohort")
+cdm <- generateConceptCohortSet(cdm,
+  conceptSet = indications,
+  name = "indications_cohort"
+)
 ```
 
 We can summarise the indication results using the `summariseIndication` function:
 
 ```{r}
-indication_summary <- cdm$dus_cohort |> 
-  summariseIndication(indicationCohortName = "indications_cohort", 
-                      unknownIndicationTable = "condition_occurrence",
-                      indicationWindow = list(c(-30, 0)))
+indication_summary <- cdm$dus_cohort |>
+  summariseIndication(
+    indicationCohortName = "indications_cohort",
+    unknownIndicationTable = "condition_occurrence",
+    indicationWindow = list(c(-30, 0))
+  )
 indication_summary |> glimpse()
 ```
 
@@ -89,9 +92,11 @@ indication_summary |> glimpse()
 We can quickly obtain a summary of drug utilisation among our cohort, with various measures calculated for a provided ingredient concept (in this case the concept for acetaminophen).
 
 ```{r}
-drug_utilisation_summary <- cdm$dus_cohort |> 
-  summariseDrugUtilisation(ingredientConceptId = 1125315, 
-                           gapEra = 7)
+drug_utilisation_summary <- cdm$dus_cohort |>
+  summariseDrugUtilisation(
+    ingredientConceptId = 1125315,
+    gapEra = 7
+  )
 drug_utilisation_summary |> glimpse()
 table(drug_utilisation_summary$variable_name)
 ```
@@ -99,8 +104,10 @@ table(drug_utilisation_summary$variable_name)
 ### Combine and share results
 Now we can combine our results and suppress any counts less than 5 so that they are ready to be shared.
 ```{r}
-results <- bind(indication_summary,
-                   drug_utilisation_summary) |> 
+results <- bind(
+  indication_summary,
+  drug_utilisation_summary
+) |>
   suppress(minCellCount = 5)
 results |> glimpse()
 ```

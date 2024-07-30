@@ -87,9 +87,12 @@
 #' library(DrugUtilisation)
 #'
 #' cdm <- mockDrugUtilisation()
-#' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(
+#'   cdm,
+#'   name = "acetaminophen"
 #' )
+#'
+#' cdm <- generateDrugUtilisationCohortSet(cdm, "dus_cohort", codelist)
 #' cdm[["dus_cohort"]] |>
 #'   addDrugUse(ingredientConceptId = 1125315)
 #' }
@@ -322,10 +325,10 @@ addInfo <- function(cohort,
 }
 
 addInitialDailyDoseDrugUse <- function(cohort,
-                                cohortInfo,
-                                sameIndexMode,
-                                units,
-                                cdm) {
+                                       cohortInfo,
+                                       sameIndexMode,
+                                       units,
+                                       cdm) {
   if (length(units) == 0) {
     cohortInfo <- cohortInfo |>
       dplyr::select("subject_id", "cohort_start_date", "cohort_end_date") |>
@@ -419,13 +422,13 @@ addNumberErasDrugUse <- function(cohort, cohortInfo, gapEra, cdm) {
 }
 
 addCumulativeDoseDrugUse <- function(cohort,
-                              cohortInfo,
-                              cdm,
-                              gapEra,
-                              sameIndexMode,
-                              overlapMode,
-                              eraJoinMode,
-                              units) {
+                                     cohortInfo,
+                                     cdm,
+                                     gapEra,
+                                     sameIndexMode,
+                                     overlapMode,
+                                     eraJoinMode,
+                                     units) {
   if (length(units) == 0) {
     cumDose <- cohortInfo |>
       dplyr::select(
@@ -504,10 +507,10 @@ initialSubset <- function(cdm, dusCohort, conceptSet) {
     dplyr::inner_join(conceptSet, by = "drug_concept_id") |>
     dplyr::filter(
       (is.na(.data$drug_exposure_end_date) &
-         (.data$drug_exposure_start_date <= .data$cohort_end_date)) |
+        (.data$drug_exposure_start_date <= .data$cohort_end_date)) |
         (!is.na(.data$drug_exposure_end_date) &
-           ((.data$drug_exposure_end_date >= .data$cohort_start_date) &
-              (.data$drug_exposure_start_date <= .data$cohort_end_date)))
+          ((.data$drug_exposure_end_date >= .data$cohort_start_date) &
+            (.data$drug_exposure_start_date <= .data$cohort_end_date)))
     ) |>
     dplyr::compute(
       temporary = FALSE, overwrite = TRUE, name = uniqueTmpName()

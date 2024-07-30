@@ -53,8 +53,10 @@ subsetTables <- function(cdm, conceptSet, name) {
         ),
       by = "subject_id"
     ) |>
-    dplyr::filter(.data$cohort_start_date <= .data$observation_period_end_date,
-                  .data$cohort_end_date >= .data$observation_period_start_date) |>
+    dplyr::filter(
+      .data$cohort_start_date <= .data$observation_period_end_date,
+      .data$cohort_end_date >= .data$observation_period_start_date
+    ) |>
     dplyr::mutate(
       "cohort_start_date" = dplyr::if_else(
         .data$cohort_start_date < .data$observation_period_start_date,
@@ -83,7 +85,9 @@ subsetTables <- function(cdm, conceptSet, name) {
 }
 
 sumcounts <- function(cohort) {
-  cohortCount(cohort) |> dplyr::pull("number_records") |> sum()
+  cohortCount(cohort) |>
+    dplyr::pull("number_records") |>
+    sum()
 }
 
 #' @noRd
@@ -179,8 +183,9 @@ solveImputation <- function(x, column, method, toRound = FALSE) {
     if (method == "median") {
       imp <- imp |>
         dplyr::summarise(dplyr::across(dplyr::all_of(column),
-                                       ~ stats::median(., na.rm = TRUE),
-                                       .names = "x")) |>
+          ~ stats::median(., na.rm = TRUE),
+          .names = "x"
+        )) |>
         dplyr::pull("x")
     } else if (method == "mean") {
       imp <- imp |>

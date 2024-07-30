@@ -1,4 +1,5 @@
 test_that("test same results for ingredient cohorts", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
 
   expect_warning(cdm <- generateAtcCohortSet(cdm = cdm, name = "test_cohort_1"))
@@ -21,4 +22,3 @@ test_that("test same results for ingredient cohorts", {
 
   mockDisconnect(cdm = cdm)
 })
-

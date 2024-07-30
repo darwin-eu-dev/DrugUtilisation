@@ -53,8 +53,9 @@
 #' library(CodelistGenerator)
 #'
 #' cdm <- mockDrugUtilisation()
+#' codelist <- CodelistGenerator::getDrugIngredientCodes(cdm, "acetaminophen")
 #' cdm <- generateDrugUtilisationCohortSet(
-#'   cdm, "dus_cohort", getDrugIngredientCodes(cdm, name = "acetaminophen")
+#'   cdm, "dus_cohort", codelist
 #' )
 #' cdm[["dus_cohort"]] %>%
 #'   summariseDrugUtilisation(ingredientConceptId = 1125315)
@@ -80,7 +81,6 @@ summariseDrugUtilisation <- function(cohort,
                                      cumulativeQuantity = TRUE,
                                      initialDailyDose = TRUE,
                                      cumulativeDose = TRUE) {
-
   # checks
   checkInputs(cohort = cohort, strata = strata, estimates = estimates)
   cdm <- omopgenerics::cdmReference(cohort)
@@ -117,7 +117,8 @@ summariseDrugUtilisation <- function(cohort,
       cumulativeDose = cumulativeDose,
       gapEra = gapEra,
       nameStyle = "{value}_{concept_name}_{ingredient}",
-      name = NULL) |>
+      name = NULL
+    ) |>
     dplyr::collect()
 
   initialCols <- c(
@@ -139,10 +140,11 @@ summariseDrugUtilisation <- function(cohort,
       table = cohort, group = list("cohort_name"),
       strata = strata, variables = drugUseCols,
       estimates = estimates
-    )) |>
+    )
+  ) |>
     dplyr::mutate(
       cdm_name = dplyr::coalesce(omopgenerics::cdmName(cdm), as.character(NA)),
-      variable_level =  gsub("_xx.*|xx.*", "", gsub(paste0(variableNames, collapse = "|"), "", .data$variable_name)),
+      variable_level = gsub("_xx.*|xx.*", "", gsub(paste0(variableNames, collapse = "|"), "", .data$variable_name)),
       variable_level = dplyr::if_else(
         nchar(.data$variable_level) == 0 | grepl("records|subjects", .data$variable_level),
         NA, .data$variable_level
@@ -155,7 +157,8 @@ summariseDrugUtilisation <- function(cohort,
       ingredient_id = gsub(".*xx_|.*xx", "", .data$variable_name),
       ingredient_id = dplyr::if_else(
         nchar(.data$ingredient_id) == 0 | grepl("records|subjects", .data$variable_level),
-        NA, suppressWarnings(as.numeric(.data$ingredient_id))),
+        NA, suppressWarnings(as.numeric(.data$ingredient_id))
+      ),
       !!!variableNameExp(variableNames)
     ) |>
     dplyr::left_join(dic, by = "concept_set_name") |>
@@ -184,7 +187,9 @@ summariseDrugUtilisation <- function(cohort,
 variableNameExp <- function(variableNames) {
   expr <- "dplyr::case_when("
   for (var in variableNames) {
-    expr <- paste0(expr, "grepl('", var, "', .data$variable_name) ~ '", gsub("_", " ", substring(var, 0, nchar(var)-1)), "',")
+    expr <- paste0(expr, "grepl('", var, "', .data$variable_name) ~ '", gsub("_", " ", substring(var, 0, nchar(var) - 1)), "',")
   }
-  expr <- paste0(expr, ".default = .data$variable_name)") |> rlang::parse_exprs() |> rlang::set_names("variable_name")
+  expr <- paste0(expr, ".default = .data$variable_name)") |>
+    rlang::parse_exprs() |>
+    rlang::set_names("variable_name")
 }

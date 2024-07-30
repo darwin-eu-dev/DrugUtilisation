@@ -43,16 +43,17 @@ indications <- list("headache" = 378253, "asthma" = 317009)
 cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 
 cdm <- generateIngredientCohortSet(
-  cdm = cdm, name = "drug_cohort", ingredient = "acetaminophen")
+  cdm = cdm, name = "drug_cohort", ingredient = "acetaminophen"
+)
 
 result <- cdm$drug_cohort |>
   summariseIndication(
     indicationCohortName = "indication_cohorts",
     unknownIndicationTable = "condition_occurrence",
-    indicationWindow = list(c(-Inf, 0), c(-365, 0)))
+    indicationWindow = list(c(-Inf, 0), c(-365, 0))
+  )
 
 plotIndication(result)
-
 }
 
 }

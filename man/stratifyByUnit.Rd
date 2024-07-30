@@ -25,7 +25,7 @@ library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
 
-codelist <- getDrugIngredientCodes(cdm, "acetaminophen")
+codelist <- CodelistGenerator::getDrugIngredientCodes(cdm, "acetaminophen")
 
 codelistStratified <- stratifyByUnit(codelist, cdm, 1125315)
 

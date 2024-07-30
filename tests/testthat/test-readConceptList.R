@@ -1,4 +1,5 @@
 test_that("test inputs", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
   expect_warning(expect_error(readConceptList()))
   expect_warning(expect_error(readConceptList(cdm = cdm)))
@@ -6,7 +7,8 @@ test_that("test inputs", {
   expect_warning(expect_error(readConceptList(cdm = cdm, path = "not/a/path")))
   expect_warning(
     x <- readConceptList(
-      cdm = cdm, path =  system.file(package = "DrugUtilisation", "concepts"))
+      cdm = cdm, path = system.file(package = "DrugUtilisation", "concepts")
+    )
   )
   expect_true(typeof(x) == "list")
   expect_true(all(names(x) %in% c("influenza", "acetaminophen")))

@@ -50,12 +50,13 @@ library(DrugUtilisation)
 cdm <- mockDrugUtilisation()
 
 result <- cdm$cohort1 |>
- summariseIndication(indicationCohortName = "cohort2",
-                     indicationWindow = list(c(-30, 0)),
-                     unknownIndicationTable = "condition_occurrence")
+  summariseIndication(
+    indicationCohortName = "cohort2",
+    indicationWindow = list(c(-30, 0)),
+    unknownIndicationTable = "condition_occurrence"
+  )
 
 tableIndication(result, type = "tibble")
-
 }
 
 }

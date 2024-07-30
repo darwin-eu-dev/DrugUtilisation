@@ -60,16 +60,18 @@ cdm <- mockDrugUtilisation()
 indications <- list("headache" = 378253, "asthma" = 317009)
 cdm <- generateConceptCohortSet(cdm, indications, "indication_cohorts")
 
-cdm <- generateIngredientCohortSet(cdm = cdm, name = "drug_cohort",
-                                   ingredient = "acetaminophen")
+cdm <- generateIngredientCohortSet(
+  cdm = cdm, name = "drug_cohort",
+  ingredient = "acetaminophen"
+)
 
 cdm$drug_cohort |>
   summariseIndication(
     indicationCohortName = "indication_cohorts",
     unknownIndicationTable = "condition_occurrence",
-    indicationWindow = list(c(-Inf, 0))) |>
- glimpse()
-
+    indicationWindow = list(c(-Inf, 0))
+  ) |>
+  glimpse()
 }
 
 }

@@ -57,10 +57,14 @@ test_that("summarise drug restart", {
     group_level = c(rep("cohort_1", 12), rep("cohort_2", 12)),
     strata_name = "overall",
     strata_level = "overall",
-    variable_name = c(rep("100 days", 4), rep("300 days", 4), rep("End of observation", 4),
-                      rep("100 days", 4), rep("300 days", 4), rep("End of observation", 4)),
-    variable_level = c(rep(c("restart", "switch", "restart and switch", "not treated"), 3),
-                       rep(c("restart", "switch", "restart and switch", "not treated"), 3))
+    variable_name = c(
+      rep("100 days", 4), rep("300 days", 4), rep("End of observation", 4),
+      rep("100 days", 4), rep("300 days", 4), rep("End of observation", 4)
+    ),
+    variable_level = c(
+      rep(c("restart", "switch", "restart and switch", "not treated"), 3),
+      rep(c("restart", "switch", "restart and switch", "not treated"), 3)
+    )
   )
   uniqueVarsRes <- resultsCohort |> dplyr::distinct(group_level, strata_name, strata_level, variable_name, variable_level)
   expect_equal(uniqueVars$group_level, uniqueVarsRes$group_level)
@@ -72,7 +76,7 @@ test_that("summarise drug restart", {
   expect_true(is.na(settings(resultsCohort)$censor_date))
   expect_equal(
     resultsCohort |> dplyr::filter(estimate_name == "count") |> dplyr::pull("estimate_value"),
-    c('1', '1', '0', '2', '1', '2', '0', '1', '0', '2', '1', '1', '0', '0', '0', '4', '0', '0', '0', '4', '0', '2', '0', '2')
+    c("1", "1", "0", "2", "1", "2", "0", "1", "0", "2", "1", "1", "0", "0", "0", "4", "0", "0", "0", "4", "0", "2", "0", "2")
   )
   # suppress
   resultsSup <- omopgenerics::suppress(resultsCohort)
@@ -87,7 +91,7 @@ test_that("summarise drug restart", {
   # strata
   resultsStra <- cdm$dus_cohort |>
     PatientProfiles::addDemographics(
-      ageGroup = list(c(0,50), c(51,100))
+      ageGroup = list(c(0, 50), c(51, 100))
     ) |>
     summariseDrugRestart(
       strata = list("age_group", "sex", c("age_group", "sex")),
@@ -120,7 +124,8 @@ test_that("summarise drug restart", {
         switchCohortId = 1:2,
         censorDate = "cohort_start_date",
         followUpDays = c(10)
-      ))
+      )
+  )
   expect_true(censor$estimate_value |> unique() == "0")
 
   # expected errors

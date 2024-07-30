@@ -1,5 +1,5 @@
 test_that("basic plot", {
-
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),
@@ -38,21 +38,24 @@ test_that("basic plot", {
 
   # expected warnings - empty result or result with no ppc
   expect_warning(plotProportionOfPatientsCovered(
-    omopgenerics::emptySummarisedResult()))
+    omopgenerics::emptySummarisedResult()
+  ))
   expect_warning(plotProportionOfPatientsCovered(ppc |>
-                                    dplyr::filter(estimate_name!="ppc")))
+    dplyr::filter(estimate_name != "ppc")))
   # expected errors
   expect_error(plotProportionOfPatientsCovered(cars))
   expect_error(plotProportionOfPatientsCovered(ppc,
-                                               facet = "not_a_var"))
+    facet = "not_a_var"
+  ))
   expect_error(plotProportionOfPatientsCovered(ppc,
-                                               colour = "not_a_var"))
+    colour = "not_a_var"
+  ))
 
   mockDisconnect(cdm = cdm)
 })
 
 test_that("multiple cohorts", {
-
+  skip_on_cran()
   # id 1 - in cohort 1 for 5 days, exits the database after 25
   # id 2 - in cohort 1 for 15 days, exits the database after 15
   # id 3 - in cohort 1 for 20 days, exits the database after 25
@@ -70,7 +73,7 @@ test_that("multiple cohorts", {
       quantity = 0
     ),
     dus_cohort = dplyr::tibble(
-      cohort_definition_id = c(1,1,1,2),
+      cohort_definition_id = c(1, 1, 1, 2),
       subject_id = c(1, 2, 3, 4),
       cohort_start_date = as.Date(c("2000-01-01", "2002-01-01", "2010-01-01", "2011-01-01")),
       cohort_end_date = as.Date(c("2000-01-05", "2002-01-15", "2010-01-20", "2011-01-25"))
@@ -94,6 +97,7 @@ test_that("multiple cohorts", {
 })
 
 test_that("stratification", {
+  skip_on_cran()
   # basic example one cohort entry
   # id 1 - in cohort for 5 days, break, 5 more days, exits the database after 25
   # id 2 - in cohort for 15 days, exits the database after 15
@@ -106,8 +110,8 @@ test_that("stratification", {
     dus_cohort = dplyr::tibble(
       cohort_definition_id = 1,
       subject_id = c(1, 1, 2, 3, 4),
-      cohort_start_date = as.Date(c("2000-01-01","2000-01-10", "2002-01-01", "2010-01-01", "2011-01-01")),
-      cohort_end_date = as.Date(c("2000-01-05","2000-01-15", "2002-01-15", "2010-01-20", "2011-01-20"))
+      cohort_start_date = as.Date(c("2000-01-01", "2000-01-10", "2002-01-01", "2010-01-01", "2011-01-01")),
+      cohort_end_date = as.Date(c("2000-01-05", "2000-01-15", "2002-01-15", "2010-01-20", "2011-01-20"))
     ),
     observation_period = dplyr::tibble(
       observation_period_id = 1:4,
@@ -118,20 +122,27 @@ test_that("stratification", {
     )
   )
   cdm$dus_cohort <- cdm$dus_cohort |>
-    dplyr::mutate(var0 = "group",
-                  var1 = dplyr::if_else(subject_id == 1,
-                                        "group_1", "group_2"),
-                  var2 = dplyr::if_else(subject_id %in% c(1,2),
-                                        "group_a", "group_b"))
+    dplyr::mutate(
+      var0 = "group",
+      var1 = dplyr::if_else(subject_id == 1,
+        "group_1", "group_2"
+      ),
+      var2 = dplyr::if_else(subject_id %in% c(1, 2),
+        "group_a", "group_b"
+      )
+    )
 
   ppc <- cdm$dus_cohort |>
-    summariseProportionOfPatientsCovered(strata = list(c("var1"),
-                                                       c("var2"),
-                                                       c("var1", "var2")))
+    summariseProportionOfPatientsCovered(strata = list(
+      c("var1"),
+      c("var2"),
+      c("var1", "var2")
+    ))
 
   expect_no_error(plotProportionOfPatientsCovered(ppc,
-                                                  facet = "strata_name",
-                                                  colour = "strata_level"))
+    facet = "strata_name",
+    colour = "strata_level"
+  ))
 
   mockDisconnect(cdm = cdm)
 })

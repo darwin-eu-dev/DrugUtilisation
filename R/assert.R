@@ -169,7 +169,6 @@ assertClass <- function(x,
 
     # assert length
     assertLength(x, nm, length, msg, call)
-
   }
   invisible(x)
 }
@@ -283,7 +282,6 @@ assertNumeric <- function(x,
                           named = FALSE,
                           call = parent.frame(),
                           msg = NULL) {
-
   nm <- substitute(x) |> utils::capture.output()
   if (is.null(msg)) {
     if (integerish) obj <- "an integerish numeric" else obj <- "a numeric"
@@ -416,12 +414,13 @@ assertTable <- function(x,
 
     # assert unique.
     if (unique) {
-      if (nrow(x) != x |> dplyr::distinct() |> nrow()) {
+      if (nrow(x) != x |>
+        dplyr::distinct() |>
+        nrow()) {
         c("!" = "{.strong Rows are not unique.}", msg) |>
           cli::cli_abort(call = call)
       }
     }
-
   }
 
   return(invisible(x))

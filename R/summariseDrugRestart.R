@@ -112,11 +112,17 @@ summariseDrugRestart <- function(cohort,
   # remove cohort entries ending before censor date and throw warning saying how many
   if (!is.null(censorDate)) {
     censorDateSym <- rlang::sym(censorDate)
-    nBefore <- workingCohort |> dplyr::ungroup() |> dplyr::tally() |> dplyr::pull("n")
+    nBefore <- workingCohort |>
+      dplyr::ungroup() |>
+      dplyr::tally() |>
+      dplyr::pull("n")
     workingCohort <- workingCohort |>
       dplyr::filter(!!censorDateSym > .data$cohort_end_date) |>
       dplyr::compute(name = tempName, temporary = FALSE)
-    nAfter <- workingCohort |> dplyr::ungroup() |> dplyr::tally() |> dplyr::pull("n")
+    nAfter <- workingCohort |>
+      dplyr::ungroup() |>
+      dplyr::tally() |>
+      dplyr::pull("n")
     if (nBefore != nAfter) {
       cli::cli_warn(c(
         "!" = "{nBefore-nAfter} record{?s} {?was/were} dropped because {?it/their} ended before {censorDate}."
@@ -138,8 +144,10 @@ summariseDrugRestart <- function(cohort,
   # }
 
   # get first switch - cohort
-  cols <- c("cohort_definition_id", "subject_id", "cohort_start_date",
-            "cohort_end_date", censorDate, unique(unlist(strata)))
+  cols <- c(
+    "cohort_definition_id", "subject_id", "cohort_start_date",
+    "cohort_end_date", censorDate, unique(unlist(strata))
+  )
   results <- workingCohort |>
     dplyr::select(dplyr::all_of(cols)) |>
     PatientProfiles::addCohortIntersectDays(
@@ -158,7 +166,8 @@ summariseDrugRestart <- function(cohort,
     ) |>
     dplyr::group_by(dplyr::across(dplyr::all_of(cols))) |>
     dplyr::summarise(
-      switch_days = min(.data$switch_days, na.rm = TRUE), .groups = "drop") |>
+      switch_days = min(.data$switch_days, na.rm = TRUE), .groups = "drop"
+    ) |>
     dplyr::compute(name = tempName, temporary = FALSE)
 
   results <- results |>
@@ -291,11 +300,13 @@ summariseDrugRestart <- function(cohort,
 windowEvents <- function(followUpDays, variables) {
   followUpDaysNum <- followUpDays
   followUpDaysNum[is.infinite(followUpDays)] <- 99999999999999
-  glue::glue("dplyr::case_when(",
-             ".data$restart_days <= {followUpDaysNum} & .data$switch_days <= {followUpDaysNum} ~ 'restart and switch', ",
-             ".data$restart_days <= {followUpDaysNum} ~ 'restart', ",
-             ".data$switch_days <= {followUpDaysNum} ~ 'switch', ",
-             ".default = 'not treated')") |>
+  glue::glue(
+    "dplyr::case_when(",
+    ".data$restart_days <= {followUpDaysNum} & .data$switch_days <= {followUpDaysNum} ~ 'restart and switch', ",
+    ".data$restart_days <= {followUpDaysNum} ~ 'restart', ",
+    ".data$switch_days <= {followUpDaysNum} ~ 'switch', ",
+    ".default = 'not treated')"
+  ) |>
     rlang::parse_exprs() |>
     rlang::set_names(variables)
 }

@@ -3,7 +3,8 @@ test_that("test benchmarking function", {
   skip_if_not_installed("tictoc")
 
   cdm <- mockDrugUtilisation(
-    con = connection(),  writeSchema = schema(), numberIndividuals = 100)
+    con = connection(), writeSchema = schema(), numberIndividuals = 100
+  )
 
 
   # current mock only have concept set of length 4

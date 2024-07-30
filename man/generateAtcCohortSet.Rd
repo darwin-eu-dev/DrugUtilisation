@@ -69,12 +69,12 @@ library(dplyr)
 cdm <- mockDrugUtilisation()
 
 cdm <- generateAtcCohortSet(
-cdm = cdm,
-atcName = "alimentary tract and metabolism",
-name = "drugs"
+  cdm = cdm,
+  atcName = "alimentary tract and metabolism",
+  name = "drugs"
 )
 
 cdm$drugs |>
-glimpse()
+  glimpse()
 }
 }

@@ -31,7 +31,7 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' codelist <- readConceptList(
-#'   path = system.file("concepts",package="DrugUtilisation"), cdm = cdm
+#'   path = system.file("concepts", package = "DrugUtilisation"), cdm = cdm
 #' )
 #' }
 #'
@@ -39,7 +39,7 @@ readConceptList <- function(path, cdm) {
   lifecycle::deprecate_warn(
     when = "0.5.0",
     what = "readConceptList()",
-    with = "codesFromConceptSet()"
+    with = "CodelistGenerator::codesFromConceptSet()"
   )
-  codesFromConceptSet(path = path, cdm = cdm)
+  CodelistGenerator::codesFromConceptSet(path = path, cdm = cdm)
 }

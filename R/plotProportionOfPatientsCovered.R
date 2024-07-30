@@ -30,7 +30,7 @@ plotProportionOfPatientsCovered <- function(result,
                                             ylim = c(0, NA),
                                             facet = NULL,
                                             colour = NULL,
-                                            colour_name = NULL){
+                                            colour_name = NULL) {
   rlang::check_installed("ggplot2", reason = "for plot functions")
   rlang::check_installed("scales", reason = "for plot functions")
 
@@ -39,10 +39,10 @@ plotProportionOfPatientsCovered <- function(result,
   workingResult <- result |>
     dplyr::filter(.data$estimate_name == "ppc")
 
-  if(nrow(workingResult) == 0){
+  if (nrow(workingResult) == 0) {
     cli::cli_warn("No PPC results found")
-  return(ggplot2::ggplot() +
-    ggplot2::theme_void())
+    return(ggplot2::ggplot() +
+      ggplot2::theme_void())
   }
 
   plot_data <- getPlotData(
@@ -50,8 +50,10 @@ plotProportionOfPatientsCovered <- function(result,
     facetVars = facet,
     colourVars = colour
   ) |>
-    dplyr::mutate(ppc = as.numeric(.data$ppc),
-                  time = as.numeric(.data$time))
+    dplyr::mutate(
+      ppc = as.numeric(.data$ppc),
+      time = as.numeric(.data$time)
+    )
 
   if (is.null(colour)) {
     plot <- plot_data %>%
@@ -72,7 +74,7 @@ plotProportionOfPatientsCovered <- function(result,
           fill = .data$colour_vars
         )
       ) +
-      ggplot2::geom_line(linewidth = 0.25)+
+      ggplot2::geom_line(linewidth = 0.25) +
       ggplot2::labs(
         fill = colour_name,
         colour = colour_name
@@ -84,11 +86,11 @@ plotProportionOfPatientsCovered <- function(result,
     ggplot2::geom_line(linewidth = 0.5)
 
   if (is.null(ylim)) {
-      plot <- plot +
-        ggplot2::scale_y_continuous(
-          labels =
-            scales::percent_format(accuracy = 0.1)
-        )
+    plot <- plot +
+      ggplot2::scale_y_continuous(
+        labels =
+          scales::percent_format(accuracy = 0.1)
+      )
   } else {
     plot <- addYLimits(plot = plot, ylim = ylim)
   }
@@ -105,8 +107,9 @@ plotProportionOfPatientsCovered <- function(result,
 
     plot <- plot +
       ggplot2::facet_wrap(ggplot2::vars(.data$facet_var),
-                          ncol = facetNcols,
-                          scales = facetScales) +
+        ncol = facetNcols,
+        scales = facetScales
+      ) +
       ggplot2::theme_bw()
   } else {
     plot <- plot +
@@ -118,33 +121,33 @@ plotProportionOfPatientsCovered <- function(result,
     ggplot2::xlab("Days")
 
   return(plot)
-
-
 }
 
 getPlotData <- function(estimates, facetVars, colourVars) {
   plotData <- estimates
 
-    plotData <- plotData |>
-      visOmopResults::splitAdditional() |>
-      visOmopResults::addSettings() |>
-      dplyr::select(!"estimate_type") |>
-      tidyr::pivot_wider(names_from = "estimate_name",
-                         values_from = "estimate_value")
+  plotData <- plotData |>
+    visOmopResults::splitAdditional() |>
+    visOmopResults::addSettings() |>
+    dplyr::select(!"estimate_type") |>
+    tidyr::pivot_wider(
+      names_from = "estimate_name",
+      values_from = "estimate_value"
+    )
 
 
   if (!is.null(facetVars)) {
     plotData <- plotData %>%
       tidyr::unite("facet_var",
-                   c(dplyr::all_of(.env$facetVars)),
-                   remove = FALSE, sep = "; "
+        c(dplyr::all_of(.env$facetVars)),
+        remove = FALSE, sep = "; "
       )
   }
   if (!is.null(colourVars)) {
     plotData <- plotData %>%
       tidyr::unite("colour_vars",
-                   c(dplyr::all_of(.env$colourVars)),
-                   remove = FALSE, sep = "; "
+        c(dplyr::all_of(.env$colourVars)),
+        remove = FALSE, sep = "; "
       )
   }
 
@@ -152,13 +155,11 @@ getPlotData <- function(estimates, facetVars, colourVars) {
 }
 
 addYLimits <- function(plot, ylim) {
-
-    plot <- plot +
-      ggplot2::scale_y_continuous(
-        labels =
-          scales::percent_format(accuracy = 0.1),
-        limits = ylim
-      )
+  plot <- plot +
+    ggplot2::scale_y_continuous(
+      labels =
+        scales::percent_format(accuracy = 0.1),
+      limits = ylim
+    )
   return(plot)
 }
-

@@ -47,7 +47,8 @@ addDailyDose <- function(drugExposure,
   .addDailyDose(
     drugExposure = drugExposure,
     ingredientConceptId = ingredientConceptId,
-    name = name)
+    name = name
+  )
 }
 
 .addDailyDose <- function(drugExposure,
@@ -134,7 +135,7 @@ summariseDoseCoverage <- function(cdm,
                                   sampleSize = NULL) {
   # initial checks
   checkInputs(cdm = cdm, ingredientConceptId = ingredientConceptId)
-  checkmate::assertIntegerish(x = sampleSize,lower = 0, len = 1, null.ok = TRUE, any.missing = FALSE, )
+  checkmate::assertIntegerish(x = sampleSize, lower = 0, len = 1, null.ok = TRUE, any.missing = FALSE, )
   checkmate::assertCharacter(estimates)
 
   # get daily dosage
@@ -162,7 +163,7 @@ summariseDoseCoverage <- function(cdm,
     applyFormula() |>
     dplyr::select(
       "drug_concept_id", "daily_dose", "unit", "pattern_id",
-      "concept_id" =  "ingredient_concept_id"
+      "concept_id" = "ingredient_concept_id"
     ) |>
     .addRoute() |>
     dplyr::left_join(
@@ -233,7 +234,18 @@ summariseDoseCoverage <- function(cdm,
 #'
 dailyDoseCoverage <- function(cdm,
                               ingredientConceptId) {
-  lifecycle::deprecate_stop(when = "0.7.0", what = "dailyDoseCoverage()", with = "summariseDoseCoverage()")
+  lifecycle::deprecate_warn(
+    when = "0.7.0",
+    what = "dailyDoseCoverage()",
+    with = "summariseDoseCoverage()")
+  summariseDoseCoverage(
+    cdm = cdm,
+    ingredientConceptId = ingredientConceptId,
+    estimates = c(
+      "count_missing", "percentage_missing", "mean", "sd", "min", "q05",
+      "q25", "median", "q75", "q95", "max"
+    )
+  )
 }
 
 standardUnits <- function(drugExposure) {

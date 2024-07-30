@@ -94,7 +94,8 @@ checkLimit <- function(limit) {
 
 checkPriorObservation <- function(priorObservation) {
   checkmate::assertIntegerish(
-    priorObservation, lower = 0, any.missing = F, len = 1,
+    priorObservation,
+    lower = 0, any.missing = F, len = 1,
   )
 }
 
@@ -118,8 +119,8 @@ checkPriorUseWashout <- function(priorUseWashout) {
 checkCohortDateRange <- function(cohortDateRange) {
   checkmate::assertDate(cohortDateRange, len = 2)
   if (!is.na(cohortDateRange[1]) &
-      !is.na(cohortDateRange[2]) &
-      cohortDateRange[1] > cohortDateRange[2]) {
+    !is.na(cohortDateRange[2]) &
+    cohortDateRange[1] > cohortDateRange[2]) {
     cli::cli_abort(
       "cohortDateRange[1] should be equal or smaller than cohortDateRange[2]"
     )
@@ -159,8 +160,8 @@ checkDurationRange <- function(durationRange) {
   errorMessage <- "durationRange has to be numeric of length 2 with no NA and
       durationRange[1] <= durationRange[2]"
   if (!is.numeric(durationRange) |
-      length(durationRange) != 2 |
-      any(is.na(durationRange))) {
+    length(durationRange) != 2 |
+    any(is.na(durationRange))) {
     cli::cli_abort(errorMessage)
   }
   if (durationRange[1] > durationRange[2]) {
@@ -172,8 +173,8 @@ checkDailyDoseRange <- function(dailyDoseRange) {
   errorMessage <- "dailyDoseRange has to be numeric of length 2 with no NA and
       dailyDoseRange[1] <= dailyDoseRange[2]"
   if (!is.numeric(dailyDoseRange) |
-      length(dailyDoseRange) != 2 |
-      any(is.na(dailyDoseRange))) {
+    length(dailyDoseRange) != 2 |
+    any(is.na(dailyDoseRange))) {
     cli::cli_abort(errorMessage)
   }
   if (dailyDoseRange[1] > dailyDoseRange[2]) {
@@ -249,7 +250,7 @@ checkEraJoinMode <- function(eraJoinMode) {
   errorMessage <- "eraJoinMode must be a choice between: 'previous', 'subsequent', 'zero' and 'join'"
   if (!is.character(eraJoinMode) | length(eraJoinMode) > 1) {
     cli::cli_abort(errorMessage)
-  } else{
+  } else {
     eraJoinMode <- tolower(eraJoinMode)
   }
   if (!(eraJoinMode %in% c("previous", "subsequent", "zero", "join"))) {
@@ -261,7 +262,7 @@ checkOverlapMode <- function(overlapMode) {
   errorMessage <- "overlapMode must be a choice between: 'previous', 'subsequent', 'minimum', 'maximum' and 'sum'"
   if (!is.character(overlapMode) | length(overlapMode) > 1) {
     cli::cli_abort(errorMessage)
-  } else{
+  } else {
     overlapMode <- tolower(overlapMode)
   }
   if (!(overlapMode %in% c("previous", "subsequent", "minimum", "maximum", "sum"))) {
@@ -273,7 +274,7 @@ checkSameIndexMode <- function(sameIndexMode) {
   errorMessage <- "sameIndexMode must be a choice between: 'minimum', 'maximum' and 'sum'"
   if (!is.character(sameIndexMode) | length(sameIndexMode) > 1) {
     cli::cli_abort(errorMessage)
-  }else{
+  } else {
     sameIndexMode <- tolower(sameIndexMode)
   }
   if (!(sameIndexMode %in% c("minimum", "maximum", "sum"))) {
@@ -289,8 +290,8 @@ checkIngredientConceptId <- function(ingredientConceptId, cdm) {
     cli::cli_abort("ingredientConceptId is not an integer of length 1")
   }
   if (cdm[["concept"]] |>
-      dplyr::filter(.data$concept_id == .env$ingredientConceptId) |>
-      dplyr::pull("concept_class_id") != "Ingredient"
+    dplyr::filter(.data$concept_id == .env$ingredientConceptId) |>
+    dplyr::pull("concept_class_id") != "Ingredient"
   ) {
     cli::cli_abort("ingredientConceptId is not found in vocabulary")
   }
@@ -686,7 +687,7 @@ isInteger <- function(integer) {
     return(FALSE)
   } else {
     if (!is.infinite(integer) &&
-        abs(integer - round(integer)) > sqrt(.Machine$double.eps)) {
+      abs(integer - round(integer)) > sqrt(.Machine$double.eps)) {
       return(FALSE)
     } else {
       return(TRUE)

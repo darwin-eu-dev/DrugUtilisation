@@ -1,14 +1,14 @@
 Package: DrugUtilisation
 Title: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP 
     Common Data Model 
-Version: 0.7.0.900
+Version: 0.7.0
 Authors@R: c(
     person(
         "Martí", "Català", email = "marti.catalasabate@ndorms.ox.ac.uk", 
         role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3308-9905")
     ),
     person(
-        "Mike", "Du", email = "mike.du@ndorms.ox.ac.uk", role = c("aut"), 
+        "Mike", "Du", email = "mike.du@ndorms.ox.ac.uk", role = c("ctb"), 
         comment = c(ORCID = "0000-0002-9517-8834")
     ),
     person(
@@ -21,7 +21,7 @@ Authors@R: c(
     ),
     person(
         "Edward", "Burn", email = "edward.burn@ndorms.ox.ac.uk", 
-        role = c("ctb"), comment = c(ORCID = "0000-0002-9286-1128")
+        role = c("aut"), comment = c(ORCID = "0000-0002-9286-1128")
     ), 
     person(
         "Xintong", "Li", email = "xintong.li@ndorms.ox.ac.uk", role = c("ctb"),

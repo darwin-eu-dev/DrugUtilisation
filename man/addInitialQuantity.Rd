@@ -47,7 +47,10 @@ To add a new column with the initial quantity. To add multiple columns use
 library(DrugUtilisation)
 
 cdm <- mockDrugUtilisation()
-codelist <- getDrugIngredientCodes(cdm, name = "acetaminophen")
+codelist <- CodelistGenerator::getDrugIngredientCodes(
+  cdm,
+  name = "acetaminophen"
+)
 cdm <- generateDrugUtilisationCohortSet(
   cdm = cdm, name = "dus_cohort", conceptSet = codelist
 )

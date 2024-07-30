@@ -74,10 +74,11 @@ test_that("plot treatment (from cohort) works", {
   treatment3 <- cdm$cohort1 |>
     PatientProfiles::addSex() |>
     PatientProfiles::addAge(ageGroup = list("<40" = c(0, 39), ">40" = c(40, 150))) |>
-    summariseTreatment(treatmentCohortName = "cohort2",
-                                 window = list(c(0, 30), c(31, 365)),
-                                 treatmentCohortId = 1,
-                                 strata = list("sex", "age_group")
+    summariseTreatment(
+      treatmentCohortName = "cohort2",
+      window = list(c(0, 30), c(31, 365)),
+      treatmentCohortId = 1,
+      strata = list("sex", "age_group")
     )
 
   expect_no_error(
@@ -88,4 +89,3 @@ test_that("plot treatment (from cohort) works", {
 
   mockDisconnect(cdm = cdm)
 })
-

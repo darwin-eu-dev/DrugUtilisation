@@ -1,5 +1,6 @@
 
 test_that("Basic functionality", {
+  skip_on_cran()
   # basic functionality
   cdm <- mockDrugUtilisation(
     con = connection(),
@@ -152,6 +153,7 @@ test_that("Basic functionality", {
 })
 
 test_that("gapEra consecutive prescriptions", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),
@@ -190,8 +192,8 @@ test_that("gapEra consecutive prescriptions", {
   mockDisconnect(cdm = cdm)
 })
 
-
 test_that("test subfunctions", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(
     con = connection(),
     writeSchema = schema(),

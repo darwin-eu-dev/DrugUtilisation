@@ -55,13 +55,13 @@
 #' cdm <- mockDrugUtilisation()
 #'
 #' cdm <- generateAtcCohortSet(
-#' cdm = cdm,
-#' atcName = "alimentary tract and metabolism",
-#' name = "drugs"
+#'   cdm = cdm,
+#'   atcName = "alimentary tract and metabolism",
+#'   name = "drugs"
 #' )
 #'
 #' cdm$drugs |>
-#' glimpse()
+#'   glimpse()
 #' }
 generateAtcCohortSet <- function(cdm,
                                  name,
@@ -75,7 +75,6 @@ generateAtcCohortSet <- function(cdm,
                                  priorObservation = lifecycle::deprecated(),
                                  cohortDateRange = lifecycle::deprecated(),
                                  limit = lifecycle::deprecated()) {
-
   if (lifecycle::is_present(durationRange)) {
     lifecycle::deprecate_warn(
       when = "0.7.0",
@@ -137,4 +136,3 @@ generateAtcCohortSet <- function(cdm,
 
   return(cdm)
 }
-

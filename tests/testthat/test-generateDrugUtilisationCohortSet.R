@@ -1,4 +1,5 @@
 test_that("test inputs", {
+  skip_on_cran()
   cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
   expect_error(generateDrugUtilisationCohortSet())
   expect_error(generateDrugUtilisationCohortSet(cdm = cdm))
@@ -41,7 +42,8 @@ test_that("basic functionality drug_conceptId", {
 
   # check gap
   cdm1 <- generateDrugUtilisationCohortSet(
-    cdm, "dus", acetaminophen, gapEra = 0
+    cdm, "dus", acetaminophen,
+    gapEra = 0
   )
   expect_true(cdm1$dus |> dplyr::tally() |> dplyr::pull() == 4)
   cdm1 <- generateDrugUtilisationCohortSet(

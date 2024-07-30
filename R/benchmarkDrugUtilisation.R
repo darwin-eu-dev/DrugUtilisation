@@ -38,15 +38,15 @@ benchmarkDrugUtilisation <- function(cdm,
                                      indicationCohortName = "cohort1",
                                      ingredientId = 1125315,
                                      drugExposureName = "drug_exposure") {
-
   rlang::check_installed("tictoc")
 
   errorMessage <- checkmate::makeAssertCollection()
 
   checkmate::assertIntegerish(ingredientId,
-                           len = 1,
-                           add = errorMessage,
-                           null.ok = FALSE)
+    len = 1,
+    add = errorMessage,
+    null.ok = FALSE
+  )
 
   checkmate::assertIntegerish(numberOfCohort,
     lower = 1,
@@ -72,7 +72,8 @@ benchmarkDrugUtilisation <- function(cdm,
   conceptSet <- CodelistGenerator::getDrugIngredientCodes(cdm)
 
   checkmate::assertTRUE(length(conceptSet) >= max(numberOfCohort),
-                        add = errorMessage)
+    add = errorMessage
+  )
 
   time_record <- list()
 
@@ -105,7 +106,7 @@ benchmarkDrugUtilisation <- function(cdm,
     cdm[[name]] |>
       addIndication(
         indicationCohortName = indicationCohortName,
-        indicationWindow = list(c(0,0)),
+        indicationWindow = list(c(0, 0)),
         unknownIndicationTable = NULL
       )
 
@@ -147,8 +148,8 @@ benchmarkDrugUtilisation <- function(cdm,
     dplyr::mutate(time_taken_mins = round(.data$time_taken_secs / 60, 2)) |>
     dplyr::mutate(time_taken_hours = round(.data$time_taken_mins / 60, 2)) |>
     dplyr::mutate(person_n = cdm$person |>
-                    dplyr::count() |>
-                    dplyr::pull())
+      dplyr::count() |>
+      dplyr::pull())
 
   return(time_record)
 }
