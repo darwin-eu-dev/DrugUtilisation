@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.900</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,19 +97,22 @@ Eunomia dataset to show how this could be done.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>, </span>
-<span>                     dbdir <span class="op">=</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">db</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dbdir <span class="op">=</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/eunomiaDir.html" class="external-link">eunomia_dir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu">CDMConnector</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CDMConnector/reference/cdm_from_con.html" class="external-link">cdm_from_con</a></span><span class="op">(</span></span>
 <span>  con <span class="op">=</span> <span class="va">db</span>,</span>
-<span>  cdm_schema <span class="op">=</span> <span class="st">"main"</span>, </span>
-<span>  write_schema <span class="op">=</span> <span class="st">"main"</span>, </span>
+<span>  cdm_schema <span class="op">=</span> <span class="st">"main"</span>,</span>
+<span>  write_schema <span class="op">=</span> <span class="st">"main"</span>,</span>
 <span>  cdm_name <span class="op">=</span> <span class="st">"Eunomia"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateIngredientCohortSet.html">generateIngredientCohortSet</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
-<span>                                   name <span class="op">=</span> <span class="st">"amoxicillin"</span>,</span>
-<span>                                   ingredient <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>                                   gapEra <span class="op">=</span> <span class="fl">7</span><span class="op">)</span> </span></code></pre></div>
+<span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateIngredientCohortSet.html">generateIngredientCohortSet</a></span><span class="op">(</span></span>
+<span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>  name <span class="op">=</span> <span class="st">"amoxicillin"</span>,</span>
+<span>  ingredient <span class="op">=</span> <span class="st">"amoxicillin"</span>,</span>
+<span>  gapEra <span class="op">=</span> <span class="fl">7</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="time-to-discontinuation">Time-to-discontinuation<a class="anchor" aria-label="anchor" href="#time-to-discontinuation"></a>
 </h3>
@@ -125,13 +128,14 @@ creating the drug cohort can often have an important impact on the
 results.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">discontinuationSummary</span> <span class="op">&lt;-</span> <span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/estimateSingleEventSurvival.html" class="external-link">estimateSingleEventSurvival</a></span><span class="op">(</span></span>
-<span>  cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
-<span>  targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>  outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
+<span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
+<span>  targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>,</span>
+<span>  outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>,</span>
 <span>  outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
 <span>  outcomeWashout <span class="op">=</span> <span class="cn">Inf</span>,</span>
-<span>  followUpDays <span class="op">=</span> <span class="fl">90</span>, </span>
-<span>  eventGap <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
+<span>  followUpDays <span class="op">=</span> <span class="fl">90</span>,</span>
+<span>  eventGap <span class="op">=</span> <span class="fl">30</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>We can plot our study result like so:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuationSummary</span><span class="op">)</span></span></code></pre></div>
@@ -613,18 +617,20 @@ results.</p>
 demographics to our cohort table using the PatientProfiles packages and
 then stratify results by age group and sex.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">PatientProfiles</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/PatientProfiles/reference/addDemographics.html" class="external-link">addDemographics</a></span><span class="op">(</span></span>
-<span>    ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">41</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"amoxicillin"</span><span class="op">)</span></span>
+<span>    ageGroup <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">40</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">41</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"amoxicillin"</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">discontinuationSummary</span> <span class="op">&lt;-</span> <span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/estimateSingleEventSurvival.html" class="external-link">estimateSingleEventSurvival</a></span><span class="op">(</span></span>
-<span>  cdm <span class="op">=</span> <span class="va">cdm</span>, </span>
+<span>  cdm <span class="op">=</span> <span class="va">cdm</span>,</span>
 <span>  strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>  outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>, </span>
-<span>  outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>, </span>
-<span>  followUpDays <span class="op">=</span> <span class="fl">90</span>, </span>
-<span>  eventGap <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></code></pre></div>
+<span>  targetCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>,</span>
+<span>  outcomeCohortTable <span class="op">=</span> <span class="st">"amoxicillin"</span>,</span>
+<span>  outcomeDateVariable <span class="op">=</span> <span class="st">"cohort_end_date"</span>,</span>
+<span>  followUpDays <span class="op">=</span> <span class="fl">90</span>,</span>
+<span>  eventGap <span class="op">=</span> <span class="fl">30</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Again we could present our results in a plot or a table.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">CohortSurvival</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu.github.io/CohortSurvival/reference/plotSurvival.html" class="external-link">plotSurvival</a></span><span class="op">(</span><span class="va">discontinuationSummary</span>, facet <span class="op">=</span> <span class="st">"strata_level"</span><span class="op">)</span></span></code></pre></div>
@@ -1166,7 +1172,7 @@ re-initiate the drug after some break. Consequently this method is
 typically far less sensitive to the choice of gap era used when creating
 the drug cohort.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ppcSummary</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">ppcSummary</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseProportionOfPatientsCovered.html">summariseProportionOfPatientsCovered</a></span><span class="op">(</span>followUpDays <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
 <p>Like with our survival estimates, we can quickly create a plot of our
 results</p>
@@ -1175,13 +1181,15 @@ results</p>
 <p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-10-1.png" width="75%"></p>
 <p>Similarly, we can also stratify our results in a similar way.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ppcSummary</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">ppcSummary</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">amoxicillin</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/summariseProportionOfPatientsCovered.html">summariseProportionOfPatientsCovered</a></span><span class="op">(</span></span>
 <span>    strata <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sex"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    followUpDays <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span></code></pre></div>
+<span>    followUpDays <span class="op">=</span> <span class="fl">90</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotProportionOfPatientsCovered.html">plotProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">ppcSummary</span>, </span>
-<span>                                facet <span class="op">=</span> <span class="st">"strata_level"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plotProportionOfPatientsCovered.html">plotProportionOfPatientsCovered</a></span><span class="op">(</span><span class="va">ppcSummary</span>,</span>
+<span>  facet <span class="op">=</span> <span class="st">"strata_level"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p><img src="treatment_discontinuation_files/figure-html/unnamed-chunk-12-1.png" width="75%"></p>
 </div>
 </div>
@@ -1192,7 +1200,7 @@ results</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Martí Català, Mike Du, Yuchen Guo, Kim Lopez-Guell, Nuria Mercade-Besora, Xihang Chen.</p>
+  <p>Developed by Martí Català, Yuchen Guo, Kim Lopez-Guell, Edward Burn, Nuria Mercade-Besora, Xihang Chen.</p>
 </div>
 
 <div class="pkgdown-footer-right">
