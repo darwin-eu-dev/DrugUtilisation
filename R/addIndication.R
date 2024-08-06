@@ -176,7 +176,8 @@ addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) 
       )
   }
 
-  qq <- paste0("dplyr::if_else(dplyr::if_any(dplyr::starts_with('unknown_", names(window), "')), 1L, 0L)") |>
+  qq <- paste0("dplyr::if_else(", paste0(".data[['unknown_{win}_", table, "']] == 1", collapse = " | "), ", 1L, 0L)") |>
+    glue::glue(win = names(window)) |>
     rlang::parse_exprs() |>
     rlang::set_names(paste0("i_", names(window), "_unknown"))
 
