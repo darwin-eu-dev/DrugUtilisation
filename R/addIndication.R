@@ -151,7 +151,15 @@ addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) 
   if (length(table) == 0) return(x)
 
   cdm <- omopgenerics::cdmReference(x)
-  q <- paste0("dplyr::if_all(dplyr::starts_with('", names(window), "'), ~ . == 0)", collapse = " | ") |>
+
+  # get individuals that in at least one window do not have any indication
+  cols <- colnames(x)
+  q <- character()
+  for (k in seq_along(window)) {
+    wcols <- cols[startsWith(cols, paste0("i_", names(window)[k]))]
+    q[k] <- paste0(".data[['", wcols, "']] == 0L", collapse = " & ")
+  }
+  q <- paste0("(", paste0(q, collapse = ") | ("), ")") |>
     rlang::parse_exprs()
 
   tablePrefix <- omopgenerics::tmpPrefix()
