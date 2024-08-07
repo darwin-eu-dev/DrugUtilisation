@@ -232,7 +232,8 @@ collapseIndication <- function(x, window, name, unknown) {
       rlang::parse_exprs() |>
       rlang::set_names(cols)
     x <- x |>
-      dplyr::mutate(!!!q)
+      dplyr::mutate(!!!q) |>
+      dplyr::compute(name = name, temporary = FALSE)
   }
 
   if (unknown) {
