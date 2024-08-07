@@ -148,12 +148,18 @@ addIndication <- function(cohort,
 }
 
 addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) {
-  if (length(table) == 0) {
-    return(x)
-  }
+  if (length(table) == 0) return(x)
 
   cdm <- omopgenerics::cdmReference(x)
-  q <- paste0("dplyr::if_all(dplyr::starts_with('", names(window), "'), ~ . == 0)", collapse = " | ") |>
+
+  # get individuals that in at least one window do not have any indication
+  cols <- colnames(x)
+  q <- character()
+  for (k in seq_along(window)) {
+    wcols <- cols[startsWith(cols, paste0("i_", names(window)[k]))]
+    q[k] <- paste0(".data[['", wcols, "']] == 0L", collapse = " & ")
+  }
+  q <- paste0("(", paste0(q, collapse = ") | ("), ")") |>
     rlang::parse_exprs()
 
   tablePrefix <- omopgenerics::tmpPrefix()
@@ -178,7 +184,8 @@ addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) 
       )
   }
 
-  qq <- paste0("dplyr::if_else(dplyr::if_any(dplyr::starts_with('unknown_", names(window), "')), 1L, 0L)") |>
+  qq <- paste0("dplyr::if_else(", paste0(".data[['unknown_{win}_", table, "']] == 1", collapse = " | "), ", 1L, 0L)") |>
+    glue::glue(win = names(window)) |>
     rlang::parse_exprs() |>
     rlang::set_names(paste0("i_", names(window), "_unknown"))
 
@@ -204,41 +211,47 @@ collapseIndication <- function(x, window, name, unknown) {
   indications <- indications[indications != "unknown"]
   indications <- sort(indications)
 
-  combs <- rep(list(c(1, 0)), length(indications))
-  names(combs) <- paste0("i_x1x_", indications)
-  combs <- tidyr::expand_grid(!!!combs)
-  xx <- character()
-  for (k in seq_len(nrow(combs) - 1)) {
-    cols <- combs[k, ] |>
-      as.list() |>
-      unlist()
-    nms <- names(cols)[cols == 1]
-    vals <- paste0(".data[['", nms, "']] == 1", collapse = " & ")
-    nms <- substr(nms, 7, nchar(nms)) |>
-      tolower() |>
-      paste0(collapse = " and ")
-    val <- paste0(vals, " ~ '", nms, "'")
-    xx <- c(xx, val)
+  iCol <- ".data[['i_win{i}_{indications[k]}']]"
+  ind <- ".data[['indication_win{i}']]"
+  cols <- glue::glue('indication_win{i}', i = seq_along(window))
+  for (k in seq_along(indications)) {
+    nm <- indications[k]
+    q <- character()
+    for (i in seq_along(window)) {
+      if (k == 1) {
+        q[i] <- paste0("dplyr::if_else(", iCol, " == 1, '{nm}', NA_character_)") |>
+          glue::glue()
+      } else {
+        q[i] <- paste0(
+          "dplyr::if_else(", iCol, " == 1, dplyr::if_else(is.na(", ind,
+          "), '{nm}', paste0(", ind, ", ' and {nm}')), ", ind, ")") |>
+          glue::glue()
+      }
+    }
+    q <- q |>
+      rlang::parse_exprs() |>
+      rlang::set_names(cols)
+    x <- x |>
+      dplyr::mutate(!!!q)
   }
-  if (unknown) xx <- c(xx, ".data[['i_x1x_unknown']] == 1 ~ 'unknown'")
-  xx <- paste0(xx, collapse = ", ")
 
-  q <- character()
-  nms <- character()
-  for (win in seq_along(window)) {
-    q <- c(q, paste0(
-      "dplyr::case_when(",
-      gsub("_x1x_", paste0("_win", win, "_"), xx),
-      ", .default = 'none')"
-    ))
-    nms <- c(nms, paste0("indication_win", win))
+  if (unknown) {
+    q <- character()
+    for (i in seq_along(window)) {
+      q[i] <- paste0(
+        "dplyr::if_else(.data[['i_win{i}_unknown']] == 1 & is.na(", ind,
+        "), 'unknown', ", ind, ")") |>
+        glue::glue()
+    }
+    q <- q |>
+      rlang::parse_exprs() |>
+      rlang::set_names(cols)
+    x <- x |>
+      dplyr::mutate(!!!q)
   }
-  q <- q |>
-    rlang::parse_exprs() |>
-    rlang::set_names(nms)
 
   x <- x |>
-    dplyr::mutate(!!!q) |>
+    dplyr::mutate(dplyr::across(dplyr::all_of(cols), ~ dplyr::coalesce(.x, "none"))) |>
     dplyr::select(!dplyr::starts_with("i_")) |>
     dplyr::compute(name = name, temporary = FALSE)
 

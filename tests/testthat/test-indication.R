@@ -348,6 +348,15 @@ test_that("test case single indication with unknown indication table", {
       dplyr::pull("indication_m6_to_0")
   ))
 
+  # expect no error
+  expect_no_error(
+    resres <- cdm[["cohort1"]] |>
+      addIndication(
+        indicationCohortName = "cohort2", indicationWindow = list(c(0, 0), c(-1, 0), c(-6, 0)),
+        unknownIndicationTable = c("condition_occurrence", "drug_exposure", "observation")
+      )
+  )
+
   mockDisconnect(cdm = cdm)
 })
 
