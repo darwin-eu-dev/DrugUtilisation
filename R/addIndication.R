@@ -152,20 +152,9 @@ addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) 
 
   cdm <- omopgenerics::cdmReference(x)
 
-  # get individuals that in at least one window do not have any indication
-  cols <- colnames(x)
-  q <- character()
-  for (k in seq_along(window)) {
-    wcols <- cols[startsWith(cols, paste0("i_", names(window)[k]))]
-    q[k] <- paste0(".data[['", wcols, "']] == 0L", collapse = " & ")
-  }
-  q <- paste0("(", paste0(q, collapse = ") | ("), ")") |>
-    rlang::parse_exprs()
-
   tablePrefix <- omopgenerics::tmpPrefix()
 
   xx <- x |>
-    dplyr::filter(!!!q) |>
     dplyr::select(dplyr::any_of(c("subject_id", indexDate, censorDate))) |>
     dplyr::compute(
       name = omopgenerics::uniqueTableName(tablePrefix), temporary = FALSE
