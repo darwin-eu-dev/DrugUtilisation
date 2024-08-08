@@ -101,6 +101,7 @@ addIndication <- function(cohort,
   names(indicationWindow) <- paste0("win", seq_along(indicationWindow))
 
   # select to interest individuals
+  cli::cli_inform("Getting specified indications")
   ind <- cohort |>
     dplyr::select(dplyr::all_of(c("subject_id", censorDate, indexDate))) |>
     dplyr::distinct() |>
@@ -148,6 +149,7 @@ addIndication <- function(cohort,
 }
 
 addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) {
+  cli::cli_inform("Getting unknown indications")
   if (length(table) == 0) return(x)
 
   cdm <- omopgenerics::cdmReference(x)
@@ -205,6 +207,7 @@ addUnknownIndication <- function(x, indexDate, censorDate, window, table, name) 
   return(x)
 }
 collapseIndication <- function(x, window, name, unknown) {
+  cli::cli_inform("Creating indication summary variables")
   indications <- colnames(x)
   indications <- indications[startsWith(indications, "i_win1_")]
   indications <- substr(indications, 8, nchar(indications))
