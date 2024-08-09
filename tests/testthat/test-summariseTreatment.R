@@ -1,5 +1,5 @@
 test_that("test summariseTreatment", {
-  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema())
+  cdm <- mockDrugUtilisation(con = connection(), writeSchema = schema(), seed = 1)
   expect_no_error(
     x <- cdm$cohort1 |>
       summariseTreatment(
