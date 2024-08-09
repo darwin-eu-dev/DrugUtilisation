@@ -156,11 +156,11 @@ with the label of the indication.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: ??</span></span>
 <span><span class="co">#&gt; Columns: 5</span></span>
-<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/Rtmp2ssC7A/file1cd7341b1da0.duckdb]</span></span>
+<span><span class="co">#&gt; Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/RtmpOJGIwq/file1e2b3c998bc5.duckdb]</span></span>
 <span><span class="co">#&gt; $ cohort_definition_id <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…</span></span>
-<span><span class="co">#&gt; $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1898, 2942, 1642, 4080, 1110, 2616, 2802, 2882, 2…</span></span>
-<span><span class="co">#&gt; $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1979-10-23, 1983-05-24, 1951-06-22, 1985-01-19, …</span></span>
-<span><span class="co">#&gt; $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1979-10-30, 1983-05-31, 1951-07-06, 1985-02-02, …</span></span>
+<span><span class="co">#&gt; $ subject_id           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 411, 865, 956, 2693, 53, 1316, 2373, 1867, 842, 3…</span></span>
+<span><span class="co">#&gt; $ cohort_start_date    <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1961-02-11, 1945-09-01, 1945-04-15, 1962-01-27, …</span></span>
+<span><span class="co">#&gt; $ cohort_end_date      <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 1961-02-25, 1945-09-08, 1945-04-22, 1962-02-10, …</span></span>
 <span><span class="co">#&gt; $ indication_m30_to_0  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "bronchitis", "bronchitis", "bronchitis", "bronch…</span></span></code></pre></div>
 <p>We can see that individuals are classified as having sinusistis
 (without bronchitis), bronchitis (without sinusitis), sinusitis and
@@ -170,11 +170,11 @@ bronchitis, or no observed indication.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [4 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/Rtmp2ssC7A/file1cd7341b1da0.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/RtmpOJGIwq/file1e2b3c998bc5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis and sinusitis     3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> bronchitis and sinusitis     3</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> sinusitis                   18</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> none                     <span style="text-decoration: underline;">11</span>351</span></span></code></pre></div>
 <p>As well as the indication cohort table, we can also use the clinical
@@ -196,7 +196,7 @@ initiation.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/Rtmp2ssC7A/file1cd7341b1da0.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/RtmpOJGIwq/file1e2b3c998bc5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis and sinusitis     3</span></span>
@@ -219,7 +219,7 @@ likely increase our risk of false positives).</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_0_to_0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [4 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/Rtmp2ssC7A/file1cd7341b1da0.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/RtmpOJGIwq/file1e2b3c998bc5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_0_to_0     n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis         <span style="text-decoration: underline;">2</span>524</span></span>
@@ -230,24 +230,24 @@ likely increase our risk of false positives).</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m30_to_0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/Rtmp2ssC7A/file1cd7341b1da0.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/RtmpOJGIwq/file1e2b3c998bc5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_m30_to_0          n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis and sinusitis     3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> unknown                  <span style="text-decoration: underline;">11</span>344</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis                <span style="text-decoration: underline;">2</span>527</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> bronchitis and sinusitis     3</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> unknown                  <span style="text-decoration: underline;">11</span>344</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> sinusitis                   18</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> none                         7</span></span>
 <span><span class="va">cdm</span><span class="op">[[</span><span class="st">"acetaminophen_users"</span><span class="op">]</span><span class="op">]</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">indication_m365_to_0</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">tally</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># Source:   SQL [5 x 2]</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/Rtmp2ssC7A/file1cd7341b1da0.duckdb]</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1//tmp/RtmpOJGIwq/file1e2b3c998bc5.duckdb]</span></span></span>
 <span><span class="co">#&gt;   indication_m365_to_0         n</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis and sinusitis   101</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> unknown                  <span style="text-decoration: underline;">10</span>968</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> bronchitis                <span style="text-decoration: underline;">2</span>615</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> bronchitis                <span style="text-decoration: underline;">2</span>615</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> bronchitis and sinusitis   101</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> unknown                  <span style="text-decoration: underline;">10</span>968</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> sinusitis                  211</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> none                         4</span></span></code></pre></div>
 <div class="section level3">
