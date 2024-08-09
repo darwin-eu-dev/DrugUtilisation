@@ -4,8 +4,8 @@
 # DrugUtilisation <img src="man/figures/logo.png" align="right" height="200"/>
 
 [![CRANstatus](https://www.r-pkg.org/badges/version/DrugUtilisation)](https://CRAN.R-project.org/package=DrugUtilisation)
-[![codecov.io](https://codecov.io/github/darwin-eu/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu/DrugUtilisation?branch=main)
-[![R-CMD-check](https://github.com/darwin-eu/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu/DrugUtilisation/actions)
+[![codecov.io](https://codecov.io/github/darwin-eu-dev/DrugUtilisation/coverage.svg?branch=main)](https://app.codecov.io/github/darwin-eu-dev/DrugUtilisation?branch=main)
+[![R-CMD-check](https://github.com/darwin-eu-dev/DrugUtilisation/workflows/R-CMD-check/badge.svg)](https://github.com/darwin-eu-dev/DrugUtilisation/actions)
 [![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](https://lifecycle.r-lib.org/articles/stages.html)
 
 ## Package overview
@@ -56,26 +56,35 @@ observation in the database prior to their drug start date.
 cdm <- generateIngredientCohortSet(
   cdm = cdm,
   name = "dus_cohort",
-  ingredient = "acetaminophen", 
+  ingredient = "acetaminophen",
   gapEra = 7
 )
-cdm$dus_cohort |> 
-  requireIsFirstDrugEntry() |> 
+#> Warning: ! 1 casted column in dus_cohort (cohort_attrition) as do not match expected
+#>   column type:
+#> • `reason_id` from numeric to integer
+cdm$dus_cohort |>
+  requireIsFirstDrugEntry() |>
   requireObservationBeforeDrug(days = 30)
+#> Warning: ! 1 casted column in dus_cohort (cohort_attrition) as do not match expected
+#>   column type:
+#> • `reason_id` from numeric to integer
+#> ! 1 casted column in dus_cohort (cohort_attrition) as do not match expected
+#>   column type:
+#> • `reason_id` from numeric to integer
 #> # Source:   table<main.dus_cohort> [?? x 4]
-#> # Database: DuckDB v0.10.0 [martics@Windows 10 x64:R 4.2.1/:memory:]
+#> # Database: DuckDB v1.0.0 [root@Darwin 23.4.0:R 4.4.1/:memory:]
 #>    cohort_definition_id subject_id cohort_start_date cohort_end_date
 #>                   <int>      <int> <date>            <date>         
-#>  1                    1          2 2016-04-20        2016-04-25     
-#>  2                    1         42 2016-01-25        2017-01-25     
-#>  3                    1         50 2012-09-06        2014-04-27     
-#>  4                    1         59 2020-04-16        2020-05-08     
-#>  5                    1         64 2022-04-16        2022-07-03     
-#>  6                    1         71 2013-10-27        2014-04-03     
-#>  7                    1         75 2002-04-30        2004-08-27     
-#>  8                    1         82 2013-01-30        2013-02-19     
-#>  9                    1         29 1997-06-07        1998-07-16     
-#> 10                    1         68 2012-12-25        2013-05-01     
+#>  1                    1         99 1996-03-26        1996-12-20     
+#>  2                    1         31 2000-05-14        2005-08-28     
+#>  3                    1         37 2015-01-22        2015-01-28     
+#>  4                    1         49 2018-07-10        2018-12-19     
+#>  5                    1         54 2015-08-27        2015-09-15     
+#>  6                    1          4 2018-02-11        2022-05-24     
+#>  7                    1         18 2020-08-05        2021-02-12     
+#>  8                    1         25 2001-02-18        2003-06-26     
+#>  9                    1         38 2018-06-04        2019-07-18     
+#> 10                    1         39 2001-04-02        2004-11-23     
 #> # ℹ more rows
 ```
 
@@ -88,21 +97,34 @@ and the other for influenza.
 
 ``` r
 indications <- list(headache = 378253, influenza = 4266367)
-cdm <- generateConceptCohortSet(cdm, 
-                                conceptSet = indications, 
-                                name = "indications_cohort")
+cdm <- generateConceptCohortSet(cdm,
+  conceptSet = indications,
+  name = "indications_cohort"
+)
+#> Warning: ! 3 casted columns in indications_cohort (cohort_attrition) as do not match
+#>   expected column type:
+#> • `reason_id` from numeric to integer
+#> • `excluded_records` from numeric to integer
+#> • `excluded_subjects` from numeric to integer
+#> Warning: ! 1 casted column in indications_cohort (cohort_codelist) as do not match
+#>   expected column type:
+#> • `concept_id` from numeric to integer
 ```
 
 We can summarise the indication results using the `summariseIndication`
 function:
 
 ``` r
-indication_summary <- cdm$dus_cohort |> 
-  summariseIndication(indicationCohortName = "indications_cohort", 
-                      unknownIndicationTable = "condition_occurrence",
-                      indicationWindow = list(c(-30, 0)))
-#> Warning: Your SQL query is over 10,000 characters which can cause issues on some database platforms!
-#> Try calling computeQuery earlier in your pipeline.
+indication_summary <- cdm$dus_cohort |>
+  summariseIndication(
+    indicationCohortName = "indications_cohort",
+    unknownIndicationTable = "condition_occurrence",
+    indicationWindow = list(c(-30, 0))
+  )
+#> Getting specified indications
+#> Creating indication summary variables
+#> Getting unknown indications
+#> Summarising indication results
 indication_summary |> glimpse()
 #> Rows: 12
 #> Columns: 13
@@ -116,7 +138,7 @@ indication_summary |> glimpse()
 #> $ variable_level   <chr> NA, NA, "headache", "headache", "influenza", "influen…
 #> $ estimate_name    <chr> "count", "count", "count", "percentage", "count", "pe…
 #> $ estimate_type    <chr> "integer", "integer", "integer", "percentage", "integ…
-#> $ estimate_value   <chr> "54", "54", "0", "0", "0", "0", "0", "0", "1", "1.851…
+#> $ estimate_value   <chr> "43", "43", "2", "4.65116279069767", "0", "0", "0", "…
 #> $ additional_name  <chr> "overall", "overall", "overall", "overall", "overall"…
 #> $ additional_level <chr> "overall", "overall", "overall", "overall", "overall"…
 ```
@@ -128,11 +150,11 @@ with various measures calculated for a provided ingredient concept (in
 this case the concept for acetaminophen).
 
 ``` r
-drug_utilisation_summary <- cdm$dus_cohort |> 
-  summariseDrugUtilisation(ingredientConceptId = 1125315, 
-                           gapEra = 7)
-#> Warning: Your SQL query is over 10,000 characters which can cause issues on some database platforms!
-#> Try calling computeQuery earlier in your pipeline.
+drug_utilisation_summary <- cdm$dus_cohort |>
+  summariseDrugUtilisation(
+    ingredientConceptId = 1125315,
+    gapEra = 7
+  )
 drug_utilisation_summary |> glimpse()
 #> Rows: 58
 #> Columns: 13
@@ -146,7 +168,7 @@ drug_utilisation_summary |> glimpse()
 #> $ variable_level   <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 #> $ estimate_name    <chr> "count", "count", "q25", "median", "q75", "mean", "sd…
 #> $ estimate_type    <chr> "integer", "integer", "integer", "integer", "integer"…
-#> $ estimate_value   <chr> "54", "54", "1", "1", "1", "1.27777777777778", "0.626…
+#> $ estimate_value   <chr> "43", "43", "1", "1", "1", "1.11627906976744", "0.324…
 #> $ additional_name  <chr> "overall", "overall", "concept_set", "concept_set", "…
 #> $ additional_level <chr> "overall", "overall", "ingredient_1125315_descendants…
 table(drug_utilisation_summary$variable_name)
@@ -165,8 +187,10 @@ Now we can combine our results and suppress any counts less than 5 so
 that they are ready to be shared.
 
 ``` r
-results <- bind(indication_summary,
-                   drug_utilisation_summary) |> 
+results <- bind(
+  indication_summary,
+  drug_utilisation_summary
+) |>
   suppress(minCellCount = 5)
 results |> glimpse()
 #> Rows: 70
@@ -181,7 +205,7 @@ results |> glimpse()
 #> $ variable_level   <chr> NA, NA, "headache", "headache", "influenza", "influen…
 #> $ estimate_name    <chr> "count", "count", "count", "percentage", "count", "pe…
 #> $ estimate_type    <chr> "integer", "integer", "integer", "percentage", "integ…
-#> $ estimate_value   <chr> "54", "54", "0", "0", "0", "0", "0", "0", NA, NA, "53…
+#> $ estimate_value   <chr> "43", "43", NA, NA, "0", "0", "0", "0", NA, NA, "40",…
 #> $ additional_name  <chr> "overall", "overall", "overall", "overall", "overall"…
 #> $ additional_level <chr> "overall", "overall", "overall", "overall", "overall"…
 ```
