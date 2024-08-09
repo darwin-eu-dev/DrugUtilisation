@@ -127,6 +127,7 @@ summariseIndication <- function(cohort,
     rlang::set_names("variable_name")
 
   # summarise indication columns
+  cli::cli_inform("Summarising indication results")
   suppressMessages(
     result <- PatientProfiles::summariseResult(
       table = cohort,
