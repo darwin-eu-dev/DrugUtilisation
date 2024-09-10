@@ -1,7 +1,7 @@
 Package: DrugUtilisation
 Title: Summarise Patient-Level Drug Utilisation in Data Mapped to the OMOP 
     Common Data Model 
-Version: 0.7.0.900
+Version: 0.7.1
 Authors@R: c(
     person(
         "Martí", "Català", email = "marti.catalasabate@ndorms.ox.ac.uk", 

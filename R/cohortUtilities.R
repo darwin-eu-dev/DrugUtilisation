@@ -93,8 +93,10 @@ sumcounts <- function(cohort) {
 #' @noRd
 erafyCohort <- function(cohort, gap) {
   if (sumcounts(cohort) > 0 & gap > 0) {
+    name <- omopgenerics::tableName(cohort)
     cohort <- cohort |>
       erafy(gap) |>
+      dplyr::compute(name = name, temporary = FALSE) |>
       omopgenerics::recordCohortAttrition(paste(
         "join exposures separated by", gap, "or less days"
       ))

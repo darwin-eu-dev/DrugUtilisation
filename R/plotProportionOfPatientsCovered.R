@@ -51,7 +51,7 @@ plotProportionOfPatientsCovered <- function(result,
     colourVars = colour
   ) |>
     dplyr::mutate(
-      ppc = as.numeric(.data$ppc),
+      ppc = as.numeric(.data$ppc) / 100,
       time = as.numeric(.data$time)
     )
 
