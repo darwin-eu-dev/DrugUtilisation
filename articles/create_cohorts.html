@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">DrugUtilisation</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.900</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,6 +114,67 @@ useful to test the package:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://darwin-eu-dev.github.io/DrugUtilisation/">DrugUtilisation</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mockDrugUtilisation.html">mockDrugUtilisation</a></span><span class="op">(</span>numberIndividuals <span class="op">=</span> <span class="fl">100</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 6 column in <span style="font-weight: bold;">person</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `gender_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `race_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `ethnicity_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `location_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `provider_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `care_site_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 1 column in <span style="font-weight: bold;">observation_period</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `period_type_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 2 column in <span style="font-weight: bold;">visit_occurrence</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `visit_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `visit_type_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 10 column in <span style="font-weight: bold;">condition_occurrence</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `condition_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `condition_type_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `condition_status_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `stop_reason` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">character</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `provider_id` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `visit_occurrence_id` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `visit_detail_id` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `condition_source_value` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">character</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `condition_source_concept_id` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `condition_status_source_value` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">character</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 2 column in <span style="font-weight: bold;">drug_exposure</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `drug_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `drug_type_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 2 column in <span style="font-weight: bold;">observation</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `observation_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `observation_type_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 4 column in <span style="font-weight: bold;">concept</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `valid_start_date` is <span style="color: #0000BB;">character</span> but expected <span style="color: #0000BB;">date</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `valid_end_date` is <span style="color: #0000BB;">character</span> but expected <span style="color: #0000BB;">date</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `invalid_reason` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">character</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 2 column in <span style="font-weight: bold;">concept_relationship</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `concept_id_1` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `concept_id_2` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 4 column in <span style="font-weight: bold;">concept_ancestor</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `ancestor_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `descendant_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `min_levels_of_separation` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `max_levels_of_separation` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 9 column in <span style="font-weight: bold;">drug_strength</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `drug_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `ingredient_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `amount_unit_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `numerator_unit_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `denominator_unit_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `box_size` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `valid_start_date` is <span style="color: #0000BB;">character</span> but expected <span style="color: #0000BB;">date</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `valid_end_date` is <span style="color: #0000BB;">character</span> but expected <span style="color: #0000BB;">date</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `invalid_reason` is <span style="color: #0000BB;">logical</span> but expected <span style="color: #0000BB;">character</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 6 column in <span style="font-weight: bold;">person</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `gender_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `race_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `ethnicity_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `location_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `provider_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `care_site_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> 1 column in <span style="font-weight: bold;">observation_period</span> do not match expected column type:</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">•</span> `period_type_concept_id` is <span style="color: #0000BB;">numeric</span> but expected <span style="color: #0000BB;">integer</span></span></span>
 <span></span>
 <span><span class="va">cdm</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -152,6 +213,8 @@ useful to test the package:</p>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conceptSet</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>acetaminophen <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">omopgenerics</span><span class="fu">::</span><span class="fu"><a href="https://darwin-eu-dev.github.io/omopgenerics/reference/newCodelist.html" class="external-link">newCodelist</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> `codelist` contains numeric values, they are casted</span></span>
+<span><span class="co">#&gt; to integers.</span></span>
 <span><span class="va">conceptSet</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">1 codelist</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────────</span></span></span>
@@ -190,12 +253,16 @@ can be very useful to create conceptSet.</p>
 <code><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes()</a></code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">codes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, name <span class="op">=</span> <span class="st">"acetaminophen"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> `codelist` contains numeric values, they are casted</span></span>
+<span><span class="co">#&gt; to integers.</span></span>
 <span><span class="va">codes</span><span class="op">[[</span><span class="st">"161_acetaminophen"</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="co">#&gt; [1]  1125315  1125360  2905077 43135274</span></span></code></pre></div>
 <p>We could also use the function <code><a href="https://darwin-eu.github.io/CodelistGenerator/reference/codesFromConceptSet.html" class="external-link">codesFromConceptSet()</a></code> to
 read a concept set from a json file:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">codes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/codesFromConceptSet.html" class="external-link">codesFromConceptSet</a></span><span class="op">(</span>path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"acetaminophen.json"</span>, package <span class="op">=</span> <span class="st">"DrugUtilisation"</span><span class="op">)</span>, cdm <span class="op">=</span> <span class="va">cdm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> `codelist` contains numeric values, they are casted</span></span>
+<span><span class="co">#&gt; to integers.</span></span>
 <span><span class="va">codes</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">1 codelist</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────────</span></span></span>
@@ -250,6 +317,8 @@ records would be collapsed into a single episode:</p>
 acetaminophen with a gapEra of 30 days.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">codes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, name <span class="op">=</span> <span class="st">"acetaminophen"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> `codelist` contains numeric values, they are casted</span></span>
+<span><span class="co">#&gt; to integers.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">codes</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"acetaminophen"</span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, name <span class="op">=</span> <span class="st">"acetaminophen_cohort"</span>, conceptSet <span class="op">=</span> <span class="va">codes</span>, gapEra <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="va">cdm</span></span>
@@ -387,12 +456,12 @@ criteria:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         73 2011-04-02        2011-06-19     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         44 2017-01-01        2018-03-30     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         23 2003-10-29        2003-11-27     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         77 1966-09-15        1966-12-27     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         57 2020-04-17        2020-11-19     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         99 2015-02-03        2020-11-01     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         45 2017-07-03        2018-07-06     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         77 1966-09-15        1966-12-27     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         25 2020-01-04        2020-02-05     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         87 2020-10-02        2021-01-02     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         57 2020-04-17        2020-11-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         45 2017-07-03        2018-07-06     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>This would also get recorded in the attrition, counts and
 settings.</p>
@@ -431,6 +500,8 @@ to only one of them (simvastatin) and save the result to a table named:
 <code>my_new_cohort</code></p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">codes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://darwin-eu.github.io/CodelistGenerator/reference/getDrugIngredientCodes.html" class="external-link">getDrugIngredientCodes</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"metformin"</span>, <span class="st">"simvastatin"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> `codelist` contains numeric values, they are casted</span></span>
+<span><span class="co">#&gt; to integers.</span></span>
 <span><span class="va">cdm</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/generateDrugUtilisationCohortSet.html">generateDrugUtilisationCohortSet</a></span><span class="op">(</span>cdm <span class="op">=</span> <span class="va">cdm</span>, name <span class="op">=</span> <span class="st">"my_cohort"</span>, conceptSet <span class="op">=</span> <span class="va">codes</span>, gapEra <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="va">cdm</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -445,8 +516,8 @@ to only one of them (simvastatin) and save the result to a table named:
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 3</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id cohort_name       gap_era</span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1 6809_metformin    30     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    2 36567_simvastatin 30</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1 36567_simvastatin 30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    2 6809_metformin    30</span></span>
 <span><span class="va">cdm</span><span class="op">$</span><span class="va">my_new_cohort</span> <span class="op">&lt;-</span> <span class="va">cdm</span><span class="op">$</span><span class="va">my_cohort</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/requirePriorDrugWashout.html">requirePriorDrugWashout</a></span><span class="op">(</span>days <span class="op">=</span> <span class="fl">365</span>, cohortId <span class="op">=</span> <span class="fl">2</span>, name <span class="op">=</span> <span class="st">"my_new_cohort"</span><span class="op">)</span></span>
 <span><span class="va">cdm</span></span>
@@ -463,10 +534,10 @@ to only one of them (simvastatin) and save the result to a table named:
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 7</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects reason_id reason          </span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1             55              48         1 Initial qualify…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1             52              48         2 join exposures …</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                    2             53              48         1 Initial qualify…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>                    2             51              48         2 join exposures …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1             53              48         1 Initial qualify…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1             51              48         2 join exposures …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                    2             55              48         1 Initial qualify…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>                    2             52              48         2 join exposures …</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>                    2             51              48         3 require prior u…</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: excluded_records &lt;int&gt;, excluded_subjects &lt;int&gt;</span></span></span></code></pre></div>
 </div>
@@ -488,16 +559,16 @@ criteria:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          3 1996-09-13        2008-07-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         42 2002-09-15        2007-12-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         50 2017-04-01        2017-04-23     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         59 2020-11-09        2021-03-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         64 2019-01-10        2020-07-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         71 2017-07-05        2018-09-17     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         75 2010-06-16        2011-09-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         84 2008-10-08        2016-01-31     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         45 2017-07-03        2018-07-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         95 2001-06-13        2010-01-28     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         36 2018-06-17        2018-10-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1          7 1969-09-09        1970-02-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         37 1996-11-11        2003-08-07     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         54 2020-12-09        2021-01-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         98 2020-03-14        2020-08-14     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         17 2000-08-24        2003-02-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         77 1966-09-15        1966-12-27     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         87 2020-10-02        2021-01-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         96 2011-05-25        2013-01-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1          8 2019-09-14        2020-12-31     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>This would also get recorded in the attrition, counts and settings on
 top of the already exiting ones.</p>
@@ -545,16 +616,16 @@ criteria:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1          3 1996-09-13        2008-07-15     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         42 2002-09-15        2007-12-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         75 2010-06-16        2011-09-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         45 2017-07-03        2018-07-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         95 2001-06-13        2010-01-28     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         48 1972-04-14        1972-12-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         97 1991-02-09        1991-10-07     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         26 2015-07-22        2020-07-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         51 2017-09-04        2017-09-17     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         58 1995-08-29        2002-06-12     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         36 2018-06-17        2018-10-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         54 2020-12-09        2021-01-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         17 2000-08-24        2003-02-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         87 2020-10-02        2021-01-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         96 2011-05-25        2013-01-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1          8 2019-09-14        2020-12-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         23 2003-10-29        2003-11-27     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         44 2017-01-01        2018-03-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         81 1995-09-13        1997-11-17     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         88 2015-08-19        2016-05-09     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>This would also get recorded in the attrition, counts and settings on
 top of the already exiting ones.</p>
@@ -610,16 +681,16 @@ criteria:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># Database: DuckDB v1.0.0 [unknown@Linux 6.5.0-1025-azure:R 4.4.1/:memory:]</span></span></span>
 <span><span class="co">#&gt;    cohort_definition_id subject_id cohort_start_date cohort_end_date</span></span>
 <span><span class="co">#&gt;                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>         </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         42 2002-09-15        2007-12-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         75 2010-06-16        2011-09-20     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         45 2017-07-03        2018-07-06     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         95 2001-06-13        2010-01-28     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         26 2015-07-22        2020-07-18     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1         51 2017-09-04        2017-09-17     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         62 2005-01-24        2006-12-05     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         73 2011-04-02        2011-06-19     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         29 2020-12-08        2021-01-09     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         93 2014-01-09        2016-06-21     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>                    1         36 2018-06-17        2018-10-24     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>                    1         54 2020-12-09        2021-01-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>                    1         17 2000-08-24        2003-02-19     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>                    1         87 2020-10-02        2021-01-02     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>                    1         96 2011-05-25        2013-01-23     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>                    1          8 2019-09-14        2020-12-31     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>                    1         23 2003-10-29        2003-11-27     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>                    1         44 2017-01-01        2018-03-30     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>                    1         88 2015-08-19        2016-05-09     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>                    1         45 2017-07-03        2018-07-06     </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ more rows</span></span></span></code></pre></div>
 <p>This would also get recorded in the attrition, counts and settings on
 top of the already exiting ones.</p>
@@ -661,13 +732,13 @@ for example:</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 7</span></span></span>
 <span><span class="co">#&gt;   cohort_definition_id number_records number_subjects reason_id reason          </span></span>
 <span><span class="co">#&gt;                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1             55              48         1 Initial qualify…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1             52              48         2 join exposures …</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                    1             23              21         3 require cohort_…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>                    2             53              48         1 Initial qualify…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>                    2             51              48         2 join exposures …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>                    1             53              48         1 Initial qualify…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>                    1             51              48         2 join exposures …</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>                    1             18              18         3 require cohort_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>                    2             55              48         1 Initial qualify…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>                    2             52              48         2 join exposures …</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>                    2             51              48         3 require prior u…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>                    2             18              18         4 require cohort_…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>                    2             23              21         4 require cohort_…</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: excluded_records &lt;int&gt;, excluded_subjects &lt;int&gt;</span></span></span></code></pre></div>
 </div>
 </div>
